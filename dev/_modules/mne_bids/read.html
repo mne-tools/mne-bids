@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.18.0.dev32+g1e0a96e13 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.18.0.dev33+g56d36ab14 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=95573ed3"></script>
+    <script src="../../_static/documentation_options.js?v=4517f9e8"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev32+g1e0a96e13" />
+  <meta name="docsearch:version" content="0.18.0.dev33+g56d36ab14" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev32+g1e0a96e13 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev33+g56d36ab14 documentation</p>
   
 </a></div>
     
@@ -1020,7 +1020,8 @@
 
 <div class="viewcode-block" id="events_file_to_annotation_kwargs">
 <a class="viewcode-back" href="../../generated/mne_bids.events_file_to_annotation_kwargs.html#mne_bids.events_file_to_annotation_kwargs">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">events_file_to_annotation_kwargs</span><span class="p">(</span><span class="n">events_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="nd">@verbose</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">events_file_to_annotation_kwargs</span><span class="p">(</span><span class="n">events_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read the ``events.tsv`` file and extract onset, duration, and description.</span>
 
@@ -1028,6 +1029,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    events_fname : str</span>
 <span class="sd">        The file path to the ``events.tsv`` file.</span>
+<span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1071,8 +1073,8 @@
 <span class="sd">    ...     &#39;duration&#39;: [0.1, 0.1, 0.1],</span>
 <span class="sd">    ...     &#39;trial_type&#39;: [&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;],</span>
 <span class="sd">    ...     &#39;value&#39;: [1, 2, 1],</span>
-<span class="sd">    ...     &#39;sample&#39;: [10, 20, 30]</span>
-<span class="sd">            &#39;foo&#39;: [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;],</span>
+<span class="sd">    ...     &#39;sample&#39;: [10, 20, 30],</span>
+<span class="sd">    ...     &#39;foo&#39;: [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;],</span>
 <span class="sd">    ... }</span>
 <span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data)</span>
 <span class="sd">    &gt;&gt;&gt;</span>
@@ -1082,15 +1084,11 @@
 <span class="sd">    &gt;&gt;&gt; df.to_csv(events_file, sep=&#39;\t&#39;, index=False)</span>
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # Read the events file using the function</span>
-<span class="sd">    &gt;&gt;&gt; events_dict = events_file_to_annotation_kwargs(events_file)</span>
+<span class="sd">    &gt;&gt;&gt; events_dict = events_file_to_annotation_kwargs(events_file, verbose=False)</span>
 <span class="sd">    &gt;&gt;&gt; events_dict</span>
-<span class="sd">    {&#39;onset&#39;: array([0.1, 0.2, 0.3]),</span>
-<span class="sd">    &#39;duration&#39;: array([0.1, 0.1, 0.1]),</span>
-<span class="sd">    &#39;description&#39;: array([&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;], dtype=&#39;&lt;U6&#39;),</span>
-<span class="sd">    &#39;event_id&#39;: {&#39;event1&#39;: 1, &#39;event2&#39;: 2},</span>
-<span class="sd">    &#39;extras&#39;: [{&#39;foo&#39;: &#39;a&#39;}, {&#39;foo&#39;: &#39;b&#39;}, {&#39;foo&#39;: &#39;c&#39;}]}</span>
+<span class="sd">    {&#39;onset&#39;: array([0.1, 0.2, 0.3]), &#39;duration&#39;: array([0.1, 0.1, 0.1]), &#39;description&#39;: array([&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;], dtype=&#39;&lt;U6&#39;), &#39;event_id&#39;: {&#39;event1&#39;: 1, &#39;event2&#39;: 2}, &#39;extras&#39;: [{&#39;foo&#39;: &#39;a&#39;}, {&#39;foo&#39;: &#39;b&#39;}, {&#39;foo&#39;: &#39;c&#39;}]}</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa E501</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading events from </span><span class="si">{</span><span class="n">events_fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">events_fname</span><span class="p">)</span>
 
@@ -1156,9 +1154,11 @@
                     <span class="n">culled_vals</span> <span class="o">=</span> <span class="n">culled_vals</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># numeric, but has some non-integer values</span>
                     <span class="k">pass</span>
+            <span class="c1"># purge any np.str_, np.int_, or np.float_ types</span>
+            <span class="n">culled_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">culled_vals</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
             <span class="n">event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">culled</span><span class="p">[</span><span class="n">trial_type_col_name</span><span class="p">],</span> <span class="n">culled_vals</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">trial_types</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trial_types</span><span class="p">))))</span>
+            <span class="n">event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">trial_types</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trial_types</span><span class="p">)))))</span>
         <span class="n">descrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">trial_types</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 
     <span class="c1"># convert onsets &amp; durations to floats (&quot;n/a&quot; onsets were already dropped)</span>
@@ -1956,7 +1956,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-11-06.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-11-13.
       <br/>
     
   </p>

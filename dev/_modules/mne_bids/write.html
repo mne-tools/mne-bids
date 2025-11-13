@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.18.0.dev32+g1e0a96e13 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.18.0.dev33+g56d36ab14 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=95573ed3"></script>
+    <script src="../../_static/documentation_options.js?v=4517f9e8"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev32+g1e0a96e13" />
+  <meta name="docsearch:version" content="0.18.0.dev33+g56d36ab14" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev32+g1e0a96e13 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev33+g56d36ab14 documentation</p>
   
 </a></div>
     
@@ -613,7 +613,7 @@
     <span class="k">return</span> <span class="n">use_pdf_suffix</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">convert_fmt</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a channels.tsv file and save it.</span>
 
 <span class="sd">    Parameters</span>
@@ -622,6 +622,10 @@
 <span class="sd">        The data as MNE-Python Raw object.</span>
 <span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Filename to save the channels.tsv to.</span>
+<span class="sd">    convert_fmt : str | None</span>
+<span class="sd">        Which format the data are being converted to (determines what gets written in</span>
+<span class="sd">        the &quot;unit&quot; column). If ``None`` then we assume no conversion is happening (the</span>
+<span class="sd">        raw data files are being copied from the source tree into the BIDS folder tree).</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file.</span>
 <span class="sd">        Defaults to False.</span>
@@ -670,11 +674,32 @@
         <span class="n">ch_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">map_chs</span><span class="p">[</span><span class="n">_channel_type</span><span class="p">])</span>
         <span class="n">description</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">map_desc</span><span class="p">[</span><span class="n">_channel_type</span><span class="p">])</span>
     <span class="n">low_cutoff</span><span class="p">,</span> <span class="n">high_cutoff</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;highpass&quot;</span><span class="p">],</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;lowpass&quot;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">_orig_units</span><span class="p">:</span>
+    <span class="c1"># If data are being *converted*, unit is determined by destination format:</span>
+    <span class="c1">#   - `eeglabio.raw.export_set` always converts V to µV, cf:</span>
+    <span class="c1"># https://github.com/jackz314/eeglabio/blob/3961bb29daf082767ea44e7c7d9da2df10971c37/eeglabio/raw.py#L57</span>
+    <span class="c1">#</span>
+    <span class="c1">#   - `mne.export._edf_bdf._export_raw_edf_bdf` always converts V to µV, cf:</span>
+    <span class="c1"># https://github.com/mne-tools/mne-python/blob/1b921f4af5154bad40202d87428a2583ef896a00/mne/export/_edf_bdf.py#L61-L63</span>
+    <span class="c1">#</span>
+    <span class="c1">#   - `pybv.write_brainvision` converts V to µV by default (and we don&#39;t alter that)</span>
+    <span class="c1"># https://github.com/bids-standard/pybv/blob/2832c80ee00d12990a8c79f12c843c0d4ddc825b/pybv/io.py#L40</span>
+    <span class="c1"># https://github.com/mne-tools/mne-bids/blob/1e0a96e132fc904ba856d42beaa9ddddb985f1ed/mne_bids/write.py#L1279-L1280</span>
+    <span class="k">if</span> <span class="n">convert_fmt</span><span class="p">:</span>
+        <span class="n">volt_like</span> <span class="o">=</span> <span class="s2">&quot;µV&quot;</span> <span class="k">if</span> <span class="n">convert_fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;BrainVision&quot;</span><span class="p">,</span> <span class="s2">&quot;EDF&quot;</span><span class="p">,</span> <span class="s2">&quot;EEGLAB&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;V&quot;</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">volt_like</span>
+            <span class="k">if</span> <span class="n">ch_i</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFF_UNIT_V</span>
+            <span class="k">else</span> <span class="n">_unit2human</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_i</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">],</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ch_i</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+    <span class="c1"># if raw data is merely copied, check `raw._orig_units`</span>
+    <span class="k">elif</span> <span class="n">raw</span><span class="o">.</span><span class="n">_orig_units</span><span class="p">:</span>
         <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">_orig_units</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
+    <span class="c1"># If `raw._orig_units` is missing, assume SI units</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">_unit2human</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_i</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">],</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch_i</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">]]</span>
-        <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span> <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;NA&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">units</span><span class="p">]</span>
+    <span class="c1"># fixup &quot;NA&quot; (from `_unit2human`) → &quot;n/a&quot;</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span> <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;NA&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">units</span><span class="p">]</span>
 
     <span class="c1"># Translate from MNE to BIDS unit naming</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">mne_unit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">units</span><span class="p">):</span>
@@ -2711,7 +2736,6 @@
         <span class="n">emptyroom_fname</span><span class="o">=</span><span class="n">associated_er_path</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channels_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
     <span class="c1"># create parent directories if needed</span>
     <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">data_path</span><span class="p">))</span>
@@ -2769,6 +2793,14 @@
                 <span class="sa">f</span><span class="s2">&quot;Please use one of </span><span class="si">{</span><span class="n">CONVERT_FORMATS</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;for </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> datatype.&quot;</span>
             <span class="p">)</span>
+
+    <span class="c1"># this can&#39;t happen until after value of `convert` has been determined</span>
+    <span class="n">_channels_tsv</span><span class="p">(</span>
+        <span class="n">raw</span><span class="p">,</span>
+        <span class="n">channels_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
+        <span class="n">convert_fmt</span><span class="o">=</span><span class="nb">format</span> <span class="k">if</span> <span class="n">convert</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># raise error when trying to copy files (copyfile_*) into same location</span>
     <span class="c1"># (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)</span>
@@ -3960,7 +3992,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-11-06.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-11-13.
       <br/>
     
   </p>
