@@ -1359,15 +1359,15 @@ def _write_raw_edf_bdf(raw, bids_fname, overwrite):
             "to dates after 1985-01-01. Setting `startdate` to 1985-01-01 00:00:00 in "
             f"the {ext} file; the original anonymized date will be written to scans.tsv"
         )
-    # make a copy, so that anonymized meas_date is unchanged in orig raw,
-    # and thus scans.tsv ends up with the properly anonymized meas_date
-    raw_anon = raw.copy()
-    raw_anon.set_meas_date(
-        raw_anon.info["meas_date"].replace(
-            year=1985, month=1, day=1, hour=0, minute=0, second=0, microsecond=0
+        # make a copy, so that anonymized meas_date is unchanged in orig raw,
+        # and thus scans.tsv ends up with the properly anonymized meas_date
+        raw = raw.copy()
+        raw.set_meas_date(
+            raw.info["meas_date"].replace(
+                year=1985, month=1, day=1, hour=0, minute=0, second=0, microsecond=0
+            )
         )
-    )
-    raw_anon.export(bids_fname, overwrite=overwrite)
+    raw.export(bids_fname, overwrite=overwrite)
 
 
 def _write_raw_eeglab(raw, bids_fname, overwrite):
