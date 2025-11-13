@@ -47,6 +47,7 @@ from mne_bids import (
 )
 from mne_bids.config import (
     BIDS_COORD_FRAME_DESCRIPTIONS,
+    CURRYREADER_VERSION,
     EEGLABIO_VERSION,
     PYBV_VERSION,
     REFERENCES,
@@ -3373,8 +3374,12 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
-    pytest.importorskip("pybv", PYBV_VERSION)
-    pytest.importorskip("eeglabio", EEGLABIO_VERSION)
+    if dir_name == "BrainVision" or fmt == "BrainVision":
+        pytest.importorskip("pybv", PYBV_VERSION)
+    elif dir_name == "EEGLAB" or fmt == "EEGLAB":
+        pytest.importorskip("eeglabio", EEGLABIO_VERSION)
+    elif dir_name == "curry" or fmt == "curry":
+        pytest.importorskip("curryreader", CURRYREADER_VERSION)
     bids_root = tmp_path / fmt
     raw_fname = data_path / dir_name / fname
 
@@ -3431,7 +3436,7 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     # load channels.tsv; the unit should be Volts
     channels_fname = bids_output_path.copy().update(suffix="channels", extension=".tsv")
     channels_tsv = _from_tsv(channels_fname)
-    assert channels_tsv["units"][0] == "V"
+    assert channels_tsv["units"][0] == "µV"
 
     if fmt == "BrainVision":
         assert Path(raw2.filenames[0]).suffix == ".eeg"

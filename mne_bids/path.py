@@ -1766,7 +1766,8 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
 'space': None, \
 'recording': None, \
 'split': None, \
-'description': None}
+'description': None, \
+'tracking_system': None}
     """
     if on_error not in ("warn", "raise", "ignore"):
         raise ValueError(

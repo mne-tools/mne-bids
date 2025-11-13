@@ -25,6 +25,7 @@ Optional:
 * ``matplotlib`` (>=3.6, for using the interactive data inspector)
 * ``pandas`` (>=1.3.2, for generating event statistics)
 * ``edfio`` (>=0.4.10, for writing EDF data)
+* ``curryreader`` (>=0.1.2, for reading Curry data)
 * ``defusedxml`` (for writing reading EGI MFF data and BrainVision montages)
 * ``filelock`` (for atomic file writing, and parallel processing support)
 

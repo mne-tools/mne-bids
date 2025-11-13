@@ -27,6 +27,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Stefan Appelhoff`_
+* `Daniel McCloy`_
 
 
 Detailed list of changes
@@ -44,8 +45,9 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
--  `tracksys` accepted as argument in :class:`mne_bids.BIDSPath()` by `Julius Welzel`_ (:gh:`1430`)
+-  ``tracksys`` accepted as argument in :class:`mne_bids.BIDSPath()` by `Julius Welzel`_ (:gh:`1430`)
 - :func:`mne_bids.read_raw_bids()` has a new parameter ``on_ch_mismatch`` that controls behaviour when there is a mismatch between channel names in ``channels.tsv`` and the raw data; accepted values are ``'raise'`` (default), ``'reorder'``, and ``'rename'``, by `Kalle Mäkelä`_.
+- Column names read from ``.tsv`` are now converted from :class:`numpy.str_` class to built-in :class:`str` class, by `Daniel McCloy`_ (:gh:`1475`).
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -60,6 +62,7 @@ Detailed list of changes
 - Updated MEG/iEEG writers to satisfy the stricter checks in the latest BIDS validator releases: BTi/4D run folders now retain their ``.pdf`` suffix (falling back to the legacy naming when an older validator is detected), KIT marker files encode the run via the ``acq`` entity instead of ``run``, datasets lacking iEEG montages receive placeholder ``electrodes.tsv``/``coordsystem.json`` files, and the ``AssociatedEmptyRoom`` entry stores dataset-relative paths  by `Bruno Aristimunha`_ (:gh:`1449`)
 - Made the lock helpers skip reference counting when the optional ``filelock`` dependency is missing, preventing spurious ``AttributeError`` crashes during reads, by `Bruno Aristimunha`_ (:gh:`1469`)
 - Fixed a bug in :func:`mne_bids.read_raw_bids` that caused it to fail when reading BIDS datasets where the acquisition time was specified in local time rather than UTC only in Windows, by `Bruno Aristimunha`_ (:gh:`1452`)
+- Fixed bug in :func:`~mne_bids.write_raw_bids` where incorrect unit was sometimes written into ``channels.tsv`` file when converting data to BrainVision, EDF, or EEGLAB formats, by `Daniel McCloy`_ (:gh:`1475`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
@@ -67,5 +70,6 @@ Detailed list of changes
 - Made :func:`mne_bids.copyfiles.copyfile_brainvision` output more meaningful error messages when encountering problematic files, by `Stefan Appelhoff`_ (:gh:`1444`)
 - Raised the minimum ``edfio`` requirement to ``0.4.10``,  eeglabio to ``0.1.0``  by `Bruno Aristimunha`_ (:gh:`1449`)
 - Relaxed EDF padding warnings in the test suite to accommodate upstream changes by `Bruno Aristimunha`_ (:gh:`1449`)
+- Adapt to upstream switch to new reader package for Neuroscan-Curry-format files, by `Daniel McCloy`_ (:gh:`1475`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
