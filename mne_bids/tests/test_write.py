@@ -3457,6 +3457,7 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     assert_array_almost_equal(raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
 
 
+@testing.requires_testing_data
 def test_anonymize_and_convert_to_edf(tmp_path):
     """Test anonymization if converting to EDF (different codepath than EDF → EDF)."""
     bids_root = tmp_path / "EDF"
