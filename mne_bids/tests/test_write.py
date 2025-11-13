@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from mne.datasets import testing
-from mne.io import anonymize_info
+from mne.io import anonymize_info, read_raw_edf
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 from mne.utils import check_version
@@ -3453,6 +3453,42 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     # writing to EDF is not 100% lossless, as the resolution is determined
     # by the physical min/max. The precision is to 0.09 uV.
     assert_array_almost_equal(raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
+
+
+def test_anonymize_and_convert_to_edf(tmp_path):
+    """Test anonymization if converting to EDF (different codepath than EDF → EDF)."""
+    bids_root = tmp_path / "EDF"
+    raw_fname = data_path / "NihonKohden" / "MB0400FU.EEG"
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="eeg")
+    raw = _read_raw_nihon(raw_fname)
+
+    with (
+        pytest.warns(RuntimeWarning, match="limits `startdate` to dates after 1985"),
+        pytest.warns(RuntimeWarning, match="Converting data files to EDF format"),
+    ):
+        bids_output_path = write_raw_bids(
+            raw=raw,
+            format="EDF",
+            bids_path=bids_path,
+            overwrite=True,
+            verbose=False,
+            anonymize=dict(daysback=41234),
+        )
+    # make sure the written EDF file is valid
+    direct_read = read_raw_edf(bids_output_path.fpath)
+    assert direct_read.info["meas_date"] == datetime(1985, 1, 1, tzinfo=timezone.utc)
+    # make sure MNE-BIDS replaced the 1985-1-1 date with the date from scans.tsv
+    bids_read = read_raw_bids(bids_output_path)
+    bids_output_path.update(
+        suffix="scans",
+        extension=".tsv",
+        task=None,
+        acquisition=None,
+        run=None,
+        datatype=None,
+    )
+    scans = _from_tsv(bids_output_path.fpath)
+    assert bids_read.info["meas_date"] == datetime.fromisoformat(scans["acq_time"][0])
 
 
 @pytest.mark.parametrize("dir_name, fmt, fname, reader", test_converteeg_data)
