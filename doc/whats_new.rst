@@ -51,6 +51,7 @@ Detailed list of changes
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
+- MNE-BIDS now requires Python 3.11 or higher.
 - Including ``filelock`` as a dependency to handle atomic file writing and parallel processing support by `Bruno Aristimunha`_ (:gh:`1451`)
 
 - None yet
