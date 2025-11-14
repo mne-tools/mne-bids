@@ -13,7 +13,7 @@ import re
 import shutil as sh
 from collections import OrderedDict
 from contextlib import nullcontext
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import mne
@@ -108,7 +108,7 @@ def _make_parallel_raw(subject, *, seed=None):
     info = mne.create_info(["MEG0113"], 100, ch_types="mag")
     data = rng.standard_normal((1, 100)) * 1e-12
     raw = mne.io.RawArray(data, info)
-    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=timezone.utc))
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
     raw.info["line_freq"] = 60
     raw.info["subject_info"] = {
         "his_id": subject,
@@ -802,7 +802,7 @@ def test_handle_scans_reading(tmp_path):
     scans_tsv = _from_tsv(scans_path)
     acq_time_str = scans_tsv["acq_time"][0]
     acq_time = datetime.strptime(acq_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-    acq_time = acq_time.replace(tzinfo=timezone.utc)
+    acq_time = acq_time.replace(tzinfo=UTC)
     new_acq_time = acq_time_str.split(".")[0] + "Z"
     assert acq_time == raw_01.info["meas_date"]
     scans_tsv["acq_time"][0] = new_acq_time
@@ -813,7 +813,7 @@ def test_handle_scans_reading(tmp_path):
     raw_02 = read_raw_bids(bids_path)
     new_acq_time = new_acq_time.replace("Z", ".0Z")
     new_acq_time = datetime.strptime(new_acq_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-    new_acq_time = new_acq_time.replace(tzinfo=timezone.utc)
+    new_acq_time = new_acq_time.replace(tzinfo=UTC)
     assert raw_02.info["meas_date"] == new_acq_time
     assert new_acq_time != raw_01.info["meas_date"]
 
@@ -833,7 +833,7 @@ def test_handle_scans_reading(tmp_path):
         # from the original date and the same as the newly altered date
         raw_03 = read_raw_bids(bids_path)
         new_acq_time = datetime.strptime(new_acq_time_str, date_format)
-        assert raw_03.info["meas_date"] == new_acq_time.astimezone(timezone.utc)
+        assert raw_03.info["meas_date"] == new_acq_time.astimezone(UTC)
 
     # Regression for naive, pre-epoch acquisition times (Windows bug GH-1399)
     pre_epoch_str = "1950-06-15T13:45:30"
@@ -842,10 +842,8 @@ def test_handle_scans_reading(tmp_path):
 
     raw_pre_epoch = read_raw_bids(bids_path)
     pre_epoch_naive = datetime.strptime(pre_epoch_str, "%Y-%m-%dT%H:%M:%S")
-    local_tz = datetime.now().astimezone().tzinfo or timezone.utc
-    expected_pre_epoch = pre_epoch_naive.replace(tzinfo=local_tz).astimezone(
-        timezone.utc
-    )
+    local_tz = datetime.now().astimezone().tzinfo or UTC
+    expected_pre_epoch = pre_epoch_naive.replace(tzinfo=local_tz).astimezone(UTC)
     assert raw_pre_epoch.info["meas_date"] == expected_pre_epoch
     if raw_pre_epoch.annotations.orig_time is not None:
         assert raw_pre_epoch.annotations.orig_time == expected_pre_epoch

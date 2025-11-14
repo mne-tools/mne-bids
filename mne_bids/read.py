@@ -6,7 +6,7 @@
 import json
 import os
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
 from pathlib import Path
 
@@ -417,14 +417,14 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
 
         if acq_time_is_utc:
             # Enforce setting timezone to UTC without additonal conversion
-            acq_time = acq_time.replace(tzinfo=timezone.utc)
+            acq_time = acq_time.replace(tzinfo=UTC)
         else:
             # Convert time offset to UTC
             if acq_time.tzinfo is None:
                 # Windows needs an explicit local tz for naive, pre-epoch times.
-                local_tz = datetime.now().astimezone().tzinfo or timezone.utc
+                local_tz = datetime.now().astimezone().tzinfo or UTC
                 acq_time = acq_time.replace(tzinfo=local_tz)
-            acq_time = acq_time.astimezone(timezone.utc)
+            acq_time = acq_time.astimezone(UTC)
 
         logger.debug(f"Loaded {scans_fname} scans file to set acq_time as {acq_time}.")
         # First set measurement date to None and then call call anonymize() to

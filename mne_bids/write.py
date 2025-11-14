@@ -12,7 +12,7 @@ import subprocess
 import sys
 import warnings
 from collections import OrderedDict, defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import mne
@@ -551,11 +551,11 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             meas_date = meas_date[0]
 
         if meas_date is not None and age is not None:
-            bday = datetime(age.year, age.month, age.day, tzinfo=timezone.utc)
+            bday = datetime(age.year, age.month, age.day, tzinfo=UTC)
             if isinstance(meas_date, datetime):
                 meas_datetime = meas_date
             else:
-                meas_datetime = datetime.fromtimestamp(meas_date, tz=timezone.utc)
+                meas_datetime = datetime.fromtimestamp(meas_date, tz=UTC)
             subject_age = _age_on_date(bday, meas_datetime)
         else:
             subject_age = "n/a"
@@ -1338,7 +1338,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     )
 
 
-def _write_raw_edf(raw, bids_fname, overwrite):
+def _write_raw_edf_bdf(raw, bids_fname, overwrite):
     """Store data as EDF.
 
     Parameters
@@ -1350,7 +1350,23 @@ def _write_raw_edf(raw, bids_fname, overwrite):
     overwrite : bool
         Whether to overwrite an existing file or not.
     """
-    assert str(bids_fname).endswith(".edf")
+    ext = bids_fname.suffix[1:].upper()
+    assert ext in ("EDF", "BDF")
+    if raw.info["meas_date"] is not None and raw.info["meas_date"].year < 1985:
+        warn(
+            f"Attempting to write a {ext} file with a meas_date of "
+            f"{raw.info['meas_date']}. This is not supported; {ext} limits `startdate` "
+            "to dates after 1985-01-01. Setting `startdate` to 1985-01-01 00:00:00 in "
+            f"the {ext} file; the original anonymized date will be written to scans.tsv"
+        )
+        # make a copy, so that anonymized meas_date is unchanged in orig raw,
+        # and thus scans.tsv ends up with the properly anonymized meas_date
+        raw = raw.copy()
+        raw.set_meas_date(
+            raw.info["meas_date"].replace(
+                year=1985, month=1, day=1, hour=0, minute=0, second=0, microsecond=0
+            )
+        )
     raw.export(bids_fname, overwrite=overwrite)
 
 
@@ -2013,7 +2029,7 @@ def write_raw_bids(
         meas_date = raw.info.get("meas_date", None)
         if meas_date is not None:
             if not isinstance(meas_date, datetime):
-                meas_date = datetime.fromtimestamp(meas_date[0], tz=timezone.utc)
+                meas_date = datetime.fromtimestamp(meas_date[0], tz=UTC)
 
             if anonymize is not None and "daysback" in anonymize:
                 meas_date = meas_date - timedelta(anonymize["daysback"])
@@ -2361,7 +2377,7 @@ def write_raw_bids(
             )
         elif bids_path.datatype in ["eeg", "ieeg"] and format == "EDF":
             warn("Converting data files to EDF format")
-            _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
+            _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
         elif bids_path.datatype in ["eeg", "ieeg"] and format == "EEGLAB":
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)

@@ -32,7 +32,7 @@ Optional:
 We recommend installing ``mne-bids`` into an isolated Python environment,
 for example created via ``conda``
 (may be obtained through `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_).
-We require that you **use Python 3.10 or higher**.
+We require that you **use Python 3.11 or higher**.
 You may choose to install ``mne-bids`` into your isolated Python environment
 `via pip <#installation-via-pip>`_ or
 `via conda <#installation-via-conda>`_.

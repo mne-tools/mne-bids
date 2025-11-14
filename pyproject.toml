@@ -11,12 +11,10 @@ classifiers = [
   "Operating System :: MacOS",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX :: Linux",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python",
-  "Topic :: Scientific/Engineering",
   "Topic :: Scientific/Engineering",
   "Topic :: Software Development",
 ]
@@ -38,7 +36,7 @@ maintainers = [
 ]
 name = "mne-bids"
 readme = {content-type = "text/markdown", file = "README.md"}
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 scripts = {mne_bids = "mne_bids.commands.run:main"}
 
 [project.optional-dependencies]
