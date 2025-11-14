@@ -15,7 +15,7 @@ import sys
 import time
 import warnings
 from concurrent.futures import ProcessPoolExecutor
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from glob import glob
 from pathlib import Path
 
@@ -115,7 +115,7 @@ def _make_parallel_raw(subject, *, seed=None):
     info = mne.create_info(["MEG0113"], 100, ch_types="mag")
     data = rng.standard_normal((1, 100)) * 1e-12
     raw = mne.io.RawArray(data, info, verbose=False)
-    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=timezone.utc))
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
     raw.info["line_freq"] = 60
     raw.info["subject_info"] = {
         "his_id": subject,
@@ -267,7 +267,7 @@ def test_write_participants(_bids_validate, tmp_path):
     raw = _read_raw_fif(raw_fname)
 
     # add fake participants data
-    raw.set_meas_date(datetime(year=1994, month=1, day=26, tzinfo=timezone.utc))
+    raw.set_meas_date(datetime(year=1994, month=1, day=26, tzinfo=UTC))
     birthday = (1993, 1, 26)
     birthday = date(*birthday)
     raw.info["subject_info"] = {
@@ -478,10 +478,10 @@ def test_stamp_to_dt():
     """Test conversions of meas_date to datetime objects."""
     meas_date = (1346981585, 835782)
     meas_datetime = _stamp_to_dt(meas_date)
-    assert meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 835782, tzinfo=timezone.utc)
+    assert meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 835782, tzinfo=UTC)
     meas_date = (1346981585,)
     meas_datetime = _stamp_to_dt(meas_date)
-    assert meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 0, tzinfo=timezone.utc)
+    assert meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 0, tzinfo=UTC)
 
 
 @testing.requires_testing_data
@@ -688,7 +688,7 @@ def test_fif(_bids_validate, tmp_path):
     raw = _read_raw_fif(raw_fname)
     meas_date = raw.info["meas_date"]
     if not isinstance(meas_date, datetime):
-        meas_date = datetime.fromtimestamp(meas_date[0], tz=timezone.utc)
+        meas_date = datetime.fromtimestamp(meas_date[0], tz=UTC)
     er_date = meas_date.strftime("%Y%m%d")
     er_bids_path = BIDSPath(
         subject="emptyroom", session=er_date, task="noise", root=bids_root
@@ -3479,7 +3479,7 @@ def test_anonymize_and_convert_to_edf(tmp_path):
         )
     # make sure the written EDF file is valid
     direct_read = read_raw_edf(bids_output_path.fpath)
-    assert direct_read.info["meas_date"] == datetime(1985, 1, 1, tzinfo=timezone.utc)
+    assert direct_read.info["meas_date"] == datetime(1985, 1, 1, tzinfo=UTC)
     # make sure MNE-BIDS replaced the 1985-1-1 date with the date from scans.tsv
     bids_read = read_raw_bids(bids_output_path)
     bids_output_path.update(
@@ -3736,7 +3736,7 @@ def test_write_associated_emptyroom(_bids_validate, tmp_path, empty_room_dtype):
     bids_root = tmp_path / "bids1"
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
-    meas_date = datetime(year=2020, month=1, day=10, tzinfo=timezone.utc)
+    meas_date = datetime(year=2020, month=1, day=10, tzinfo=UTC)
 
     if empty_room_dtype == "BIDSPath":
         # First write "empty-room" data

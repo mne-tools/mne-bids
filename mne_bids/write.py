@@ -12,7 +12,7 @@ import subprocess
 import sys
 import warnings
 from collections import OrderedDict, defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import mne
@@ -551,11 +551,11 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             meas_date = meas_date[0]
 
         if meas_date is not None and age is not None:
-            bday = datetime(age.year, age.month, age.day, tzinfo=timezone.utc)
+            bday = datetime(age.year, age.month, age.day, tzinfo=UTC)
             if isinstance(meas_date, datetime):
                 meas_datetime = meas_date
             else:
-                meas_datetime = datetime.fromtimestamp(meas_date, tz=timezone.utc)
+                meas_datetime = datetime.fromtimestamp(meas_date, tz=UTC)
             subject_age = _age_on_date(bday, meas_datetime)
         else:
             subject_age = "n/a"
@@ -2029,7 +2029,7 @@ def write_raw_bids(
         meas_date = raw.info.get("meas_date", None)
         if meas_date is not None:
             if not isinstance(meas_date, datetime):
-                meas_date = datetime.fromtimestamp(meas_date[0], tz=timezone.utc)
+                meas_date = datetime.fromtimestamp(meas_date[0], tz=UTC)
 
             if anonymize is not None and "daysback" in anonymize:
                 meas_date = meas_date - timedelta(anonymize["daysback"])
