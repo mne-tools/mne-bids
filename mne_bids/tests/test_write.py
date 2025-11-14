@@ -3207,6 +3207,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
         bids_path.update(task="noise", session=raw_date, suffix="meg", datatype="meg")
         write_kw = dict(empty_room=None)
     elif dir_name == "Brainvision":  # pretend it's EMG data
+        pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
         raw.set_channel_types({ch: "emg" for ch in raw.ch_names})
         raw.set_montage(None)
         bids_path.update(task="task", suffix="emg", datatype="emg")
@@ -3388,6 +3389,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_emg_errors_and_warnings(tmp_path):
     """Test EMG-specific error/warning raising."""
+    pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
     bids_root = tmp_path / "EMG_errors"
     raw_fname = data_path / "Brainvision" / "test_NO.vhdr"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="emg")
@@ -3894,6 +3896,8 @@ def test_preload_errors(tmp_path):
 )
 def test_preload(_bids_validate, tmp_path, format, ch_type):
     """Test writing custom preloaded raw objects."""
+    if format == "emg":
+        pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
     bids_root = tmp_path / "bids"
     bids_path = _bids_path.copy().update(root=bids_root)
     sfreq = 1024.0
