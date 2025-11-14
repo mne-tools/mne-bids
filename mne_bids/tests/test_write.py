@@ -3896,7 +3896,7 @@ def test_preload_errors(tmp_path):
 )
 def test_preload(_bids_validate, tmp_path, format, ch_type):
     """Test writing custom preloaded raw objects."""
-    if format == "emg":
+    if ch_type == "emg":
         pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
     bids_root = tmp_path / "bids"
     bids_path = _bids_path.copy().update(root=bids_root)
