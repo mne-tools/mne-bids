@@ -64,6 +64,7 @@ Detailed list of changes
 - Made the lock helpers skip reference counting when the optional ``filelock`` dependency is missing, preventing spurious ``AttributeError`` crashes during reads, by `Bruno Aristimunha`_ (:gh:`1469`)
 - Fixed a bug in :func:`mne_bids.read_raw_bids` that caused it to fail when reading BIDS datasets where the acquisition time was specified in local time rather than UTC only in Windows, by `Bruno Aristimunha`_ (:gh:`1452`)
 - Fixed bug in :func:`~mne_bids.write_raw_bids` where incorrect unit was sometimes written into ``channels.tsv`` file when converting data to BrainVision, EDF, or EEGLAB formats, by `Daniel McCloy`_ (:gh:`1475`)
+- Converting data to EDF format while also anonymizing it will now yield valid EDF files (with ``startdate`` set to 1985-01-01 00:00:00); the BIDS-compliant anonymized date will still be stored in ``scans.tsv`` file and restored to the in-memory Raw object when read using :func:`~mne_bids.read_raw_bids`, by `Daniel McCloy`_ (:gh:`1479`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
