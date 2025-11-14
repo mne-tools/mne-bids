@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.18.0.dev34+gdd3c984f2 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.18.0.dev35+g8e4e13dae documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=1feb7b42"></script>
+    <script src="../../_static/documentation_options.js?v=0a3b43f5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev34+gdd3c984f2" />
+  <meta name="docsearch:version" content="0.18.0.dev35+g8e4e13dae" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev34+gdd3c984f2 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev35+g8e4e13dae documentation</p>
   
 </a></div>
     
@@ -489,7 +489,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
@@ -1028,11 +1028,11 @@
             <span class="n">meas_date</span> <span class="o">=</span> <span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">age</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">bday</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">age</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+            <span class="n">bday</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">age</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
                 <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">meas_date</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+                <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
             <span class="n">subject_age</span> <span class="o">=</span> <span class="n">_age_on_date</span><span class="p">(</span><span class="n">bday</span><span class="p">,</span> <span class="n">meas_datetime</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">subject_age</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
@@ -1815,7 +1815,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store data as EDF.</span>
 
 <span class="sd">    Parameters</span>
@@ -1827,7 +1827,23 @@
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite an existing file or not.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.edf&quot;</span><span class="p">)</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;EDF&quot;</span><span class="p">,</span> <span class="s2">&quot;BDF&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">year</span> <span class="o">&lt;</span> <span class="mi">1985</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Attempting to write a </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2"> file with a meas_date of &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">. This is not supported; </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2"> limits `startdate` &quot;</span>
+            <span class="s2">&quot;to dates after 1985-01-01. Setting `startdate` to 1985-01-01 00:00:00 in &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;the </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2"> file; the original anonymized date will be written to scans.tsv&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># make a copy, so that anonymized meas_date is unchanged in orig raw,</span>
+        <span class="c1"># and thus scans.tsv ends up with the properly anonymized meas_date</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">set_meas_date</span><span class="p">(</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="n">year</span><span class="o">=</span><span class="mi">1985</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
 
@@ -2495,7 +2511,7 @@
         <span class="n">meas_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;meas_date&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
-                <span class="n">meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+                <span class="n">meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tz</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;daysback&quot;</span> <span class="ow">in</span> <span class="n">anonymize</span><span class="p">:</span>
                 <span class="n">meas_date</span> <span class="o">=</span> <span class="n">meas_date</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">anonymize</span><span class="p">[</span><span class="s2">&quot;daysback&quot;</span><span class="p">])</span>
@@ -2843,7 +2859,7 @@
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EDF&quot;</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to EDF format&quot;</span><span class="p">)</span>
-            <span class="n">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+            <span class="n">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EEGLAB&quot;</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to EEGLAB format&quot;</span><span class="p">)</span>
             <span class="n">_write_raw_eeglab</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
@@ -3992,7 +4008,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-11-13.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-11-14.
       <br/>
     
   </p>

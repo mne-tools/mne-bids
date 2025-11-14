@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.18.0.dev34+gdd3c984f2 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.18.0.dev35+g8e4e13dae documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=1feb7b42"></script>
+    <script src="_static/documentation_options.js?v=0a3b43f5"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev34+gdd3c984f2" />
+  <meta name="docsearch:version" content="0.18.0.dev35+g8e4e13dae" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev34+gdd3c984f2 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev35+g8e4e13dae documentation</p>
   
 </a></div>
     
@@ -527,6 +527,7 @@
 <section id="requirements">
 <h4>🛠 Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h4>
 <ul class="simple">
+<li><p>MNE-BIDS now requires Python 3.11 or higher.</p></li>
 <li><p>Including <code class="docutils literal notranslate"><span class="pre">filelock</span></code> as a dependency to handle atomic file writing and parallel processing support by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1451">#1451</a>)</p></li>
 <li><p>None yet</p></li>
 </ul>
@@ -539,6 +540,7 @@
 <li><p>Made the lock helpers skip reference counting when the optional <code class="docutils literal notranslate"><span class="pre">filelock</span></code> dependency is missing, preventing spurious <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> crashes during reads, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1469">#1469</a>)</p></li>
 <li><p>Fixed a bug in <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> that caused it to fail when reading BIDS datasets where the acquisition time was specified in local time rather than UTC only in Windows, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1452">#1452</a>)</p></li>
 <li><p>Fixed bug in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> where incorrect unit was sometimes written into <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> file when converting data to BrainVision, EDF, or EEGLAB formats, by <a class="reference external" href="http://dan.mccloy.info">Daniel McCloy</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1475">#1475</a>)</p></li>
+<li><p>Converting data to EDF format while also anonymizing it will now yield valid EDF files (with <code class="docutils literal notranslate"><span class="pre">startdate</span></code> set to 1985-01-01 00:00:00); the BIDS-compliant anonymized date will still be stored in <code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code> file and restored to the in-memory Raw object when read using <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a>, by <a class="reference external" href="http://dan.mccloy.info">Daniel McCloy</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1479">#1479</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">
@@ -642,7 +644,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-11-13.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-11-14.
       <br/>
     
   </p>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.18.0.dev34+gdd3c984f2 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.18.0.dev35+g8e4e13dae documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=1feb7b42"></script>
+    <script src="../../_static/documentation_options.js?v=0a3b43f5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev34+gdd3c984f2" />
+  <meta name="docsearch:version" content="0.18.0.dev35+g8e4e13dae" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev34+gdd3c984f2 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev35+g8e4e13dae documentation</p>
   
 </a></div>
     
@@ -483,7 +483,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">difflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_close_matches</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
@@ -894,14 +894,14 @@
 
         <span class="k">if</span> <span class="n">acq_time_is_utc</span><span class="p">:</span>
             <span class="c1"># Enforce setting timezone to UTC without additonal conversion</span>
-            <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+            <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Convert time offset to UTC</span>
             <span class="k">if</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># Windows needs an explicit local tz for naive, pre-epoch times.</span>
-                <span class="n">local_tz</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">astimezone</span><span class="p">()</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">or</span> <span class="n">timezone</span><span class="o">.</span><span class="n">utc</span>
+                <span class="n">local_tz</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">astimezone</span><span class="p">()</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">or</span> <span class="n">UTC</span>
                 <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">local_tz</span><span class="p">)</span>
-            <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+            <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s2"> scans file to set acq_time as </span><span class="si">{</span><span class="n">acq_time</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="c1"># First set measurement date to None and then call call anonymize() to</span>
@@ -1956,7 +1956,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-11-13.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-11-14.
       <br/>
     
   </p>
