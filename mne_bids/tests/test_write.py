@@ -105,7 +105,7 @@ warning_str = dict(
         "ignore:Channel mismatch between .*channels\\.tsv and the raw data file "
         "detected\\.:RuntimeWarning:mne"
     ),
-    edf_date="ignore:.*limits dates to after 1985-01-01:RuntimeWarning",
+    edf_date="ignore:.*limits `startdate` to dates after 1985-01-01:RuntimeWarning",
 )
 
 
