@@ -51,7 +51,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.10", "3.13"]  # Oldest and newest supported versions
+        python-version: ["3.11", "3.13"]  # Oldest and newest supported versions
     steps:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
@@ -129,14 +129,14 @@ jobs:
     #
     # 8 checks:
     # for each machine type (ubuntu, macos, windows):
-    # 3.10 / mne-stable / full / validator-stable
+    # 3.11 / mne-stable / full / validator-stable
     # 3.13 / mne-stable / full / validator-stable
     #
     # 4 additional checks with alternative MNE-Python and BIDS validator versions:
     # ubuntu / 3.13 / mne-main / full / validator-main -->  to test cutting edge of everything
-    # ubuntu / 3.10 / mne-prev / full / validator-stable --> to test last supported of everything
+    # ubuntu / 3.11 / mne-prev / full / validator-stable --> to test last supported of everything
     # ubuntu / 3.13 / mne-stable / minimal / validator-stable --> to test a minimal installation
-    # ubuntu / 3.12 / mne-stable / full / validator-main-schema --> to test next-gen BIDS validator
+    # ubuntu / 3.13 / mne-stable / full / validator-main-schema --> to test next-gen BIDS validator
     # macos-15-intel / 3.13 / mne-stable / full / validator-stable --> to test macos x86_64
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
@@ -144,7 +144,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.10", "3.13"]  # Oldest and newest supported versions
+        python-version: ["3.11", "3.13"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         mne-bids-install: [full]
         bids-validator-version: [validator-stable]
@@ -159,7 +159,7 @@ jobs:
             bids-validator-version: validator-main
           # Test previous MNE stable version
           - os: ubuntu-latest
-            python-version: "3.10"
+            python-version: "3.11"
             mne-version: mne-prev-stable
             mne-bids-install: full
             bids-validator-version: validator-stable
@@ -171,7 +171,7 @@ jobs:
             bids-validator-version: validator-stable
           # Test next gen BIDS schema validator
           - os: ubuntu-latest
-            python-version: "3.12"
+            python-version: "3.13"
             mne-version: mne-stable
             mne-bids-install: full
             bids-validator-version: validator-main-schema

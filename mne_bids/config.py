@@ -10,6 +10,7 @@ BIDS_VERSION = "1.9.0"
 
 PYBV_VERSION = "0.7.3"
 EEGLABIO_VERSION = "0.0.2"
+CURRYREADER_VERSION = "0.1.2"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 

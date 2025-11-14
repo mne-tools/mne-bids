@@ -25,13 +25,14 @@ Optional:
 * ``matplotlib`` (>=3.6, for using the interactive data inspector)
 * ``pandas`` (>=1.3.2, for generating event statistics)
 * ``edfio`` (>=0.4.10, for writing EDF data)
+* ``curryreader`` (>=0.1.2, for reading Curry data)
 * ``defusedxml`` (for writing reading EGI MFF data and BrainVision montages)
 * ``filelock`` (for atomic file writing, and parallel processing support)
 
 We recommend installing ``mne-bids`` into an isolated Python environment,
 for example created via ``conda``
 (may be obtained through `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_).
-We require that you **use Python 3.10 or higher**.
+We require that you **use Python 3.11 or higher**.
 You may choose to install ``mne-bids`` into your isolated Python environment
 `via pip <#installation-via-pip>`_ or
 `via conda <#installation-via-conda>`_.

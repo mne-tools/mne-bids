@@ -12,7 +12,7 @@ import subprocess
 import sys
 import warnings
 from collections import OrderedDict, defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import mne
@@ -136,7 +136,7 @@ def _should_use_bti_pdf_suffix() -> bool:
     return use_pdf_suffix
 
 
-def _channels_tsv(raw, fname, overwrite=False):
+def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
     """Create a channels.tsv file and save it.
 
     Parameters
@@ -145,6 +145,10 @@ def _channels_tsv(raw, fname, overwrite=False):
         The data as MNE-Python Raw object.
     fname : str | mne_bids.BIDSPath
         Filename to save the channels.tsv to.
+    convert_fmt : str | None
+        Which format the data are being converted to (determines what gets written in
+        the "unit" column). If ``None`` then we assume no conversion is happening (the
+        raw data files are being copied from the source tree into the BIDS folder tree).
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -193,11 +197,32 @@ def _channels_tsv(raw, fname, overwrite=False):
         ch_type.append(map_chs[_channel_type])
         description.append(map_desc[_channel_type])
     low_cutoff, high_cutoff = (raw.info["highpass"], raw.info["lowpass"])
-    if raw._orig_units:
+    # If data are being *converted*, unit is determined by destination format:
+    #   - `eeglabio.raw.export_set` always converts V to µV, cf:
+    # https://github.com/jackz314/eeglabio/blob/3961bb29daf082767ea44e7c7d9da2df10971c37/eeglabio/raw.py#L57
+    #
+    #   - `mne.export._edf_bdf._export_raw_edf_bdf` always converts V to µV, cf:
+    # https://github.com/mne-tools/mne-python/blob/1b921f4af5154bad40202d87428a2583ef896a00/mne/export/_edf_bdf.py#L61-L63
+    #
+    #   - `pybv.write_brainvision` converts V to µV by default (and we don't alter that)
+    # https://github.com/bids-standard/pybv/blob/2832c80ee00d12990a8c79f12c843c0d4ddc825b/pybv/io.py#L40
+    # https://github.com/mne-tools/mne-bids/blob/1e0a96e132fc904ba856d42beaa9ddddb985f1ed/mne_bids/write.py#L1279-L1280
+    if convert_fmt:
+        volt_like = "µV" if convert_fmt in ("BrainVision", "EDF", "EEGLAB") else "V"
+        units = [
+            volt_like
+            if ch_i["unit"] == FIFF.FIFF_UNIT_V
+            else _unit2human.get(ch_i["unit"], "n/a")
+            for ch_i in raw.info["chs"]
+        ]
+    # if raw data is merely copied, check `raw._orig_units`
+    elif raw._orig_units:
         units = [raw._orig_units.get(ch, "n/a") for ch in raw.ch_names]
+    # If `raw._orig_units` is missing, assume SI units
     else:
         units = [_unit2human.get(ch_i["unit"], "n/a") for ch_i in raw.info["chs"]]
-        units = [u if u not in ["NA"] else "n/a" for u in units]
+    # fixup "NA" (from `_unit2human`) → "n/a"
+    units = [u if u not in ["NA"] else "n/a" for u in units]
 
     # Translate from MNE to BIDS unit naming
     for idx, mne_unit in enumerate(units):
@@ -526,11 +551,11 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             meas_date = meas_date[0]
 
         if meas_date is not None and age is not None:
-            bday = datetime(age.year, age.month, age.day, tzinfo=timezone.utc)
+            bday = datetime(age.year, age.month, age.day, tzinfo=UTC)
             if isinstance(meas_date, datetime):
                 meas_datetime = meas_date
             else:
-                meas_datetime = datetime.fromtimestamp(meas_date, tz=timezone.utc)
+                meas_datetime = datetime.fromtimestamp(meas_date, tz=UTC)
             subject_age = _age_on_date(bday, meas_datetime)
         else:
             subject_age = "n/a"
@@ -1353,13 +1378,21 @@ def _write_raw_edf_bdf(raw, bids_fname, overwrite):
     """
     ext = bids_fname.suffix[1:].upper()
     assert ext in ("EDF", "BDF")
-    if raw.info["meas_date"].year < 1985:
+    if raw.info["meas_date"] is not None and raw.info["meas_date"].year < 1985:
         warn(
             f"Attempting to write a {ext} file with a meas_date of "
-            f"{raw.info['meas_date']}. This is not supported; {ext} limits dates to "
-            "after 1985-01-01. Setting raw.info['meas_date'] to 1985-01-01."
+            f"{raw.info['meas_date']}. This is not supported; {ext} limits `startdate` "
+            "to dates after 1985-01-01. Setting `startdate` to 1985-01-01 00:00:00 in "
+            f"the {ext} file; the original anonymized date will be written to scans.tsv"
         )
-    raw.set_meas_date(raw.info["meas_date"].replace(year=1985, month=1, day=1))
+        # make a copy, so that anonymized meas_date is unchanged in orig raw,
+        # and thus scans.tsv ends up with the properly anonymized meas_date
+        raw = raw.copy()
+        raw.set_meas_date(
+            raw.info["meas_date"].replace(
+                year=1985, month=1, day=1, hour=0, minute=0, second=0, microsecond=0
+            )
+        )
     raw.export(bids_fname, overwrite=overwrite)
 
 
@@ -2038,7 +2071,7 @@ def write_raw_bids(
         meas_date = raw.info.get("meas_date", None)
         if meas_date is not None:
             if not isinstance(meas_date, datetime):
-                meas_date = datetime.fromtimestamp(meas_date[0], tz=timezone.utc)
+                meas_date = datetime.fromtimestamp(meas_date[0], tz=UTC)
 
             if anonymize is not None and "daysback" in anonymize:
                 meas_date = meas_date - timedelta(anonymize["daysback"])
@@ -2296,7 +2329,6 @@ def write_raw_bids(
         emg_placement=emg_placement,
         overwrite=overwrite,
     )
-    _channels_tsv(raw, channels_path.fpath, overwrite)
 
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
@@ -2357,6 +2389,14 @@ def write_raw_bids(
                 f"Please use one of {CONVERT_FORMATS[datatype]} "
                 f"for {datatype} datatype."
             )
+
+    # this can't happen until after value of `convert` has been determined
+    _channels_tsv(
+        raw,
+        channels_path.fpath,
+        convert_fmt=format if convert else None,
+        overwrite=overwrite,
+    )
 
     # raise error when trying to copy files (copyfile_*) into same location
     # (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)

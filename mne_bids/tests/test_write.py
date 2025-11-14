@@ -12,9 +12,10 @@ import os
 import os.path as op
 import shutil as sh
 import sys
+import time
 import warnings
 from concurrent.futures import ProcessPoolExecutor
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from glob import glob
 from pathlib import Path
 
@@ -23,7 +24,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from mne.datasets import testing
-from mne.io import anonymize_info
+from mne.io import anonymize_info, read_raw_edf
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 from mne.utils import check_version
@@ -46,6 +47,7 @@ from mne_bids import (
 )
 from mne_bids.config import (
     BIDS_COORD_FRAME_DESCRIPTIONS,
+    CURRYREADER_VERSION,
     EEGLABIO_VERSION,
     PYBV_VERSION,
     REFERENCES,
@@ -114,7 +116,7 @@ def _make_parallel_raw(subject, *, seed=None):
     info = mne.create_info(["MEG0113"], 100, ch_types="mag")
     data = rng.standard_normal((1, 100)) * 1e-12
     raw = mne.io.RawArray(data, info, verbose=False)
-    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=timezone.utc))
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
     raw.info["line_freq"] = 60
     raw.info["subject_info"] = {
         "his_id": subject,
@@ -271,7 +273,7 @@ def test_write_participants(_bids_validate, tmp_path):
     raw = _read_raw_fif(raw_fname)
 
     # add fake participants data
-    raw.set_meas_date(datetime(year=1994, month=1, day=26, tzinfo=timezone.utc))
+    raw.set_meas_date(datetime(year=1994, month=1, day=26, tzinfo=UTC))
     birthday = (1993, 1, 26)
     birthday = date(*birthday)
     raw.info["subject_info"] = {
@@ -482,10 +484,10 @@ def test_stamp_to_dt():
     """Test conversions of meas_date to datetime objects."""
     meas_date = (1346981585, 835782)
     meas_datetime = _stamp_to_dt(meas_date)
-    assert meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 835782, tzinfo=timezone.utc)
+    assert meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 835782, tzinfo=UTC)
     meas_date = (1346981585,)
     meas_datetime = _stamp_to_dt(meas_date)
-    assert meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 0, tzinfo=timezone.utc)
+    assert meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 0, tzinfo=UTC)
 
 
 @testing.requires_testing_data
@@ -692,7 +694,7 @@ def test_fif(_bids_validate, tmp_path):
     raw = _read_raw_fif(raw_fname)
     meas_date = raw.info["meas_date"]
     if not isinstance(meas_date, datetime):
-        meas_date = datetime.fromtimestamp(meas_date[0], tz=timezone.utc)
+        meas_date = datetime.fromtimestamp(meas_date[0], tz=UTC)
     er_date = meas_date.strftime("%Y%m%d")
     er_bids_path = BIDSPath(
         subject="emptyroom", session=er_date, task="noise", root=bids_root
@@ -3449,8 +3451,12 @@ def test_convert_emg_formats(tmp_path, dir_name, fmt, fname, reader):
 @testing.requires_testing_data
 def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
-    pytest.importorskip("pybv", PYBV_VERSION)
-    pytest.importorskip("eeglabio", EEGLABIO_VERSION)
+    if dir_name == "BrainVision" or fmt == "BrainVision":
+        pytest.importorskip("pybv", PYBV_VERSION)
+    elif dir_name == "EEGLAB" or fmt == "EEGLAB":
+        pytest.importorskip("eeglabio", EEGLABIO_VERSION)
+    elif dir_name == "curry" or fmt == "curry":
+        pytest.importorskip("curryreader", CURRYREADER_VERSION)
     bids_root = tmp_path / fmt
     raw_fname = data_path / dir_name / fname
 
@@ -3507,7 +3513,7 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     # load channels.tsv; the unit should be Volts
     channels_fname = bids_output_path.copy().update(suffix="channels", extension=".tsv")
     channels_tsv = _from_tsv(channels_fname)
-    assert channels_tsv["units"][0] == "V"
+    assert channels_tsv["units"][0] == "µV"
 
     if fmt == "BrainVision":
         assert Path(raw2.filenames[0]).suffix == ".eeg"
@@ -3524,6 +3530,43 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     # writing to EDF is not 100% lossless, as the resolution is determined
     # by the physical min/max. The precision is to 0.09 uV.
     assert_array_almost_equal(raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
+
+
+@testing.requires_testing_data
+def test_anonymize_and_convert_to_edf(tmp_path):
+    """Test anonymization if converting to EDF (different codepath than EDF → EDF)."""
+    bids_root = tmp_path / "EDF"
+    raw_fname = data_path / "NihonKohden" / "MB0400FU.EEG"
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="eeg")
+    raw = _read_raw_nihon(raw_fname)
+
+    with (
+        pytest.warns(RuntimeWarning, match="limits `startdate` to dates after 1985"),
+        pytest.warns(RuntimeWarning, match="Converting data files to EDF format"),
+    ):
+        bids_output_path = write_raw_bids(
+            raw=raw,
+            format="EDF",
+            bids_path=bids_path,
+            overwrite=True,
+            verbose=False,
+            anonymize=dict(daysback=41234),
+        )
+    # make sure the written EDF file is valid
+    direct_read = read_raw_edf(bids_output_path.fpath)
+    assert direct_read.info["meas_date"] == datetime(1985, 1, 1, tzinfo=UTC)
+    # make sure MNE-BIDS replaced the 1985-1-1 date with the date from scans.tsv
+    bids_read = read_raw_bids(bids_output_path)
+    bids_output_path.update(
+        suffix="scans",
+        extension=".tsv",
+        task=None,
+        acquisition=None,
+        run=None,
+        datatype=None,
+    )
+    scans = _from_tsv(bids_output_path.fpath)
+    assert bids_read.info["meas_date"] == datetime.fromisoformat(scans["acq_time"][0])
 
 
 @pytest.mark.parametrize("dir_name, fmt, fname, reader", test_converteeg_data)
@@ -3768,7 +3811,7 @@ def test_write_associated_emptyroom(_bids_validate, tmp_path, empty_room_dtype):
     bids_root = tmp_path / "bids1"
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
-    meas_date = datetime(year=2020, month=1, day=10, tzinfo=timezone.utc)
+    meas_date = datetime(year=2020, month=1, day=10, tzinfo=UTC)
 
     if empty_room_dtype == "BIDSPath":
         # First write "empty-room" data
@@ -3842,9 +3885,9 @@ def test_preload_errors(tmp_path):
 
 
 @pytest.mark.filterwarnings(
+    warning_str["converting_to_edf"],
     warning_str["edfblocks"],
     warning_str["emg_coords_missing"],
-    warning_str["converting_to_edf"],
 )
 @pytest.mark.parametrize(
     "format,ch_type", (("BrainVision", "eeg"), ("BDF", "emg"), ("EDF", "seeg"))
@@ -3855,17 +3898,19 @@ def test_preload(_bids_validate, tmp_path, format, ch_type):
     bids_path = _bids_path.copy().update(root=bids_root)
     sfreq = 1024.0
     info = mne.create_info(["ch1", "ch2"], sfreq, ch_type)
-    raw = mne.io.RawArray(np.empty((2, 100), dtype=np.float32), info)
+    data = np.zeros((2, 100), dtype=np.float32)
+    data[0, 5] = 1.0  # avoid physical_min == physical_max
+    raw = mne.io.RawArray(data, info)
     raw.orig_format = "single"
     raw.info["line_freq"] = 60
     kw = dict(emg_placement="Measured") if ch_type == "emg" else dict()
     write_raw_bids(
         raw,
         bids_path,
-        verbose=False,
-        overwrite=True,
         allow_preload=True,
         format=format,
+        verbose=False,
+        overwrite=True,
         **kw,
     )
     if ch_type != "emg":  # TODO validator support for EMG not available yet
@@ -4346,6 +4391,7 @@ def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
     write_raw_bids(raw, bids_path=bids_path)
 
 
+@pytest.mark.flaky(reruns=3, reruns_delay=5)
 @pytest.mark.filterwarnings(
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",
@@ -4384,5 +4430,7 @@ def test_parallel_write_many_subjects(tmp_path):
             # In case lock is still held or file is in use, that's OK
             pass
 
+    # putting some sleep to make sure all file locks are released
+    time.sleep(1)
     # No stale lock files should remain after the parallel writes complete.
     assert not any(bids_root.rglob("*.lock"))

@@ -6,7 +6,7 @@
 import json
 import os
 import re
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -471,7 +471,7 @@ def _stamp_to_dt(utc_stamp):
     stamp = [int(s) for s in utc_stamp]
     if len(stamp) == 1:  # In case there is no microseconds information
         stamp.append(0)
-    return datetime.fromtimestamp(0, tz=timezone.utc) + timedelta(
+    return datetime.fromtimestamp(0, tz=UTC) + timedelta(
         0, stamp[0], stamp[1]
     )  # day, sec, μs
 
