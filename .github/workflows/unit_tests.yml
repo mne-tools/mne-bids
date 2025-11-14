@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.13"]
+        python-version: ["3.14"]
     steps:
     - uses: actions/checkout@v5
       with:
@@ -301,7 +301,7 @@ jobs:
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
       run: make test
-      if: ${{ matrix.python-version == '3.13' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
+      if: ${{ matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
 
     # Get testing data
     - run: ./tools/get_testing_version.sh
@@ -335,7 +335,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.13"]
+        python-version: ["3.14"]
     steps:
     - uses: actions/checkout@v5
       with:
