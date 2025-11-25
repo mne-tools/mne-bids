@@ -21,7 +21,7 @@ jobs:
       matrix:
         python-version: ["3.13"]
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -69,7 +69,7 @@ jobs:
         pip check
         python -m pip install build twine
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -88,7 +88,7 @@ jobs:
     - name: Remove sdist install
       run: python -m pip uninstall -y mne-bids
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -107,7 +107,7 @@ jobs:
     - name: Remove wheel install
       run: python -m pip uninstall -y mne-bids
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -186,7 +186,7 @@ jobs:
       TZ: Europe/Berlin
       FORCE_COLOR: true
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -337,7 +337,7 @@ jobs:
       matrix:
         python-version: ["3.13"]
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
