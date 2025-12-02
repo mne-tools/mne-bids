@@ -171,7 +171,7 @@ html_sidebars = {}
 # When https://github.com/scipy/docs.scipy.org/issues/102 is resolved, we can
 # remove the scipy entry below and rely on intersphinx_registry.
 intersphinx_mapping = {
-    "scipy": ("https://scipy.github.io/devdocs/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "mne-gui-addons": ("https://mne.tools/mne-gui-addons", None),
 }
 intersphinx_mapping.update(
