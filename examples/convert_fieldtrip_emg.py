@@ -123,7 +123,11 @@ for acq, acq_dict in acqs.items():
     raw.set_channel_types({ch: "emg" for ch in raw.ch_names})
     # write to bids folder tree
     mne_bids.write_raw_bids(
-        raw=raw, bids_path=bids_path, format="EDF", emg_placement="Other"
+        raw=raw,
+        bids_path=bids_path,
+        format="EDF",
+        emg_placement="Other",
+        overwrite=True,
     )
     # update the sidecar with acquisition-specific info
     bp = bids_path.copy().update(suffix="emg", extension="json")
