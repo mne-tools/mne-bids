@@ -137,6 +137,6 @@ for acq, acq_dict in acqs.items():
 
 # %%
 # Note that in this dataset, only the BOLD acquisition had event markers in the raw
-# data file, so the GABA MRS run lacks *_events.tsv and *_events.json files:
+# data file, so the GABA MRS run lacks ``*_events.tsv`` and ``*_events.json`` files:
 
 mne_bids.print_dir_tree(bids_path.root)
