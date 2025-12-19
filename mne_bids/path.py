@@ -40,6 +40,21 @@ from mne_bids.utils import (
     warn,
 )
 
+# Take all possible data types from "entity" table (Appendix in BIDS spec)
+# https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html
+_DATATYPE_LIST = (  # must be alphabetical
+    "anat",
+    "beh",
+    "dwi",
+    "eeg",
+    "emg",
+    "fmap",
+    "func",
+    "ieeg",
+    "meg",
+    "nirs",
+)
+
 
 def _find_empty_room_candidates(bids_path):
     """Get matching empty-room file for an MEG recording."""
@@ -1938,25 +1953,10 @@ def get_datatypes(root, verbose=None):
         `root`.
 
     """
-    # Take all possible data types from "entity" table
-    # (Appendix in BIDS spec)
-    # https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html
-    datatype_list = (
-        "anat",
-        "beh",
-        "dwi",
-        "eeg",
-        "emg",
-        "fmap",
-        "func",
-        "ieeg",
-        "meg",
-        "nirs",
-    )
     datatypes = list()
     for root, dirs, files in os.walk(root):
         for _dir in dirs:
-            if _dir in datatype_list and _dir not in datatypes:
+            if _dir in _DATATYPE_LIST and _dir not in datatypes:
                 datatypes.append(_dir)
 
     return datatypes

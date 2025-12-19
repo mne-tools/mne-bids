@@ -29,6 +29,7 @@ from mne_bids import (
 )
 from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
 from mne_bids.path import (
+    _DATATYPE_LIST,
     _filter_fnames,
     _find_best_candidates,
     _parse_ext,
@@ -49,6 +50,11 @@ data_path = testing.data_path(download=False)
 _bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq, task=task
 )
+
+
+def test_datatypes_alphabetical():
+    """Make sure we keep this list alphabetized."""
+    assert _DATATYPE_LIST == tuple(sorted(_DATATYPE_LIST))
 
 
 @pytest.fixture(scope="session")
