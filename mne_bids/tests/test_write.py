@@ -3201,27 +3201,26 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     raw_date = raw.info["meas_date"].strftime("%Y%m%d")
 
     bids_path = BIDSPath(subject=subject, root=bids_root)
+    write_kw = dict(verbose=False, overwrite=True)
 
     # handle different edge cases
     if subject == "emptyroom":
         bids_path.update(task="noise", session=raw_date, suffix="meg", datatype="meg")
-        write_kw = dict(empty_room=None)
+        write_kw.update(empty_room=None)
     elif dir_name == "Brainvision":  # pretend it's EMG data
         pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
         raw.set_channel_types({ch: "emg" for ch in raw.ch_names})
         raw.set_montage(None)
         bids_path.update(task="task", suffix="emg", datatype="emg")
-        write_kw = dict(empty_room=None, emg_placement="Measured")
+        write_kw.update(empty_room=None, emg_placement="Measured")
     else:
         bids_path.update(task="task", suffix="eeg", datatype="eeg")
         # make sure anonymization works when also writing empty room file
-        write_kw = dict(empty_room=raw.copy())
+        write_kw.update(empty_room=raw.copy())
     daysback_min, daysback_max = get_anonymization_daysback(raw)
     anonymize = dict(daysback=daysback_min + 1)
     orig_bids_path = bids_path.copy()
-    bids_path = write_raw_bids(
-        raw, bids_path, overwrite=True, anonymize=anonymize, verbose=False, **write_kw
-    )
+    bids_path = write_raw_bids(raw, bids_path, anonymize=anonymize, **write_kw)
     # emptyroom recordings' session should match the recording date
     if subject == "emptyroom":
         assert bids_path.session == (
@@ -3237,7 +3236,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     year = 1986 if dir_name == "Brainvision" else 1925
     assert raw2.info["meas_date"].year < year
 
-    # write without source
+    # write without source (# anonymize=dict(..., keep_source=False) is the default)
     scans_fname = BIDSPath(
         subject=bids_path.subject,
         session=bids_path.session,
@@ -3245,27 +3244,13 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
         extension=".tsv",
         root=bids_path.root,
     )
-    anonymize["keep_source"] = False
-    bids_path = write_raw_bids(
-        raw,
-        orig_bids_path,
-        overwrite=True,
-        anonymize=anonymize,
-        verbose=False,
-        **write_kw,
-    )
+    bids_path = write_raw_bids(raw, orig_bids_path, anonymize=anonymize, **write_kw)
     scans_tsv = _from_tsv(scans_fname)
     assert "source" not in scans_tsv.keys()
 
     # Write with source this time get the scans tsv
-    bids_path = write_raw_bids(
-        raw,
-        orig_bids_path,
-        overwrite=True,
-        anonymize=dict(daysback=daysback_min, keep_source=True),
-        verbose=False,
-        **write_kw,
-    )
+    anonymize.update(keep_source=True)
+    bids_path = write_raw_bids(raw, orig_bids_path, anonymize=anonymize, **write_kw)
     scans_fname = BIDSPath(
         subject=bids_path.subject,
         session=bids_path.session,
@@ -3286,14 +3271,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     update_sidecar_json(scans_json_fpath, scans_json)
 
     # write again and make sure scans json was not altered
-    bids_path = write_raw_bids(
-        raw,
-        orig_bids_path,
-        overwrite=True,
-        anonymize=dict(daysback=daysback_min, keep_source=True),
-        verbose=False,
-        **write_kw,
-    )
+    bids_path = write_raw_bids(raw, orig_bids_path, anonymize=anonymize, **write_kw)
     with open(scans_json_fpath) as fin:
         scans_json = json.load(fin)
     assert "test" in scans_json
