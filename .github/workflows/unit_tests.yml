@@ -21,7 +21,7 @@ jobs:
       matrix:
         python-version: ["3.13"]
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -29,7 +29,7 @@ jobs:
       uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v4
+    - uses: actions/cache@v5
       with:
         path: ${{ env.pythonLocation }}
         key: style-2-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
@@ -58,7 +58,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - uses: actions/cache@v4
+    - uses: actions/cache@v5
       with:
         path: ${{ env.pythonLocation }}
         key: build-3-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
@@ -69,7 +69,7 @@ jobs:
         pip check
         python -m pip install build twine
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -88,7 +88,7 @@ jobs:
     - name: Remove sdist install
       run: python -m pip uninstall -y mne-bids
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -107,7 +107,7 @@ jobs:
     - name: Remove wheel install
       run: python -m pip uninstall -y mne-bids
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -186,7 +186,7 @@ jobs:
       TZ: Europe/Berlin
       FORCE_COLOR: true
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -209,7 +209,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Restore cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.pythonLocation }}
         key: test-2-${{ env.pythonLocation }}-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.mne-version }}-${{ hashFiles('pyproject.toml') }}
@@ -309,7 +309,7 @@ jobs:
       shell: bash
       name: 'Get testing version'
 
-    - uses: actions/cache@v4
+    - uses: actions/cache@v5
       with:
         key: testing_data-1-${{ env.TESTING_VERSION }}-${{ matrix.mne-version }}
         path: ~/mne_data
@@ -337,7 +337,7 @@ jobs:
       matrix:
         python-version: ["3.13"]
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -345,7 +345,7 @@ jobs:
       uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v4
+    - uses: actions/cache@v5
       with:
         path: ${{ env.pythonLocation }}
         key: build_docs-3-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
@@ -359,7 +359,7 @@ jobs:
       run: |
         make build-doc
     - name: Upload artifacts
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: documentation
         path: doc/_build/html
