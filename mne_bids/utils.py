@@ -135,7 +135,7 @@ def _handle_datatype(raw, datatype):
     raw : mne.io.Raw
         Raw object.
     datatype : str | None
-        Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``. If ``None``,
+        Can be one of either ``'meg'``, ``'eeg'``, ``'emg'`` or ``'ieeg'``. If ``None``,
         `mne.utils._handle_datatype()` will attempt to infer the datatype from
         the ``raw`` object. In case of multiple data types in the ``raw``
         object, ``datatype`` must not be ``None``.
@@ -143,7 +143,7 @@ def _handle_datatype(raw, datatype):
     Returns
     -------
     datatype : str
-        One of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.
+        One of either ``'meg'``, ``'eeg'``, ``'emg'``, or ``'ieeg'``.
     """
     if datatype is not None:
         _check_datatype(raw, datatype)
@@ -167,11 +167,13 @@ def _handle_datatype(raw, datatype):
             datatypes.append("meg")
         if "eeg" in raw:
             datatypes.append("eeg")
+        if "emg" in raw:
+            datatypes.append("emg")
         if "fnirs_cw_amplitude" in raw:
             datatypes.append("nirs")
         if len(datatypes) == 0:
             raise ValueError(
-                "No MEG, EEG or iEEG channels found in data. "
+                "No MEG, EEG, iEEG, EMG, or fNIRS channels found in data. "
                 "Please use raw.set_channel_types to set the "
                 "channel types in the data."
             )
@@ -488,7 +490,7 @@ def _check_datatype(raw, datatype):
     -------
     None
     """
-    supported_types = ("meg", "eeg", "ieeg", "nirs")
+    supported_types = ("eeg", "emg", "ieeg", "meg", "nirs")
     if datatype not in supported_types:
         raise ValueError(
             f"The specified datatype {datatype} is currently not supported. "
@@ -498,6 +500,8 @@ def _check_datatype(raw, datatype):
         )
     datatype_matches = False
     if datatype == "eeg" and datatype in raw:
+        datatype_matches = True
+    elif datatype == "emg" and datatype in raw:
         datatype_matches = True
     elif datatype == "meg" and datatype in raw:
         datatype_matches = True

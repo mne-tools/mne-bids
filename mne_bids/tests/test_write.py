@@ -89,7 +89,7 @@ warning_str = dict(
     edf_warning=r"ignore:^EDF\/EDF\+\/BDF files contain two fields .*"
     r":RuntimeWarning:mne",
     maxshield="ignore:.*Internal Active Shielding:RuntimeWarning:mne",
-    edfblocks="ignore:.*EDF format requires equal-length data "
+    edfblocks="ignore:.*[BE]DF format requires equal-length data "
     "blocks:RuntimeWarning:mne",
     brainvision_unit="ignore:Encountered unsupported non-voltage units*.:UserWarning",
     cnt_warning1="ignore:.*Could not parse meas date from the header. Setting to None.",
@@ -99,12 +99,13 @@ warning_str = dict(
     no_hand=r"ignore:Unable to map.*\n.*subject handedness.*:RuntimeWarning:mne",
     no_montage=r"ignore:Not setting position of.*channel found in "
     r"montage.*:RuntimeWarning:mne",
+    emg_coords_missing=r"ignore:No electrode location info found.*:RuntimeWarning",
+    converting_to_edf=r"ignore:Converting data files to [BE]DF format:RuntimeWarning",
     channel_mismatch=(
         "ignore:Channel mismatch between .*channels\\.tsv and the raw data file "
         "detected\\.:RuntimeWarning:mne"
     ),
-    converting_to_edf=r"ignore:Converting data files to [BE]DF format:RuntimeWarning",
-    edf_date="ignore:.*limits dates to after 1985-01-01:RuntimeWarning",
+    edf_date="ignore:.*limits `startdate` to dates after 1985-01-01:RuntimeWarning",
 )
 
 
@@ -218,6 +219,11 @@ test_converteeg_data = [
     ("NihonKohden", "EDF", "MB0400FU.EEG", _read_raw_nihon),
     ("CNT", "EDF", "scan41_short.cnt", _read_raw_cnt),
     ("curry", "EDF", "test_bdf_stim_channel Curry 8.cdt", _read_raw_curry),
+]
+test_convertemg_data = [
+    ("BDF", "EDF", "test_generator_2.bdf", _read_raw_bdf),
+    ("EDF", "BDF", "test_generator_2.edf", _read_raw_edf),
+    ("Brainvision", "BDF", "test_NO.vhdr", _read_raw_brainvision),
 ]
 
 data_path = testing.data_path(download=False)
@@ -3170,6 +3176,7 @@ def test_coordsystem_json_compliance(
             "sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay",
             _read_raw_persyst,
         ),
+        ("01", "Brainvision", "Analyzer_nV_Export.vhdr", _read_raw_brainvision),
         ("03", "NihonKohden", "MB0400FU.EEG", _read_raw_nihon),
         ("emptyroom", "MEG/sample", "sample_audvis_trunc_raw.fif", _read_raw_fif),
     ],
@@ -3179,10 +3186,14 @@ def test_coordsystem_json_compliance(
     warning_str["channel_unit_changed"],
     warning_str["edf_warning"],
     warning_str["brainvision_unit"],
+    warning_str["converting_to_edf"],
+    warning_str["edfblocks"],
+    warning_str["emg_coords_missing"],
+    warning_str["edf_date"],
 )
 @testing.requires_testing_data
 def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
-    """Test writing anonymized EDF data."""
+    """Test writing anonymized data."""
     raw_fname = op.join(data_path, dir_name, fname)
 
     bids_root = tmp_path / "bids1"
@@ -3190,26 +3201,26 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     raw_date = raw.info["meas_date"].strftime("%Y%m%d")
 
     bids_path = BIDSPath(subject=subject, root=bids_root)
+    write_kw = dict(verbose=False, overwrite=True)
 
     # handle different edge cases
     if subject == "emptyroom":
         bids_path.update(task="noise", session=raw_date, suffix="meg", datatype="meg")
-        erm = None
+        write_kw.update(empty_room=None)
+    elif dir_name == "Brainvision":  # pretend it's EMG data
+        pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
+        raw.set_channel_types({ch: "emg" for ch in raw.ch_names})
+        raw.set_montage(None)
+        bids_path.update(task="task", suffix="emg", datatype="emg")
+        write_kw.update(empty_room=None, emg_placement="Measured")
     else:
         bids_path.update(task="task", suffix="eeg", datatype="eeg")
         # make sure anonymization works when also writing empty room file
-        erm = raw.copy()
+        write_kw.update(empty_room=raw.copy())
     daysback_min, daysback_max = get_anonymization_daysback(raw)
     anonymize = dict(daysback=daysback_min + 1)
     orig_bids_path = bids_path.copy()
-    bids_path = write_raw_bids(
-        raw,
-        bids_path,
-        overwrite=True,
-        anonymize=anonymize,
-        verbose=False,
-        empty_room=erm,
-    )
+    bids_path = write_raw_bids(raw, bids_path, anonymize=anonymize, **write_kw)
     # emptyroom recordings' session should match the recording date
     if subject == "emptyroom":
         assert bids_path.session == (
@@ -3222,9 +3233,10 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
         assert _raw.info["meas_date"].year == 1985
         assert _raw.info["meas_date"].month == 1
         assert _raw.info["meas_date"].day == 1
-    assert raw2.info["meas_date"].year < 1925
+    year = 1986 if dir_name == "Brainvision" else 1925
+    assert raw2.info["meas_date"].year < year
 
-    # write without source
+    # write without source (# anonymize=dict(..., keep_source=False) is the default)
     scans_fname = BIDSPath(
         subject=bids_path.subject,
         session=bids_path.session,
@@ -3232,21 +3244,13 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
         extension=".tsv",
         root=bids_path.root,
     )
-    anonymize["keep_source"] = False
-    bids_path = write_raw_bids(
-        raw, orig_bids_path, overwrite=True, anonymize=anonymize, verbose=False
-    )
+    bids_path = write_raw_bids(raw, orig_bids_path, anonymize=anonymize, **write_kw)
     scans_tsv = _from_tsv(scans_fname)
     assert "source" not in scans_tsv.keys()
 
     # Write with source this time get the scans tsv
-    bids_path = write_raw_bids(
-        raw,
-        orig_bids_path,
-        overwrite=True,
-        anonymize=dict(daysback=daysback_min, keep_source=True),
-        verbose=False,
-    )
+    anonymize.update(keep_source=True)
+    bids_path = write_raw_bids(raw, orig_bids_path, anonymize=anonymize, **write_kw)
     scans_fname = BIDSPath(
         subject=bids_path.subject,
         session=bids_path.session,
@@ -3256,7 +3260,8 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     )
     scans_tsv = _from_tsv(scans_fname)
     assert scans_tsv["source"] == [Path(f).name for f in raw.filenames]
-    _bids_validate(bids_path.root)
+    if dir_name != "Brainvision":  # EMG not yet supported by validator
+        _bids_validate(bids_path.root)
 
     # update the scans sidecar JSON with information
     scans_json_fpath = scans_fname.copy().update(extension=".json")
@@ -3266,13 +3271,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     update_sidecar_json(scans_json_fpath, scans_json)
 
     # write again and make sure scans json was not altered
-    bids_path = write_raw_bids(
-        raw,
-        orig_bids_path,
-        overwrite=True,
-        anonymize=dict(daysback=daysback_min, keep_source=True),
-        verbose=False,
-    )
+    bids_path = write_raw_bids(raw, orig_bids_path, anonymize=anonymize, **write_kw)
     with open(scans_json_fpath) as fin:
         scans_json = json.load(fin)
     assert "test" in scans_json
@@ -3363,6 +3362,62 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     # Read back the data
     raw_read = read_raw_bids(bids_path)
     assert_array_equal(raw.annotations.description, raw_read.annotations.description)
+
+
+@testing.requires_testing_data
+def test_emg_errors_and_warnings(tmp_path):
+    """Test EMG-specific error/warning raising."""
+    pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
+    bids_root = tmp_path / "EMG_errors"
+    raw_fname = data_path / "Brainvision" / "test_NO.vhdr"
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="emg")
+    raw = _read_raw_brainvision(raw_fname)
+    raw.set_channel_types({ch: "emg" for ch in raw.ch_names})  # HACK eeg → emg
+    good_kwargs = dict(raw=raw, bids_path=bids_path, verbose=False, overwrite=True)
+    with pytest.raises(ValueError, match="`emg_placement` must be one of"):
+        write_raw_bids(**good_kwargs, emg_placement="Foo")
+    with (
+        pytest.warns(RuntimeWarning, match="BDF format requires equal-length data"),
+        pytest.warns(RuntimeWarning, match="Converting data files to BDF format"),
+        pytest.warns(RuntimeWarning, match="add `coordsystem.json` file manually"),
+    ):
+        write_raw_bids(**good_kwargs, emg_placement="Other")
+
+
+@pytest.mark.parametrize("dir_name, fmt, fname, reader", test_convertemg_data)
+@pytest.mark.filterwarnings(
+    warning_str["edfblocks"],
+    warning_str["emg_coords_missing"],
+    warning_str["converting_to_edf"],
+)
+@testing.requires_testing_data
+def test_convert_emg_formats(tmp_path, dir_name, fmt, fname, reader):
+    """Test EDF ←→ BDF conversion of EMG datasets."""
+    pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
+    bids_root = tmp_path / fmt
+    raw_fname = data_path / dir_name / fname
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="emg")
+    raw = reader(raw_fname)
+    raw.set_channel_types({ch: "emg" for ch in raw.ch_names})  # HACK eeg → emg
+    # test anonymization in one case too, for coverage
+    if dir_name == "Brainvision":
+        raw.anonymize()
+    # make sure it's possible to define arbitrarily-named coordsys spaces for EMG
+    bids_path.update(space="foo", check=True)
+    bids_output_path = write_raw_bids(
+        raw=raw,
+        format=fmt,
+        bids_path=bids_path,
+        overwrite=True,
+        verbose=False,
+        emg_placement="Other",
+    )
+    # make sure the file extension is correct (different from what we started with)
+    outdir = tmp_path / fmt / "sub-01" / "ses-01" / "emg"
+    dont_want = list((outdir).glob(f"*{raw_fname.suffix}"))
+    want = list((outdir).glob(f"*.{fmt.lower()}"))
+    assert len(dont_want) == 0
+    assert want == [bids_output_path.fpath]
 
 
 @pytest.mark.parametrize("dir_name, fmt, fname, reader", test_converteeg_data)
@@ -3812,10 +3867,15 @@ def test_preload_errors(tmp_path):
 @pytest.mark.filterwarnings(
     warning_str["converting_to_edf"],
     warning_str["edfblocks"],
+    warning_str["emg_coords_missing"],
 )
-@pytest.mark.parametrize("format,ch_type", (("BrainVision", "eeg"), ("EDF", "seeg")))
+@pytest.mark.parametrize(
+    "format,ch_type", (("BrainVision", "eeg"), ("BDF", "emg"), ("EDF", "seeg"))
+)
 def test_preload(_bids_validate, tmp_path, format, ch_type):
     """Test writing custom preloaded raw objects."""
+    if ch_type == "emg":
+        pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
     bids_root = tmp_path / "bids"
     bids_path = _bids_path.copy().update(root=bids_root)
     sfreq = 1024.0
@@ -3825,6 +3885,7 @@ def test_preload(_bids_validate, tmp_path, format, ch_type):
     raw = mne.io.RawArray(data, info)
     raw.orig_format = "single"
     raw.info["line_freq"] = 60
+    kw = dict(emg_placement="Measured") if ch_type == "emg" else dict()
     write_raw_bids(
         raw,
         bids_path,
@@ -3832,8 +3893,10 @@ def test_preload(_bids_validate, tmp_path, format, ch_type):
         format=format,
         verbose=False,
         overwrite=True,
+        **kw,
     )
-    _bids_validate(bids_root)
+    if ch_type != "emg":  # TODO validator support for EMG not available yet
+        _bids_validate(bids_root)
 
 
 @pytest.mark.parametrize("dir_name", ("tsv_test", "json_test"))

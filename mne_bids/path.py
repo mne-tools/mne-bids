@@ -40,6 +40,21 @@ from mne_bids.utils import (
     warn,
 )
 
+# Take all possible data types from "entity" table (Appendix in BIDS spec)
+# https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html
+_DATATYPE_LIST = (  # must be alphabetical
+    "anat",
+    "beh",
+    "dwi",
+    "eeg",
+    "emg",
+    "fmap",
+    "func",
+    "ieeg",
+    "meg",
+    "nirs",
+)
+
 
 def _find_empty_room_candidates(bids_path):
     """Get matching empty-room file for an MEG recording."""
@@ -1938,14 +1953,10 @@ def get_datatypes(root, verbose=None):
         `root`.
 
     """
-    # Take all possible data types from "entity" table
-    # (Appendix in BIDS spec)
-    # https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html
-    datatype_list = ("anat", "func", "dwi", "fmap", "beh", "meg", "eeg", "ieeg", "nirs")
     datatypes = list()
     for root, dirs, files in os.walk(root):
         for _dir in dirs:
-            if _dir in datatype_list and _dir not in datatypes:
+            if _dir in _DATATYPE_LIST and _dir not in datatypes:
                 datatypes.append(_dir)
 
     return datatypes
@@ -2303,7 +2314,7 @@ def _infer_datatype(*, root, sub, ses):
     modalities = _get_datatypes_for_sub(root=root, sub=sub, ses=ses)
 
     # We only want to handle electrophysiological data here.
-    allowed_recording_modalities = ["meg", "eeg", "ieeg"]
+    allowed_recording_modalities = ["eeg", "emg", "ieeg", "meg"]
     modalities = list(set(modalities) & set(allowed_recording_modalities))
     if not modalities:
         raise ValueError("No electrophysiological data found.")
