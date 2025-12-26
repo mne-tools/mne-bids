@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert EEG data to BIDS format &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
+    <title>Convert EEG data to BIDS format &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
   
   
   
@@ -44,9 +44,9 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=287be518"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev1+g8787a658a" />
+  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev1+g8787a658a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
   
 </a></div>
     
@@ -444,6 +444,7 @@
 <li class="toctree-l1"><a class="reference internal" href="create_bids_folder.html">Creating BIDS-compatible folder names and filenames</a></li>
 <li class="toctree-l1"><a class="reference internal" href="update_bids_datasets.html">Updating BIDS datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="anonymize_dataset.html">Anonymizing a BIDS dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_fieldtrip_emg.html">Convert EMG data to BIDS format</a></li>
 </ul>
 </div>
 </nav></div>
@@ -597,7 +598,7 @@ and supply meta data files to properly <em>bidsify</em> this data.</p>
 <h2>Convert to BIDS<a class="headerlink" href="#convert-to-bids" title="Link to this heading">#</a></h2>
 <p>Let’s start with loading the data and extracting the events.
 We are reading the data using MNE-Python’s <code class="docutils literal notranslate"><span class="pre">io</span></code> module and the
-<a class="reference external" href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="(in MNE v1.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_edf()</span></code></a> function.
+<a class="reference external" href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="(in MNE v1.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_edf()</span></code></a> function.
 Note that we must use the <code class="docutils literal notranslate"><span class="pre">preload=False</span></code> parameter, which is the default
 in MNE-Python.
 It prevents the data from being loaded and modified when converting to BIDS.</p>
@@ -608,7 +609,6 @@ It prevents the data from being loaded and modified when converting to BIDS.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R02.edf...
-EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 </pre></div>
@@ -624,7 +624,7 @@ intended to carry information about digitized (i.e., <em>measured</em>)
 electrode positions on the scalp of the research subject. Do <em>not</em>
 (!) use these files to store “template” or “idealized” electrode
 positions, like those that can be obtained from
-<a class="reference external" href="https://mne.tools/stable/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="(in MNE v1.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.channels.make_standard_montage()</span></code></a>!</p>
+<a class="reference external" href="https://mne.tools/stable/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="(in MNE v1.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.channels.make_standard_montage()</span></code></a>!</p>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the electrode coordinates</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">testing_data</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">data_path</span><span class="p">()</span>
@@ -780,14 +780,14 @@ anonymize : dict | None
         ``source`` column of ``scans.tsv``. By default, this information
         is not stored.
 
-format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;EDF&#39; | &#39;FIF&#39; | &#39;EEGLAB&#39;
+format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;BDF&#39; | &#39;EDF&#39; | &#39;FIF&#39; | &#39;EEGLAB&#39;
     Controls the file format of the data after BIDS conversion. If
     ``&#39;auto&#39;``, MNE-BIDS will attempt to convert the input data to BIDS
     without a change of the original file format. A conversion to a
     different file format will then only take place if the original file
     format lacks some necessary features.
     Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
-    and to FIF for MEG data.
+    to BDF or EDF for EMG, and to FIF for MEG data.
 symlink : bool
     Instead of copying the source files, only create symbolic links to
     preserve storage space. This is only allowed when not anonymizing the
@@ -838,6 +838,12 @@ acpc_aligned : bool
     So, this flag is required to be True when the digitization data
     is in &quot;mri&quot; for intracranial data to confirm that the T1 is
     ACPC-aligned.
+electrodes_tsv_task : bool
+    Add the ``task-`` entity to the ``electrodes.tsv`` filename.
+    Defaults to ``False``.
+emg_placement : &quot;Measured&quot; | &quot;ChannelSpecific&quot; | &quot;Other&quot; | None
+    How the EMG sensor locations were determined. Must be one of the literal strings
+    if datatype is &quot;emg&quot; and should be ``None`` for all other datatypes.
 overwrite : bool
     Whether to overwrite existing files or data in files.
     Defaults to ``False``.
@@ -950,7 +956,6 @@ automatically by MNE-BIDS when writing the BIDS data:</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R02.edf...
-EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/README&#39;...
@@ -964,8 +969,8 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-0
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_events.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_eeg.json&#39;...
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_channels.tsv&#39;...
 Copying data files to sub-001_task-RestEyesClosed_eeg.edf
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_channels.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-RestEyesClosed_eeg.edf.
 
@@ -1092,7 +1097,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.360 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.451 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/0bc5481d861907f3ba86dd37d953b980/convert_eeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_eeg_to_bids.ipynb</span></code></a></p>
@@ -1186,7 +1191,7 @@ command line tool:</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
       <br/>
     
   </p>
@@ -1195,7 +1200,7 @@ command line tool:</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

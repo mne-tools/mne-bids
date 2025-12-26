@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.print_dir_tree &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
+    <title>mne_bids.print_dir_tree &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
   
   
   
@@ -44,9 +44,9 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=287be518"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev1+g8787a658a" />
+  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev1+g8787a658a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
   
 </a></div>
     
@@ -537,19 +537,19 @@
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>folder</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.10)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The folder for which to print the directory tree.</p>
+<dt><strong>folder</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.11)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The folder for which to print the directory tree.</p>
 </dd>
-<dt><strong>max_depth</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The maximum depth into which to descend recursively for printing
+<dt><strong>max_depth</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The maximum depth into which to descend recursively for printing
 the directory tree.</p>
 </dd>
-<dt><strong>return_str</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return the directory tree as a str instead of
+<dt><strong>return_str</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return the directory tree as a str instead of
 printing it.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>If <em class="xref py py-obj">return_str</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the directory tree is returned as a
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>If <em class="xref py py-obj">return_str</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the directory tree is returned as a
 string. Else, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned and the directory tree is printed.</p>
 </dd>
 </dl>
@@ -560,34 +560,37 @@ string. Else, <code class="docutils literal notranslate"><span class="pre">None<
 <section id="examples-using-mne-bids-print-dir-tree">
 <span id="sphx-glr-backreferences-mne-bids-print-dir-tree"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.print_dir_tree</span></code><a class="headerlink" href="#examples-using-mne-bids-print-dir-tree" title="Link to this heading">#</a></h2>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Consider the following scenario:"><img alt="" src="../_images/sphx_glr_anonymize_dataset_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/anonymize_dataset.html#sphx-glr-auto-examples-anonymize-dataset-py"><span class="std std-ref">Anonymizing a BIDS dataset</span></a></p>
+<p><a class="reference internal" href="../auto_examples/anonymize_dataset.html"><span class="doc">Anonymizing a BIDS dataset</span></a></p>
   <div class="sphx-glr-thumbnail-title">Anonymizing a BIDS dataset</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specifically, we will follow these steps:"><img alt="" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">Convert EEG data to BIDS format</span></a></p>
+<p><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html"><span class="doc">Convert EEG data to BIDS format</span></a></p>
   <div class="sphx-glr-thumbnail-title">Convert EEG data to BIDS format</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data &quot;manually&quot; in the BIDS format and how to retrieve them."><img alt="" src="../_images/sphx_glr_convert_empty_room_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">Manually storing empty room data</span></a></p>
+<p><a class="reference internal" href="../auto_examples/convert_empty_room.html"><span class="doc">Manually storing empty room data</span></a></p>
   <div class="sphx-glr-thumbnail-title">Manually storing empty room data</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EMG data. The data comes from the FieldTrip download server, and was recorded through an EEG amplifier in BrainVision format. Because of that, we&#x27;ll need to explicitly change the channel type from EEG to EMG; this may not be necessary for your data."><img alt="" src="../_images/sphx_glr_convert_fieldtrip_emg_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/convert_fieldtrip_emg.html"><span class="doc">Convert EMG data to BIDS format</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Convert EMG data to BIDS format</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. We will use the EEG Motor Movement/Imagery Dataset available on the PhysioBank database. We recommend that you go through the more basic BIDS conversion example before checking out this group conversion example: ex-convert-mne-sample"><img alt="" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">BIDS conversion for group studies</span></a></p>
+<p><a class="reference internal" href="../auto_examples/convert_group_studies.html"><span class="doc">BIDS conversion for group studies</span></a></p>
   <div class="sphx-glr-thumbnail-title">BIDS conversion for group studies</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifically, we will follow these steps:"><img alt="" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">Convert iEEG data to BIDS format</span></a></p>
+<p><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html"><span class="doc">Convert iEEG data to BIDS format</span></a></p>
   <div class="sphx-glr-thumbnail-title">Convert iEEG data to BIDS format</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS standard. In a second step we will read the organized dataset using MNE-BIDS."><img alt="" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">Convert MNE sample data to BIDS format</span></a></p>
+<p><a class="reference internal" href="../auto_examples/convert_mne_sample.html"><span class="doc">Convert MNE sample data to BIDS format</span></a></p>
   <div class="sphx-glr-thumbnail-title">Convert MNE sample data to BIDS format</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with aligning several coordinate systems, such as the coordinate systems of ..."><img alt="" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></p>
+<p><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html"><span class="doc">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></p>
   <div class="sphx-glr-thumbnail-title">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of NIRS data. Specifically, we will follow these steps:"><img alt="" src="../_images/sphx_glr_convert_nirs_to_bids_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_nirs_to_bids.html#sphx-glr-auto-examples-convert-nirs-to-bids-py"><span class="std std-ref">Convert NIRS data to BIDS format</span></a></p>
+<p><a class="reference internal" href="../auto_examples/convert_nirs_to_bids.html"><span class="doc">Convert NIRS data to BIDS format</span></a></p>
   <div class="sphx-glr-thumbnail-title">Convert NIRS data to BIDS format</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, an important resource is the OpenNeuro database. OpenNeuro works great with MNE-BIDS because every dataset must pass a validator that tests to ensure its format meets BIDS specifications before the dataset can be uploaded, so you know the data will work with a script like in this example without modification."><img alt="" src="../_images/sphx_glr_read_bids_datasets_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">Read BIDS datasets</span></a></p>
+<p><a class="reference internal" href="../auto_examples/read_bids_datasets.html"><span class="doc">Read BIDS datasets</span></a></p>
   <div class="sphx-glr-thumbnail-title">Read BIDS datasets</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually do not have all the metadata stored in the Raw mne-python object. We can update the BIDS sidecar files via the update_sidecar_json function."><img alt="" src="../_images/sphx_glr_update_bids_datasets_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/update_bids_datasets.html#sphx-glr-auto-examples-update-bids-datasets-py"><span class="std std-ref">Updating BIDS datasets</span></a></p>
+<p><a class="reference internal" href="../auto_examples/update_bids_datasets.html"><span class="doc">Updating BIDS datasets</span></a></p>
   <div class="sphx-glr-thumbnail-title">Updating BIDS datasets</div>
 </div></div></section>
 </section>
@@ -669,7 +672,7 @@ string. Else, <code class="docutils literal notranslate"><span class="pre">None<
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
       <br/>
     
   </p>
@@ -678,7 +681,7 @@ string. Else, <code class="docutils literal notranslate"><span class="pre">None<
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

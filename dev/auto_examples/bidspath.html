@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>An introduction to BIDSPath &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
+    <title>An introduction to BIDSPath &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
   
   
   
@@ -44,9 +44,9 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=287be518"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev1+g8787a658a" />
+  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev1+g8787a658a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
   
 </a></div>
     
@@ -440,6 +440,7 @@
 <li class="toctree-l1"><a class="reference internal" href="create_bids_folder.html">Creating BIDS-compatible folder names and filenames</a></li>
 <li class="toctree-l1"><a class="reference internal" href="update_bids_datasets.html">Updating BIDS datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="anonymize_dataset.html">Anonymizing a BIDS dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_fieldtrip_emg.html">Convert EMG data to BIDS format</a></li>
 </ul>
 </div>
 </nav></div>
@@ -602,7 +603,7 @@ are going to specify the data type explicitly.</p>
 </div>
 <p>As you can see, <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> automatically arranged all the information we
 provided such that it creates a valid BIDS folder structure. You can also
-retrieve a <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> object of this path:</p>
+retrieve a <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> object of this path:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pathlib_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span></a>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pathlib_path</span></a>
 </pre></div>
@@ -639,7 +640,7 @@ use of them. To get a list of all supported entities, use:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">bids_path</span><span class="o">.</span><span class="n">entities</span></a>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;subject&#39;: &#39;01&#39;, &#39;session&#39;: &#39;eeg&#39;, &#39;task&#39;: None, &#39;acquisition&#39;: None, &#39;run&#39;: None, &#39;processing&#39;: None, &#39;space&#39;: None, &#39;recording&#39;: None, &#39;split&#39;: None, &#39;description&#39;: None}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;subject&#39;: &#39;01&#39;, &#39;session&#39;: &#39;eeg&#39;, &#39;task&#39;: None, &#39;acquisition&#39;: None, &#39;run&#39;: None, &#39;processing&#39;: None, &#39;space&#39;: None, &#39;recording&#39;: None, &#39;split&#39;: None, &#39;description&#39;: None, &#39;tracking_system&#39;: None}
 </pre></div>
 </div>
 <p>As you can see, most entity keys are set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is the default
@@ -705,7 +706,7 @@ basename: sub-01_ses-eeg_eeg.vhdr)
 <p>By default, most MNE-BIDS functions will try to infer to correct
 suffix and extension for your data, and you don’t need to specify them
 manually.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.005 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.006 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-bidspath-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/0c7e85abda2fce1fe2c484ad9f9aaa81/bidspath.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">bidspath.ipynb</span></code></a></p>
@@ -778,7 +779,7 @@ manually.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
       <br/>
     
   </p>
@@ -787,7 +788,7 @@ manually.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
   
   
   
@@ -43,9 +43,9 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=287be518"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev1+g8787a658a" />
+  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev1+g8787a658a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
   
 </a></div>
     
@@ -483,7 +483,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">difflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_close_matches</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
@@ -494,6 +494,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_trans</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">logger</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids._fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">_open_lock</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ANNOTATIONS_TO_KEEP</span><span class="p">,</span>
@@ -512,6 +513,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">_import_nibabel</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">warn</span>
 
 
+<span class="nd">@verbose</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_read_raw</span><span class="p">(</span>
     <span class="n">raw_path</span><span class="p">,</span>
     <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -519,6 +521,7 @@
     <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">config_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a raw file into MNE, making inferences based on extension.&quot;&quot;&quot;</span>
@@ -527,7 +530,13 @@
     <span class="c1"># KIT systems</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.con&quot;</span><span class="p">,</span> <span class="s2">&quot;.sqd&quot;</span><span class="p">]:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">(</span>
-            <span class="n">raw_path</span><span class="p">,</span> <span class="n">elp</span><span class="o">=</span><span class="n">electrode</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span> <span class="n">mrk</span><span class="o">=</span><span class="n">hpi</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="n">raw_path</span><span class="p">,</span>
+            <span class="n">elp</span><span class="o">=</span><span class="n">electrode</span><span class="p">,</span>
+            <span class="n">hsp</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
+            <span class="n">mrk</span><span class="o">=</span><span class="n">hpi</span><span class="p">,</span>
+            <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># BTi systems</span>
@@ -537,15 +546,16 @@
             <span class="n">config_fname</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span>
             <span class="n">head_shape_fname</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
             <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.fif&quot;</span><span class="p">:</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.ds&quot;</span><span class="p">,</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">,</span> <span class="s2">&quot;.set&quot;</span><span class="p">,</span> <span class="s2">&quot;.edf&quot;</span><span class="p">,</span> <span class="s2">&quot;.bdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.EDF&quot;</span><span class="p">,</span> <span class="s2">&quot;.snirf&quot;</span><span class="p">,</span> <span class="s2">&quot;.cdt&quot;</span><span class="p">]:</span>
         <span class="n">raw_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">raw_path</span><span class="p">)</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="c1"># MEF and NWB are allowed, but not yet implemented</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.mef&quot;</span><span class="p">,</span> <span class="s2">&quot;.nwb&quot;</span><span class="p">]:</span>
@@ -810,10 +820,6 @@
     <span class="n">scans_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">)</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
 
-    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">):</span>
-        <span class="c1"># for BTi files, the scan is an entire directory</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
     <span class="c1"># get the row corresponding to the file</span>
     <span class="c1"># use string concatenation instead of os.path</span>
     <span class="c1"># to work nicely with windows</span>
@@ -834,7 +840,15 @@
     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.vhdr&quot;</span><span class="p">,</span> <span class="s2">&quot;.eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;.vmrk&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="n">acq_suffixes</span><span class="p">):</span>
         <span class="n">ext</span> <span class="o">=</span> <span class="n">fnames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">suffix</span>
         <span class="n">data_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_fname</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
-    <span class="n">row_ind</span> <span class="o">=</span> <span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">data_fname</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">row_ind</span> <span class="o">=</span> <span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">data_fname</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">):</span>
+            <span class="n">alt_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">row_ind</span> <span class="o">=</span> <span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">alt_fname</span><span class="p">)</span>
+            <span class="n">data_fname</span> <span class="o">=</span> <span class="n">alt_fname</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exc</span>
 
     <span class="c1"># check whether all split files have the same acq_time</span>
     <span class="c1"># and throw an error if they don&#39;t</span>
@@ -880,10 +894,14 @@
 
         <span class="k">if</span> <span class="n">acq_time_is_utc</span><span class="p">:</span>
             <span class="c1"># Enforce setting timezone to UTC without additonal conversion</span>
-            <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+            <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Convert time offset to UTC</span>
-            <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Windows needs an explicit local tz for naive, pre-epoch times.</span>
+                <span class="n">local_tz</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">astimezone</span><span class="p">()</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">or</span> <span class="n">UTC</span>
+                <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">local_tz</span><span class="p">)</span>
+            <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s2"> scans file to set acq_time as </span><span class="si">{</span><span class="n">acq_time</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="c1"># First set measurement date to None and then call call anonymize() to</span>
@@ -906,7 +924,7 @@
 
 <span class="sd">    Handle PowerLineFrequency of recording.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
 
     <span class="c1"># read in the sidecar JSON&#39;s and raw object&#39;s line frequency</span>
@@ -1002,7 +1020,8 @@
 
 <div class="viewcode-block" id="events_file_to_annotation_kwargs">
 <a class="viewcode-back" href="../../generated/mne_bids.events_file_to_annotation_kwargs.html#mne_bids.events_file_to_annotation_kwargs">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">events_file_to_annotation_kwargs</span><span class="p">(</span><span class="n">events_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="nd">@verbose</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">events_file_to_annotation_kwargs</span><span class="p">(</span><span class="n">events_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read the ``events.tsv`` file and extract onset, duration, and description.</span>
 
@@ -1010,6 +1029,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    events_fname : str</span>
 <span class="sd">        The file path to the ``events.tsv`` file.</span>
+<span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1053,8 +1073,8 @@
 <span class="sd">    ...     &#39;duration&#39;: [0.1, 0.1, 0.1],</span>
 <span class="sd">    ...     &#39;trial_type&#39;: [&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;],</span>
 <span class="sd">    ...     &#39;value&#39;: [1, 2, 1],</span>
-<span class="sd">    ...     &#39;sample&#39;: [10, 20, 30]</span>
-<span class="sd">            &#39;foo&#39;: [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;],</span>
+<span class="sd">    ...     &#39;sample&#39;: [10, 20, 30],</span>
+<span class="sd">    ...     &#39;foo&#39;: [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;],</span>
 <span class="sd">    ... }</span>
 <span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data)</span>
 <span class="sd">    &gt;&gt;&gt;</span>
@@ -1064,15 +1084,11 @@
 <span class="sd">    &gt;&gt;&gt; df.to_csv(events_file, sep=&#39;\t&#39;, index=False)</span>
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # Read the events file using the function</span>
-<span class="sd">    &gt;&gt;&gt; events_dict = events_file_to_annotation_kwargs(events_file)</span>
+<span class="sd">    &gt;&gt;&gt; events_dict = events_file_to_annotation_kwargs(events_file, verbose=False)</span>
 <span class="sd">    &gt;&gt;&gt; events_dict</span>
-<span class="sd">    {&#39;onset&#39;: array([0.1, 0.2, 0.3]),</span>
-<span class="sd">    &#39;duration&#39;: array([0.1, 0.1, 0.1]),</span>
-<span class="sd">    &#39;description&#39;: array([&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;], dtype=&#39;&lt;U6&#39;),</span>
-<span class="sd">    &#39;event_id&#39;: {&#39;event1&#39;: 1, &#39;event2&#39;: 2},</span>
-<span class="sd">    &#39;extras&#39;: [{&#39;foo&#39;: &#39;a&#39;}, {&#39;foo&#39;: &#39;b&#39;}, {&#39;foo&#39;: &#39;c&#39;}]}</span>
+<span class="sd">    {&#39;onset&#39;: array([0.1, 0.2, 0.3]), &#39;duration&#39;: array([0.1, 0.1, 0.1]), &#39;description&#39;: array([&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;], dtype=&#39;&lt;U6&#39;), &#39;event_id&#39;: {&#39;event1&#39;: 1, &#39;event2&#39;: 2}, &#39;extras&#39;: [{&#39;foo&#39;: &#39;a&#39;}, {&#39;foo&#39;: &#39;b&#39;}, {&#39;foo&#39;: &#39;c&#39;}]}</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa E501</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading events from </span><span class="si">{</span><span class="n">events_fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">events_fname</span><span class="p">)</span>
 
@@ -1138,9 +1154,11 @@
                     <span class="n">culled_vals</span> <span class="o">=</span> <span class="n">culled_vals</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># numeric, but has some non-integer values</span>
                     <span class="k">pass</span>
+            <span class="c1"># purge any np.str_, np.int_, or np.float_ types</span>
+            <span class="n">culled_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">culled_vals</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
             <span class="n">event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">culled</span><span class="p">[</span><span class="n">trial_type_col_name</span><span class="p">],</span> <span class="n">culled_vals</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">trial_types</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trial_types</span><span class="p">))))</span>
+            <span class="n">event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">trial_types</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trial_types</span><span class="p">)))))</span>
         <span class="n">descrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">trial_types</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 
     <span class="c1"># convert onsets &amp; durations to floats (&quot;n/a&quot; onsets were already dropped)</span>
@@ -1233,7 +1251,28 @@
     <span class="k">return</span> <span class="n">bads</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_channel_mismatch</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="p">,</span> <span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">channels_fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle mismatch between channels.tsv and raw channel names.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">on_ch_mismatch</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Channel mismatch between </span><span class="si">{</span><span class="n">channels_fname</span><span class="si">}</span><span class="s2"> and the raw data file detected.&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Either align channel names in channels.tsv with the raw file, or call &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;read_raw_bids(on_ch_mismatch=&#39;reorder&#39;|&#39;rename&#39;) to proceed.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;Channel mismatch between &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">channels_fname</span><span class="si">}</span><span class="s2"> and the raw data file detected. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Using mismatch strategy: </span><span class="si">{</span><span class="n">on_ch_mismatch</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">on_ch_mismatch</span> <span class="o">==</span> <span class="s2">&quot;reorder&quot;</span><span class="p">:</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">reorder_channels</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">on_ch_mismatch</span> <span class="o">==</span> <span class="s2">&quot;rename&quot;</span><span class="p">:</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">ch_names_tsv</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;on_ch_mismatch must be one of {&#39;reorder&#39;,&#39;raise&#39;,&#39;rename&#39;}&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read associated channels.tsv and populate raw.</span>
 
 <span class="sd">    Updates status (bad) and types of channels.</span>
@@ -1314,7 +1353,9 @@
             <span class="sa">f</span><span class="s2">&quot;set channel names.&quot;</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">ch_names_tsv</span><span class="p">)))</span>
+        <span class="n">orig_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">orig_names</span> <span class="o">!=</span> <span class="n">ch_names_tsv</span><span class="p">:</span>
+            <span class="n">_handle_channel_mismatch</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="p">,</span> <span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">channels_fname</span><span class="p">)</span>
 
     <span class="c1"># Set the channel types in the raw data according to channels.tsv</span>
     <span class="n">channel_type_bids_mne_map_available_channels</span> <span class="o">=</span> <span class="p">{</span>
@@ -1356,7 +1397,12 @@
 <a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a>
 <span class="nd">@verbose</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_raw_bids</span><span class="p">(</span>
-    <span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">return_event_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">bids_path</span><span class="p">,</span>
+    <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">return_event_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">on_ch_mismatch</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read BIDS compatible data.</span>
 
@@ -1387,6 +1433,17 @@
 <span class="sd">        event IDs, in addition to the :class:`~mne.io.Raw` object. If a ``value`` column</span>
 <span class="sd">        is present in the ``*_events.tsv`` file, it will be used as the source of the</span>
 <span class="sd">        integer event ID values (events with ``value=&quot;n/a&quot;`` will be omitted).</span>
+<span class="sd">    on_ch_mismatch : str</span>
+<span class="sd">        How to handle a mismatch between channel names in channels.tsv file</span>
+<span class="sd">        and channel names in the raw data file.</span>
+<span class="sd">        Must be one of ``&#39;raise&#39;``, ``&#39;reorder&#39;``, ``&#39;rename&#39;`` (default ``&#39;raise&#39;``).</span>
+
+<span class="sd">        * ``&#39;raise&#39;`` will raise a RuntimeError if there is a channel mismatch.</span>
+<span class="sd">        * ``&#39;reorder&#39;`` will reorder the channels in the raw data file to match the</span>
+<span class="sd">          channel order in the channels.tsv file.</span>
+<span class="sd">        * ``&#39;rename&#39;`` will rename the channels in the raw data file to match the</span>
+<span class="sd">          channel names in the channels.tsv file.</span>
+
 <span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
@@ -1413,6 +1470,9 @@
 <span class="sd">    ValueError</span>
 <span class="sd">        If the specified ``datatype`` cannot be found in the dataset.</span>
 
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If channels.tsv and the raw file have a channel-name mismatch</span>
+<span class="sd">        and ``on_ch_mismatch`` is &#39;raise&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
@@ -1448,8 +1508,10 @@
     <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
         <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bids_raw_folder</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">bids_raw_folder</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
         <span class="c1"># try to find the processed data file (&quot;pdf&quot;)</span>
         <span class="c1"># see: https://www.fieldtriptoolbox.org/getting_started/bti/</span>
@@ -1524,6 +1586,7 @@
         <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">config_path</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
         <span class="o">**</span><span class="n">extra_params</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -1548,7 +1611,9 @@
         <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;channels&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">channels_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_channels_reading</span><span class="p">(</span>
+            <span class="n">channels_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="o">=</span><span class="n">on_ch_mismatch</span>
+        <span class="p">)</span>
 
     <span class="c1"># Try to find an associated electrodes.tsv and coordsystem.json</span>
     <span class="c1"># to get information about the status and type of present channels</span>
@@ -1560,14 +1625,14 @@
         <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;coordsystem&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">electrodes_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;should exist if electrodes.tsv does. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Please create coordsystem.json for&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
         <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;should exist if electrodes.tsv does. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Please create coordsystem.json for &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
             <span class="n">_read_dig_bids</span><span class="p">(</span>
                 <span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span>
             <span class="p">)</span>
@@ -1891,7 +1956,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
       <br/>
     
   </p>
@@ -1900,7 +1965,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

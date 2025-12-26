@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert MNE sample data to BIDS format &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
+    <title>Convert MNE sample data to BIDS format &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
   
   
   
@@ -44,9 +44,9 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=287be518"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev1+g8787a658a" />
+  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev1+g8787a658a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
   
 </a></div>
     
@@ -440,6 +440,7 @@
 <li class="toctree-l1"><a class="reference internal" href="create_bids_folder.html">Creating BIDS-compatible folder names and filenames</a></li>
 <li class="toctree-l1"><a class="reference internal" href="update_bids_datasets.html">Updating BIDS datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="anonymize_dataset.html">Anonymizing a BIDS dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_fieldtrip_emg.html">Convert EMG data to BIDS format</a></li>
 </ul>
 </div>
 </nav></div>
@@ -634,8 +635,8 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/participants.json&#39;
 Writing of electrodes.tsv is not supported for data type &quot;meg&quot;. Skipping ...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.json&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_channels.tsv&#39;...
 Copying data files to sub-emptyroom_ses-20021206_task-noise_meg.fif
+Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_channels.tsv&#39;...
 Reserving possible split file sub-emptyroom_ses-20021206_task-noise_split-01_meg.fif
 Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif
 Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif
@@ -645,14 +646,13 @@ Wrote /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/su
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/participants.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/participants.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json&#39;...
 Used Annotations descriptions: [np.str_(&#39;Auditory/Left&#39;), np.str_(&#39;Auditory/Right&#39;), np.str_(&#39;Button&#39;), np.str_(&#39;Smiley&#39;), np.str_(&#39;Visual/Left&#39;), np.str_(&#39;Visual/Right&#39;)]
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_events.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_events.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_meg.json&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_channels.tsv&#39;...
 Copying data files to sub-01_ses-01_task-audiovisual_run-1_meg.fif
+Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_channels.tsv&#39;...
 Reserving possible split file sub-01_ses-01_task-audiovisual_run-1_split-01_meg.fif
 Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_meg.fif
 Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_meg.fif
@@ -693,7 +693,7 @@ sidecar files that describe our data is correct.</p>
     &quot;MEGREFChannelCount&quot;: 0,
     &quot;ContinuousHeadLocalization&quot;: false,
     &quot;HeadCoilFrequency&quot;: [],
-    &quot;AssociatedEmptyRoom&quot;: &quot;/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif&quot;,
+    &quot;AssociatedEmptyRoom&quot;: &quot;sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif&quot;,
     &quot;EEGChannelCount&quot;: 60,
     &quot;EOGChannelCount&quot;: 1,
     &quot;ECGChannelCount&quot;: 0,
@@ -1022,9 +1022,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-82cbcd32-7725-4507-ba12-f726d0380176"
+<tr class="mne-repr-section-header general-c129cf70-9e82-42be-aa15-5d552ac5a048"
      title="Hide section"
-    onclick="toggleVisibility('general-82cbcd32-7725-4507-ba12-f726d0380176')">
+    onclick="toggleVisibility('general-c129cf70-9e82-42be-aa15-5d552ac5a048')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1036,7 +1036,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-82cbcd32-7725-4507-ba12-f726d0380176 ">
+<tr class="repr-element general-c129cf70-9e82-42be-aa15-5d552ac5a048 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -1047,19 +1047,19 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-82cbcd32-7725-4507-ba12-f726d0380176 ">
+<tr class="repr-element general-c129cf70-9e82-42be-aa15-5d552ac5a048 ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>Raw</td>
 </tr>
-<tr class="repr-element general-82cbcd32-7725-4507-ba12-f726d0380176 ">
+<tr class="repr-element general-c129cf70-9e82-42be-aa15-5d552ac5a048 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>2002-12-06 at 15:16:18 UTC</td>
 
 </tr>
-<tr class="repr-element general-82cbcd32-7725-4507-ba12-f726d0380176 ">
+<tr class="repr-element general-c129cf70-9e82-42be-aa15-5d552ac5a048 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
@@ -1068,7 +1068,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 </tr>
-<tr class="repr-element general-82cbcd32-7725-4507-ba12-f726d0380176 ">
+<tr class="repr-element general-c129cf70-9e82-42be-aa15-5d552ac5a048 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -1083,9 +1083,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-cd499ce3-c5a0-4806-9847-ac834b93d709"
+<tr class="mne-repr-section-header acquisition-27501e22-ebad-4dec-8071-4ab944065da5"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-cd499ce3-c5a0-4806-9847-ac834b93d709')">
+    onclick="toggleVisibility('acquisition-27501e22-ebad-4dec-8071-4ab944065da5')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1097,7 +1097,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-cd499ce3-c5a0-4806-9847-ac834b93d709 ">
+<tr class="repr-element acquisition-27501e22-ebad-4dec-8071-4ab944065da5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Duration</td>
     <td>00:01:51 (HH:MM:SS)</td>
@@ -1110,14 +1110,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-cd499ce3-c5a0-4806-9847-ac834b93d709 ">
+<tr class="repr-element acquisition-27501e22-ebad-4dec-8071-4ab944065da5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>600.61 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-cd499ce3-c5a0-4806-9847-ac834b93d709 ">
+<tr class="repr-element acquisition-27501e22-ebad-4dec-8071-4ab944065da5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>66,068</td>
@@ -1132,9 +1132,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-01a06df7-a5dd-4b3c-a7ec-eb6b02a0f89a"
+<tr class="mne-repr-section-header channels-08114efd-d61b-44a7-b978-f5526ac1ea42"
      title="Hide section"
-    onclick="toggleVisibility('channels-01a06df7-a5dd-4b3c-a7ec-eb6b02a0f89a')">
+    onclick="toggleVisibility('channels-08114efd-d61b-44a7-b978-f5526ac1ea42')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1147,7 +1147,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-01a06df7-a5dd-4b3c-a7ec-eb6b02a0f89a ">
+<tr class="repr-element channels-08114efd-d61b-44a7-b978-f5526ac1ea42 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Magnetometers</td>
     <td>
@@ -1160,7 +1160,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-01a06df7-a5dd-4b3c-a7ec-eb6b02a0f89a ">
+<tr class="repr-element channels-08114efd-d61b-44a7-b978-f5526ac1ea42 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Gradiometers</td>
     <td>
@@ -1178,7 +1178,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-01a06df7-a5dd-4b3c-a7ec-eb6b02a0f89a ">
+<tr class="repr-element channels-08114efd-d61b-44a7-b978-f5526ac1ea42 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Stimulus</td>
     <td>
@@ -1191,7 +1191,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-01a06df7-a5dd-4b3c-a7ec-eb6b02a0f89a ">
+<tr class="repr-element channels-08114efd-d61b-44a7-b978-f5526ac1ea42 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1206,9 +1206,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-f9be4293-e48f-438e-aa7b-64d4b7be08be"
+<tr class="mne-repr-section-header filters-58f391b4-9add-4f1d-bba6-25c7f7fbc1af"
      title="Hide section"
-    onclick="toggleVisibility('filters-f9be4293-e48f-438e-aa7b-64d4b7be08be')">
+    onclick="toggleVisibility('filters-58f391b4-9add-4f1d-bba6-25c7f7fbc1af')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1220,21 +1220,21 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-f9be4293-e48f-438e-aa7b-64d4b7be08be ">
+<tr class="repr-element filters-58f391b4-9add-4f1d-bba6-25c7f7fbc1af ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-f9be4293-e48f-438e-aa7b-64d4b7be08be ">
+<tr class="repr-element filters-58f391b4-9add-4f1d-bba6-25c7f7fbc1af ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>172.18 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-f9be4293-e48f-438e-aa7b-64d4b7be08be ">
+<tr class="repr-element filters-58f391b4-9add-4f1d-bba6-25c7f7fbc1af ">
     <td class="mne-repr-section-toggle"></td>
     <td>Projections</td>
     <td>
@@ -1334,7 +1334,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
 {&#39;Acknowledgements&#39;: &#39;Alexandre Gramfort, Mainak Jas, and Stefan Appelhoff &#39;
                      &#39;prepared and updated the data in BIDS format.&#39;,
  &#39;Authors&#39;: [&#39;Alexandre Gramfort&#39;, &#39;Matti Hämäläinen&#39;],
- &#39;BIDSVersion&#39;: &#39;1.7.0&#39;,
+ &#39;BIDSVersion&#39;: &#39;1.9.0&#39;,
  &#39;DatasetDOI&#39;: &#39;doi:10.18112/openneuro.ds000248.v1.2.4&#39;,
  &#39;DatasetType&#39;: &#39;raw&#39;,
  &#39;EthicsApprovals&#39;: [&#39;Human Subjects Division at the University of Washington&#39;],
@@ -1351,7 +1351,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
              &#39;ANR-14-NEUC-0002-01&#39;],
  &#39;GeneratedBy&#39;: [{&#39;CodeURL&#39;: &#39;https://mne.tools/mne-bids/&#39;,
                   &#39;Name&#39;: &#39;MNE-BIDS&#39;,
-                  &#39;Version&#39;: &#39;0.18.0.dev1+g8787a658a&#39;}],
+                  &#39;Version&#39;: &#39;0.18.0.dev44+g9139214b9&#39;}],
  &#39;HowToAcknowledge&#39;: &#39;If you reference this dataset in a publication, please &#39;
                      &#39;acknowledge its authors and cite MNE papers: A. &#39;
                      &#39;Gramfort, M. Luessi, E. Larson, D. Engemann, D. &#39;
@@ -1371,7 +1371,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
 </pre></div>
 </div>
 <p>This should be very similar to the <a class="reference external" href="https://github.com/sappelhoff/bids-examples/blob/master/ds000248/dataset_description.json">ds000248 dataset_description.json</a>!</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.874 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.639 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mne-sample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/529f3230e5683b7676557bd33b2ea01b/convert_mne_sample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_mne_sample.ipynb</span></code></a></p>
@@ -1444,7 +1444,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
       <br/>
     
   </p>
@@ -1453,7 +1453,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

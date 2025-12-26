@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
   
   
   
@@ -43,9 +43,9 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=287be518"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev1+g8787a658a" />
+  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev1+g8787a658a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
   
 </a></div>
     
@@ -485,10 +485,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
@@ -519,6 +520,7 @@
     <span class="n">get_bids_path_from_fname</span><span class="p">,</span>
     <span class="n">read_raw_bids</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids._fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">_open_lock</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">,</span>
@@ -544,7 +546,11 @@
     <span class="n">copyfile_eeglab</span><span class="p">,</span>
     <span class="n">copyfile_kit</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.dig</span><span class="w"> </span><span class="kn">import</span> <span class="n">_write_coordsystem_json</span><span class="p">,</span> <span class="n">_write_dig_bids</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.dig</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_write_coordsystem_json</span><span class="p">,</span>
+    <span class="n">_write_dig_bids</span><span class="p">,</span>
+    <span class="n">_write_empty_ieeg_positions</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_path_to_str</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.pick</span><span class="w"> </span><span class="kn">import</span> <span class="n">coil_type</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.read</span><span class="w"> </span><span class="kn">import</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_read_events</span>
@@ -565,13 +571,49 @@
 <span class="p">)</span>
 
 <span class="n">_FIFF_SPLIT_SIZE</span> <span class="o">=</span> <span class="s2">&quot;2GB&quot;</span>  <span class="c1"># MNE-Python default; can be altered during debugging</span>
+<span class="n">_BTI_SUFFIX_CACHE</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_numeric</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_should_use_bti_pdf_suffix</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return ``True`` if BTi runs should retain the ``.pdf`` suffix.&quot;&quot;&quot;</span>
+    <span class="n">override</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MNE_BIDS_BTI_PDF_SUFFIX&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">override</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">override</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;legacy&quot;</span><span class="p">,</span> <span class="s2">&quot;old&quot;</span><span class="p">}</span>
+
+    <span class="n">validator_path</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;bids-validator&quot;</span><span class="p">)</span>
+    <span class="n">cache_key</span> <span class="o">=</span> <span class="n">validator_path</span>
+    <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">in</span> <span class="n">_BTI_SUFFIX_CACHE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_BTI_SUFFIX_CACHE</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
+
+    <span class="n">use_pdf_suffix</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">validator_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">validator_path</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">],</span>
+                <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to run bids-validator to check version: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">version_output</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="n">res</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)\.(\d+)\.(\d+)&quot;</span><span class="p">,</span> <span class="n">version_output</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">major</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">major</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">use_pdf_suffix</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">_BTI_SUFFIX_CACHE</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">use_pdf_suffix</span>
+    <span class="k">return</span> <span class="n">use_pdf_suffix</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">convert_fmt</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a channels.tsv file and save it.</span>
 
 <span class="sd">    Parameters</span>
@@ -580,6 +622,10 @@
 <span class="sd">        The data as MNE-Python Raw object.</span>
 <span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Filename to save the channels.tsv to.</span>
+<span class="sd">    convert_fmt : str | None</span>
+<span class="sd">        Which format the data are being converted to (determines what gets written in</span>
+<span class="sd">        the &quot;unit&quot; column). If ``None`` then we assume no conversion is happening (the</span>
+<span class="sd">        raw data files are being copied from the source tree into the BIDS folder tree).</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file.</span>
 <span class="sd">        Defaults to False.</span>
@@ -628,11 +674,32 @@
         <span class="n">ch_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">map_chs</span><span class="p">[</span><span class="n">_channel_type</span><span class="p">])</span>
         <span class="n">description</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">map_desc</span><span class="p">[</span><span class="n">_channel_type</span><span class="p">])</span>
     <span class="n">low_cutoff</span><span class="p">,</span> <span class="n">high_cutoff</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;highpass&quot;</span><span class="p">],</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;lowpass&quot;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">_orig_units</span><span class="p">:</span>
+    <span class="c1"># If data are being *converted*, unit is determined by destination format:</span>
+    <span class="c1">#   - `eeglabio.raw.export_set` always converts V to µV, cf:</span>
+    <span class="c1"># https://github.com/jackz314/eeglabio/blob/3961bb29daf082767ea44e7c7d9da2df10971c37/eeglabio/raw.py#L57</span>
+    <span class="c1">#</span>
+    <span class="c1">#   - `mne.export._edf_bdf._export_raw_edf_bdf` always converts V to µV, cf:</span>
+    <span class="c1"># https://github.com/mne-tools/mne-python/blob/1b921f4af5154bad40202d87428a2583ef896a00/mne/export/_edf_bdf.py#L61-L63</span>
+    <span class="c1">#</span>
+    <span class="c1">#   - `pybv.write_brainvision` converts V to µV by default (and we don&#39;t alter that)</span>
+    <span class="c1"># https://github.com/bids-standard/pybv/blob/2832c80ee00d12990a8c79f12c843c0d4ddc825b/pybv/io.py#L40</span>
+    <span class="c1"># https://github.com/mne-tools/mne-bids/blob/1e0a96e132fc904ba856d42beaa9ddddb985f1ed/mne_bids/write.py#L1279-L1280</span>
+    <span class="k">if</span> <span class="n">convert_fmt</span><span class="p">:</span>
+        <span class="n">volt_like</span> <span class="o">=</span> <span class="s2">&quot;µV&quot;</span> <span class="k">if</span> <span class="n">convert_fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;BrainVision&quot;</span><span class="p">,</span> <span class="s2">&quot;EDF&quot;</span><span class="p">,</span> <span class="s2">&quot;EEGLAB&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;V&quot;</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">volt_like</span>
+            <span class="k">if</span> <span class="n">ch_i</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFF_UNIT_V</span>
+            <span class="k">else</span> <span class="n">_unit2human</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_i</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">],</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ch_i</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+    <span class="c1"># if raw data is merely copied, check `raw._orig_units`</span>
+    <span class="k">elif</span> <span class="n">raw</span><span class="o">.</span><span class="n">_orig_units</span><span class="p">:</span>
         <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">_orig_units</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
+    <span class="c1"># If `raw._orig_units` is missing, assume SI units</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">_unit2human</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_i</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">],</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch_i</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">]]</span>
-        <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span> <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;NA&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">units</span><span class="p">]</span>
+    <span class="c1"># fixup &quot;NA&quot; (from `_unit2human`) → &quot;n/a&quot;</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span> <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;NA&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">units</span><span class="p">]</span>
 
     <span class="c1"># Translate from MNE to BIDS unit naming</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">mne_unit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">units</span><span class="p">):</span>
@@ -896,7 +963,7 @@
 <span class="sd">        already contains that citation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
             <span class="n">orig_data</span> <span class="o">=</span> <span class="n">fid</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">mne_bids_ref</span> <span class="o">=</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="s2">&quot;mne-bids&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">orig_data</span>
         <span class="n">datatype_ref</span> <span class="o">=</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span> <span class="ow">in</span> <span class="n">orig_data</span>
@@ -961,11 +1028,11 @@
             <span class="n">meas_date</span> <span class="o">=</span> <span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">age</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">bday</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">age</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+            <span class="n">bday</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">age</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
                 <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">meas_date</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+                <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
             <span class="n">subject_age</span> <span class="o">=</span> <span class="n">_age_on_date</span><span class="p">(</span><span class="n">bday</span><span class="p">,</span> <span class="n">meas_datetime</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">subject_age</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
@@ -1009,59 +1076,70 @@
 
         <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
 
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-        <span class="n">orig_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-        <span class="c1"># whether the new data exists identically in the previous data</span>
-        <span class="n">exact_included</span> <span class="o">=</span> <span class="n">_contains_row</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">orig_data</span><span class="p">,</span>
-            <span class="n">row_data</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;participant_id&quot;</span><span class="p">:</span> <span class="n">subject_id</span><span class="p">,</span>
-                <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">subject_age</span><span class="p">,</span>
-                <span class="s2">&quot;sex&quot;</span><span class="p">:</span> <span class="n">sex</span><span class="p">,</span>
-                <span class="s2">&quot;hand&quot;</span><span class="p">:</span> <span class="n">hand</span><span class="p">,</span>
-                <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="n">weight</span><span class="p">,</span>
-                <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">height</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">)</span>
-        <span class="c1"># whether the subject id is in the previous data</span>
-        <span class="n">sid_included</span> <span class="o">=</span> <span class="n">subject_id</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]</span>
-        <span class="c1"># if the subject data provided is different to the currently existing</span>
-        <span class="c1"># data and overwrite is not True raise an error</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">sid_included</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exact_included</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">subject_id</span><span class="si">}</span><span class="s1">&quot; already exists in &#39;</span>
-                <span class="sa">f</span><span class="s2">&quot;the participant list. Please set &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;overwrite to True.&quot;</span>
+    <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fpath</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">orig_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="c1"># If we read an empty OrderedDict, it means</span>
+            <span class="c1"># the file exists but is empty/just has headers</span>
+            <span class="c1"># We should still treat this as having the file structure,</span>
+            <span class="c1"># just no rows</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">orig_data</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">orig_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># whether the new data exists identically in the previous data</span>
+            <span class="c1"># Use .get() with empty list default in case participant_id column is empty</span>
+            <span class="n">existing_participants</span> <span class="o">=</span> <span class="n">orig_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;participant_id&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="n">exact_included</span> <span class="o">=</span> <span class="n">_contains_row</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">orig_data</span><span class="p">,</span>
+                <span class="n">row_data</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;participant_id&quot;</span><span class="p">:</span> <span class="n">subject_id</span><span class="p">,</span>
+                    <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="n">subject_age</span><span class="p">,</span>
+                    <span class="s2">&quot;sex&quot;</span><span class="p">:</span> <span class="n">sex</span><span class="p">,</span>
+                    <span class="s2">&quot;hand&quot;</span><span class="p">:</span> <span class="n">hand</span><span class="p">,</span>
+                    <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="n">weight</span><span class="p">,</span>
+                    <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">height</span><span class="p">,</span>
+                <span class="p">},</span>
             <span class="p">)</span>
+            <span class="c1"># whether the subject id is in the previous data</span>
+            <span class="n">sid_included</span> <span class="o">=</span> <span class="n">subject_id</span> <span class="ow">in</span> <span class="n">existing_participants</span>
+            <span class="c1"># if the subject data provided is different to the currently</span>
+            <span class="c1"># existing data and overwrite is not True raise an error</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">sid_included</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exact_included</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">subject_id</span><span class="si">}</span><span class="s1">&quot; already exists in &#39;</span>
+                    <span class="sa">f</span><span class="s2">&quot;the participant list. Please set &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;overwrite to True.&quot;</span>
+                <span class="p">)</span>
 
-        <span class="c1"># Append any columns the original data did not have, and fill them with</span>
-        <span class="c1"># n/a&#39;s.</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">:</span>
-                <span class="k">continue</span>
+            <span class="c1"># Append any columns the original data did not have, and fill them</span>
+            <span class="c1"># with n/a&#39;s.</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">:</span>
+                    <span class="k">continue</span>
 
-            <span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">orig_data</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">])</span>
+                <span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">existing_participants</span><span class="p">)</span>
 
-        <span class="c1"># Append any additional columns that original data had.</span>
-        <span class="c1"># Keep the original order of the data by looping over</span>
-        <span class="c1"># the original OrderedDict keys</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-                <span class="k">continue</span>
+            <span class="c1"># Append any additional columns that original data had.</span>
+            <span class="c1"># Keep the original order of the data by looping over</span>
+            <span class="c1"># the original OrderedDict keys</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="k">continue</span>
 
-            <span class="c1"># add original value for any user-appended columns</span>
-            <span class="c1"># that were not handled by mne-bids</span>
-            <span class="n">p_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">p_id</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]:</span>
-                <span class="n">row_idx</span> <span class="o">=</span> <span class="n">orig_data</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">p_id</span><span class="p">)</span>
-                <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">row_idx</span><span class="p">]]</span>
+                <span class="c1"># add original value for any user-appended columns</span>
+                <span class="c1"># that were not handled by mne-bids</span>
+                <span class="n">p_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">p_id</span> <span class="ow">in</span> <span class="n">existing_participants</span><span class="p">:</span>
+                    <span class="n">row_idx</span> <span class="o">=</span> <span class="n">existing_participants</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">p_id</span><span class="p">)</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">row_idx</span><span class="p">]]</span>
 
-        <span class="c1"># otherwise add the new data as new row</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">_combine_rows</span><span class="p">(</span><span class="n">orig_data</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;participant_id&quot;</span><span class="p">)</span>
+            <span class="c1"># otherwise add the new data as new row if there&#39;s existing data</span>
+            <span class="k">if</span> <span class="n">existing_participants</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">_combine_rows</span><span class="p">(</span><span class="n">orig_data</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;participant_id&quot;</span><span class="p">)</span>
 
-    <span class="c1"># overwrite is forced to True as all issues with overwrite == False have</span>
-    <span class="c1"># been handled by this point</span>
-    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_participants_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1099,14 +1177,57 @@
     <span class="c1"># make sure to append any JSON fields added by the user</span>
     <span class="c1"># Note: mne-bids will overwrite age, sex and hand fields</span>
     <span class="c1"># if `overwrite` is True</span>
-    <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="n">orig_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
-            <span class="n">fname</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span>
-        <span class="p">)</span>
-        <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">orig_data</span><span class="p">,</span> <span class="o">**</span><span class="n">new_data</span><span class="p">}</span>
+    <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">fpath</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+    <span class="c1"># Use _open_lock for atomic read-modify-write operation</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;a+&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+        <span class="c1"># Move to beginning of file for reading</span>
+        <span class="n">fid</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">file_content</span> <span class="o">=</span> <span class="n">fid</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># Try to parse existing content</span>
+        <span class="n">orig_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">file_content</span><span class="p">:</span>
+            <span class="c1"># File exists but is empty or contains only whitespace</span>
+            <span class="c1"># Treat as no original data; proceed to write new schema</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">orig_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">file_content</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># File is corrupted/incomplete - this can happen in a race condition</span>
+                <span class="c1"># when one process truncates while another reads</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Could not parse JSON in &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="s2">&quot;This may occur when reading during concurrent writes. &quot;</span>
+                    <span class="s2">&quot;Treating as empty.&quot;</span>
+                <span class="p">)</span>
+                <span class="c1"># Treat as empty file and just write the schema</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># File exists with valid JSON content</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. Please set overwrite to True.&#39;</span>
+                    <span class="p">)</span>
+
+        <span class="c1"># Merge new schema with any existing user-added fields</span>
+        <span class="c1"># The new_data schema will overwrite age, sex, hand as intended</span>
+        <span class="k">if</span> <span class="n">orig_data</span><span class="p">:</span>
+            <span class="c1"># Keep any user-added fields not in new_data</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_data</span><span class="p">:</span>
+                    <span class="n">new_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="c1"># Write JSON data atomically within the lock context</span>
+        <span class="c1"># I could not use the _write_json helper here because it also</span>
+        <span class="c1"># handles file locking and I need to manage that manually</span>
+        <span class="n">json_output</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">fid</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">fid</span><span class="o">.</span><span class="n">truncate</span><span class="p">()</span>
+        <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_output</span><span class="p">)</span>
+        <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">keep_source</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1178,29 +1299,29 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_write_json</span><span class="p">(</span><span class="n">sidecar_json_path</span><span class="p">,</span> <span class="n">sidecar_json</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-        <span class="n">orig_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-        <span class="c1"># if the file name is already in the file raise an error</span>
-        <span class="k">if</span> <span class="n">raw_fname</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">raw_fname</span><span class="si">}</span><span class="s1">&quot; already exists in &#39;</span>
-                <span class="sa">f</span><span class="s2">&quot;the scans list. Please set &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;overwrite to True.&quot;</span>
-            <span class="p">)</span>
+    <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fpath</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">orig_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="c1"># if the file name is already in the file raise an error</span>
+            <span class="k">if</span> <span class="n">raw_fname</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">raw_fname</span><span class="si">}</span><span class="s1">&quot; already exists in &#39;</span>
+                    <span class="sa">f</span><span class="s2">&quot;the scans list. Please set &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;overwrite to True.&quot;</span>
+                <span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">:</span>
-                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">:</span>
+                    <span class="k">continue</span>
 
-            <span class="c1"># add &#39;n/a&#39; if any missing columns</span>
-            <span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+                <span class="c1"># add &#39;n/a&#39; if any missing columns</span>
+                <span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
 
-        <span class="c1"># otherwise add the new data</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">_combine_rows</span><span class="p">(</span><span class="n">orig_data</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">)</span>
+            <span class="c1"># otherwise add the new data</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">_combine_rows</span><span class="p">(</span><span class="n">orig_data</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">)</span>
 
-    <span class="c1"># overwrite is forced to True as all issues with overwrite == False have</span>
-    <span class="c1"># been handled by this point</span>
-    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_load_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;image&quot;</span><span class="p">):</span>
@@ -1315,7 +1436,15 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_sidecar_json</span><span class="p">(</span>
-    <span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">emptyroom_fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
+    <span class="n">raw</span><span class="p">,</span>
+    <span class="n">task</span><span class="p">,</span>
+    <span class="n">manufacturer</span><span class="p">,</span>
+    <span class="n">fname</span><span class="p">,</span>
+    <span class="n">datatype</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">emg_placement</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">emptyroom_fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a sidecar json file depending on the suffix and save it.</span>
 
@@ -1335,6 +1464,9 @@
 <span class="sd">        Filename to save the sidecar json to.</span>
 <span class="sd">    datatype : str</span>
 <span class="sd">        Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.</span>
+<span class="sd">    emg_placement : &quot;Measured&quot; | &quot;ChannelSpecific&quot; | &quot;Other&quot; | None</span>
+<span class="sd">        How the EMG sensor locations were determined. Must be one of the literal strings</span>
+<span class="sd">        if ``datatype=&quot;emg&quot;`` and should be ``None`` for all other datatypes.</span>
 <span class="sd">    emptyroom_fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        For MEG recordings, the path to an empty-room data file to be</span>
 <span class="sd">        associated with ``raw``. Only supported for MEG.</span>
@@ -1483,6 +1615,19 @@
         <span class="p">(</span><span class="s2">&quot;Manufacturer&quot;</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">),</span>
     <span class="p">]</span>
 
+    <span class="n">ch_info_json_emg</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;EMGReference&quot;</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;EMGGround&quot;</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">),</span>
+        <span class="c1"># n/a will fail to validate, but if emg_placement is None that&#39;s our bug:</span>
+        <span class="c1"># the user-called function write_raw_bids should guarantee a valid string here</span>
+        <span class="p">(</span><span class="s2">&quot;EMGPlacementScheme&quot;</span><span class="p">,</span> <span class="n">emg_placement</span> <span class="ow">or</span> <span class="s2">&quot;n/a&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;Manufacturer&quot;</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">emg_placement</span> <span class="o">==</span> <span class="s2">&quot;Other&quot;</span><span class="p">:</span>
+        <span class="n">ch_info_json_emg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;EMGPlacementSchemeDescription&quot;</span><span class="p">,</span> <span class="s2">&quot;TODO FIXME please complete this field&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
     <span class="n">ch_info_json_ieeg</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s2">&quot;iEEGReference&quot;</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">),</span>
         <span class="p">(</span><span class="s2">&quot;ECOGChannelCount&quot;</span><span class="p">,</span> <span class="n">n_ecogchan</span><span class="p">),</span>
@@ -1512,6 +1657,8 @@
         <span class="n">append_datatype_json</span> <span class="o">=</span> <span class="n">ch_info_json_meg</span>
     <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;eeg&quot;</span><span class="p">:</span>
         <span class="n">append_datatype_json</span> <span class="o">=</span> <span class="n">ch_info_json_eeg</span>
+    <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;emg&quot;</span><span class="p">:</span>
+        <span class="n">append_datatype_json</span> <span class="o">=</span> <span class="n">ch_info_json_emg</span>
     <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">:</span>
         <span class="n">append_datatype_json</span> <span class="o">=</span> <span class="n">ch_info_json_ieeg</span>
     <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;nirs&quot;</span><span class="p">:</span>
@@ -1604,6 +1751,24 @@
     <span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_bti_bidsignore</span><span class="p">(</span><span class="n">bids_root</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure vendor-specific BTi files are ignored by the validator.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">bidsignore_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;.bidsignore&quot;</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;**/*_meg.pdf/*&quot;</span>
+
+    <span class="k">if</span> <span class="n">bidsignore_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">bidsignore_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">pattern</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="n">bidsignore_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save out the raw file in BrainVision format.</span>
 
@@ -1676,7 +1841,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store data as EDF.</span>
 
 <span class="sd">    Parameters</span>
@@ -1688,7 +1853,23 @@
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite an existing file or not.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.edf&quot;</span><span class="p">)</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;EDF&quot;</span><span class="p">,</span> <span class="s2">&quot;BDF&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">year</span> <span class="o">&lt;</span> <span class="mi">1985</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Attempting to write a </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2"> file with a meas_date of &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">. This is not supported; </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2"> limits `startdate` &quot;</span>
+            <span class="s2">&quot;to dates after 1985-01-01. Setting `startdate` to 1985-01-01 00:00:00 in &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;the </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2"> file; the original anonymized date will be written to scans.tsv&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># make a copy, so that anonymized meas_date is unchanged in orig raw,</span>
+        <span class="c1"># and thus scans.tsv ends up with the properly anonymized meas_date</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">set_meas_date</span><span class="p">(</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="n">year</span><span class="o">=</span><span class="mi">1985</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
 
@@ -1875,32 +2056,37 @@
     <span class="p">)</span>
 
     <span class="c1"># Handle potentially existing file contents</span>
-    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
-            <span class="n">orig_cols</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;BIDSVersion&quot;</span> <span class="ow">in</span> <span class="n">orig_cols</span> <span class="ow">and</span> <span class="n">orig_cols</span><span class="p">[</span><span class="s2">&quot;BIDSVersion&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">BIDS_VERSION</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;Conflicting BIDSVersion found in dataset_description.json! &quot;</span>
-                <span class="s2">&quot;Consider setting BIDS root to a new directory and redo &quot;</span>
-                <span class="s2">&quot;conversion after ensuring all software has been updated. &quot;</span>
-                <span class="s2">&quot;Original dataset description will not be overwritten.&quot;</span>
-            <span class="p">)</span>
-            <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">description</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-                <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig_cols</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+                    <span class="n">orig_cols</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">):</span>
+                <span class="c1"># File is empty, corrupted, or being written to by another process</span>
+                <span class="n">orig_cols</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="s2">&quot;BIDSVersion&quot;</span> <span class="ow">in</span> <span class="n">orig_cols</span> <span class="ow">and</span> <span class="n">orig_cols</span><span class="p">[</span><span class="s2">&quot;BIDSVersion&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">BIDS_VERSION</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;Conflicting BIDSVersion found in dataset_description.json! &quot;</span>
+                    <span class="s2">&quot;Consider setting BIDS root to a new directory and redo &quot;</span>
+                    <span class="s2">&quot;conversion after ensuring all software has been updated. &quot;</span>
+                    <span class="s2">&quot;Original dataset description will not be overwritten.&quot;</span>
+                <span class="p">)</span>
+                <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">description</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                    <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig_cols</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="c1"># default author to make dataset description BIDS compliant</span>
-    <span class="c1"># if the user passed an author don&#39;t overwrite,</span>
-    <span class="c1"># if there was an author there, only overwrite if `overwrite=True`</span>
-    <span class="k">if</span> <span class="n">authors</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="s2">&quot;Authors&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">overwrite</span><span class="p">):</span>
-        <span class="n">description</span><span class="p">[</span><span class="s2">&quot;Authors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[Unspecified1]&quot;</span><span class="p">,</span> <span class="s2">&quot;[Unspecified2]&quot;</span><span class="p">]</span>
+        <span class="c1"># default author to make dataset description BIDS compliant</span>
+        <span class="c1"># if the user passed an author don&#39;t overwrite,</span>
+        <span class="c1"># if there was an author there, only overwrite if `overwrite=True`</span>
+        <span class="k">if</span> <span class="n">authors</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="s2">&quot;Authors&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">overwrite</span><span class="p">):</span>
+            <span class="n">description</span><span class="p">[</span><span class="s2">&quot;Authors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[Unspecified1]&quot;</span><span class="p">,</span> <span class="s2">&quot;[Unspecified2]&quot;</span><span class="p">]</span>
 
-    <span class="c1"># Only write data that is not None</span>
-    <span class="n">pop_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">description</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pop_keys</span><span class="p">:</span>
-        <span class="n">description</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="c1"># Only write data that is not None</span>
+        <span class="n">pop_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">description</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pop_keys</span><span class="p">:</span>
+            <span class="n">description</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 
@@ -1922,6 +2108,8 @@
     <span class="n">allow_preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">electrodes_tsv_task</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">emg_placement</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
@@ -2040,14 +2228,14 @@
 <span class="sd">            ``source`` column of ``scans.tsv``. By default, this information</span>
 <span class="sd">            is not stored.</span>
 
-<span class="sd">    format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;EDF&#39; | &#39;FIF&#39; | &#39;EEGLAB&#39;</span>
+<span class="sd">    format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;BDF&#39; | &#39;EDF&#39; | &#39;FIF&#39; | &#39;EEGLAB&#39;</span>
 <span class="sd">        Controls the file format of the data after BIDS conversion. If</span>
 <span class="sd">        ``&#39;auto&#39;``, MNE-BIDS will attempt to convert the input data to BIDS</span>
 <span class="sd">        without a change of the original file format. A conversion to a</span>
 <span class="sd">        different file format will then only take place if the original file</span>
 <span class="sd">        format lacks some necessary features.</span>
 <span class="sd">        Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,</span>
-<span class="sd">        and to FIF for MEG data.</span>
+<span class="sd">        to BDF or EDF for EMG, and to FIF for MEG data.</span>
 <span class="sd">    symlink : bool</span>
 <span class="sd">        Instead of copying the source files, only create symbolic links to</span>
 <span class="sd">        preserve storage space. This is only allowed when not anonymizing the</span>
@@ -2098,6 +2286,12 @@
 <span class="sd">        So, this flag is required to be True when the digitization data</span>
 <span class="sd">        is in &quot;mri&quot; for intracranial data to confirm that the T1 is</span>
 <span class="sd">        ACPC-aligned.</span>
+<span class="sd">    electrodes_tsv_task : bool</span>
+<span class="sd">        Add the ``task-`` entity to the ``electrodes.tsv`` filename.</span>
+<span class="sd">        Defaults to ``False``.</span>
+<span class="sd">    emg_placement : &quot;Measured&quot; | &quot;ChannelSpecific&quot; | &quot;Other&quot; | None</span>
+<span class="sd">        How the EMG sensor locations were determined. Must be one of the literal strings</span>
+<span class="sd">        if datatype is &quot;emg&quot; and should be ``None`` for all other datatypes.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to ``False``.</span>
@@ -2282,6 +2476,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;BrainVision&quot;</span><span class="p">:</span>
             <span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;.vhdr&quot;</span>
+        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;BDF&quot;</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;.bdf&quot;</span>
         <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EDF&quot;</span><span class="p">:</span>
             <span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;.edf&quot;</span>
         <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EEGLAB&quot;</span><span class="p">:</span>
@@ -2291,7 +2487,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s1">&#39;For preloaded data, you must set the &quot;format&quot; parameter &#39;</span>
-                <span class="s2">&quot;to one of: BrainVision, EDF, EEGLAB, or FIF&quot;</span>
+                <span class="s2">&quot;to one of: BrainVision, BDF, EDF, EEGLAB, or FIF&quot;</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>  <span class="c1"># the default was changed</span>
                 <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;, but got: &quot;</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
@@ -2299,6 +2495,10 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">raw</span>
+
+    <span class="n">use_bti_pdf_suffix</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
+        <span class="n">use_bti_pdf_suffix</span> <span class="o">=</span> <span class="n">_should_use_bti_pdf_suffix</span><span class="p">()</span>
 
     <span class="c1"># Check times</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
@@ -2331,6 +2531,16 @@
         <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">ext</span>
     <span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;emg&quot;</span> <span class="ow">and</span> <span class="n">emg_placement</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="s2">&quot;Measured&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ChannelSpecific&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Other&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;`emg_placement` must be one of &quot;Measured&quot;, &quot;ChannelSpecific&quot;, or &quot;Other&quot; &#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;(got </span><span class="si">{</span><span class="n">emg_placement</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
     <span class="c1"># Check whether provided info and raw indicates valid MEG emptyroom data</span>
     <span class="n">data_is_emptyroom</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="p">(</span>
@@ -2343,7 +2553,7 @@
         <span class="n">meas_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;meas_date&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
-                <span class="n">meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+                <span class="n">meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tz</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;daysback&quot;</span> <span class="ow">in</span> <span class="n">anonymize</span><span class="p">:</span>
                 <span class="n">meas_date</span> <span class="o">=</span> <span class="n">meas_date</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">anonymize</span><span class="p">[</span><span class="s2">&quot;daysback&quot;</span><span class="p">])</span>
@@ -2411,9 +2621,7 @@
             <span class="p">)</span>
 
         <span class="c1"># Turn it into a path relative to the BIDS root</span>
-        <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">associated_er_path</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
         <span class="c1"># Ensure it works on Windows too</span>
         <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
 
@@ -2477,6 +2685,12 @@
                 <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to BrainVision format for anonymization&quot;</span><span class="p">)</span>
                 <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.vhdr&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;emg&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.edf&quot;</span><span class="p">,</span> <span class="s2">&quot;.bdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.EDF&quot;</span><span class="p">,</span> <span class="s2">&quot;.BDF&quot;</span><span class="p">]:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to BDF format for anonymization&quot;</span><span class="p">)</span>
+                <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.bdf&quot;</span><span class="p">)</span>
+
     <span class="c1"># Read in Raw object and extract metadata from Raw object if needed</span>
     <span class="n">orient</span> <span class="o">=</span> <span class="n">ORIENTATION</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
     <span class="n">unit</span> <span class="o">=</span> <span class="n">EXT_TO_UNIT_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
@@ -2519,20 +2733,29 @@
             <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
             <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">_write_coordsystem_json</span><span class="p">(</span>
-            <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
-            <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
-            <span class="n">hpi_coord_system</span><span class="o">=</span><span class="n">orient</span><span class="p">,</span>
-            <span class="n">sensor_coord_system</span><span class="o">=</span><span class="n">sensor_coord_system</span><span class="p">,</span>
-            <span class="n">fname</span><span class="o">=</span><span class="n">coordsystem_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
-            <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
-            <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;nirs&quot;</span><span class="p">]:</span>
-        <span class="c1"># We only write electrodes.tsv and accompanying coordsystem.json</span>
-        <span class="c1"># if we have an available DigMontage</span>
-        <span class="k">if</span> <span class="n">montage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">]):</span>
-            <span class="n">_write_dig_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">montage</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;emg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;nirs&quot;</span><span class="p">]:</span>
+        <span class="n">have_dig</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">montage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">have_dig</span><span class="p">:</span>
+            <span class="n">_write_dig_bids</span><span class="p">(</span>
+                <span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">montage</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="p">,</span> <span class="n">electrodes_tsv_task</span><span class="p">,</span> <span class="n">overwrite</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;emg&quot;</span><span class="p">:</span>
+            <span class="c1"># TODO EMG: Handle EMG coordsystem if it&#39;s not in `raw.info[&quot;dig&quot;]`.</span>
+            <span class="c1"># In theory we could make a helper func for creating a `DigMontage` from</span>
+            <span class="c1"># EMG electrode location info, and users could pass that into</span>
+            <span class="c1"># `write_raw_bids`...</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;No electrode location info found in raw file, so not writing &quot;</span>
+                <span class="s2">&quot;coordinate system info for EMG data. Please add `coordsystem.json` &quot;</span>
+                <span class="s2">&quot;file manually.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">:</span>
+            <span class="n">_write_empty_ieeg_positions</span><span class="p">(</span>
+                <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+                <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+                <span class="n">electrodes_tsv_task</span><span class="o">=</span><span class="n">electrodes_tsv_task</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Writing of electrodes.tsv is not supported &quot;</span>
@@ -2585,9 +2808,9 @@
         <span class="n">fname</span><span class="o">=</span><span class="n">sidecar_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
         <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
         <span class="n">emptyroom_fname</span><span class="o">=</span><span class="n">associated_er_path</span><span class="p">,</span>
+        <span class="n">emg_placement</span><span class="o">=</span><span class="n">emg_placement</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channels_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
     <span class="c1"># create parent directories if needed</span>
     <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">data_path</span><span class="p">))</span>
@@ -2622,9 +2845,12 @@
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;BrainVision&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">]:</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.vhdr&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EDF&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EDF&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;emg&quot;</span><span class="p">]:</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.edf&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;BDF&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;emg&quot;</span><span class="p">]:</span>
+            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.bdf&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EEGLAB&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">]:</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.set&quot;</span><span class="p">)</span>
@@ -2645,6 +2871,14 @@
                 <span class="sa">f</span><span class="s2">&quot;Please use one of </span><span class="si">{</span><span class="n">CONVERT_FORMATS</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;for </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> datatype.&quot;</span>
             <span class="p">)</span>
+
+    <span class="c1"># this can&#39;t happen until after value of `convert` has been determined</span>
+    <span class="n">_channels_tsv</span><span class="p">(</span>
+        <span class="n">raw</span><span class="p">,</span>
+        <span class="n">channels_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
+        <span class="n">convert_fmt</span><span class="o">=</span><span class="nb">format</span> <span class="k">if</span> <span class="n">convert</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># raise error when trying to copy files (copyfile_*) into same location</span>
     <span class="c1"># (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)</span>
@@ -2685,12 +2919,20 @@
                     <span class="k">else</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
                 <span class="p">),</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EDF&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;emg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;BDF&quot;</span><span class="p">:</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.bdf&quot;</span><span class="p">)</span>
+            <span class="n">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;emg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EDF&quot;</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to EDF format&quot;</span><span class="p">)</span>
-            <span class="n">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.edf&quot;</span><span class="p">)</span>
+            <span class="n">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EEGLAB&quot;</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to EEGLAB format&quot;</span><span class="p">)</span>
             <span class="n">_write_raw_eeglab</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;emg&quot;</span><span class="p">]:</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.bdf&quot;</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to BDF format&quot;</span><span class="p">)</span>
+            <span class="n">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to BrainVision format&quot;</span><span class="p">)</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.vhdr&quot;</span><span class="p">)</span>
@@ -2725,9 +2967,14 @@
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.set&quot;</span><span class="p">:</span>
         <span class="n">copyfile_eeglab</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
-        <span class="n">raw_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">use_bti_pdf_suffix</span><span class="p">:</span>
+            <span class="n">raw_dir</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">raw_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">raw_dir</span><span class="p">)</span>
         <span class="n">copyfile_bti</span><span class="p">(</span><span class="n">raw_orig</span><span class="p">,</span> <span class="n">raw_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_bti_pdf_suffix</span><span class="p">:</span>
+            <span class="n">_ensure_bti_bidsignore</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.con&quot;</span><span class="p">,</span> <span class="s2">&quot;.sqd&quot;</span><span class="p">]:</span>
         <span class="n">copyfile_kit</span><span class="p">(</span>
             <span class="n">raw_fname</span><span class="p">,</span>
@@ -2743,7 +2990,10 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># write to the scans.tsv file the output file written</span>
-    <span class="n">scan_relative_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">scan_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_bti_pdf_suffix</span><span class="p">:</span>
+        <span class="n">scan_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">scan_fname</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">scan_relative_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">scan_fname</span><span class="p">)</span>
     <span class="n">_scans_tsv</span><span class="p">(</span>
         <span class="n">raw</span><span class="p">,</span>
         <span class="n">raw_fname</span><span class="o">=</span><span class="n">scan_relative_fpath</span><span class="p">,</span>
@@ -3769,11 +4019,23 @@
         <span class="s2">&quot;CHANGES&quot;</span><span class="p">,</span>
         <span class="s2">&quot;dataset_description.json&quot;</span><span class="p">,</span>
         <span class="s2">&quot;participants.json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;participants.tsv&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">additional_files</span><span class="p">:</span>
         <span class="n">in_path</span> <span class="o">=</span> <span class="n">bids_root_in</span> <span class="o">/</span> <span class="n">fname</span>
         <span class="k">if</span> <span class="n">in_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">in_path</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">bids_root_out</span><span class="p">)</span></div>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">in_path</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">bids_root_out</span><span class="p">)</span>
+
+    <span class="n">participants_out_path</span> <span class="o">=</span> <span class="n">bids_root_out</span> <span class="o">/</span> <span class="s2">&quot;participants.tsv&quot;</span>
+    <span class="k">if</span> <span class="n">participants_out_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">participants_out_path</span><span class="p">)</span>
+        <span class="n">updated_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">participant_id</span> <span class="ow">in</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]:</span>
+            <span class="n">participant</span> <span class="o">=</span> <span class="n">participant_id</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;sub-&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">new_id</span> <span class="o">=</span> <span class="n">subject_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">participant</span><span class="p">,</span> <span class="n">participant</span><span class="p">)</span>
+            <span class="n">updated_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">new_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">participants_tsv</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_ids</span>
+        <span class="n">_write_tsv</span><span class="p">(</span><span class="n">participants_out_path</span><span class="p">,</span> <span class="n">participants_tsv</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 </pre></div>
 
@@ -3816,7 +4078,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
       <br/>
     
   </p>
@@ -3825,7 +4087,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

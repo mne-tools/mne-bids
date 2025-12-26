@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
+    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
   
   
   
@@ -43,9 +43,9 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=287be518"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev1+g8787a658a" />
+  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev1+g8787a658a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
   
 </a></div>
     
@@ -497,6 +497,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids._fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">_open_lock</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_parse_ext</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">warn</span>
 
@@ -510,6 +511,18 @@
         <span class="c1"># the copy is successful (see https://bugs.python.org/issue24564)</span>
         <span class="k">if</span> <span class="s2">&quot;[Errno 22]&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
             <span class="k">raise</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_kit_marker_acq_label</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">acquisition_label</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compose a BIDS acquisition label for KIT marker files.&quot;&quot;&quot;</span>
+    <span class="n">label_parts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">label_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">acquisition_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">label_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acquisition_label</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">label_parts</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">label_parts</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">):</span>
@@ -528,7 +541,7 @@
 <span class="sd">        in the header.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ef</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ef</span><span class="p">:</span>
         <span class="n">enc</span> <span class="o">=</span> <span class="n">ef</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">enc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Codepage=&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">enc</span> <span class="o">=</span> <span class="n">enc</span><span class="p">[</span><span class="n">enc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Codepage=&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">9</span> <span class="p">:]</span>
@@ -566,7 +579,7 @@
     <span class="n">enc</span> <span class="o">=</span> <span class="n">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
 
     <span class="c1"># ..and read it</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
     <span class="c1"># Try to find data file .eeg/.dat</span>
@@ -585,17 +598,24 @@
         <span class="n">vmrk_file</span> <span class="o">=</span> <span class="n">vmrk_file_match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="c1"># Make sure we are dealing with file names as is customary, not paths</span>
-    <span class="c1"># Paths are problematic when copying the files to another system. Instead,</span>
-    <span class="c1"># always use the file name and keep the file triplet in the same directory</span>
-    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">eeg_file</span>
-    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vmrk_file</span>
+    <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="p">[</span><span class="n">eeg_file</span><span class="p">,</span> <span class="n">vmrk_file</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">in</span> <span class="n">fi</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Detected a path separator in a file link: </span><span class="si">{</span><span class="n">fi</span><span class="si">}</span><span class="s2">.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Paths are problematic when copying the files to another system. &quot;</span>
+                <span class="s2">&quot;Instead, always use the file name and keep the &quot;</span>
+                <span class="s2">&quot;BrainVision file triplet (eeg/dat, vhdr, vmrk) in the same directory.&quot;</span>
+            <span class="p">)</span>
 
     <span class="c1"># Assert the paths exist</span>
     <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
     <span class="n">eeg_file_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">eeg_file</span><span class="p">)</span>
     <span class="n">vmrk_file_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">vmrk_file</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="p">[</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2"> referenced in </span><span class="si">{</span><span class="n">vhdr_path</span><span class="si">}</span><span class="s2"> but it does not exist.&quot;</span>
+            <span class="p">)</span>
 
     <span class="c1"># Return the paths</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span><span class="p">)</span>
@@ -703,12 +723,13 @@
             <span class="n">_</span><span class="p">,</span> <span class="n">marker_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
             <span class="n">acq_map</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">acq_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">marker_acq</span> <span class="o">=</span> <span class="n">_kit_marker_acq_label</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
             <span class="n">marker_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
                 <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span>
                 <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
                 <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
-                <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
-                <span class="n">acquisition</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">acquisition</span><span class="o">=</span><span class="n">marker_acq</span><span class="p">,</span>
                 <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;markers&quot;</span><span class="p">,</span>
                 <span class="n">extension</span><span class="o">=</span><span class="n">marker_ext</span><span class="p">,</span>
                 <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
@@ -737,13 +758,14 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_replace_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Overwrite file, replacing end of lines matching pattern with replace.&quot;&quot;&quot;</span>
     <span class="n">new_content</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">replace</span><span class="p">)]</span> <span class="o">+</span> <span class="n">replace</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">new_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">replace</span><span class="p">)]</span> <span class="o">+</span> <span class="n">replace</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">new_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
         <span class="n">fout</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">new_content</span><span class="p">)</span>
 
 
@@ -840,32 +862,42 @@
     <span class="c1"># Write new header and marker files, fixing the file pointer links</span>
     <span class="c1"># For that, we need to replace an old &quot;basename&quot; with a new one</span>
     <span class="c1"># assuming that all .eeg/.dat, .vhdr, .vmrk share one basename</span>
-    <span class="n">__</span><span class="p">,</span> <span class="n">basename_src</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_src</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="n">basename_src</span> <span class="o">+</span> <span class="s2">&quot;.eeg&quot;</span><span class="p">,</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s2">&quot;.dat&quot;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s2">&quot;.vmrk&quot;</span> <span class="o">==</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">__</span><span class="p">,</span> <span class="n">basename_dest</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_dest</span><span class="p">)</span>
+    <span class="n">basename_src</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname_src</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">eeg_expected</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.eeg&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.dat&quot;</span><span class="p">]</span>
+    <span class="n">vmrk_expected</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.vmrk&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">eeg_expected</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unexpected path to data file in </span><span class="si">{</span><span class="n">vhdr_src</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">    &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;--&gt;</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">Expected one of </span><span class="si">{</span><span class="n">eeg_expected</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vmrk_expected</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unexpected path to marker file in </span><span class="si">{</span><span class="n">vhdr_src</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">    &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;--&gt;</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">Expected one of </span><span class="si">{</span><span class="n">vmrk_expected</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">basename_dest</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname_dest</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
     <span class="n">search_lines</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;DataFile=&quot;</span> <span class="o">+</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s2">&quot;.eeg&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;DataFile=&quot;</span> <span class="o">+</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s2">&quot;.dat&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;MarkerFile=&quot;</span> <span class="o">+</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s2">&quot;.vmrk&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;DataFile=</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.eeg&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;DataFile=</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.dat&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;MarkerFile=</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.vmrk&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="n">search_lines</span><span class="p">:</span>
                     <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">basename_src</span><span class="p">,</span> <span class="n">basename_dest</span><span class="p">)</span>
                 <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s2">&quot;.vmrk&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s2">&quot;.vmrk&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="n">search_lines</span><span class="p">:</span>
                     <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">basename_src</span><span class="p">,</span> <span class="n">basename_dest</span><span class="p">)</span>
                 <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
         <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">anonymize_info</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">)</span>
         <span class="n">_anonymize_brainvision</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">])</span>
@@ -881,7 +913,8 @@
 
 <div class="viewcode-block" id="copyfile_edf">
 <a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="nd">@verbose</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.</span>
 
 <span class="sd">    .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:</span>
@@ -963,14 +996,14 @@
     <span class="c1"># Anonymize EDF/BDF data, if requested</span>
     <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ext_src</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.bdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.BDF&quot;</span><span class="p">]:</span>
-            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bdf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bdf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">ext_src</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.edf&quot;</span><span class="p">,</span> <span class="s2">&quot;.EDF&quot;</span><span class="p">]:</span>
-            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_edf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_edf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported file type (</span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
         <span class="c1"># Get subject info, recording info, and recording date</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># id_info field starts 8 bytes in</span>
             <span class="n">id_info</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
             <span class="n">rec_info</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
@@ -997,7 +1030,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">id_info</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">]</span>
             <span class="n">rec_info</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Startdate&quot;</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;mne-bids_anonymize&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">]</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;r+b&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;r+b&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># id_info field starts 8 bytes in</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">id_info</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">80</span><span class="p">),</span> <span class="s2">&quot;ascii&quot;</span><span class="p">))</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rec_info</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">80</span><span class="p">),</span> <span class="s2">&quot;ascii&quot;</span><span class="p">))</span>
@@ -1170,7 +1203,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
       <br/>
     
   </p>
@@ -1179,7 +1212,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>

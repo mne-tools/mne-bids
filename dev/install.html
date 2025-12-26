@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Installation &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
+    <title>Installation &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
   
   
   
@@ -44,9 +44,9 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=287be518"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev1+g8787a658a" />
+  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev1+g8787a658a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
   
 </a></div>
     
@@ -501,17 +501,19 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">nibabel</span></code> (&gt;=3.2.1, for processing MRI data)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pybv</span></code> (&gt;=0.7.5, for writing BrainVision data)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">eeglabio</span></code> (&gt;=0.0.2, for writing EEGLAB data)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eeglabio</span></code> (&gt;=0.1.0, for writing EEGLAB data)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pymatreader</span></code> (for other operations with EEGLAB data)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> (&gt;=3.6, for using the interactive data inspector)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> (&gt;=1.3.2, for generating event statistics)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">edfio</span></code> (&gt;=0.2.1, for writing EDF data)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edfio</span></code> (&gt;=0.4.10, for writing EDF data)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">curryreader</span></code> (&gt;=0.1.2, for reading Curry data)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">defusedxml</span></code> (for writing reading EGI MFF data and BrainVision montages)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filelock</span></code> (for atomic file writing, and parallel processing support)</p></li>
 </ul>
 <p>We recommend installing <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> into an isolated Python environment,
 for example created via <code class="docutils literal notranslate"><span class="pre">conda</span></code>
 (may be obtained through <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a>).
-We require that you <strong>use Python 3.10 or higher</strong>.
+We require that you <strong>use Python 3.11 or higher</strong>.
 You may choose to install <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> into your isolated Python environment
 <a class="reference external" href="#installation-via-pip">via pip</a> or
 <a class="reference external" href="#installation-via-conda">via conda</a>.</p>
@@ -650,7 +652,7 @@ python<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;im
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
       <br/>
     
   </p>
@@ -659,7 +661,7 @@ python<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;im
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
