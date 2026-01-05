@@ -19,11 +19,11 @@ Version 0.19 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* `None Yet`_
+* None Yet
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* `None Yet`_
+* None Yet
 
 
 Detailed list of changes
