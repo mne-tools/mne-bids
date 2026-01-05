@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev1+g245249aa2 documentation</title>
+    <title>Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev2+g50e284a1c documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3302bd3c"></script>
+    <script src="../_static/documentation_options.js?v=ea2a310d"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev1+g245249aa2" />
+  <meta name="docsearch:version" content="0.19.0.dev2+g50e284a1c" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev1+g245249aa2 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev2+g50e284a1c documentation</p>
   
 </a></div>
     
@@ -1063,11 +1063,10 @@ sub-1/ieeg/sub-1_task-motor_channels.tsv
     ...
 </pre></div>
 </div>
-<p>Remember that there is a convenient JavaScript tool to validate all your BIDS
-directories called the “BIDS-validator”, available as a web version and a
-command line tool:</p>
-<p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
-<p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
+<p>Remember that there is a convenient tool to validate all your BIDS
+directories called the “BIDS-validator”, available as a web version and
+on the command line:</p>
+<p><a class="github reference external" href="https://github.com/bids-standard/bids-validator">bids-standard/bids-validator</a></p>
 </section>
 <section id="step-3-load-channels-from-bids-formatted-dataset-and-compare">
 <h2>Step 3: Load channels from BIDS-formatted dataset and compare<a class="headerlink" href="#step-3-load-channels-from-bids-formatted-dataset-and-compare" title="Link to this heading">#</a></h2>
@@ -1205,7 +1204,7 @@ Ready.
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/examples/convert_ieeg_to_bids.py:350: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/examples/convert_ieeg_to_bids.py:348: RuntimeWarning: Converting data files to BrainVision format for anonymization
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -1219,7 +1218,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/examples/convert_ieeg_to_bids.py:350: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/examples/convert_ieeg_to_bids.py:348: RuntimeWarning: Converting data files to BrainVision format
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
@@ -1386,7 +1385,7 @@ Ready.
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/examples/convert_ieeg_to_bids.py:493: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/examples/convert_ieeg_to_bids.py:491: RuntimeWarning: Converting data files to BrainVision format for anonymization
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -1400,7 +1399,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_channels.tsv&#39;...
-/home/circleci/project/examples/convert_ieeg_to_bids.py:493: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/examples/convert_ieeg_to_bids.py:491: RuntimeWarning: Converting data files to BrainVision format
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_space-fsaverage_ieeg.vhdr.
@@ -1448,7 +1447,7 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.851 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.891 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/cf640e6bfa39f55978e620ef4269fd4c/convert_ieeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_ieeg_to_bids.ipynb</span></code></a></p>
@@ -1545,7 +1544,7 @@ coordinate frame.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-26.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-01-05.
       <br/>
     
   </p>
@@ -1554,7 +1553,7 @@ coordinate frame.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>
