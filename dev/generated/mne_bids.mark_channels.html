@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.mark_channels &#8212; MNE-BIDS 0.19.0.dev3+gc91b7b6aa documentation</title>
+    <title>mne_bids.mark_channels &#8212; MNE-BIDS 0.19.0.dev4+g58010824f documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=212d28f6"></script>
+    <script src="../_static/documentation_options.js?v=a9e04f40"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev3+gc91b7b6aa" />
+  <meta name="docsearch:version" content="0.19.0.dev4+g58010824f" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev3+gc91b7b6aa documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev4+g58010824f documentation</p>
   
 </a></div>
     
@@ -546,9 +546,9 @@ selected automatically.</p>
 <dt><strong>ch_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The name(s) of the channel(s) to mark with a <code class="docutils literal notranslate"><span class="pre">status</span></code> (and optionally a
 <code class="docutils literal notranslate"><span class="pre">description</span></code>). The special value <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code> will mark all channels.</p>
 <div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 0.16: </span>The behavior of passing an empty list will change in version 0.17. In version
-0.16 and older, an empty list would mark <em>all</em> channels. In version 0.17 and
-newer, an empty list will be a no-op (no channels will be marked/changed).</p>
+<p><span class="versionmodified changed">Changed in version 0.19: </span>In version 0.18 and older, an empty list would mark <em>all</em> channels.
+In version 0.19 and newer, an empty list will be a no-op (no channels
+will be marked/changed).</p>
 </div>
 </dd>
 <dt><strong>status</strong><span class="classifier">‘good’ | ‘bad’ | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The status of the channels (‘good’, or ‘bad’). If it is a list, then must be a

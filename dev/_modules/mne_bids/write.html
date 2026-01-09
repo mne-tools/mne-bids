@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev3+gc91b7b6aa documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev4+g58010824f documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=212d28f6"></script>
+    <script src="../../_static/documentation_options.js?v=a9e04f40"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev3+gc91b7b6aa" />
+  <meta name="docsearch:version" content="0.19.0.dev4+g58010824f" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev3+gc91b7b6aa documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev4+g58010824f documentation</p>
   
 </a></div>
     
@@ -3305,11 +3305,10 @@
 <span class="sd">        The name(s) of the channel(s) to mark with a ``status`` (and optionally a</span>
 <span class="sd">        ``description``). The special value ``&quot;all&quot;`` will mark all channels.</span>
 
-<span class="sd">        .. versionchanged:: 0.16</span>
-<span class="sd">           The behavior of passing an empty list will change in version 0.17. In version</span>
-<span class="sd">           0.16 and older, an empty list would mark *all* channels. In version 0.17 and</span>
-<span class="sd">           newer, an empty list will be a no-op (no channels will be marked/changed).</span>
-
+<span class="sd">        .. versionchanged:: 0.19</span>
+<span class="sd">           In version 0.18 and older, an empty list would mark *all* channels.</span>
+<span class="sd">           In version 0.19 and newer, an empty list will be a no-op (no channels</span>
+<span class="sd">           will be marked/changed).</span>
 <span class="sd">    status : &#39;good&#39; | &#39;bad&#39; | list of str</span>
 <span class="sd">        The status of the channels (&#39;good&#39;, or &#39;bad&#39;). If it is a list, then must be a</span>
 <span class="sd">        list of &#39;good&#39;, or &#39;bad&#39; that has the same length as ``ch_names``.</span>
@@ -3370,18 +3369,6 @@
     <span class="p">)</span>
     <span class="n">tsv_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span>
 
-    <span class="c1"># if an empty list is passed in, then these are the entire list</span>
-    <span class="c1"># of channels</span>
-    <span class="k">if</span> <span class="nb">list</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]:</span>  <span class="c1"># casting to list avoids error if ch_names is np.ndarray</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;In version 0.17, the behavior of `mark_channels(..., ch_names=[])` will &quot;</span>
-            <span class="s2">&quot;change, from marking *all* channels to marking *no* channels. Pass &quot;</span>
-            <span class="s2">&quot;ch_names=&#39;all&#39; instead of ch_names=[] to keep the old behavior and &quot;</span>
-            <span class="s2">&quot;avoid this warning.&quot;</span><span class="p">,</span>
-            <span class="ne">FutureWarning</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">ch_names</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
-    <span class="c1"># TODO ↑↑↑ remove prior conditional block after 0.16 release ↑↑↑</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">ch_names</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
             <span class="n">ch_names</span> <span class="o">=</span> <span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
