@@ -327,7 +327,7 @@ def _handle_participants_reading(participants_fname, raw, subject):
             raw.info["subject_info"][key] = value
 
     if bad_key_vals:
-        warn_str = "Unable to map the following column(s) to to MNE:"
+        warn_str = "Unable to map the following column(s) to MNE:"
         for col_name, orig_value, info_str in bad_key_vals:
             warn_str += f"\n{col_name}"
             if info_str is not None:

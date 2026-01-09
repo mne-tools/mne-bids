@@ -95,7 +95,7 @@ other packages in your existing ``conda`` environment.
 Alternatively, you may wish to take advantage of the fact that the
 ``mne-bids`` package on ``conda-forge`` in fact depends on ``mne``,
 meaning that a "full" installation of ``mne-bids`` (i.e., including its
-dependencies) will provide you with a working copy of of both ``mne`` and
+dependencies) will provide you with a working copy of both ``mne`` and
 ``mne-bids`` at once:
 
 .. code-block:: bash
