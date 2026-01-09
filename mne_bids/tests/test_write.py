@@ -2608,8 +2608,7 @@ def test_mark_channel_roundtrip(tmp_path):
 
     ch_names = raw.ch_names
     # first mark all channels as good
-    with pytest.warns(FutureWarning, match=r"`mark_channels\(\.\.\., ch_names=\[\]\)`"):
-        mark_channels(bids_path, ch_names=[], status="good", verbose=False)
+    mark_channels(bids_path, ch_names="all", status="good", verbose=False)
     tsv_data = _from_tsv(channels_fname)
     assert all(status == "good" for status in tsv_data["status"])
 
