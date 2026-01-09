@@ -2814,11 +2814,10 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
         The name(s) of the channel(s) to mark with a ``status`` (and optionally a
         ``description``). The special value ``"all"`` will mark all channels.
 
-        .. versionchanged:: 0.16
-           The behavior of passing an empty list will change in version 0.17. In version
-           0.16 and older, an empty list would mark *all* channels. In version 0.17 and
-           newer, an empty list will be a no-op (no channels will be marked/changed).
-
+        .. versionchanged:: 0.19
+           In version 0.18 and older, an empty list would mark *all* channels.
+           In version 0.19 and newer, an empty list will be a no-op (no channels
+           will be marked/changed).
     status : 'good' | 'bad' | list of str
         The status of the channels ('good', or 'bad'). If it is a list, then must be a
         list of 'good', or 'bad' that has the same length as ``ch_names``.
@@ -2879,18 +2878,6 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
     )
     tsv_data = _from_tsv(channels_fname)
 
-    # if an empty list is passed in, then these are the entire list
-    # of channels
-    if list(ch_names) == []:  # casting to list avoids error if ch_names is np.ndarray
-        warn(
-            "In version 0.17, the behavior of `mark_channels(..., ch_names=[])` will "
-            "change, from marking *all* channels to marking *no* channels. Pass "
-            "ch_names='all' instead of ch_names=[] to keep the old behavior and "
-            "avoid this warning.",
-            FutureWarning,
-        )
-        ch_names = "all"
-    # TODO ↑↑↑ remove prior conditional block after 0.16 release ↑↑↑
     if isinstance(ch_names, str):
         if ch_names == "all":
             ch_names = tsv_data["name"]
