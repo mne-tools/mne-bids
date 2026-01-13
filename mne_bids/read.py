@@ -709,6 +709,16 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
         }
     )
     if extra_columns:
+        # inter types (int, float or str)
+        for col in extra_columns:
+            events_dict[col] = [str(val) for val in events_dict[col]]
+            try:
+                events_dict[col] = np.asarray(events_dict[col], dtype=int)
+            except ValueError:
+                try:
+                    events_dict[col] = np.asarray(events_dict[col], dtype=float)
+                except ValueError:
+                    pass  # leave as str
         extras = [
             dict(zip(extra_columns, values))
             for values in zip(*[events_dict[col] for col in extra_columns])
