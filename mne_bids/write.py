@@ -456,7 +456,7 @@ def _events_tsv(
     for key, values in extras_columns.items():
         if len(values) != n_events:
             raise ValueError(
-                f"Column {key} derived from annotation extras has {len(values)} entries, "
+                f"Column {key} derived from annotation extras has {len(values)} entries,"
                 f"but {n_events} events were found."
             )
         if key in data:
