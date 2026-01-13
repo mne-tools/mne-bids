@@ -2381,7 +2381,9 @@ def write_raw_bids(
             has_trial_type = event_desc_id_map is not None
 
             events_extra_columns = (
-                dict() if extra_columns_descriptions is None else dict(extra_columns_descriptions)
+                dict()
+                if extra_columns_descriptions is None
+                else dict(extra_columns_descriptions)
             )
             for column in extras_columns:
                 events_extra_columns.setdefault(

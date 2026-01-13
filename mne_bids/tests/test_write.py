@@ -4330,7 +4330,6 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_write_annotation_extras(_bids_validate, tmp_path):
     """Ensure annotation extras are written to events files."""
-
     if not check_version("mne", "1.10"):
         pytest.skip("Annotations extras requires MNE-Python >= 1.10")
 
