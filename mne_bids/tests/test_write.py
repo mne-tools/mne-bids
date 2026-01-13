@@ -4327,6 +4327,59 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
         assert cur_col in events_json
 
 
+@testing.requires_testing_data
+def test_write_annotation_extras(_bids_validate, tmp_path):
+    """Ensure annotation extras are written to events files."""
+
+    if not check_version("mne", "1.10"):
+        pytest.skip("Annotations extras requires MNE-Python >= 1.10")
+
+    bids_root = tmp_path / "bids"
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    raw = _read_raw_fif(raw_fname)
+
+    annotations = mne.Annotations(
+        onset=[0.0, 1.0],
+        duration=[0.1, 0.2],
+        description=["first", "second"],
+        extras=[{"custom": "left", "rating": 1}, {"custom": "right", "rating": 2}],
+    )
+    raw.set_annotations(annotations)
+
+    bids_path = _bids_path_minimal.copy().update(root=bids_root, datatype="meg")
+    write_raw_bids(
+        raw,
+        bids_path=bids_path,
+        overwrite=True,
+        allow_preload=True,
+        format="FIF",
+    )
+
+    _bids_validate(bids_root)
+
+    events_tsv_path = bids_path.copy().update(suffix="events", extension=".tsv")
+    events_json_path = events_tsv_path.copy().update(extension=".json")
+
+    events_tsv = _from_tsv(events_tsv_path)
+    assert "custom" in events_tsv
+    assert "rating" in events_tsv
+
+    events_json = json.loads(events_json_path.fpath.read_text())
+    assert "custom" in events_json
+    assert "rating" in events_json
+
+    raw_roundtrip = read_raw_bids(bids_path=bids_path, verbose=False)
+    assert raw_roundtrip.annotations.extras is not None
+    assert [extra["custom"] for extra in raw_roundtrip.annotations.extras] == [
+        "left",
+        "right",
+    ]
+    assert [extra.get("rating") for extra in raw_roundtrip.annotations.extras] == [
+        1,
+        2,
+    ]
+
+
 # XXX: Remove once MNE-Python <1.9 is no longer supported
 @testing.requires_testing_data
 def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
