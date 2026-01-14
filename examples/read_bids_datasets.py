@@ -12,7 +12,7 @@ that tests to ensure its format meets BIDS specifications before the dataset
 can be uploaded, so you know the data will work with a script like in this
 example without modification.
 
-We have various data types that can be loaded via the ``read_raw_bids``
+We have various data types that can be loaded via the :func:`~mne_bids.read_raw_bids`
 function:
 
 - MEG
@@ -20,7 +20,7 @@ function:
 - iEEG (ECoG and SEEG)
 - the anatomical MRI scan of a study participant
 
-In this tutorial, we show how ``read_raw_bids`` can be used to load and
+In this tutorial, we show how :func:`~mne_bids.read_raw_bids` can be used to load and
 inspect BIDS-formatted data.
 """  # noqa: D400
 
@@ -45,25 +45,24 @@ from mne_bids import (
 )
 
 # %%
-# Download a subject's data from an OpenNeuro BIDS dataset
-# --------------------------------------------------------
+# Download a BIDS dataset from OpenNeuro
+# --------------------------------------
 #
-# Download the data, storing each in a ``target_dir`` target directory, which,
-# in ``mne-bids`` terminology, is the `root` of each BIDS dataset. This example
-# uses this `EEG dataset <https://openneuro.org/datasets/ds002778>`_ of
-# resting-state recordings of patients with Parkinson's disease.
-#
+# A downloaded OpenNeuro dataset is stored in a ``target_dir`` directory, which is
+# called the `root` of each BIDS dataset. This example uses this
+# `EEG dataset <https://openneuro.org/datasets/ds002778>`_ of resting-state recordings
+# of patients with Parkinson's disease.
 
-# .. note: If the keyword argument include is left out of
-#          ``openneuro.download``, the whole dataset will be downloaded.
-#          We're just using data from one subject to reduce the time
-#          it takes to run the example.
+# .. note::
+#   If the keyword argument ``include`` is omitted, the entire dataset will be
+#   downloaded. We're just using data from one subject to reduce the time it takes to
+#   run the example.
 
 dataset = "ds002778"
 subject = "pd6"
 
-# Download one subject's data from each dataset
-bids_root = sample.data_path().parent / dataset
+# Create a BIDS root directory in the MNE dataset folder
+bids_root = sample.data_path(download=False).parent / dataset
 bids_root.mkdir(parents=True, exist_ok=True)
 
 openneuro.download(dataset=dataset, target_dir=bids_root, include=[f"sub-{subject}"])
@@ -104,7 +103,7 @@ bids_paths = find_matching_paths(
 )
 
 # %%
-# We can now retrieve a list of all MEG-related files in the dataset:
+# We can now retrieve a list of all EEG-related files in the dataset:
 print(bids_paths)
 
 # %%
@@ -114,7 +113,7 @@ bids_path = BIDSPath(root=bids_root, session=session, datatype=datatype)
 print(bids_path.match(ignore_json=True))
 
 # %%
-# The returned list contains ``BIDSpaths`` of 3 files:
+# The returned list contains three paths:
 # ``sub-pd6_ses-off_task-rest_channels.tsv``,
 # ``sub-pd6_ses-off_task-rest_events.tsv``, and
 # ``sub-pd6_ses-off_task-rest_eeg.bdf``.
@@ -125,13 +124,13 @@ print(bids_path.match(ignore_json=True))
 # Prepare reading the data
 # ------------------------
 #
-# There is only one subject and one experimental task (``rest``).
-# Let's use this knowledge to create a new ``BIDSPath`` with
+# There is only one subject (``sub-pd6``) and one experimental task (``rest``).
+# Let's use this knowledge to create a new :class:`~mne_bids.BIDSPath` with
 # all the information required to actually read the EEG data. We also need to
 # pass a ``suffix``, which is the last part of the filename just before the
-# extension -- ``'channels'`` and ``'events'`` for the two TSV files in
-# our example, and ``'eeg'`` for EEG raw data. For MEG and EEG raw data, the
-# suffix is identical to the datatype, so don't let yourself be confused here!
+# extension -- ``"channels"`` and ``"events"`` for the two TSV files in
+# our example, and ``"eeg"`` for EEG raw data. For MEG and EEG raw data, the
+# suffix is identical to the data type, so don't get confused here!
 
 task = "rest"
 suffix = "eeg"
@@ -139,30 +138,30 @@ suffix = "eeg"
 bids_path = bids_path.update(subject=subject, task=task, suffix=suffix)
 
 # %%
-# Now let's print the contents of ``bids_path``.
+# Now let's print the contents of ``bids_path``:
 
 print(bids_path)
 
 # %%
 # You probably noticed two things: Firstly, this looks like an ordinary string
 # now, not like the more-or-less neatly formatted output we saw before. And
-# secondly, that there's suddenly a filename extension which we never specified
+# secondly, there's suddenly a filename extension which we never specified
 # anywhere!
 #
-# The reason is that when you call ``print(bids_path)``, ``BIDSPath`` returns
-# a string representation of ``BIDSPath.fpath``, which looks different. If,
-# instead, you simply typed ``bids_path`` (or ``print(repr(bids_path))``, which
-# is the same) into your Python console, you would get the nicely formatted
+# The reason is that when you call ``print(bids_path)``, :class:`~mne_bids.BIDSPath`
+# returns a string representation of :class:`~mne_bids.BIDSPath.fpath`, which looks
+# different. If, instead, you simply typed ``bids_path`` (or ``print(repr(bids_path))``,
+# which is the same) into your Python console, you would get the nicely formatted
 # output:
 
 bids_path
 
 # %%
 # The ``root`` here is – you guessed it – the directory we passed via the
-# ``root`` parameter: the "home" of our BIDS dataset. The ``datatype``, again,
+# ``root`` parameter, the "home" of our BIDS dataset. The ``datatype``, again,
 # is self-explanatory. The ``basename``, on the other hand, is created
 # automatically based on the suffix and **BIDS entities**  we passed to
-# ``BIDSPath``: in our case, ``subject``, ``session`` and ``task``.
+# :class:`~mne_bids.BIDSPath`; in our case, ``subject``, ``session`` and ``task``.
 #
 # .. note::
 #   There are many more supported entities, the most-commonly used among them
@@ -170,47 +169,51 @@ bids_path
 #   :ref:`our introduction to BIDSPath <bidspath-example>` to learn more
 #   about entities, ``basename``, and ``BIDSPath`` in general.
 #
-# But what about that filename extension, now? ``BIDSPath.fpath``, which –
-# as you hopefully remember – is invoked when you run ``print(bids_path)`` –
+# But what about that filename extension, now? :class:`~mne_bids.BIDSPath.fpath`, which
+# - as you hopefully remember – is invoked when you run ``print(bids_path)`` –
 # employs some heuristics to auto-detect some missing filename components.
 # Omitting the filename extension in your script can make your code
-# more portable. Note that, however, you **can** explicitly specify an
-# extension too, by passing e.g. ``extension='.bdf'`` to ``BIDSPath``.
+# more portable. Note that, however, you *can* explicitly specify an
+# extension too, by passing e.g. ``extension=".bdf"`` to :class:`~mne_bids.BIDSPath`.
 
 # %%
 # Read the data
 # -------------
 #
-# Let's read the data! It's just a single line of code.
+# Let's read the data! It's just a single line of code:
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 
 # %%
-# Now we can inspect the ``raw`` object to check that it contains to correct
-# metadata.
+# Notice that a ``RuntimeWarning`` is issued here. This is because some BIDS fields
+# (``gender``, ``MMSE``, ``NAART``, ``disease_duration``, ``rl_deficits``, and
+# ``notes``) could not be mapped to appropriate MNE metadata fields. You can safely
+# ignore this warning as it does not affect the data reading process at all.
 #
-# Basic subject metadata is here.
+# Now we can inspect the ``raw`` object to check that it contains to correct metadata.
+#
+# Basic subject metadata is here:
 
 print(raw.info["subject_info"])
 
 # %%
-# Power line frequency is here.
+# Power line frequency is here:
 
 print(raw.info["line_freq"])
 
 # %%
-# Sampling frequency is here.
+# Sampling frequency is here:
 
 print(raw.info["sfreq"])
 
 # %%
-# Events are now Annotations
+# Events are available as annotations:
 print(raw.annotations)
 
 # %%
-# Plot the raw data.
+# Finally, we can plot the resulting raw data:
 
-raw.plot()
+raw.plot(duration=20, show_scrollbars=False)
 
 # %%
 # .. LINKS
