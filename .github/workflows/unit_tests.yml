@@ -224,13 +224,13 @@ jobs:
     - name: Install MNE (stable)
       if: matrix.mne-version == 'mne-stable'
       run: |
-        git clone --single-branch --branch maint/1.9 https://github.com/mne-tools/mne-python.git
+        git clone --single-branch --branch maint/1.11 https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python
 
     - name: Install MNE (previous stable)
       if: matrix.mne-version == 'mne-prev-stable'
       run: |
-        git clone --single-branch --branch maint/1.8 https://github.com/mne-tools/mne-python.git
+        git clone --single-branch --branch maint/1.10 https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python
 
     - name: Install MNE (main)
