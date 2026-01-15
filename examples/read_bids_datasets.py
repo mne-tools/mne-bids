@@ -52,7 +52,7 @@ from mne_bids import (
 # called the `root` of each BIDS dataset. This example uses this
 # `EEG dataset <https://openneuro.org/datasets/ds002778>`_ of resting-state recordings
 # of patients with Parkinson's disease.
-
+#
 # .. note::
 #   If the keyword argument ``include`` is omitted, the entire dataset will be
 #   downloaded. We're just using data from one subject to reduce the time it takes to
