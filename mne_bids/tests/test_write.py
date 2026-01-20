@@ -4341,7 +4341,7 @@ def test_write_annotation_extras(_bids_validate, tmp_path):
         onset=[0.0, 1.0],
         duration=[0.1, 0.2],
         description=["first", "second"],
-        extras=[{"A": "left", "B": 1, "C":1.1}, {"A": "right", "B": 2, "C":2}],
+        extras=[{"A": "left", "B": 1, "C": 1.1}, {"A": "right", "B": 2, "C": 2}],
     )
     raw.set_annotations(annotations)
 
