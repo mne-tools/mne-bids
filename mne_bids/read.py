@@ -711,18 +711,18 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
     if extra_columns:
         # inter types (int, float or str)
         for col in extra_columns:
-        vals = [str(v) for v in events_dict[col]]
-        try:
-            events_dict[col] = [int(v) for v in vals]
-        except ValueError:
+            vals = [str(v) for v in events_dict[col]]
             try:
-                events_dict[col] = [float(v) for v in vals]
+                events_dict[col] = [int(v) for v in vals]
             except ValueError:
-                events_dict[col] = vals
-        extras = [
-            dict(zip(extra_columns, values))
-            for values in zip(*[events_dict[col] for col in extra_columns])
-        ]
+                try:
+                    events_dict[col] = [float(v) for v in vals]
+                except ValueError:
+                    events_dict[col] = vals
+            extras = [
+                dict(zip(extra_columns, values))
+                for values in zip(*[events_dict[col] for col in extra_columns])
+            ]
 
     return {
         "onset": ons,
