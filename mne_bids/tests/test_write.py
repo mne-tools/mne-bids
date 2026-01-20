@@ -4341,7 +4341,7 @@ def test_write_annotation_extras(_bids_validate, tmp_path):
         onset=[0.0, 1.0],
         duration=[0.1, 0.2],
         description=["first", "second"],
-        extras=[{"custom": "left", "rating": 1}, {"custom": "right", "rating": 2}],
+        extras=[{"A": "left", "B": 1, "C":1.1}, {"A": "right", "B": 2, "C":2}],
     )
     raw.set_annotations(annotations)
 
@@ -4360,22 +4360,28 @@ def test_write_annotation_extras(_bids_validate, tmp_path):
     events_json_path = events_tsv_path.copy().update(extension=".json")
 
     events_tsv = _from_tsv(events_tsv_path)
-    assert "custom" in events_tsv
-    assert "rating" in events_tsv
+    assert "A" in events_tsv
+    assert "B" in events_tsv
+    assert "C" in events_tsv
 
     events_json = json.loads(events_json_path.fpath.read_text())
-    assert "custom" in events_json
-    assert "rating" in events_json
+    assert "A" in events_json
+    assert "B" in events_json
+    assert "C" in events_json
 
     raw_roundtrip = read_raw_bids(bids_path=bids_path, verbose=False)
     assert raw_roundtrip.annotations.extras is not None
-    assert [extra["custom"] for extra in raw_roundtrip.annotations.extras] == [
+    assert [extra["A"] for extra in raw_roundtrip.annotations.extras] == [
         "left",
         "right",
     ]
-    assert [extra.get("rating") for extra in raw_roundtrip.annotations.extras] == [
+    assert [extra.get("B") for extra in raw_roundtrip.annotations.extras] == [
         1,
         2,
+    ]
+    assert [extra.get("C") for extra in raw_roundtrip.annotations.extras] == [
+        1.1,
+        2.0,
     ]
 
 
