@@ -19,6 +19,7 @@ from textwrap import indent
 import numpy as np
 from mne.utils import _check_fname, _validate_type, logger, verbose
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_DATATYPES,
@@ -37,6 +38,21 @@ from mne_bids.utils import (
     _ensure_tuple,
     param_regex,
     warn,
+)
+
+# Take all possible data types from "entity" table (Appendix in BIDS spec)
+# https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html
+_DATATYPE_LIST = (  # must be alphabetical
+    "anat",
+    "beh",
+    "dwi",
+    "eeg",
+    "emg",
+    "fmap",
+    "func",
+    "ieeg",
+    "meg",
+    "nirs",
 )
 
 
@@ -1225,7 +1241,7 @@ class BIDSPath:
             .update(datatype=None, suffix="meg")
             .find_matching_sidecar(extension=".json")
         )
-        with open(sidecar_fname, encoding="utf-8") as f:
+        with _open_lock(sidecar_fname, encoding="utf-8") as f:
             sidecar_json = json.load(f)
 
         if "AssociatedEmptyRoom" in sidecar_json:
@@ -1454,7 +1470,7 @@ def _print_lines_with_entry(file, entry, folder, is_tsv, line_numbers, outfile):
         prints to the console, else a string is printed to.
     """
     entry_lines = list()
-    with open(file, encoding="utf-8-sig") as fid:
+    with _open_lock(file, encoding="utf-8-sig") as fid:
         if is_tsv:  # format tsv files nicely
             header = _truncate_tsv_line(fid.readline())
             if line_numbers:
@@ -1765,7 +1781,8 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
 'space': None, \
 'recording': None, \
 'split': None, \
-'description': None}
+'description': None, \
+'tracking_system': None}
     """
     if on_error not in ("warn", "raise", "ignore"):
         raise ValueError(
@@ -1936,14 +1953,10 @@ def get_datatypes(root, verbose=None):
         `root`.
 
     """
-    # Take all possible data types from "entity" table
-    # (Appendix in BIDS spec)
-    # https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html
-    datatype_list = ("anat", "func", "dwi", "fmap", "beh", "meg", "eeg", "ieeg", "nirs")
     datatypes = list()
     for root, dirs, files in os.walk(root):
         for _dir in dirs:
-            if _dir in datatype_list and _dir not in datatypes:
+            if _dir in _DATATYPE_LIST and _dir not in datatypes:
                 datatypes.append(_dir)
 
     return datatypes
@@ -2301,7 +2314,7 @@ def _infer_datatype(*, root, sub, ses):
     modalities = _get_datatypes_for_sub(root=root, sub=sub, ses=ses)
 
     # We only want to handle electrophysiological data here.
-    allowed_recording_modalities = ["meg", "eeg", "ieeg"]
+    allowed_recording_modalities = ["eeg", "emg", "ieeg", "meg"]
     modalities = list(set(modalities) & set(allowed_recording_modalities))
     if not modalities:
         raise ValueError("No electrophysiological data found.")

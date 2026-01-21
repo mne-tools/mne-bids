@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.0
+    rev: v0.14.13
     hooks:
       - id: ruff
         name: ruff mne_bids/
@@ -37,3 +37,10 @@ repos:
     hooks:
       - id: toml-sort-fix
         files: pyproject.toml
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: file-contents-sorter
+        files: ^doc/authors.rst|^.mailmap
+        args: ["--ignore-case"]

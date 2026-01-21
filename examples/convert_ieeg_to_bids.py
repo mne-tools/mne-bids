@@ -235,13 +235,11 @@ print_dir_tree(bids_root)
 search_folder_for_text("n/a", bids_root)
 
 # %%
-# Remember that there is a convenient JavaScript tool to validate all your BIDS
-# directories called the "BIDS-validator", available as a web version and a
-# command line tool:
+# Remember that there is a convenient tool to validate all your BIDS
+# directories called the "BIDS-validator", available as a web version and
+# on the command line:
 #
-# Web version: https://bids-standard.github.io/bids-validator/
-#
-# Command line tool: https://www.npmjs.com/package/bids-validator
+# https://github.com/bids-standard/bids-validator
 
 # %%
 # Step 3: Load channels from BIDS-formatted dataset and compare

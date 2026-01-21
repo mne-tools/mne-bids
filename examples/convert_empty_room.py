@@ -29,7 +29,7 @@ format and how to retrieve them.
 # Let us first import mne_bids.
 
 import shutil
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import mne
 from mne.datasets import sample
@@ -98,7 +98,7 @@ dates = ["20021204", "20021201", "20021001"]
 for date in dates:
     er_bids_path.update(session=date)
     er_meas_date = datetime.strptime(date, "%Y%m%d")
-    er_raw.set_meas_date(er_meas_date.replace(tzinfo=timezone.utc))
+    er_raw.set_meas_date(er_meas_date.replace(tzinfo=UTC))
     write_raw_bids(er_raw, er_bids_path, overwrite=True)
 
 # %%

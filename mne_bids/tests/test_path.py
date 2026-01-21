@@ -8,7 +8,7 @@ import os.path as op
 import shutil
 import shutil as sh
 import timeit
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import mne
@@ -29,6 +29,7 @@ from mne_bids import (
 )
 from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
 from mne_bids.path import (
+    _DATATYPE_LIST,
     _filter_fnames,
     _find_best_candidates,
     _parse_ext,
@@ -49,6 +50,11 @@ data_path = testing.data_path(download=False)
 _bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq, task=task
 )
+
+
+def test_datatypes_alphabetical():
+    """Make sure we keep this list alphabetized."""
+    assert _DATATYPE_LIST == tuple(sorted(_DATATYPE_LIST))
 
 
 @pytest.fixture(scope="session")
@@ -1435,7 +1441,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     for date in dates:
         er_bids_path.update(session=date)
         er_meas_date = datetime.strptime(date, "%Y%m%d")
-        er_meas_date = er_meas_date.replace(tzinfo=timezone.utc)
+        er_meas_date = er_meas_date.replace(tzinfo=UTC)
         er_raw.set_meas_date(er_meas_date)
         write_raw_bids(er_raw, er_bids_path, verbose=False)
 
@@ -1460,8 +1466,8 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     bids_root = tmp_path / "associated-empty-room"
     bids_root.mkdir()
     raw = _read_raw_fif(raw_fname)
-    meas_date = datetime(year=2020, month=1, day=10, tzinfo=timezone.utc)
-    er_date = datetime(year=2010, month=1, day=1, tzinfo=timezone.utc)
+    meas_date = datetime(year=2020, month=1, day=10, tzinfo=UTC)
+    er_date = datetime(year=2010, month=1, day=1, tzinfo=UTC)
     raw.set_meas_date(meas_date)
 
     er_raw_matching_date = er_raw.copy().set_meas_date(meas_date)
@@ -1543,7 +1549,7 @@ def test_find_emptyroom_ties(tmp_path):
     )
     er_dir = er_dir_path.mkdir().directory
 
-    meas_date = datetime.strptime(session, "%Y%m%d").replace(tzinfo=timezone.utc)
+    meas_date = datetime.strptime(session, "%Y%m%d").replace(tzinfo=UTC)
 
     raw = _read_raw_fif(raw_fname)
 

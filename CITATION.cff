@@ -225,6 +225,10 @@ authors:
       family-names: Aristimunha
       affiliation: 'Université Paris-Saclay, LISN, Inria TAU/INRIA Nerv, France'
       orcid: 'https://orcid.org/0000-0001-5258-2995'
+    - given-names: Kalle
+      family-names: Mäkelä
+      affiliation: 'University of Helsinki, Helsinki, Finland'
+      orcid: 'https://orcid.org/0009-0005-5706-0842'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
