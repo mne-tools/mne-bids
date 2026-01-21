@@ -58,7 +58,7 @@ jobs:
 
         - persist_to_workspace:
             root: doc/_build
-            paths: html
+            paths: [html]
 
         - store_artifacts:
             path: doc/_build/html/
