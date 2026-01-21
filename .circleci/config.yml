@@ -38,6 +38,10 @@ jobs:
                 echo "source /home/circleci/mne_bids_env/bin/activate" >> $BASH_ENV
 
         - run:
+            name: Pre-create MNE config
+            command: mkdir -p /home/circleci/.mne
+
+        - run:
             name: Install Python packages
             command: |
               python -m pip install --upgrade --progress-bar off pip
