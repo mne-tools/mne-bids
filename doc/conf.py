@@ -181,6 +181,7 @@ intersphinx_mapping.update(
             "nibabel",
             "nilearn",
             "numpy",
+            "scipy",
             "pandas",
             "python",
         }
