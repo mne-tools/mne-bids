@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Read BIDS datasets &#8212; MNE-BIDS 0.19.0.dev7+gf523d7872 documentation</title>
+    <title>Read BIDS datasets &#8212; MNE-BIDS 0.19.0.dev8+ga5da8e37a documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=38803bac"></script>
+    <script src="../_static/documentation_options.js?v=e61fc67c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev7+gf523d7872" />
+  <meta name="docsearch:version" content="0.19.0.dev8+ga5da8e37a" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev7+gf523d7872 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev8+ga5da8e37a documentation</p>
   
 </a></div>
     
@@ -518,7 +518,7 @@ works great with MNE-BIDS because every dataset must pass a validator
 that tests to ensure its format meets BIDS specifications before the dataset
 can be uploaded, so you know the data will work with a script like in this
 example without modification.</p>
-<p>We have various data types that can be loaded via the <code class="docutils literal notranslate"><span class="pre">read_raw_bids</span></code>
+<p>We have various data types that can be loaded via the <a class="reference internal" href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a>
 function:</p>
 <ul class="simple">
 <li><p>MEG</p></li>
@@ -526,7 +526,7 @@ function:</p>
 <li><p>iEEG (ECoG and SEEG)</p></li>
 <li><p>the anatomical MRI scan of a study participant</p></li>
 </ul>
-<p>In this tutorial, we show how <code class="docutils literal notranslate"><span class="pre">read_raw_bids</span></code> can be used to load and
+<p>In this tutorial, we show how <a class="reference internal" href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a> can be used to load and
 inspect BIDS-formatted data.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: The MNE-BIDS developers</span>
 <span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
@@ -549,22 +549,23 @@ inspect BIDS-formatted data.</p>
 </pre></div>
 </div>
 </section>
-<section id="download-a-subject-s-data-from-an-openneuro-bids-dataset">
-<h2>Download a subject’s data from an OpenNeuro BIDS dataset<a class="headerlink" href="#download-a-subject-s-data-from-an-openneuro-bids-dataset" title="Link to this heading">#</a></h2>
-<p>Download the data, storing each in a <code class="docutils literal notranslate"><span class="pre">target_dir</span></code> target directory, which,
-in <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> terminology, is the <em class="xref py py-obj">root</em> of each BIDS dataset. This example
-uses this <a class="reference external" href="https://openneuro.org/datasets/ds002778">EEG dataset</a> of
-resting-state recordings of patients with Parkinson’s disease.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># .. note: If the keyword argument include is left out of</span>
-<span class="c1">#          ``openneuro.download``, the whole dataset will be downloaded.</span>
-<span class="c1">#          We&#39;re just using data from one subject to reduce the time</span>
-<span class="c1">#          it takes to run the example.</span>
-
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <span class="s2">&quot;ds002778&quot;</span>
+<section id="download-a-bids-dataset-from-openneuro">
+<h2>Download a BIDS dataset from OpenNeuro<a class="headerlink" href="#download-a-bids-dataset-from-openneuro" title="Link to this heading">#</a></h2>
+<p>A downloaded OpenNeuro dataset is stored in a <code class="docutils literal notranslate"><span class="pre">target_dir</span></code> directory, which is
+called the <em class="xref py py-obj">root</em> of each BIDS dataset. This example uses this
+<a class="reference external" href="https://openneuro.org/datasets/ds002778">EEG dataset</a> of resting-state recordings
+of patients with Parkinson’s disease.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the keyword argument <code class="docutils literal notranslate"><span class="pre">include</span></code> is omitted, the entire dataset will be
+downloaded. We’re just using data from one subject to reduce the time it takes to
+run the example.</p>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <span class="s2">&quot;ds002778&quot;</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="s2">&quot;pd6&quot;</span>
 
-<span class="c1"># Download one subject&#39;s data from each dataset</span>
-<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a>
+<span class="c1"># Create a BIDS root directory in the MNE dataset folder</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">(</span><span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.mkdir" title="pathlib.Path.mkdir" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">bids_root</span><span class="o">.</span><span class="n">mkdir</span></a><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">openneuro</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <span class="n">target_dir</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
@@ -583,19 +584,19 @@ Could not read the /home/circleci/.mne/mne-python.json json file during the writ
 🌍 Preparing to download ds002778 …
 
 📁 Traversing directories for ds002778 : 0 entities [00:00, ? entities/s]
-📁 Traversing directories for ds002778 : 7 entities [00:05,  1.37 entities/s]
-📁 Traversing directories for ds002778 : 8 entities [00:05,  1.57 entities/s]
-📁 Traversing directories for ds002778 : 10 entities [00:05,  2.21 entities/s]
-📁 Traversing directories for ds002778 : 14 entities [00:05,  3.62 entities/s]
-📁 Traversing directories for ds002778 : 15 entities [00:05,  3.90 entities/s]
-📁 Traversing directories for ds002778 : 17 entities [00:06,  4.99 entities/s]
-📁 Traversing directories for ds002778 : 20 entities [00:06,  3.23 entities/s]
+📁 Traversing directories for ds002778 : 7 entities [00:04,  1.60 entities/s]
+📁 Traversing directories for ds002778 : 8 entities [00:04,  1.82 entities/s]
+📁 Traversing directories for ds002778 : 10 entities [00:04,  2.54 entities/s]
+📁 Traversing directories for ds002778 : 14 entities [00:04,  4.54 entities/s]
+📁 Traversing directories for ds002778 : 16 entities [00:04,  5.52 entities/s]
+📁 Traversing directories for ds002778 : 18 entities [00:05,  6.65 entities/s]
+📁 Traversing directories for ds002778 : 20 entities [00:05,  3.82 entities/s]
 📥 Retrieving up to 19 files (5 concurrent downloads).
 
-Skipping participants.tsv: already downloaded.: 100%|██████████| 1.62k/1.62k [00:00&lt;?, ?B/s]
-
-
 Skipping participants.json: already downloaded.: 100%|██████████| 1.24k/1.24k [00:00&lt;?, ?B/s]
+
+
+Skipping participants.tsv: already downloaded.: 100%|██████████| 1.62k/1.62k [00:00&lt;?, ?B/s]
 
 
 Skipping CHANGES: already downloaded.: 100%|██████████| 379/379 [00:00&lt;?, ?B/s]
@@ -610,13 +611,13 @@ Skipping dataset_description.json: already downloaded.: 100%|██████�
 Skipping sub-pd6_ses-off_scans.tsv: already downloaded.: 100%|██████████| 75.0/75.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_beh.tsv: already downloaded.: 100%|██████████| 10.0/10.0 [00:00&lt;?, ?B/s]
+Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 11.5M/11.5M [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-off_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 11.5M/11.5M [00:00&lt;?, ?B/s]
+Skipping sub-pd6_ses-off_task-rest_beh.tsv: already downloaded.: 100%|██████████| 10.0/10.0 [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-off_task-rest_beh.json: already downloaded.: 100%|██████████| 433/433 [00:00&lt;?, ?B/s]
@@ -625,28 +626,28 @@ Skipping sub-pd6_ses-off_task-rest_beh.json: already downloaded.: 100%|███
 Skipping sub-pd6_ses-off_task-rest_eeg.json: already downloaded.: 100%|██████████| 471/471 [00:00&lt;?, ?B/s]
 
 
+Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|██████████| 66.0/66.0 [00:00&lt;?, ?B/s]
+
+
 Skipping sub-pd6_ses-on_scans.tsv: already downloaded.: 100%|██████████| 74.0/74.0 [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|██████████| 433/433 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|██████████| 66.0/66.0 [00:00&lt;?, ?B/s]
-
-
 Skipping sub-pd6_ses-on_task-rest_beh.tsv: already downloaded.: 100%|██████████| 10.0/10.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
+Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|██████████| 51.0/51.0 [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_eeg.json: already downloaded.: 100%|██████████| 471/471 [00:00&lt;?, ?B/s]
 
 
+Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
+
+
 Skipping sub-pd6_ses-on_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 17.4M/17.4M [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|██████████| 51.0/51.0 [00:00&lt;?, ?B/s]
 
 ✅ Finished downloading ds002778.
 
@@ -733,7 +734,7 @@ not interested in the on-medication session.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>We can now retrieve a list of all MEG-related files in the dataset:</p>
+<p>We can now retrieve a list of all EEG-related files in the dataset:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_paths</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -767,7 +768,7 @@ datatype: eeg
 basename: sub-pd6_ses-off_task-rest_events.tsv)]
 </pre></div>
 </div>
-<p>The returned list contains <code class="docutils literal notranslate"><span class="pre">BIDSpaths</span></code> of 3 files:
+<p>The returned list contains three paths:
 <code class="docutils literal notranslate"><span class="pre">sub-pd6_ses-off_task-rest_channels.tsv</span></code>,
 <code class="docutils literal notranslate"><span class="pre">sub-pd6_ses-off_task-rest_events.tsv</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">sub-pd6_ses-off_task-rest_eeg.bdf</span></code>.
@@ -777,20 +778,20 @@ data file.</p>
 </section>
 <section id="prepare-reading-the-data">
 <h2>Prepare reading the data<a class="headerlink" href="#prepare-reading-the-data" title="Link to this heading">#</a></h2>
-<p>There is only one subject and one experimental task (<code class="docutils literal notranslate"><span class="pre">rest</span></code>).
-Let’s use this knowledge to create a new <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> with
+<p>There is only one subject (<code class="docutils literal notranslate"><span class="pre">sub-pd6</span></code>) and one experimental task (<code class="docutils literal notranslate"><span class="pre">rest</span></code>).
+Let’s use this knowledge to create a new <a class="reference internal" href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> with
 all the information required to actually read the EEG data. We also need to
 pass a <code class="docutils literal notranslate"><span class="pre">suffix</span></code>, which is the last part of the filename just before the
-extension – <code class="docutils literal notranslate"><span class="pre">'channels'</span></code> and <code class="docutils literal notranslate"><span class="pre">'events'</span></code> for the two TSV files in
-our example, and <code class="docutils literal notranslate"><span class="pre">'eeg'</span></code> for EEG raw data. For MEG and EEG raw data, the
-suffix is identical to the datatype, so don’t let yourself be confused here!</p>
+extension – <code class="docutils literal notranslate"><span class="pre">&quot;channels&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;events&quot;</span></code> for the two TSV files in
+our example, and <code class="docutils literal notranslate"><span class="pre">&quot;eeg&quot;</span></code> for EEG raw data. For MEG and EEG raw data, the
+suffix is identical to the data type, so don’t get confused here!</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a> <span class="o">=</span> <span class="s2">&quot;rest&quot;</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a> <span class="o">=</span> <span class="s2">&quot;eeg&quot;</span>
 
 <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p>Now let’s print the contents of <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>.</p>
+<p>Now let’s print the contents of <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -799,12 +800,12 @@ suffix is identical to the datatype, so don’t let yourself be confused here!</
 </div>
 <p>You probably noticed two things: Firstly, this looks like an ordinary string
 now, not like the more-or-less neatly formatted output we saw before. And
-secondly, that there’s suddenly a filename extension which we never specified
+secondly, there’s suddenly a filename extension which we never specified
 anywhere!</p>
-<p>The reason is that when you call <code class="docutils literal notranslate"><span class="pre">print(bids_path)</span></code>, <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> returns
-a string representation of <code class="docutils literal notranslate"><span class="pre">BIDSPath.fpath</span></code>, which looks different. If,
-instead, you simply typed <code class="docutils literal notranslate"><span class="pre">bids_path</span></code> (or <code class="docutils literal notranslate"><span class="pre">print(repr(bids_path))</span></code>, which
-is the same) into your Python console, you would get the nicely formatted
+<p>The reason is that when you call <code class="docutils literal notranslate"><span class="pre">print(bids_path)</span></code>, <a class="reference internal" href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a>
+returns a string representation of <a class="reference internal" href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-class docutils literal notranslate"><span class="pre">fpath</span></code></a>, which looks
+different. If, instead, you simply typed <code class="docutils literal notranslate"><span class="pre">bids_path</span></code> (or <code class="docutils literal notranslate"><span class="pre">print(repr(bids_path))</span></code>,
+which is the same) into your Python console, you would get the nicely formatted
 output:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a>
 </pre></div>
@@ -816,10 +817,10 @@ basename: sub-pd6_ses-off_task-rest_eeg)
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">root</span></code> here is – you guessed it – the directory we passed via the
-<code class="docutils literal notranslate"><span class="pre">root</span></code> parameter: the “home” of our BIDS dataset. The <code class="docutils literal notranslate"><span class="pre">datatype</span></code>, again,
+<code class="docutils literal notranslate"><span class="pre">root</span></code> parameter, the “home” of our BIDS dataset. The <code class="docutils literal notranslate"><span class="pre">datatype</span></code>, again,
 is self-explanatory. The <code class="docutils literal notranslate"><span class="pre">basename</span></code>, on the other hand, is created
 automatically based on the suffix and <strong>BIDS entities</strong>  we passed to
-<code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>: in our case, <code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">session</span></code> and <code class="docutils literal notranslate"><span class="pre">task</span></code>.</p>
+<a class="reference internal" href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a>; in our case, <code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">session</span></code> and <code class="docutils literal notranslate"><span class="pre">task</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>There are many more supported entities, the most-commonly used among them
@@ -827,20 +828,20 @@ probably being <code class="docutils literal notranslate"><span class="pre">acqu
 <a class="reference internal" href="bidspath.html#bidspath-example"><span class="std std-ref">our introduction to BIDSPath</span></a> to learn more
 about entities, <code class="docutils literal notranslate"><span class="pre">basename</span></code>, and <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> in general.</p>
 </div>
-<p>But what about that filename extension, now? <code class="docutils literal notranslate"><span class="pre">BIDSPath.fpath</span></code>, which –
-as you hopefully remember – is invoked when you run <code class="docutils literal notranslate"><span class="pre">print(bids_path)</span></code> –
+<p>But what about that filename extension, now? <a class="reference internal" href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-class docutils literal notranslate"><span class="pre">fpath</span></code></a>, which
+- as you hopefully remember – is invoked when you run <code class="docutils literal notranslate"><span class="pre">print(bids_path)</span></code> –
 employs some heuristics to auto-detect some missing filename components.
 Omitting the filename extension in your script can make your code
-more portable. Note that, however, you <strong>can</strong> explicitly specify an
-extension too, by passing e.g. <code class="docutils literal notranslate"><span class="pre">extension='.bdf'</span></code> to <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>.</p>
+more portable. Note that, however, you <em>can</em> explicitly specify an
+extension too, by passing e.g. <code class="docutils literal notranslate"><span class="pre">extension=&quot;.bdf&quot;</span></code> to <a class="reference internal" href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a>.</p>
 </section>
 <section id="read-the-data">
 <h2>Read the data<a class="headerlink" href="#read-the-data" title="Link to this heading">#</a></h2>
-<p>Let’s read the data! It’s just a single line of code.</p>
+<p>Let’s read the data! It’s just a single line of code:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/examples/read_bids_datasets.py:186: RuntimeWarning: Unable to map the following column(s) to MNE:
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/examples/read_bids_datasets.py:185: RuntimeWarning: Unable to map the following column(s) to MNE:
 gender: f
 MMSE: 30
 NAART: 42
@@ -850,38 +851,41 @@ notes: Used preprocessed data from EEGLAB .mat file instead of raw data for pd o
   raw = read_raw_bids(bids_path=bids_path, verbose=False)
 </pre></div>
 </div>
-<p>Now we can inspect the <code class="docutils literal notranslate"><span class="pre">raw</span></code> object to check that it contains to correct
-metadata.</p>
-<p>Basic subject metadata is here.</p>
+<p>Notice that a <code class="docutils literal notranslate"><span class="pre">RuntimeWarning</span></code> is issued here. This is because some BIDS fields
+(<code class="docutils literal notranslate"><span class="pre">gender</span></code>, <code class="docutils literal notranslate"><span class="pre">MMSE</span></code>, <code class="docutils literal notranslate"><span class="pre">NAART</span></code>, <code class="docutils literal notranslate"><span class="pre">disease_duration</span></code>, <code class="docutils literal notranslate"><span class="pre">rl_deficits</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">notes</span></code>) could not be mapped to appropriate MNE metadata fields. You can safely
+ignore this warning as it does not affect the data reading process at all.</p>
+<p>Now we can inspect the <code class="docutils literal notranslate"><span class="pre">raw</span></code> object to check that it contains to correct metadata.</p>
+<p>Basic subject metadata is here:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;subject_info | his_id: sub-pd6, birthday: 1949-02-17, hand: 1&gt;
 </pre></div>
 </div>
-<p>Power line frequency is here.</p>
+<p>Power line frequency is here:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>60.0
 </pre></div>
 </div>
-<p>Sampling frequency is here.</p>
+<p>Sampling frequency is here:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>512.0
 </pre></div>
 </div>
-<p>Events are now Annotations</p>
+<p>Events are available as annotations:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Annotations | 2 segments: 1 (1), 65536 (1)&gt;
 </pre></div>
 </div>
-<p>Plot the raw data.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<p>Finally, we can plot the resulting raw data:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">show_scrollbars</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_read_bids_datasets_001.png" srcset="../_images/sphx_glr_read_bids_datasets_001.png" alt="read bids datasets" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using matplotlib as 2D backend.
@@ -889,7 +893,7 @@ metadata.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 8.353 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.192 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/07841a9269d1816a3add41f32d8a5ed2/read_bids_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">read_bids_datasets.ipynb</span></code></a></p>
@@ -953,7 +957,7 @@ metadata.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imports">Imports</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-a-subject-s-data-from-an-openneuro-bids-dataset">Download a subject’s data from an OpenNeuro BIDS dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-a-bids-dataset-from-openneuro">Download a BIDS dataset from OpenNeuro</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-the-dataset-contents">Explore the dataset contents</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-reading-the-data">Prepare reading the data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#read-the-data">Read the data</a></li>
