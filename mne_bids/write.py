@@ -346,12 +346,12 @@ def _extras_dicts_to_columns(extras, *, n_events):
 
     Returns
     -------
-    extras_columns : collections.OrderedDict
+    extras_columns : dict
         Mapping from column name to per-event values.
     """
     extras = [] if extras is None else list(extras)
     if len(extras) == 0:
-        return OrderedDict()
+        return dict()
 
     if len(extras) != n_events:
         raise ValueError(
@@ -359,7 +359,7 @@ def _extras_dicts_to_columns(extras, *, n_events):
         )
 
     extras = [extra or dict() for extra in extras]
-    extras_columns = OrderedDict()
+    extras_columns = dict()
     for extra in extras:
         for key in extra:
             extras_columns.setdefault(key, list())
@@ -409,7 +409,7 @@ def _events_tsv(
     event_metadata : pandas.DataFrame | None
         Additional metadata to be stored in the events.tsv file. Must have one
         row per event.
-    extras_columns : OrderedDict | None
+    extras_columns : dict | None
         Optional column data derived from annotation extras, mapping column name to
         per-event values.
     overwrite : bool
@@ -452,7 +452,7 @@ def _events_tsv(
                 )
             data[key] = values
 
-    extras_columns = OrderedDict() if extras_columns is None else extras_columns
+    extras_columns = dict() if extras_columns is None else extras_columns
     for key, values in extras_columns.items():
         if len(values) != n_events:
             raise ValueError(
