@@ -4370,19 +4370,11 @@ def test_write_annotation_extras(_bids_validate, tmp_path):
     assert "C" in events_json
 
     raw_roundtrip = read_raw_bids(bids_path=bids_path, verbose=False)
-    assert raw_roundtrip.annotations.extras is not None
-    assert [extra["A"] for extra in raw_roundtrip.annotations.extras] == [
-        "left",
-        "right",
-    ]
-    assert [extra.get("B") for extra in raw_roundtrip.annotations.extras] == [
-        1,
-        2,
-    ]
-    assert [extra.get("C") for extra in raw_roundtrip.annotations.extras] == [
-        1.1,
-        2.0,
-    ]
+    extras = raw_roundtrip.annotations.extras
+    assert extras is not None
+    assert [extra["A"] for extra in extras] == ["left", "right"]
+    assert [extra["B"] for extra in extras] == [1, 2]
+    assert [extra["C"] for extra in extras] == [1.1, 2.0]
 
 
 # XXX: Remove once MNE-Python <1.9 is no longer supported
