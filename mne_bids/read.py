@@ -709,7 +709,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
         }
     )
     if extra_columns:
-        # inter types (int, float or str)
+        # infer types (int, float or str)
         for col in extra_columns:
             vals = [str(v) for v in events_dict[col]]
             try:
