@@ -419,7 +419,7 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
     new_data = {
         "onset": {
             "Description": (
-                "Onset (in seconds) of the event from the beginning of the first data"
+                "Onset (in seconds) of the event from the beginning of the first data "
                 "point. Negative onsets account for events before the first stored "
                 "data point."
             ),
