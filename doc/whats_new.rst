@@ -19,7 +19,7 @@ Version 0.19 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* None Yet
+* `Bruno Aristimunha`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -47,7 +47,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- None yet
+- Fix :func:`mne_bids.BIDSPath.find_matching_sidecar` to search for sidecar files at the dataset root level per the BIDS inheritance principle, by `Bruno Aristimunha`_ (:gh:`1488`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

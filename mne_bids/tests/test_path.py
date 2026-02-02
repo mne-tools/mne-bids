@@ -728,6 +728,54 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     assert s.name == "sub-test_task-task_events.tsv"
 
 
+def test_find_matching_sidecar_at_root(tmp_path):
+    """Test finding a sidecar file located at dataset root level.
+
+    BIDS inheritance principle allows sidecars at dataset root that apply
+    to all subjects. See https://github.com/mne-tools/mne-bids/issues/1488
+    """
+    # Create a minimal BIDS structure with a root-level sidecar
+    bids_root = tmp_path / "bids_root"
+    bids_root.mkdir()
+
+    # Create subject directory structure
+    sub_dir = bids_root / "sub-01" / "eeg"
+    sub_dir.mkdir(parents=True)
+
+    # Create a data file placeholder
+    data_file = sub_dir / "sub-01_task-rest_eeg.vhdr"
+    data_file.touch()
+
+    # Create a root-level coordsystem.json (no subject entity in filename)
+    root_coordsystem = bids_root / "coordsystem.json"
+    root_coordsystem.write_text('{"EEGCoordinateSystem": "CapTrak"}')
+
+    # Now try to find the sidecar from a BIDSPath
+    bids_path = BIDSPath(subject="01", task="rest", datatype="eeg", root=bids_root)
+    sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
+    assert sidecar is not None
+    assert sidecar.name == "coordsystem.json"
+    assert sidecar.parent == bids_root
+
+    # Test that subject-level sidecar takes precedence over root-level
+    sub_coordsystem = sub_dir / "sub-01_coordsystem.json"
+    sub_coordsystem.write_text('{"EEGCoordinateSystem": "Other"}')
+    sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
+    assert sidecar.name == "sub-01_coordsystem.json"
+
+    # Clean up subject-level sidecar and test root-level again
+    sub_coordsystem.unlink()
+    sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
+    assert sidecar.name == "coordsystem.json"
+
+    # Test with task-specific root-level sidecar
+    task_coordsystem = bids_root / "task-rest_coordsystem.json"
+    task_coordsystem.write_text('{"EEGCoordinateSystem": "TaskSpecific"}')
+    sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
+    # task-rest_coordsystem.json should match better than coordsystem.json
+    assert sidecar.name == "task-rest_coordsystem.json"
+
+
 @testing.requires_testing_data
 def test_bids_path_inference(return_bids_test_dir):
     """Test usage of BIDSPath object and fpath."""
