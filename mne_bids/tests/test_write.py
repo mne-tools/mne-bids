@@ -4375,12 +4375,13 @@ def test_write_annotation_extras(_bids_validate, tmp_path):
     assert "C" in events_json
 
     # for simplicity, also test here that *reading* the extras works
+    # In particular, we ensure that the data types are correctly inferred
     raw_roundtrip = read_raw_bids(bids_path=bids_path, verbose=False)
     extras = raw_roundtrip.annotations.extras
     assert extras is not None
     assert [extra["A"] for extra in extras] == events_tsv["A"]
-    assert [extra["B"] for extra in extras] == events_tsv["B"]
-    assert [extra["C"] for extra in extras] == events_tsv["C"]
+    assert [extra["B"] for extra in extras] == list(map(int, events_tsv["B"]))
+    assert [extra["C"] for extra in extras] == list(map(float, events_tsv["C"]))
 
 
 # XXX: Remove once MNE-Python <1.9 is no longer supported
