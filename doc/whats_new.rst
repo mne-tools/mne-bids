@@ -19,11 +19,11 @@ Version 0.19 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* `Bruno Aristimunha`_
+* None yet
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* None Yet
+* `Bruno Aristimunha`_
 
 
 Detailed list of changes
@@ -47,7 +47,8 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Fix :func:`mne_bids.BIDSPath.find_matching_sidecar` to search for sidecar files at the dataset root level per the BIDS inheritance principle, by `Bruno Aristimunha`_ (:gh:`1488`)
+- Fix :func:`mne_bids.BIDSPath.find_matching_sidecar` to search for sidecar files at the dataset root level per the BIDS inheritance principle, by `Bruno Aristimunha`_ (:gh:`1508`)
+- Reinstate the requirement for ``coordsystem.json`` whenever ``electrodes.tsv`` is present (including EMG), by `Bruno Aristimunha`_ (:gh:`1508`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
