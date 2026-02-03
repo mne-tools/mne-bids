@@ -480,13 +480,13 @@ def _check_datatype(raw, datatype):
     raw : mne.io.Raw
         Raw object.
     datatype : str
-        Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.
+        Can be one of either ``'meg'``, ``'eeg'``, ``'ieeg'``, or ``'beh'``.
 
     Returns
     -------
     None
     """
-    supported_types = ("meg", "eeg", "ieeg", "nirs")
+    supported_types = ("meg", "eeg", "ieeg", "nirs", "beh")
     if datatype not in supported_types:
         raise ValueError(
             f"The specified datatype {datatype} is currently not supported. "
@@ -504,6 +504,10 @@ def _check_datatype(raw, datatype):
     elif datatype == "ieeg":
         ieeg_types = ("seeg", "ecog", "dbs")
         if any(ieeg_type in raw for ieeg_type in ieeg_types):
+            datatype_matches = True
+    elif datatype == "beh":
+        beh_types = ("eyegaze", "pupil")
+        if any(beh_type in raw for beh_type in beh_types):
             datatype_matches = True
     if not datatype_matches:
         raise ValueError(

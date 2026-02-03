@@ -147,12 +147,17 @@ allowed_extensions_nirs = [
     ".snirf",  # SNIRF
 ]
 
+allowed_extensions_physio = [
+    ".tsv",
+]
+
 # allowed extensions (data formats) in BIDS spec
 ALLOWED_DATATYPE_EXTENSIONS = {
     "meg": allowed_extensions_meg,
     "eeg": allowed_extensions_eeg,
     "ieeg": allowed_extensions_ieeg,
     "nirs": allowed_extensions_nirs,
+    "physio": allowed_extensions_physio
 }
 
 # allow additional extensions that are not BIDS
@@ -486,6 +491,12 @@ REFERENCES = {
     "Pollonini, L. (2023). fNIRS-BIDS, the Brain Imaging Data Structure "
     "Extended to Functional Near-Infrared Spectroscopy. PsyArXiv. "
     "https://doi.org/10.31219/osf.io/7nmcp",
+    # TODO: really this entry should be eyetrack, but lets circle back on that.
+    "beh": "Szinte, M., Bach, DR., Draschkow, D., Esteban, O., Gagle, B., "
+    "Gau, R., Gregorova, K., Halchenko, Y.O., Huberty, S., Kling, S., Kulkarni, S., "
+    "Markiewicz, C., Mikkelsen, M., Oostenveld, R., Pfarr, JK. (2026). "
+    "Eye-Tracking-BIDS: the Brain Imaging Data Structure extended to gaze position "
+    "and pupil data. (In review)."
 }
 
 

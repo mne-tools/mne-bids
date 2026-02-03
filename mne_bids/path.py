@@ -1854,7 +1854,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     else:
         search_dir = search_dir / "**" / bids_path.datatype
 
-    search_str_complete = str(search_dir / f"{search_str_filename}*{search_suffix}")
+    search_str_complete = str(search_dir / f"{search_str_filename}*_{search_suffix}")
 
     candidate_list = glob.glob(search_str_complete, recursive=True)
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)

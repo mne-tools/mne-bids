@@ -1681,6 +1681,9 @@ def write_raw_bids(
     """
     if not isinstance(raw, BaseRaw):
         raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
+    is_eyetracking_only = all(
+        [ch in ["eyegaze", "pupil"] for ch in raw.get_channel_types()]
+        )
 
     if raw.preload is not False and not allow_preload:
         raise ValueError(
@@ -1756,8 +1759,8 @@ def write_raw_bids(
     convert = False  # flag if converting not copying
 
     # Load file, filename, extension
+    raw_fname = raw.filenames[0]
     if not allow_preload:
-        raw_fname = raw.filenames[0]
         if ".ds" in op.dirname(raw.filenames[0]):
             raw_fname = op.dirname(raw.filenames[0])
         # point to file containing header info for multifile systems
@@ -1796,6 +1799,8 @@ def write_raw_bids(
             ext = ".set"
         elif format == "FIF":
             ext = ".fif"
+        elif is_eyetracking_only:
+            ext = ".tsv"  # Data will be saved in TSV files
         else:
             msg = (
                 'For preloaded data, you must set the "format" parameter '
@@ -1836,7 +1841,9 @@ def write_raw_bids(
     # Initialize BIDSPath
     datatype = _handle_datatype(raw, bids_path.datatype)
     bids_path = bids_path.copy().update(
-        datatype=datatype, suffix=datatype, extension=ext
+        datatype=datatype,
+        suffix=bids_path.suffix if datatype == "beh" else datatype,
+        extension=ext
     )
 
     # Check whether provided info and raw indicates valid MEG emptyroom data
@@ -1934,12 +1941,20 @@ def write_raw_bids(
 
     data_path = bids_path.mkdir().directory
 
-    # Check if eye tracking channels are present
+    # If eyetrack channels are alongside eeg, meg etc. Then
     eyetrack_ch_names = _get_eyetrack_ch_names(raw)
     if eyetrack_ch_names:
         _write_eyetrack_tsvs(raw, bids_path, overwrite=overwrite)
-        logger.debug(f"Dropping eyetracking channels from raw: {eyetrack_ch_names}")
-        raw.drop_channels(eyetrack_ch_names)
+        if not is_eyetracking_only:
+            logger.debug(f"Dropping eyetracking channels from raw: {eyetrack_ch_names}")
+            raw.drop_channels(eyetrack_ch_names)
+        # Now delete ocular annotations so they aren't written to the _events.json
+        # FIXME: Is there another way that doesn't rely on hardcoded descriptions?
+        is_ocular_ev = np.isin(
+            raw.annotations.description, ["BAD_blink", "fixation", "saccade"]
+            )
+        ocular_event_inds = np.where(is_ocular_ev)[0]
+        raw.annotations.delete(ocular_event_inds)
 
     # create *_scans.tsv
     session_path = BIDSPath(
@@ -2093,23 +2108,24 @@ def write_raw_bids(
     # this function.
     make_dataset_description(path=bids_path.root, name="[Unspecified]", overwrite=False)
 
-    _sidecar_json(
-        raw,
-        task=bids_path.task,
-        manufacturer=manufacturer,
-        fname=sidecar_path.fpath,
-        datatype=bids_path.datatype,
-        emptyroom_fname=associated_er_path,
-        overwrite=overwrite,
-    )
-    _channels_tsv(raw, channels_path.fpath, overwrite)
+    if not is_eyetracking_only:
+        _sidecar_json(
+            raw,
+            task=bids_path.task,
+            manufacturer=manufacturer,
+            fname=sidecar_path.fpath,
+            datatype=bids_path.datatype,
+            emptyroom_fname=associated_er_path,
+            overwrite=overwrite,
+        )
+        _channels_tsv(raw, channels_path.fpath, overwrite)
 
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
 
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
-    if not convert:
+    if not convert and not is_eyetracking_only:
         convert = ext not in ALLOWED_DATATYPE_EXTENSIONS[bids_path.datatype]
 
         if convert and symlink:
@@ -2176,7 +2192,7 @@ def write_raw_bids(
 
     # otherwise if the BIDSPath currently exists, check if we
     # would like to overwrite the existing dataset
-    if bids_path.fpath.exists():
+    if bids_path.fpath.exists() and not is_eyetracking_only:
         if overwrite:
             # Need to load data before removing its source
             raw.load_data()
@@ -2213,6 +2229,8 @@ def write_raw_bids(
             _write_raw_brainvision(
                 raw, bids_path.fpath, events=events_array, overwrite=overwrite
             )
+    elif is_eyetracking_only:
+        pass
     elif ext == ".fif":
         if symlink:
             link_target = Path(raw.filenames[0])
@@ -2323,7 +2341,7 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
     # What eyes were recorded.
     left_eye_chs = []
     right_eye_chs = []
-    for idx in eyegaze_ch_idx:
+    for idx in np.concatenate([eyegaze_ch_idx, pupil_ch_idx]):
         # index 3 the loc array specifies left/right eye
         which_eye = raw.info["chs"][idx]["loc"][3]
         if which_eye == -1:
@@ -2363,22 +2381,24 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
                     "StartTime": times[0],
                     "Columns": ["time"] + eye1_chs,
                     "PhysioType": "eyetrack",
-                    "EnvironmentCoordinates": "top-left",  # pixel (0, 0) is top-left of screen
-                    "RecordedEye": "right" if len(right_eye_chs) else "left",
-                    "SampleCoordinateUnits": "pixel",
+                    "RecordedEye": "left",
                     "SampleCoordinateSystem": "gaze-on-screen",
                     # Optional fields
                     eye1_chs[0]: {
-                        "description": "The x-coordinate of the gaze on the screen in pixels.",
-                        "units": "a.u"
+                        "Description": "The x-coordinate of the gaze on the screen in pixels.",
+                        "Units": "a.u"
                     },
                     eye1_chs[1]: {
-                        "description": "The y-coordinate of the gaze on the screen in pixels.",
-                        "units": "a.u"
+                        "Description": "The y-coordinate of the gaze on the screen in pixels.",
+                        "Units": "a.u"
+                    },
+                    eye1_chs[2]: {
+                        "Description": "Pupil area of the recorded eye as calculated by the eye-tracker in arbitrary units",
+                        "Units": "a.u"
                     },
                     "time": {
-                        "description": "The timestamp of the data, in seconds.",
-                        "units": "s"
+                        "Description": "The timestamp of the data, in seconds.",
+                        "Units": "s"
                     }
                 }
         fname = bids_path.copy().update(
@@ -2405,24 +2425,26 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
             # Required fields
             "SamplingFrequency": raw.info["sfreq"],
             "StartTime": times[0],
-            "Columns": ["time"] + [eye2_chs], # XXX: define dynamically
+            "Columns": ["time"] + eye2_chs, # XXX: define dynamically
             "PhysioType": "eyetrack",
-            "EnvironmentCoordinates": "top-left",  # pixel (0, 0) is top-left of screen
-            "RecordedEye": "right" if len(right_eye_chs) else "left",
-            "SampleCoordinateUnits": "pixel",
+            "RecordedEye": "right",
             "SampleCoordinateSystem": "gaze-on-screen",
             # Optional fields
             eye2_chs[0]: {
                 "description": "The x-coordinate of the gaze on the screen in pixels.",
-                "units": "a.u"
+                "Units": "a.u"
             },
             eye2_chs[1]: {
                 "description": "The y-coordinate of the gaze on the screen in pixels.",
-                "units": "a.u"
+                "Units": "a.u"
+            },
+            eye2_chs[2]: {
+                "Description": "Pupil area of the recorded eye as calculated by the eye-tracker in arbitrary units",
+                "Units": "a.u"
             },
             "time": {
                 "description": "The timestamp of the data, in seconds.",
-                "units": "s"
+                "Units": "s"
             }
         }
         fname = bids_path.copy().update(
@@ -2444,7 +2466,8 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
     """Write a *_events.tsv file."""
     raw = raw.copy()
     annotations = raw.annotations.copy()
-    annotations.rename({"BAD_blink": "blink"})
+    if "BAD_blink" in annotations.description:
+        annotations.rename({"BAD_blink": "blink"})
     raw.set_annotations(annotations)
     eye_annot_indices = []
     # Get the names of eyetracking channels
@@ -2483,7 +2506,9 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
     )
     # Write the JSON file
     fname_json = fname_tsv.with_suffix(".json")
-    _events_json(fname_json, extra_columns=None, has_trial_type=True, overwrite=False)
+    _events_json(
+        fname_json, extra_columns=None, has_trial_type=True, overwrite=overwrite
+        )
 
 
 def _write_physio_tsv(times, data, fname, overwrite):
