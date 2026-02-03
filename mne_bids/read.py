@@ -80,8 +80,19 @@ def _read_raw(
         raw_path = Path(raw_path)
         raw = reader[ext](raw_path, verbose=verbose, **kwargs)
 
-    # MEF and NWB are allowed, but not yet implemented
-    elif ext in [".mef", ".nwb"]:
+    # MEF3 directory-based format (requires MNE >= 1.12)
+    elif ext == ".mefd":
+        if ext not in reader:
+            raise ValueError(
+                f'Got "{ext}" as extension. MEF3 support requires '
+                f"MNE-Python >= 1.12. Please upgrade MNE-Python to use "
+                f"this format."
+            )
+        raw_path = Path(raw_path)
+        raw = reader[ext](raw_path, verbose=verbose, **kwargs)
+
+    # NWB is allowed, but not yet implemented
+    elif ext == ".nwb":
         raise ValueError(
             f'Got "{ext}" as extension. This is an allowed '
             f"extension but there is no IO support for this "

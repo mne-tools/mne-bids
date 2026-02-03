@@ -546,15 +546,19 @@ def _write_dig_bids(
         if coord_frame is None:  # just a space, use that
             coord_frame = bids_path.space
         else:  # space and raw have coordinate frame, check match
-            if bids_path.space != coord_frame and not (
-                coord_frame == "fsaverage" and bids_path.space == "MNI305"
-            ):  # fsaverage == MNI305
+            # Check if frames are compatible (same or map to same MNE frame)
+            coord_mne = BIDS_TO_MNE_FRAMES.get(coord_frame)
+            space_mne = BIDS_TO_MNE_FRAMES.get(bids_path.space)
+            if not (
+                bids_path.space == coord_frame
+                or (coord_mne is not None and coord_mne == space_mne)
+            ):
                 raise ValueError(
-                    "Coordinates in the raw object or montage "
-                    f"are in the {coord_frame} coordinate "
-                    "frame but BIDSPath.space is "
+                    f"Coordinates in the raw object or montage are in the "
+                    f"{coord_frame} coordinate frame but BIDSPath.space is "
                     f"{bids_path.space}"
                 )
+            coord_frame = bids_path.space  # use BIDSPath.space for output
 
     # create electrodes/coordsystem files using a subset of entities
     # that are specified for these files in the specification

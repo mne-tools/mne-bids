@@ -68,6 +68,7 @@ from mne_bids.copyfiles import (
     copyfile_edf,
     copyfile_eeglab,
     copyfile_kit,
+    copyfile_mef,
 )
 from mne_bids.dig import (
     _write_coordsystem_json,
@@ -2571,6 +2572,9 @@ def write_raw_bids(
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == ".set":
         copyfile_eeglab(raw_fname, bids_path)
+    # MEF3 data is stored in a directory
+    elif ext == ".mefd":
+        copyfile_mef(raw_fname, bids_path)
     elif ext == ".pdf":
         if use_bti_pdf_suffix:
             raw_dir = bids_path.fpath

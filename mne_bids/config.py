@@ -82,7 +82,7 @@ ieeg_manufacturers = {
     ".EDF": "n/a",
     ".set": "n/a",
     ".fdt": "n/a",
-    ".mef": "n/a",
+    ".mefd": "n/a",
     ".nwb": "n/a",
     ".lay": "Persyst",
     ".dat": "Persyst",
@@ -118,6 +118,10 @@ reader = {
     ".snirf": io.read_raw_snirf,
     ".cdt": io.read_raw_curry,
 }
+
+# MEF3 support requires MNE >= 1.12
+if hasattr(io, "read_raw_mef"):
+    reader[".mefd"] = io.read_raw_mef
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
@@ -157,7 +161,7 @@ allowed_extensions_ieeg = [
     ".vhdr",  # BrainVision, accompanied by .vmrk, .eeg
     ".edf",  # European Data Format
     ".set",  # EEGLAB, potentially accompanied by .fdt
-    ".mef",  # MEF: Multiscale Electrophysiology File
+    ".mefd",  # MEF3: Multiscale Electrophysiology File (directory)
     ".nwb",  # Neurodata without borders
 ]
 
@@ -396,6 +400,18 @@ BIDS_TO_MNE_FRAMES = {
     "ACPC": "ras",  # assumes T1 is ACPC-aligned, if not the coordinates are lost
     "fsaverage": "mni_tal",  # XXX: note fsaverage and MNI305 are the same
     "MNI305": "mni_tal",
+    # MNI152 templates - all map to mni_tal as they are MNI-based
+    "MNI152Lin": "mni_tal",
+    "MNI152NLin6Sym": "mni_tal",
+    "MNI152NLin6ASym": "mni_tal",
+    "MNI152NLin2009aSym": "mni_tal",
+    "MNI152NLin2009bSym": "mni_tal",
+    "MNI152NLin2009cSym": "mni_tal",
+    "MNI152NLin2009aAsym": "mni_tal",
+    "MNI152NLin2009bAsym": "mni_tal",
+    "MNI152NLin2009cAsym": "mni_tal",
+    "MNIColin27": "mni_tal",
+    "Talairach": "mni_tal",  # Talairach is similar to MNI
 }
 
 # mapping from supported MNE coordinate frames -> BIDS
