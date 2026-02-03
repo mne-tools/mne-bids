@@ -14,7 +14,7 @@ from mne.viz import use_browser_backend
 from mne_bids import mark_channels, read_raw_bids
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 from mne_bids.read import _from_tsv, _read_events
-from mne_bids.write import _events_tsv
+from mne_bids.write import _events_tsv, _extras_dicts_to_columns
 
 
 @verbose
@@ -242,9 +242,10 @@ def _save_annotations(*, annotations, bids_path):
         bids_path=bids_path, extra_params=extra_params, verbose="warning"
     )
     raw.set_annotations(annotations)
-    events, durs, descrs = _read_events(
+    events, durs, descrs, extras = _read_events(
         events=None, event_id=None, bids_path=bids_path, raw=raw
     )
+    extras_columns = _extras_dicts_to_columns(extras, n_events=len(events))
 
     # Write sidecar – or remove it if no events are left.
     events_tsv_fname = bids_path.copy().update(suffix="events", extension=".tsv").fpath
@@ -256,6 +257,7 @@ def _save_annotations(*, annotations, bids_path):
             raw=raw,
             fname=events_tsv_fname,
             trial_type=descrs,
+            extras_columns=extras_columns,
             overwrite=True,
         )
     elif events_tsv_fname.exists():

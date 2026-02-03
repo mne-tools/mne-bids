@@ -130,6 +130,8 @@ def _read_events(events, event_id, raw, bids_path=None):
     all_desc : dict
         A dictionary with the keys corresponding to the event descriptions and
         the values to the event IDs.
+    extras : list[dict] | None
+        The extras stored on the annotations, if available.
 
     """
     # retrieve events
@@ -245,7 +247,13 @@ def _read_events(events, event_id, raw, bids_path=None):
             'labels beginning with "rest".'
         )
 
-    return all_events, all_dur, all_desc
+    extras = getattr(raw.annotations, "extras", None)
+    if extras is not None:
+        extras = list(extras)
+        if len(extras) == 0:
+            extras = None
+
+    return all_events, all_dur, all_desc, extras
 
 
 def _verbose_list_index(lst, val, *, allow_all=False):
@@ -701,10 +709,20 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
         }
     )
     if extra_columns:
-        extras = [
-            dict(zip(extra_columns, values))
-            for values in zip(*[events_dict[col] for col in extra_columns])
-        ]
+        # infer types (int, float or str)
+        for col in extra_columns:
+            vals = [str(v) for v in events_dict[col]]
+            try:
+                events_dict[col] = [int(v) for v in vals]
+            except ValueError:
+                try:
+                    events_dict[col] = [float(v) for v in vals]
+                except ValueError:
+                    events_dict[col] = vals
+            extras = [
+                dict(zip(extra_columns, values))
+                for values in zip(*[events_dict[col] for col in extra_columns])
+            ]
 
     return {
         "onset": ons,

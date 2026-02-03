@@ -4327,6 +4327,63 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
         assert cur_col in events_json
 
 
+@testing.requires_testing_data
+def test_write_annotation_extras(_bids_validate, tmp_path):
+    """Ensure annotation extras are written to events files."""
+    if not check_version("mne", "1.10"):
+        pytest.skip("Annotations extras requires MNE-Python >= 1.10")
+
+    bids_root = tmp_path / "bids"
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    raw = _read_raw_fif(raw_fname)
+
+    a_b_c = (["left", "right"], [1, 2], [1.1, 2])
+    extras = [{key: val for key, val in zip("ABC", vals)} for vals in zip(*a_b_c)]
+
+    annotations = mne.Annotations(
+        onset=[0.0, 1.0],
+        duration=[0.1, 0.2],
+        description=["first", "second"],
+        extras=extras,
+    )
+    raw.set_annotations(annotations)
+
+    bids_path = _bids_path_minimal.copy().update(root=bids_root, datatype="meg")
+    write_raw_bids(
+        raw,
+        bids_path=bids_path,
+        overwrite=True,
+        allow_preload=True,
+        format="FIF",
+    )
+
+    _bids_validate(bids_root)
+
+    events_tsv_path = bids_path.copy().update(suffix="events", extension=".tsv")
+    events_json_path = events_tsv_path.copy().update(extension=".json")
+
+    events_tsv = _from_tsv(events_tsv_path)
+    # Make sure that the extras were correctly written
+    assert events_tsv["A"] == a_b_c[0]  # already strings
+    assert events_tsv["B"] == list(map(str, a_b_c[1]))
+    assert events_tsv["C"] == list(map(str, a_b_c[2]))
+
+    # make sure the sidecar also gets entries for the new columns in events.tsv
+    events_json = json.loads(events_json_path.fpath.read_text())
+    assert "A" in events_json
+    assert "B" in events_json
+    assert "C" in events_json
+
+    # for simplicity, also test here that *reading* the extras works
+    # In particular, we ensure that the data types are correctly inferred
+    raw_roundtrip = read_raw_bids(bids_path=bids_path, verbose=False)
+    extras = raw_roundtrip.annotations.extras
+    assert extras is not None
+    assert [extra["A"] for extra in extras] == events_tsv["A"]
+    assert [extra["B"] for extra in extras] == list(map(int, events_tsv["B"]))
+    assert [extra["C"] for extra in extras] == list(map(float, events_tsv["C"]))
+
+
 # XXX: Remove once MNE-Python <1.9 is no longer supported
 @testing.requires_testing_data
 def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):

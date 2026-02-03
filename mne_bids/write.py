@@ -334,8 +334,54 @@ def _get_fid_coords(dig_points, raise_error=True):
     return fid_coords, coord_frame
 
 
+def _extras_dicts_to_columns(extras, *, n_events):
+    """Convert annotation extras (list of dicts) into dict of lists.
+
+    Parameters
+    ----------
+    extras : list[dict] | None
+        Extras stored on ``mne.Annotations``.
+    n_events : int
+        Number of events expected.
+
+    Returns
+    -------
+    extras_columns : dict
+        Mapping from column name to per-event values.
+    """
+    extras = [] if extras is None else list(extras)
+    if len(extras) == 0:
+        return dict()
+
+    if len(extras) != n_events:
+        raise ValueError(
+            "The length of annotation extras does not match the number of events."
+        )
+
+    extras = [extra or dict() for extra in extras]
+    extras_columns = dict()
+    for extra in extras:
+        for key in extra:
+            extras_columns.setdefault(key, list())
+
+    for extra in extras:
+        for key in extras_columns:
+            value = extra.get(key, "n/a")
+            value = "n/a" if value is None else value
+            extras_columns[key].append(value)
+
+    return extras_columns
+
+
 def _events_tsv(
-    events, durations, raw, fname, trial_type, event_metadata=None, overwrite=False
+    events,
+    durations,
+    raw,
+    fname,
+    trial_type,
+    event_metadata=None,
+    extras_columns=None,
+    overwrite=False,
 ):
     """Create an events.tsv file and save it.
 
@@ -363,9 +409,11 @@ def _events_tsv(
     event_metadata : pandas.DataFrame | None
         Additional metadata to be stored in the events.tsv file. Must have one
         row per event.
+    extras_columns : dict | None
+        Optional column data derived from annotation extras, mapping column name to
+        per-event values.
     overwrite : bool
-        Whether to overwrite the existing file.
-        Defaults to False.
+        Whether to overwrite the existing file. Defaults to False.
 
     """
     # Start by filling all data that we know into an ordered dictionary
@@ -373,6 +421,8 @@ def _events_tsv(
     sfreq = raw.info["sfreq"]
     events = events.copy()
     events[:, 0] -= first_samp
+
+    n_events = len(events)
 
     # Onset column needs to be specified in seconds
     data = OrderedDict(
@@ -394,7 +444,29 @@ def _events_tsv(
 
     if event_metadata is not None:
         for key, values in event_metadata.items():
+            values = list(values)
+            if len(values) != n_events:
+                raise ValueError(
+                    f"Column {key} in event_metadata has {len(values)} entries, "
+                    f"but {n_events} events were found."
+                )
             data[key] = values
+
+    extras_columns = dict() if extras_columns is None else extras_columns
+    for key, values in extras_columns.items():
+        if len(values) != n_events:
+            raise ValueError(
+                f"Column {key} derived from annotation extras has "
+                f"{len(values)} entries, but {n_events} events were found."
+            )
+        if key in data:
+            if not np.array_equal(data[key], values):
+                raise ValueError(
+                    f"Column {key} is provided both via event_metadata and "
+                    "annotation extras, but the values differ."
+                )
+            continue
+        data[key] = values
 
     _write_tsv(fname, data, overwrite)
 
@@ -2282,7 +2354,7 @@ def write_raw_bids(
 
     # Write events.
     if not data_is_emptyroom:
-        events_array, event_dur, event_desc_id_map = _read_events(
+        events_array, event_dur, event_desc_id_map, event_extras = _read_events(
             events,
             event_id,
             raw,
@@ -2293,6 +2365,9 @@ def write_raw_bids(
             event_desc_id_map = None
 
         if events_array.size != 0:
+            extras_columns = _extras_dicts_to_columns(
+                event_extras, n_events=len(events_array)
+            )
             _events_tsv(
                 events=events_array,
                 durations=event_dur,
@@ -2300,13 +2375,25 @@ def write_raw_bids(
                 fname=events_tsv_path.fpath,
                 trial_type=event_desc_id_map,
                 event_metadata=event_metadata,
+                extras_columns=extras_columns,
                 overwrite=overwrite,
             )
             has_trial_type = event_desc_id_map is not None
 
+            events_extra_columns = (
+                dict()
+                if extra_columns_descriptions is None
+                else dict(extra_columns_descriptions)
+            )
+            for column in extras_columns:
+                events_extra_columns.setdefault(
+                    column,
+                    "Additional metadata stored in raw.annotations.extras.",
+                )
+
             _events_json(
                 fname=events_json_path.fpath,
-                extra_columns=extra_columns_descriptions,
+                extra_columns=events_extra_columns,
                 has_trial_type=has_trial_type,
                 overwrite=overwrite,
             )
