@@ -4360,6 +4360,9 @@ def test_write_annotation_extras(_bids_validate, tmp_path):
     events_json_path = events_tsv_path.copy().update(extension=".json")
 
     events_tsv = _from_tsv(events_tsv_path)
+    # Convert str digits to float, to facilitate our tests later on
+    for extra in ["B", "C"]:
+        events_tsv[extra] = list(map(float, events_tsv[extra]))
     assert "A" in events_tsv
     assert "B" in events_tsv
     assert "C" in events_tsv
@@ -4372,9 +4375,9 @@ def test_write_annotation_extras(_bids_validate, tmp_path):
     raw_roundtrip = read_raw_bids(bids_path=bids_path, verbose=False)
     extras = raw_roundtrip.annotations.extras
     assert extras is not None
-    assert [extra["A"] for extra in extras] == ["left", "right"]
-    assert [extra["B"] for extra in extras] == [1, 2]
-    assert [extra["C"] for extra in extras] == [1.1, 2.0]
+    assert [extra["A"] for extra in extras] == events_tsv["A"]
+    assert [extra["B"] for extra in extras] == events_tsv["B"]
+    assert [extra["C"] for extra in extras] == events_tsv["C"]
 
 
 # XXX: Remove once MNE-Python <1.9 is no longer supported
