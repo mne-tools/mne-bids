@@ -4337,11 +4337,14 @@ def test_write_annotation_extras(_bids_validate, tmp_path):
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
 
+    a_b_c = (["left", "right"], [1, 2], [1.1, 2])
+    extras = [{key: val for key, val in zip("ABC", vals)} for vals in zip(*a_b_c)]
+
     annotations = mne.Annotations(
         onset=[0.0, 1.0],
         duration=[0.1, 0.2],
         description=["first", "second"],
-        extras=[{"A": "left", "B": 1, "C": 1.1}, {"A": "right", "B": 2, "C": 2}],
+        extras=extras,
     )
     raw.set_annotations(annotations)
 
@@ -4363,15 +4366,17 @@ def test_write_annotation_extras(_bids_validate, tmp_path):
     # Convert str digits to float, to facilitate our tests later on
     for extra in ["B", "C"]:
         events_tsv[extra] = list(map(float, events_tsv[extra]))
-    assert "A" in events_tsv
-    assert "B" in events_tsv
-    assert "C" in events_tsv
+    assert events_tsv["A"] == a_b_c[0]  # already strings
+    assert events_tsv["B"] == list(map(str, a_b_c[1]))
+    assert events_tsv["C"] == list(map(str, a_b_c[2]))
 
+    # make sure the sidecar also gets entries for the new columns in events.tsv
     events_json = json.loads(events_json_path.fpath.read_text())
     assert "A" in events_json
     assert "B" in events_json
     assert "C" in events_json
 
+    # for simplicity, also test here that *reading* the extras works
     raw_roundtrip = read_raw_bids(bids_path=bids_path, verbose=False)
     extras = raw_roundtrip.annotations.extras
     assert extras is not None
