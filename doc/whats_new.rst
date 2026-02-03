@@ -32,7 +32,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- None yet
+- Save ``Annotations.extras`` fields in events.tsv files when writing events, by `Pierre Guetschel`_ (:gh:`1502`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
