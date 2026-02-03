@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev9+g3f27addf7 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev10+g1e09430e9 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=31cba5cb"></script>
+    <script src="../../_static/documentation_options.js?v=0fbe0b83"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev9+g3f27addf7" />
+  <meta name="docsearch:version" content="0.19.0.dev10+g1e09430e9" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev9+g3f27addf7 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev10+g1e09430e9 documentation</p>
   
 </a></div>
     
@@ -811,8 +811,54 @@
     <span class="k">return</span> <span class="n">fid_coords</span><span class="p">,</span> <span class="n">coord_frame</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_extras_dicts_to_columns</span><span class="p">(</span><span class="n">extras</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n_events</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert annotation extras (list of dicts) into dict of lists.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    extras : list[dict] | None</span>
+<span class="sd">        Extras stored on ``mne.Annotations``.</span>
+<span class="sd">    n_events : int</span>
+<span class="sd">        Number of events expected.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    extras_columns : dict</span>
+<span class="sd">        Mapping from column name to per-event values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">extras</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">extras</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">extras</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extras</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extras</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_events</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The length of annotation extras does not match the number of events.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">extras</span> <span class="o">=</span> <span class="p">[</span><span class="n">extra</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">extra</span> <span class="ow">in</span> <span class="n">extras</span><span class="p">]</span>
+    <span class="n">extras_columns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">extra</span> <span class="ow">in</span> <span class="n">extras</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">extra</span><span class="p">:</span>
+            <span class="n">extras_columns</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">extra</span> <span class="ow">in</span> <span class="n">extras</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">extras_columns</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">extra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">value</span>
+            <span class="n">extras_columns</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">extras_columns</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_events_tsv</span><span class="p">(</span>
-    <span class="n">events</span><span class="p">,</span> <span class="n">durations</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">event_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
+    <span class="n">events</span><span class="p">,</span>
+    <span class="n">durations</span><span class="p">,</span>
+    <span class="n">raw</span><span class="p">,</span>
+    <span class="n">fname</span><span class="p">,</span>
+    <span class="n">trial_type</span><span class="p">,</span>
+    <span class="n">event_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">extras_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an events.tsv file and save it.</span>
 
@@ -840,9 +886,11 @@
 <span class="sd">    event_metadata : pandas.DataFrame | None</span>
 <span class="sd">        Additional metadata to be stored in the events.tsv file. Must have one</span>
 <span class="sd">        row per event.</span>
+<span class="sd">    extras_columns : dict | None</span>
+<span class="sd">        Optional column data derived from annotation extras, mapping column name to</span>
+<span class="sd">        per-event values.</span>
 <span class="sd">    overwrite : bool</span>
-<span class="sd">        Whether to overwrite the existing file.</span>
-<span class="sd">        Defaults to False.</span>
+<span class="sd">        Whether to overwrite the existing file. Defaults to False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Start by filling all data that we know into an ordered dictionary</span>
@@ -850,6 +898,8 @@
     <span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
     <span class="n">events</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">first_samp</span>
+
+    <span class="n">n_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
 
     <span class="c1"># Onset column needs to be specified in seconds</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
@@ -871,7 +921,29 @@
 
     <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">event_metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_events</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Column </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> in event_metadata has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2"> entries, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;but </span><span class="si">{</span><span class="n">n_events</span><span class="si">}</span><span class="s2"> events were found.&quot;</span>
+                <span class="p">)</span>
             <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+
+    <span class="n">extras_columns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">extras_columns</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">extras_columns</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">extras_columns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_events</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Column </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> derived from annotation extras has &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2"> entries, but </span><span class="si">{</span><span class="n">n_events</span><span class="si">}</span><span class="s2"> events were found.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">values</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Column </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is provided both via event_metadata and &quot;</span>
+                    <span class="s2">&quot;annotation extras, but the values differ.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
 
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
@@ -2764,7 +2836,7 @@
 
     <span class="c1"># Write events.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">data_is_emptyroom</span><span class="p">:</span>
-        <span class="n">events_array</span><span class="p">,</span> <span class="n">event_dur</span><span class="p">,</span> <span class="n">event_desc_id_map</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span>
+        <span class="n">events_array</span><span class="p">,</span> <span class="n">event_dur</span><span class="p">,</span> <span class="n">event_desc_id_map</span><span class="p">,</span> <span class="n">event_extras</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span>
             <span class="n">events</span><span class="p">,</span>
             <span class="n">event_id</span><span class="p">,</span>
             <span class="n">raw</span><span class="p">,</span>
@@ -2775,6 +2847,9 @@
             <span class="n">event_desc_id_map</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">events_array</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">extras_columns</span> <span class="o">=</span> <span class="n">_extras_dicts_to_columns</span><span class="p">(</span>
+                <span class="n">event_extras</span><span class="p">,</span> <span class="n">n_events</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">events_array</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="n">_events_tsv</span><span class="p">(</span>
                 <span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">,</span>
                 <span class="n">durations</span><span class="o">=</span><span class="n">event_dur</span><span class="p">,</span>
@@ -2782,13 +2857,25 @@
                 <span class="n">fname</span><span class="o">=</span><span class="n">events_tsv_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
                 <span class="n">trial_type</span><span class="o">=</span><span class="n">event_desc_id_map</span><span class="p">,</span>
                 <span class="n">event_metadata</span><span class="o">=</span><span class="n">event_metadata</span><span class="p">,</span>
+                <span class="n">extras_columns</span><span class="o">=</span><span class="n">extras_columns</span><span class="p">,</span>
                 <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">has_trial_type</span> <span class="o">=</span> <span class="n">event_desc_id_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
+            <span class="n">events_extra_columns</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">dict</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">extra_columns_descriptions</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">extra_columns_descriptions</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">extras_columns</span><span class="p">:</span>
+                <span class="n">events_extra_columns</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span>
+                    <span class="n">column</span><span class="p">,</span>
+                    <span class="s2">&quot;Additional metadata stored in raw.annotations.extras.&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+
             <span class="n">_events_json</span><span class="p">(</span>
                 <span class="n">fname</span><span class="o">=</span><span class="n">events_json_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
-                <span class="n">extra_columns</span><span class="o">=</span><span class="n">extra_columns_descriptions</span><span class="p">,</span>
+                <span class="n">extra_columns</span><span class="o">=</span><span class="n">events_extra_columns</span><span class="p">,</span>
                 <span class="n">has_trial_type</span><span class="o">=</span><span class="n">has_trial_type</span><span class="p">,</span>
                 <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
             <span class="p">)</span>
@@ -4065,7 +4152,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-01-26.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-03.
       <br/>
     
   </p>

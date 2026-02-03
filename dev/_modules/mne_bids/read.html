@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev9+g3f27addf7 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev10+g1e09430e9 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=31cba5cb"></script>
+    <script src="../../_static/documentation_options.js?v=0fbe0b83"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev9+g3f27addf7" />
+  <meta name="docsearch:version" content="0.19.0.dev10+g1e09430e9" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev9+g3f27addf7 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev10+g1e09430e9 documentation</p>
   
 </a></div>
     
@@ -607,6 +607,8 @@
 <span class="sd">    all_desc : dict</span>
 <span class="sd">        A dictionary with the keys corresponding to the event descriptions and</span>
 <span class="sd">        the values to the event IDs.</span>
+<span class="sd">    extras : list[dict] | None</span>
+<span class="sd">        The extras stored on the annotations, if available.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># retrieve events</span>
@@ -722,7 +724,13 @@
             <span class="s1">&#39;labels beginning with &quot;rest&quot;.&#39;</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">all_events</span><span class="p">,</span> <span class="n">all_dur</span><span class="p">,</span> <span class="n">all_desc</span>
+    <span class="n">extras</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span> <span class="s2">&quot;extras&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">extras</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">extras</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">extras</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extras</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">extras</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">all_events</span><span class="p">,</span> <span class="n">all_dur</span><span class="p">,</span> <span class="n">all_desc</span><span class="p">,</span> <span class="n">extras</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_verbose_list_index</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">allow_all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1180,10 +1188,20 @@
         <span class="p">}</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">extra_columns</span><span class="p">:</span>
-        <span class="n">extras</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">extra_columns</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="p">])</span>
-        <span class="p">]</span>
+        <span class="c1"># infer types (int, float or str)</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
+            <span class="n">extras</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">extra_columns</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="p">])</span>
+            <span class="p">]</span>
 
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;onset&quot;</span><span class="p">:</span> <span class="n">ons</span><span class="p">,</span>
@@ -1956,7 +1974,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-01-26.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-03.
       <br/>
     
   </p>
