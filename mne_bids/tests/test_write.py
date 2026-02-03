@@ -4363,9 +4363,7 @@ def test_write_annotation_extras(_bids_validate, tmp_path):
     events_json_path = events_tsv_path.copy().update(extension=".json")
 
     events_tsv = _from_tsv(events_tsv_path)
-    # Convert str digits to float, to facilitate our tests later on
-    for extra in ["B", "C"]:
-        events_tsv[extra] = list(map(float, events_tsv[extra]))
+    # Make sure that the extras were correctly written
     assert events_tsv["A"] == a_b_c[0]  # already strings
     assert events_tsv["B"] == list(map(str, a_b_c[1]))
     assert events_tsv["C"] == list(map(str, a_b_c[2]))
