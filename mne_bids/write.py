@@ -57,6 +57,7 @@ from mne_bids.config import (
     ORIENTATION,
     PYBV_VERSION,
     REFERENCES,
+    UNITS_FIFF_TO_BIDS_MAP,
     UNITS_MNE_TO_BIDS_MAP,
     _map_options,
     reader,
@@ -212,7 +213,9 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         units = [
             volt_like
             if ch_i["unit"] == FIFF.FIFF_UNIT_V
-            else _unit2human.get(ch_i["unit"], "n/a")
+            else _unit2human.get(
+                ch_i["unit"], UNITS_FIFF_TO_BIDS_MAP.get(ch_i["unit"], "n/a")
+            )
             for ch_i in raw.info["chs"]
         ]
     # if raw data is merely copied, check `raw._orig_units`
@@ -220,7 +223,12 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         units = [raw._orig_units.get(ch, "n/a") for ch in raw.ch_names]
     # If `raw._orig_units` is missing, assume SI units
     else:
-        units = [_unit2human.get(ch_i["unit"], "n/a") for ch_i in raw.info["chs"]]
+        units = [
+            _unit2human.get(
+                ch_i["unit"], UNITS_FIFF_TO_BIDS_MAP.get(ch_i["unit"], "n/a")
+            )
+            for ch_i in raw.info["chs"]
+        ]
     # fixup "NA" (from `_unit2human`) → "n/a"
     units = [u if u not in ["NA"] else "n/a" for u in units]
 
