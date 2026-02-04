@@ -31,7 +31,6 @@ from mne_bids.config import (
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
     MNE_STR_TO_FRAME,
-    UNITS_BIDS_TO_FIFF_MAP,
 )
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.read import (
@@ -1741,10 +1740,12 @@ def test_channel_units_from_tsv(tmp_path):
     ch_names = ["EEG1", "EEG2", "MISC_RAD"]
     ch_types = ["eeg", "eeg", "misc"]
     info = mne.create_info(ch_names, sfreq=256, ch_types=ch_types)
-    data = np.random.RandomState(42).randn(len(ch_names), 256)
+    data = np.zeros((len(ch_names), 256))
     raw = mne.io.RawArray(data, info)
     raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
     raw.info["line_freq"] = 60
+
+    raw.set_annotations(mne.Annotations(onset=[0], duration=[1], description=["test"]))
 
     # Set the misc channel unit to radians before writing
     raw.info["chs"][2]["unit"] = FIFF.FIFF_UNIT_RAD
@@ -1754,7 +1755,7 @@ def test_channel_units_from_tsv(tmp_path):
     bids_path = _bids_path.copy().update(
         root=bids_root, datatype="eeg", suffix="eeg", extension=".edf"
     )
-    with pytest.warns(RuntimeWarning):
+    with pytest.warns(RuntimeWarning, match="Converting data files to EDF format"):
         write_raw_bids(raw, bids_path, overwrite=True, allow_preload=True, format="EDF")
 
     # Check that channels.tsv contains "rad" for the misc channel
@@ -1770,8 +1771,7 @@ def test_channel_units_from_tsv(tmp_path):
     )
 
     # Read back and verify units are set correctly
-    with pytest.warns(RuntimeWarning):
-        raw_read = read_raw_bids(bids_path)
+    raw_read = read_raw_bids(bids_path)
 
     # Verify the misc channel has radians unit after reading
     misc_ch_idx = raw_read.ch_names.index("MISC_RAD")
