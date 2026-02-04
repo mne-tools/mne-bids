@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev10+g1e09430e9 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev11+g47b49127e documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=0fbe0b83"></script>
+    <script src="../../_static/documentation_options.js?v=313baddd"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev10+g1e09430e9" />
+  <meta name="docsearch:version" content="0.19.0.dev11+g47b49127e" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev10+g1e09430e9 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev11+g47b49127e documentation</p>
   
 </a></div>
     
@@ -498,6 +498,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ANNOTATIONS_TO_KEEP</span><span class="p">,</span>
+    <span class="n">UNITS_BIDS_TO_FIFF_MAP</span><span class="p">,</span>
     <span class="n">_map_options</span><span class="p">,</span>
     <span class="n">reader</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1393,6 +1394,15 @@
         <span class="n">channel_type_bids_mne_map_available_channels</span><span class="p">,</span> <span class="n">on_unit_change</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span>
     <span class="p">)</span>
 
+    <span class="c1"># Set channel units based on channels.tsv</span>
+    <span class="k">if</span> <span class="s2">&quot;units&quot;</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">:</span>
+        <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">units_tsv</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">unit_str</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">units_tsv</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span> <span class="ow">and</span> <span class="n">unit_str</span> <span class="ow">in</span> <span class="n">UNITS_BIDS_TO_FIFF_MAP</span><span class="p">:</span>
+                <span class="n">ch_idx</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch_name</span><span class="p">)</span>
+                <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">][</span><span class="n">ch_idx</span><span class="p">][</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">UNITS_BIDS_TO_FIFF_MAP</span><span class="p">[</span><span class="n">unit_str</span><span class="p">]</span>
+
     <span class="c1"># Set bad channels based on _channels.tsv sidecar</span>
     <span class="k">if</span> <span class="s2">&quot;status&quot;</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">:</span>
         <span class="n">bads_tsv</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">)</span>
@@ -1974,7 +1984,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-03.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-04.
       <br/>
     
   </p>

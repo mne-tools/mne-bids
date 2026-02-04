@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev10+g1e09430e9 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev11+g47b49127e documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=0fbe0b83"></script>
+    <script src="_static/documentation_options.js?v=313baddd"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev10+g1e09430e9" />
+  <meta name="docsearch:version" content="0.19.0.dev11+g47b49127e" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev10+g1e09430e9 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev11+g47b49127e documentation</p>
   
 </a></div>
     
@@ -497,7 +497,8 @@
 </ul>
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
 <ul class="simple">
-<li><p>None Yet</p></li>
+<li><p><a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a></p></li>
+<li><p><a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a></p></li>
 </ul>
 </section>
 <section id="detailed-list-of-changes">
@@ -506,6 +507,7 @@
 <h4>🚀 Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Save <code class="docutils literal notranslate"><span class="pre">Annotations.extras</span></code> fields in events.tsv files when writing events, by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1502">#1502</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now reads channel units from <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> and sets them on the raw object. This includes support for units like <code class="docutils literal notranslate"><span class="pre">rad</span></code> (radians), <code class="docutils literal notranslate"><span class="pre">V</span></code>, <code class="docutils literal notranslate"><span class="pre">µV</span></code>, <code class="docutils literal notranslate"><span class="pre">mV</span></code>, <code class="docutils literal notranslate"><span class="pre">T</span></code>, <code class="docutils literal notranslate"><span class="pre">T/m</span></code>, <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">oC</span></code>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, and <code class="docutils literal notranslate"><span class="pre">px</span></code>. The write path was also updated to correctly write <code class="docutils literal notranslate"><span class="pre">rad</span></code> units to <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code>, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1509">#1509</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -624,7 +626,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-03.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-04.
       <br/>
     
   </p>
