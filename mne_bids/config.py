@@ -52,6 +52,8 @@ UNITS_MNE_TO_BIDS_MAP = {
 # This supplements MNE's _unit2human which doesn't include all FIFF units
 UNITS_FIFF_TO_BIDS_MAP = {
     FIFF.FIFF_UNIT_RAD: "rad",
+    FIFF.FIFF_UNIT_PX: "px",
+    FIFF.FIFF_UNIT_NONE: "arbitrary",
 }
 
 # Mapping from BIDS unit strings to FIFF unit constants for reading
@@ -66,6 +68,8 @@ UNITS_BIDS_TO_FIFF_MAP = {
     "oC": FIFF.FIFF_UNIT_CEL,
     "M": FIFF.FIFF_UNIT_MOL,
     "px": FIFF.FIFF_UNIT_PX,
+    "pixel": FIFF.FIFF_UNIT_PX,
+    "arbitrary": FIFF.FIFF_UNIT_NONE,
 }
 
 meg_manufacturers = {

@@ -35,7 +35,6 @@ from mne_bids.path import (
 )
 from mne_bids.physio import (
     _get_physio_type,
-    _has_eyetracking,
     read_raw_eyetracking_bids,
 )
 from mne_bids.tsv_handler import _drop, _from_tsv
