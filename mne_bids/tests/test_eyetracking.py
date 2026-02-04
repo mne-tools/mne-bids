@@ -47,7 +47,6 @@ def test_eyetracking_io(_bids_validate, tmp_path):
     assert raw_in.info['sfreq'] == raw.info['sfreq']
     for ch_orig, ch_in in zip(raw.info["chs"], raw_in.info["chs"]):
         np.testing.assert_array_equal(ch_orig["loc"], ch_in["loc"])
-    assert 1 == 0
 
 
 @testing.requires_testing_data
@@ -114,4 +113,3 @@ def test_eeg_eyetracking_io(_bids_validate, tmp_path):
     assert raw_eye_in.info['sfreq'] == raw_eye.info['sfreq']
     for ch_orig, ch_in in zip(raw_eye_in.info["chs"], raw_eye.info["chs"]):
         np.testing.assert_array_equal(ch_orig["loc"], ch_in["loc"])
-    assert 1 == 0
