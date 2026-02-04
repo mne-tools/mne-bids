@@ -5,9 +5,8 @@
 
 import json
 import os
-import os.path as op
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
 from pathlib import Path
 
@@ -18,9 +17,11 @@ from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 from mne.utils import get_subjects_dir, logger
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
+    UNITS_BIDS_TO_FIFF_MAP,
     _map_options,
     reader,
 )
@@ -41,6 +42,7 @@ from mne_bids.tsv_handler import _drop, _from_tsv
 from mne_bids.utils import _get_ch_type_mapping, _import_nibabel, verbose, warn
 
 
+@verbose
 def _read_raw(
     raw_path,
     electrode=None,
@@ -49,6 +51,7 @@ def _read_raw(
     allow_maxshield=False,
     config_path=None,
     eyetrack_ch_types=None,
+    verbose=None,
     **kwargs,
 ):
     """Read a raw file into MNE, making inferences based on extension."""
@@ -57,7 +60,13 @@ def _read_raw(
     # KIT systems
     if ext in [".con", ".sqd"]:
         raw = io.read_raw_kit(
-            raw_path, elp=electrode, hsp=hsp, mrk=hpi, preload=False, **kwargs
+            raw_path,
+            elp=electrode,
+            hsp=hsp,
+            mrk=hpi,
+            preload=False,
+            verbose=verbose,
+            **kwargs,
         )
 
     # BTi systems
@@ -67,15 +76,16 @@ def _read_raw(
             config_fname=config_path,
             head_shape_fname=hsp,
             preload=False,
+            verbose=verbose,
             **kwargs,
         )
 
     elif ext == ".fif":
-        raw = reader[ext](raw_path, allow_maxshield, **kwargs)
+        raw = reader[ext](raw_path, allow_maxshield, verbose=verbose, **kwargs)
 
     elif ext in [".ds", ".vhdr", ".set", ".edf", ".bdf", ".EDF", ".snirf", ".cdt"]:
         raw_path = Path(raw_path)
-        raw = reader[ext](raw_path, **kwargs)
+        raw = reader[ext](raw_path, verbose=verbose, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in [".mef", ".nwb"]:
@@ -143,6 +153,8 @@ def _read_events(events, event_id, raw, bids_path=None):
     all_desc : dict
         A dictionary with the keys corresponding to the event descriptions and
         the values to the event IDs.
+    extras : list[dict] | None
+        The extras stored on the annotations, if available.
 
     """
     # retrieve events
@@ -258,7 +270,13 @@ def _read_events(events, event_id, raw, bids_path=None):
             'labels beginning with "rest".'
         )
 
-    return all_events, all_dur, all_desc
+    extras = getattr(raw.annotations, "extras", None)
+    if extras is not None:
+        extras = list(extras)
+        if len(extras) == 0:
+            extras = None
+
+    return all_events, all_dur, all_desc, extras
 
 
 def _verbose_list_index(lst, val, *, allow_all=False):
@@ -340,7 +358,7 @@ def _handle_participants_reading(participants_fname, raw, subject):
             raw.info["subject_info"][key] = value
 
     if bad_key_vals:
-        warn_str = "Unable to map the following column(s) to to MNE:"
+        warn_str = "Unable to map the following column(s) to MNE:"
         for col_name, orig_value, info_str in bad_key_vals:
             warn_str += f"\n{col_name}"
             if info_str is not None:
@@ -355,10 +373,6 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     """Read associated scans.tsv and set meas_date."""
     scans_tsv = _from_tsv(scans_fname)
     fname = bids_path.fpath.name
-
-    if fname.endswith(".pdf"):
-        # for BTi files, the scan is an entire directory
-        fname = fname.split(".")[0]
 
     # get the row corresponding to the file
     # use string concatenation instead of os.path
@@ -380,7 +394,15 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     if all(suffix in (".vhdr", ".eeg", ".vmrk") for suffix in acq_suffixes):
         ext = fnames[0].suffix
         data_fname = Path(data_fname).with_suffix(ext)
-    row_ind = _verbose_list_index(fnames, data_fname)
+    try:
+        row_ind = _verbose_list_index(fnames, data_fname)
+    except ValueError as exc:
+        if fname.endswith(".pdf"):
+            alt_fname = Path(bids_path.datatype) / Path(fname).with_suffix("")
+            row_ind = _verbose_list_index(fnames, alt_fname)
+            data_fname = alt_fname
+        else:
+            raise exc
 
     # check whether all split files have the same acq_time
     # and throw an error if they don't
@@ -426,10 +448,14 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
 
         if acq_time_is_utc:
             # Enforce setting timezone to UTC without additonal conversion
-            acq_time = acq_time.replace(tzinfo=timezone.utc)
+            acq_time = acq_time.replace(tzinfo=UTC)
         else:
             # Convert time offset to UTC
-            acq_time = acq_time.astimezone(timezone.utc)
+            if acq_time.tzinfo is None:
+                # Windows needs an explicit local tz for naive, pre-epoch times.
+                local_tz = datetime.now().astimezone().tzinfo or UTC
+                acq_time = acq_time.replace(tzinfo=local_tz)
+            acq_time = acq_time.astimezone(UTC)
 
         logger.debug(f"Loaded {scans_fname} scans file to set acq_time as {acq_time}.")
         # First set measurement date to None and then call call anonymize() to
@@ -452,7 +478,7 @@ def _handle_info_reading(sidecar_fname, raw):
 
     Handle PowerLineFrequency of recording.
     """
-    with open(sidecar_fname, encoding="utf-8-sig") as fin:
+    with _open_lock(sidecar_fname, encoding="utf-8-sig") as fin:
         sidecar_json = json.load(fin)
 
     # read in the sidecar JSON's and raw object's line frequency
@@ -546,8 +572,75 @@ def _handle_info_reading(sidecar_fname, raw):
     return raw
 
 
-def _handle_events_reading(events_fname, raw):
-    """Read associated events.tsv and convert valid events to annotations on Raw."""
+@verbose
+def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) -> dict:
+    r"""
+    Read the ``events.tsv`` file and extract onset, duration, and description.
+
+    Parameters
+    ----------
+    events_fname : str
+        The file path to the ``events.tsv`` file.
+    %(verbose)s
+
+    Returns
+    -------
+    kwargs_dict : dict
+
+        A dictionary containing the following keys:
+
+        - 'onset' : np.ndarray
+            The onset times of the events in seconds.
+        - 'duration' : np.ndarray
+            The durations of the events in seconds.
+        - 'description' : np.ndarray
+            The descriptions of the events.
+        - 'event_id' : dict
+            A dictionary mapping event descriptions to integer event IDs.
+        - 'extras' : list of dict
+            A list of dictionaries containing additional columns from the
+            ``events.tsv`` file. Each dictionary corresponds to a row.
+            This corresponds to the ``extras`` argument of class
+            :class:`mne.Annotations`.
+
+    Notes
+    -----
+    The function handles the following cases:
+
+    - If the ``trial_type`` column is available, it uses it for event descriptions.
+    - If the ``stim_type`` column is available, it uses it for backward compatibility.
+    - If the ``value`` column is available, it uses it to create the ``event_id``.
+    - If none of the above columns are available, it defaults to using 'n/a' for
+      descriptions and 1 for event IDs.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>>
+    >>> # Create a sample DataFrame
+    >>> data = {
+    ...     'onset': [0.1, 0.2, 0.3],
+    ...     'duration': [0.1, 0.1, 0.1],
+    ...     'trial_type': ['event1', 'event2', 'event1'],
+    ...     'value': [1, 2, 1],
+    ...     'sample': [10, 20, 30],
+    ...     'foo': ['a', 'b', 'c'],
+    ... }
+    >>> df = pd.DataFrame(data)
+    >>>
+    >>> # Write the DataFrame to a temporary file
+    >>> temp_dir = tempfile.gettempdir()
+    >>> events_file = Path(temp_dir) / 'events.tsv'
+    >>> df.to_csv(events_file, sep='\t', index=False)
+    >>>
+    >>> # Read the events file using the function
+    >>> events_dict = events_file_to_annotation_kwargs(events_file, verbose=False)
+    >>> events_dict
+    {'onset': array([0.1, 0.2, 0.3]), 'duration': array([0.1, 0.1, 0.1]), 'description': array(['event1', 'event2', 'event1'], dtype='<U6'), 'event_id': {'event1': 1, 'event2': 2}, 'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}]}
+
+    """  # noqa E501
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
@@ -613,9 +706,11 @@ def _handle_events_reading(events_fname, raw):
                     culled_vals = culled_vals.astype(int)
                 except ValueError:  # numeric, but has some non-integer values
                     pass
+            # purge any np.str_, np.int_, or np.float_ types
+            culled_vals = np.asarray(culled_vals).tolist()
             event_id = dict(zip(culled[trial_type_col_name], culled_vals))
         else:
-            event_id = dict(zip(trial_types, np.arange(len(trial_types))))
+            event_id = dict(zip(trial_types, list(range(len(trial_types)))))
         descrs = np.asarray(trial_types, dtype=str)
 
     # convert onsets & durations to floats ("n/a" onsets were already dropped)
@@ -624,9 +719,73 @@ def _handle_events_reading(events_fname, raw):
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float
     )
 
+    extras = None
+    extra_columns = list(
+        set(events_dict)
+        - {
+            "onset",
+            "duration",
+            "value",
+            "trial_type",
+            "stim_type",
+            "sample",
+        }
+    )
+    if extra_columns:
+        # infer types (int, float or str)
+        for col in extra_columns:
+            vals = [str(v) for v in events_dict[col]]
+            try:
+                events_dict[col] = [int(v) for v in vals]
+            except ValueError:
+                try:
+                    events_dict[col] = [float(v) for v in vals]
+                except ValueError:
+                    events_dict[col] = vals
+            extras = [
+                dict(zip(extra_columns, values))
+                for values in zip(*[events_dict[col] for col in extra_columns])
+            ]
+
+    return {
+        "onset": ons,
+        "duration": durs,
+        "description": descrs,
+        "event_id": event_id,
+        "extras": extras,
+    }
+
+
+def _handle_events_reading(events_fname, raw):
+    """Read associated events.tsv and convert valid events to annotations on Raw."""
+    annotations_info = events_file_to_annotation_kwargs(events_fname)
+    event_id = annotations_info["event_id"]
+
     # Add events as Annotations, but keep essential Annotations present in raw file
     annot_from_raw = raw.annotations.copy()
-    annot_from_events = mne.Annotations(onset=ons, duration=durs, description=descrs)
+    try:
+        annot_from_events = mne.Annotations(
+            onset=annotations_info["onset"],
+            duration=annotations_info["duration"],
+            description=annotations_info["description"],
+            extras=annotations_info["extras"],
+        )
+    except TypeError:
+        if (
+            annotations_info["extras"] is not None
+            and len(annotations_info["extras"]) > 0
+        ):
+            warn(
+                "The version of MNE-Python you are using (<1.10) "
+                "does not support the extras argument in mne.Annotations. "
+                f"The extra column(s) {list(annotations_info['extras'][0].keys())} "
+                "will be ignored."
+            )
+        annot_from_events = mne.Annotations(
+            onset=annotations_info["onset"],
+            duration=annotations_info["duration"],
+            description=annotations_info["description"],
+        )
     raw.set_annotations(annot_from_events)
 
     annot_idx_to_keep = [
@@ -653,7 +812,28 @@ def _get_bads_from_tsv_data(tsv_data):
     return bads
 
 
-def _handle_channels_reading(channels_fname, raw):
+def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
+    """Handle mismatch between channels.tsv and raw channel names."""
+    if on_ch_mismatch == "raise":
+        raise RuntimeError(
+            f"Channel mismatch between {channels_fname} and the raw data file detected."
+            f"Either align channel names in channels.tsv with the raw file, or call "
+            f"read_raw_bids(on_ch_mismatch='reorder'|'rename') to proceed."
+        )
+    logger.info(
+        "Channel mismatch between "
+        f"{channels_fname} and the raw data file detected. "
+        f"Using mismatch strategy: {on_ch_mismatch}."
+    )
+    if on_ch_mismatch == "reorder":
+        raw.reorder_channels(ch_names_tsv)
+    elif on_ch_mismatch == "rename":
+        raw.rename_channels(dict(zip(raw.ch_names, ch_names_tsv)))
+    else:
+        raise ValueError("on_ch_mismatch must be one of {'reorder','raise','rename'}")
+
+
+def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     """Read associated channels.tsv and populate raw.
 
     Updates status (bad) and types of channels.
@@ -734,7 +914,9 @@ def _handle_channels_reading(channels_fname, raw):
             f"set channel names."
         )
     else:
-        raw.rename_channels(dict(zip(raw.ch_names, ch_names_tsv)))
+        orig_names = list(raw.ch_names)
+        if orig_names != ch_names_tsv:
+            _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname)
 
     # Set the channel types in the raw data according to channels.tsv
     channel_type_bids_mne_map_available_channels = {
@@ -753,6 +935,15 @@ def _handle_channels_reading(channels_fname, raw):
     raw.set_channel_types(
         channel_type_bids_mne_map_available_channels, on_unit_change="ignore"
     )
+
+    # Set channel units based on channels.tsv
+    if "units" in channels_dict:
+        ch_names_tsv = channels_dict["name"]
+        units_tsv = channels_dict["units"]
+        for ch_name, unit_str in zip(ch_names_tsv, units_tsv):
+            if ch_name in raw.ch_names and unit_str in UNITS_BIDS_TO_FIFF_MAP:
+                ch_idx = raw.ch_names.index(ch_name)
+                raw.info["chs"][ch_idx]["unit"] = UNITS_BIDS_TO_FIFF_MAP[unit_str]
 
     # Set bad channels based on _channels.tsv sidecar
     if "status" in channels_dict:
@@ -779,7 +970,8 @@ def read_raw_bids(
     *,
     return_event_dict=False,
     eyetrack_ch_types=None,
-    verbose=None
+    on_ch_mismatch="raise",
+    verbose=None,
 ):
     """Read BIDS compatible data.
 
@@ -810,6 +1002,17 @@ def read_raw_bids(
         event IDs, in addition to the :class:`~mne.io.Raw` object. If a ``value`` column
         is present in the ``*_events.tsv`` file, it will be used as the source of the
         integer event ID values (events with ``value="n/a"`` will be omitted).
+    on_ch_mismatch : str
+        How to handle a mismatch between channel names in channels.tsv file
+        and channel names in the raw data file.
+        Must be one of ``'raise'``, ``'reorder'``, ``'rename'`` (default ``'raise'``).
+
+        * ``'raise'`` will raise a RuntimeError if there is a channel mismatch.
+        * ``'reorder'`` will reorder the channels in the raw data file to match the
+          channel order in the channels.tsv file.
+        * ``'rename'`` will rename the channels in the raw data file to match the
+          channel names in the channels.tsv file.
+
     %(verbose)s
 
     Returns
@@ -836,12 +1039,21 @@ def read_raw_bids(
     ValueError
         If the specified ``datatype`` cannot be found in the dataset.
 
+    RuntimeError
+        If channels.tsv and the raw file have a channel-name mismatch
+        and ``on_ch_mismatch`` is 'raise'.
     """
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError(
             '"bids_path" must be a BIDSPath object. Please '
             "instantiate using mne_bids.BIDSPath()."
         )
+    for required in ["root", "subject", "task"]:
+        if not getattr(bids_path, required):
+            raise RuntimeError(
+                '"bids_path" must contain `root`, `subject`, and `task` '
+                f"attributes but it's missing `{required}`."
+            )
 
     bids_path = bids_path.copy()
     sub = bids_path.subject
@@ -865,8 +1077,10 @@ def read_raw_bids(
     if suffix is None:
         bids_path.update(suffix=datatype)
 
-    if bids_path.fpath.suffix == ".pdf":
+    if bids_path.extension == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
+        if not bids_raw_folder.exists():
+            bids_raw_folder = bids_raw_folder.with_suffix("")
 
         # try to find the processed data file ("pdf")
         # see: https://www.fieldtriptoolbox.org/getting_started/bti/
@@ -944,6 +1158,7 @@ def read_raw_bids(
         hpi=None,
         config_path=config_path,
         eyetrack_ch_types=eyetrack_ch_types,
+        verbose=verbose,
         **extra_params,
     )
 
@@ -970,7 +1185,9 @@ def read_raw_bids(
             bids_path, suffix="channels", extension=".tsv", on_error="warn"
         )
         if channels_fname is not None:
-            raw = _handle_channels_reading(channels_fname, raw)
+            raw = _handle_channels_reading(
+                channels_fname, raw, on_ch_mismatch=on_ch_mismatch
+            )
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
@@ -982,14 +1199,14 @@ def read_raw_bids(
         bids_path, suffix="coordsystem", extension=".json", on_error=on_error
     )
     if electrodes_fname is not None:
-        if coordsystem_fname is None:
-            raise RuntimeError(
-                f"BIDS mandates that the coordsystem.json "
-                f"should exist if electrodes.tsv does. "
-                f"Please create coordsystem.json for"
-                f"{bids_path.basename}"
-            )
         if datatype in ["meg", "eeg", "ieeg"]:
+            if coordsystem_fname is None:
+                raise RuntimeError(
+                    f"BIDS mandates that the coordsystem.json "
+                    f"should exist if electrodes.tsv does. "
+                    f"Please create coordsystem.json for "
+                    f"{bids_path.basename}"
+                )
             _read_dig_bids(
                 electrodes_fname, coordsystem_fname, raw=raw, datatype=datatype
             )
@@ -1025,7 +1242,7 @@ def read_raw_bids(
     # read in associated subject info from participants.tsv
     participants_tsv_path = bids_root / "participants.tsv"
     subject = f"sub-{bids_path.subject}"
-    if op.exists(participants_tsv_path):
+    if participants_tsv_path.exists():
         raw = _handle_participants_reading(
             participants_fname=participants_tsv_path, raw=raw, subject=subject
         )
@@ -1220,7 +1437,7 @@ def get_head_mri_trans(
         fs_subject = f"sub-{meg_bids_path.subject}"
 
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
-    fs_t1_path = Path(fs_subjects_dir) / fs_subject / "mri" / "T1.mgz"
+    fs_t1_path = fs_subjects_dir / fs_subject / "mri" / "T1.mgz"
     if not fs_t1_path.exists():
         raise ValueError(
             f"Could not find {fs_t1_path}. Consider running FreeSurfer's "

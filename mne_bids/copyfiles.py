@@ -20,6 +20,7 @@ from mne.io import anonymize_info, read_raw_bdf, read_raw_brainvision, read_raw_
 from mne.utils import logger, verbose
 from scipy.io import loadmat, savemat
 
+from mne_bids._fileio import _open_lock
 from mne_bids.path import BIDSPath, _mkdir_p, _parse_ext
 from mne_bids.utils import _check_anonymize, _get_mrk_meas_date, warn
 
@@ -33,6 +34,18 @@ def _copytree(src, dst, **kwargs):
         # the copy is successful (see https://bugs.python.org/issue24564)
         if "[Errno 22]" not in str(error) or not op.exists(dst):
             raise
+
+
+def _kit_marker_acq_label(run, acquisition_label):
+    """Compose a BIDS acquisition label for KIT marker files."""
+    label_parts = []
+    if run is not None:
+        label_parts.append(f"run{run}")
+    if acquisition_label is not None:
+        label_parts.append(acquisition_label)
+    if not label_parts:
+        return None
+    return "".join(label_parts)
 
 
 def _get_brainvision_encoding(vhdr_file):
@@ -51,7 +64,7 @@ def _get_brainvision_encoding(vhdr_file):
         in the header.
 
     """
-    with open(vhdr_file, "rb") as ef:
+    with _open_lock(vhdr_file, "rb") as ef:
         enc = ef.read()
         if enc.find(b"Codepage=") != -1:
             enc = enc[enc.find(b"Codepage=") + 9 :]
@@ -89,7 +102,7 @@ def _get_brainvision_paths(vhdr_path):
     enc = _get_brainvision_encoding(vhdr_path)
 
     # ..and read it
-    with open(vhdr_path, encoding=enc) as f:
+    with _open_lock(vhdr_path, encoding=enc) as f:
         lines = f.readlines()
 
     # Try to find data file .eeg/.dat
@@ -108,17 +121,24 @@ def _get_brainvision_paths(vhdr_path):
         vmrk_file = vmrk_file_match.groups()[0]
 
     # Make sure we are dealing with file names as is customary, not paths
-    # Paths are problematic when copying the files to another system. Instead,
-    # always use the file name and keep the file triplet in the same directory
-    assert os.sep not in eeg_file
-    assert os.sep not in vmrk_file
+    for fi in [eeg_file, vmrk_file]:
+        if os.sep in fi:
+            raise RuntimeError(
+                f"Detected a path separator in a file link: {fi}.\n\n"
+                "Paths are problematic when copying the files to another system. "
+                "Instead, always use the file name and keep the "
+                "BrainVision file triplet (eeg/dat, vhdr, vmrk) in the same directory."
+            )
 
     # Assert the paths exist
     head, tail = op.split(vhdr_path)
     eeg_file_path = op.join(head, eeg_file)
     vmrk_file_path = op.join(head, vmrk_file)
-    assert op.exists(eeg_file_path)
-    assert op.exists(vmrk_file_path)
+    for fpath in [eeg_file_path, vmrk_file_path]:
+        if not Path(fpath).exists():
+            raise FileNotFoundError(
+                f"{fpath} referenced in {vhdr_path} but it does not exist."
+            )
 
     # Return the paths
     return (eeg_file_path, vmrk_file_path)
@@ -221,12 +241,13 @@ def copyfile_kit(src, dest, subject_id, session_id, task, run, _init_kwargs):
             _, marker_ext = _parse_ext(hpi)
             acq_map[None] = hpi
         for key, value in acq_map.items():
+            marker_acq = _kit_marker_acq_label(run, key)
             marker_path = BIDSPath(
                 subject=subject_id,
                 session=session_id,
                 task=task,
-                run=run,
-                acquisition=key,
+                run=None,
+                acquisition=marker_acq,
                 suffix="markers",
                 extension=marker_ext,
                 datatype=datatype,
@@ -254,13 +275,14 @@ def copyfile_kit(src, dest, subject_id, session_id, task, run, _init_kwargs):
 def _replace_file(fname, pattern, replace):
     """Overwrite file, replacing end of lines matching pattern with replace."""
     new_content = []
-    for line in open(fname):
-        match = re.match(pattern, line)
-        if match:
-            line = match.group()[: -len(replace)] + replace + "\n"
-        new_content.append(line)
+    with _open_lock(fname, "r", encoding="utf-8") as fin:
+        for line in fin:
+            match = re.match(pattern, line)
+            if match:
+                line = match.group()[: -len(replace)] + replace + "\n"
+            new_content.append(line)
 
-    with open(fname, "w", encoding="utf-8") as fout:
+    with _open_lock(fname, "w", encoding="utf-8") as fout:
         fout.writelines(new_content)
 
 
@@ -355,32 +377,42 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     # Write new header and marker files, fixing the file pointer links
     # For that, we need to replace an old "basename" with a new one
     # assuming that all .eeg/.dat, .vhdr, .vmrk share one basename
-    __, basename_src = op.split(fname_src)
-    assert op.split(eeg_file_path)[-1] in [basename_src + ".eeg", basename_src + ".dat"]
-    assert basename_src + ".vmrk" == op.split(vmrk_file_path)[-1]
-    __, basename_dest = op.split(fname_dest)
+    basename_src = Path(fname_src).name
+    eeg_expected = [f"{basename_src}.eeg", f"{basename_src}.dat"]
+    vmrk_expected = [f"{basename_src}.vmrk"]
+    if Path(eeg_file_path).name not in eeg_expected:
+        raise RuntimeError(
+            f"Unexpected path to data file in {vhdr_src}:\n    "
+            f"-->{Path(eeg_file_path).name}\nExpected one of {eeg_expected}."
+        )
+    if Path(vmrk_file_path).name not in vmrk_expected:
+        raise RuntimeError(
+            f"Unexpected path to marker file in {vhdr_src}:\n    "
+            f"-->{Path(vmrk_file_path).name}\nExpected one of {vmrk_expected}."
+        )
+    basename_dest = Path(fname_dest).name
     search_lines = [
-        "DataFile=" + basename_src + ".eeg",
-        "DataFile=" + basename_src + ".dat",
-        "MarkerFile=" + basename_src + ".vmrk",
+        f"DataFile={basename_src}.eeg",
+        f"DataFile={basename_src}.dat",
+        f"MarkerFile={basename_src}.vmrk",
     ]
 
-    with open(vhdr_src, encoding=enc) as fin:
-        with open(vhdr_dest, "w", encoding=enc) as fout:
+    with _open_lock(vhdr_src, encoding=enc) as fin:
+        with _open_lock(vhdr_dest, "w", encoding=enc) as fout:
             for line in fin.readlines():
                 if line.strip() in search_lines:
                     line = line.replace(basename_src, basename_dest)
                 fout.write(line)
 
-    with open(vmrk_file_path, encoding=enc) as fin:
-        with open(fname_dest + ".vmrk", "w", encoding=enc) as fout:
+    with _open_lock(vmrk_file_path, encoding=enc) as fin:
+        with _open_lock(fname_dest + ".vmrk", "w", encoding=enc) as fout:
             for line in fin.readlines():
                 if line.strip() in search_lines:
                     line = line.replace(basename_src, basename_dest)
                 fout.write(line)
 
     if anonymize is not None:
-        raw = read_raw_brainvision(vhdr_src, preload=False, verbose=0)
+        raw = read_raw_brainvision(vhdr_src, preload=False, verbose=verbose)
         daysback, keep_his, _ = _check_anonymize(anonymize, raw, ".vhdr")
         raw.info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
         _anonymize_brainvision(fname_dest + ".vhdr", date=raw.info["meas_date"])
@@ -393,7 +425,8 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
         logger.info("Anonymized all dates in VHDR and VMRK.")
 
 
-def copyfile_edf(src, dest, anonymize=None):
+@verbose
+def copyfile_edf(src, dest, anonymize=None, verbose=None):
     """Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.
 
     .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:
@@ -475,14 +508,14 @@ def copyfile_edf(src, dest, anonymize=None):
     # Anonymize EDF/BDF data, if requested
     if anonymize is not None:
         if ext_src in [".bdf", ".BDF"]:
-            raw = read_raw_bdf(dest, preload=False, verbose=0)
+            raw = read_raw_bdf(dest, preload=False, verbose=verbose)
         elif ext_src in [".edf", ".EDF"]:
-            raw = read_raw_edf(dest, preload=False, verbose=0)
+            raw = read_raw_edf(dest, preload=False, verbose=verbose)
         else:
             raise ValueError(f"Unsupported file type ({ext_src})")
 
         # Get subject info, recording info, and recording date
-        with open(dest, "rb") as f:
+        with _open_lock(dest, "rb") as f:
             f.seek(8)  # id_info field starts 8 bytes in
             id_info = f.read(80).decode("ascii").rstrip()
             rec_info = f.read(80).decode("ascii").rstrip()
@@ -509,7 +542,7 @@ def copyfile_edf(src, dest, anonymize=None):
         else:
             id_info = ["0", "X", "X", "X"]
             rec_info = ["Startdate", start_date, "X", "mne-bids_anonymize", "X"]
-        with open(dest, "r+b") as f:
+        with _open_lock(dest, "r+b") as f:
             f.seek(8)  # id_info field starts 8 bytes in
             f.write(bytes(" ".join(id_info).ljust(80), "ascii"))
             f.write(bytes(" ".join(rec_info).ljust(80), "ascii"))

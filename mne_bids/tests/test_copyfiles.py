@@ -15,6 +15,7 @@ from mne_bids import BIDSPath
 from mne_bids.copyfiles import (
     _get_brainvision_encoding,
     _get_brainvision_paths,
+    _kit_marker_acq_label,
     copyfile_brainvision,
     copyfile_bti,
     copyfile_edf,
@@ -24,14 +25,14 @@ from mne_bids.copyfiles import (
 from mne_bids.path import _parse_ext
 
 testing_path = testing.data_path(download=False)
-base_path = op.join(op.dirname(mne.__file__), "io")
+base_path = Path(mne.__file__).parent / "io"
 
 
 @testing.requires_testing_data
 def test_get_brainvision_encoding():
     """Test getting the file-encoding from a BrainVision header."""
-    data_path = op.join(base_path, "brainvision", "tests", "data")
-    raw_fname = op.join(data_path, "test.vhdr")
+    data_path = base_path / "brainvision" / "tests" / "data"
+    raw_fname = data_path / "test.vhdr"
 
     with pytest.raises(UnicodeDecodeError):
         with open(raw_fname, encoding="ascii") as f:
@@ -44,11 +45,11 @@ def test_get_brainvision_encoding():
 
 def test_get_brainvision_paths(tmp_path):
     """Test getting the file links from a BrainVision header."""
-    data_path = op.join(base_path, "brainvision", "tests", "data")
-    raw_fname = op.join(data_path, "test.vhdr")
+    data_path = base_path / "brainvision" / "tests" / "data"
+    raw_fname = data_path / "test.vhdr"
 
     with pytest.raises(ValueError):
-        _get_brainvision_paths(op.join(data_path, "test.eeg"))
+        _get_brainvision_paths(data_path / "test.eeg")
 
     # Write some temporary test files
     with open(tmp_path / "test1.vhdr", "w") as f:
@@ -76,27 +77,25 @@ def test_get_brainvision_paths(tmp_path):
 )
 def test_copyfile_brainvision(tmp_path):
     """Test the copying of BrainVision vhdr, vmrk and eeg files."""
-    bids_root = str(tmp_path)
-    data_path = op.join(base_path, "brainvision", "tests", "data")
-    raw_fname = op.join(data_path, "test.vhdr")
-    new_name = op.join(bids_root, "tested_conversion.vhdr")
+    bids_root = tmp_path
+    data_path = base_path / "brainvision" / "tests" / "data"
+    raw_fname = data_path / "test.vhdr"
+    new_name = bids_root / "tested_conversion.vhdr"
 
     # IO error testing
     with pytest.raises(ValueError, match="Need to move data with same"):
-        copyfile_brainvision(raw_fname, new_name + ".eeg")
+        copyfile_brainvision(raw_fname, new_name.with_suffix(".eeg"))
 
     # Try to copy the file
     copyfile_brainvision(raw_fname, new_name)
 
     # Have all been copied?
-    head, tail = op.split(new_name)
-    assert op.exists(op.join(head, "tested_conversion.vhdr"))
-    assert op.exists(op.join(head, "tested_conversion.vmrk"))
-    assert op.exists(op.join(head, "tested_conversion.eeg"))
+    for ext in [".vhdr", ".vmrk", ".eeg"]:
+        assert (new_name.parent / f"tested_conversion{ext}").exists()
 
     # Try to read with MNE - if this works, the links are correct
     raw = mne.io.read_raw_brainvision(new_name)
-    assert Path(raw.filenames[0]) == Path(head) / "tested_conversion.eeg"
+    assert Path(raw.filenames[0]) == (new_name.parent / "tested_conversion.eeg")
 
     # Test with anonymization
     raw = mne.io.read_raw_brainvision(raw_fname)
@@ -112,22 +111,22 @@ def test_copyfile_edf(tmp_path):
     """Test the anonymization of EDF/BDF files."""
     bids_root = tmp_path / "bids1"
     bids_root.mkdir()
-    data_path = op.join(base_path, "edf", "tests", "data")
+    data_path = base_path / "edf" / "tests" / "data"
 
     # Test regular copying
     for ext in [".edf", ".bdf"]:
-        raw_fname = op.join(data_path, "test" + ext)
-        new_name = op.join(bids_root, "test_copy" + ext)
+        raw_fname = data_path / f"test{ext}"
+        new_name = bids_root / f"test_copy{ext}"
         copyfile_edf(raw_fname, new_name)
 
     # IO error testing
     with pytest.raises(ValueError, match="Need to move data with same"):
-        raw_fname = op.join(data_path, "test.edf")
-        new_name = op.join(bids_root, "test_copy.bdf")
+        raw_fname = data_path / "test.edf"
+        new_name = bids_root / "test_copy.bdf"
         copyfile_edf(raw_fname, new_name)
 
     # Add some subject info to an EDF to test anonymization
-    testfile = op.join(bids_root, "test_copy.edf")
+    testfile = bids_root / "test_copy.edf"
     raw_date = mne.io.read_raw_edf(testfile).info["meas_date"]
     date = datetime.datetime.strftime(raw_date, "%d-%b-%Y").upper()
     test_id_info = "023 F 02-AUG-1951 Jane"
@@ -147,8 +146,8 @@ def test_copyfile_edf(tmp_path):
 
     bids_root2 = tmp_path / "bids2"
     bids_root2.mkdir()
-    infile = op.join(bids_root, "test_copy.edf")
-    outfile = op.join(bids_root2, "test_copy_anon.edf")
+    infile = bids_root / "test_copy.edf"
+    outfile = bids_root2 / "test_copy_anon.edf"
     anonymize = {"daysback": 33459, "keep_his": False}
     copyfile_edf(infile, outfile, anonymize)
     new_date = _edf_get_real_date(outfile)
@@ -168,7 +167,7 @@ def test_copyfile_edf(tmp_path):
     assert rec_info == rec_info_tmp.format(anon_startdate)
 
     # Test partial ID info anonymization
-    outfile2 = op.join(bids_root2, "test_copy_anon_partial.edf")
+    outfile2 = bids_root2 / "test_copy_anon_partial.edf"
     anonymize = {"daysback": 33459, "keep_his": True}
     copyfile_edf(infile, outfile2, anonymize)
     with open(outfile2, "rb") as f:
@@ -184,12 +183,12 @@ def test_copyfile_edfbdf_uppercase(tmp_path):
     """Test the copying of EDF/BDF files with upper-case extension."""
     bids_root = tmp_path / "bids1"
     bids_root.mkdir()
-    data_path = op.join(base_path, "edf", "tests", "data")
+    data_path = base_path / "edf" / "tests" / "data"
 
     # Test regular copying
     for ext in [".edf", ".bdf"]:
-        raw_fname = op.join(data_path, "test" + ext)
-        new_name = op.join(bids_root, "test_copy" + ext.upper())
+        raw_fname = data_path / f"test{ext}"
+        new_name = bids_root / f"test_copy{ext.upper()}"
 
         with pytest.warns(RuntimeWarning, match="Upper-case extension"):
             copyfile_edf(raw_fname, new_name)
@@ -202,14 +201,14 @@ def test_copyfile_edfbdf_uppercase(tmp_path):
 @testing.requires_testing_data
 def test_copyfile_eeglab(tmp_path, fname):
     """Test the copying of EEGlab set and fdt files."""
-    bids_root = str(tmp_path)
-    data_path = op.join(testing_path, "EEGLAB")
-    raw_fname = op.join(data_path, fname)
-    new_name = op.join(bids_root, f"CONVERTED_{fname}.set")
+    bids_root = tmp_path
+    data_path = testing_path / "EEGLAB"
+    raw_fname = data_path / fname
+    new_name = bids_root / f"CONVERTED_{fname}.set"
 
     # IO error testing
     with pytest.raises(ValueError, match="Need to move data with same ext"):
-        copyfile_eeglab(raw_fname, new_name + ".wrong")
+        copyfile_eeglab(raw_fname, new_name.with_suffix(".wrong"))
 
     # Test copying and reading
     copyfile_eeglab(raw_fname, new_name)
@@ -226,11 +225,11 @@ def test_copyfile_eeglab(tmp_path, fname):
 def test_copyfile_kit(tmp_path):
     """Test copying and renaming KIT files to a new location."""
     output_path = str(tmp_path)
-    data_path = op.join(base_path, "kit", "tests", "data")
-    raw_fname = op.join(data_path, "test.sqd")
-    hpi_fname = op.join(data_path, "test_mrk.sqd")
-    electrode_fname = op.join(data_path, "test.elp")
-    headshape_fname = op.join(data_path, "test.hsp")
+    data_path = base_path / "kit" / "tests" / "data"
+    raw_fname = data_path / "test.sqd"
+    hpi_fname = data_path / "test_mrk.sqd"
+    electrode_fname = data_path / "test.elp"
+    headshape_fname = data_path / "test.hsp"
     subject_id = "01"
     session_id = "01"
     run = "01"
@@ -250,25 +249,36 @@ def test_copyfile_kit(tmp_path):
     kit_bids_path = bids_path.copy().update(
         acquisition=None, datatype=datatype, root=output_path
     )
-    bids_fname = str(
-        bids_path.copy().update(
-            datatype=datatype, suffix=datatype, extension=ext, root=output_path
-        )
+    bids_fname = (
+        bids_path.copy()
+        .update(datatype=datatype, suffix=datatype, extension=ext, root=output_path)
+        .fpath
     )
 
     copyfile_kit(
         raw_fname, bids_fname, subject_id, session_id, task, run, raw._init_kwargs
     )
-    assert op.exists(bids_fname)
+    assert bids_fname.exists()
     _, ext = _parse_ext(hpi_fname)
+    marker_acq = _kit_marker_acq_label(run, None)
     if ext == ".sqd":
-        kit_bids_path.update(suffix="markers", extension=".sqd")
-        assert op.exists(kit_bids_path)
+        kit_bids_path.update(
+            suffix="markers",
+            extension=".sqd",
+            run=None,
+            acquisition=marker_acq,
+        )
+        assert kit_bids_path.fpath.exists()
     elif ext == ".mrk":
-        kit_bids_path.update(suffix="markers", extension=".mrk")
-        assert op.exists(kit_bids_path)
+        kit_bids_path.update(
+            suffix="markers",
+            extension=".mrk",
+            run=None,
+            acquisition=marker_acq,
+        )
+        assert kit_bids_path.fpath.exists()
 
-    if op.exists(electrode_fname):
+    if electrode_fname.exists():
         task, run, key = None, None, "ELP"
         elp_ext = ".pos"
         elp_fname = BIDSPath(
@@ -282,9 +292,9 @@ def test_copyfile_kit(tmp_path):
             datatype="meg",
             root=output_path,
         )
-        assert op.exists(elp_fname)
+        assert elp_fname.fpath.exists()
 
-    if op.exists(headshape_fname):
+    if headshape_fname.exists():
         task, run, key = None, None, "HSP"
         hsp_ext = ".pos"
         hsp_fname = BIDSPath(
@@ -298,7 +308,7 @@ def test_copyfile_kit(tmp_path):
             datatype="meg",
             root=output_path,
         )
-        assert op.exists(hsp_fname)
+        assert hsp_fname.fpath.exists()
 
 
 @pytest.mark.parametrize("dataset", ("4Dsim", "erm_HFH"))

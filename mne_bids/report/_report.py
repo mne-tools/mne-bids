@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import json
-import os.path as op
 import textwrap
 from pathlib import Path
 
@@ -12,6 +11,7 @@ import jinja2
 import numpy as np
 from mne.utils import logger, verbose
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import ALLOWED_DATATYPES, DOI
 from mne_bids.path import (
     BIDSPath,
@@ -151,12 +151,12 @@ def _summarize_dataset(root):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    dataset_descrip_fpath = op.join(root, "dataset_description.json")
-    if not op.exists(dataset_descrip_fpath):
+    dataset_descrip_fpath = root / "dataset_description.json"
+    if not dataset_descrip_fpath.exists():
         return dict()
 
     # read file and 'REQUIRED' components of it
-    with open(dataset_descrip_fpath, encoding="utf-8-sig") as fin:
+    with _open_lock(dataset_descrip_fpath, encoding="utf-8-sig") as fin:
         dataset_description = json.load(fin)
 
     # create dictionary to pass into template string
@@ -186,8 +186,8 @@ def _summarize_participants_tsv(root):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    participants_tsv_fpath = op.join(root, "participants.tsv")
-    if not op.exists(participants_tsv_fpath):
+    participants_tsv_fpath = root / "participants.tsv"
+    if not participants_tsv_fpath.exists():
         return dict()
 
     participants_tsv = _from_tsv(str(participants_tsv_fpath))
@@ -312,7 +312,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
         for scan in scans:
             # summarize metadata of recordings
             bids_path, ext = _parse_ext(scan)
-            datatype = op.dirname(scan)
+            datatype = str(Path(scan).parent)
             if datatype not in ALLOWED_DATATYPES:
                 continue
 
@@ -330,7 +330,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
             sidecar_fname = _find_matching_sidecar(
                 bids_path=bids_path, suffix=datatype, extension=".json"
             )
-            with open(sidecar_fname, encoding="utf-8-sig") as fin:
+            with _open_lock(sidecar_fname, encoding="utf-8-sig") as fin:
                 sidecar_json = json.load(fin)
 
             # aggregate metadata from each scan
@@ -400,7 +400,7 @@ def _summarize_channels_tsv(root, scans_fpaths):
         for scan in scans:
             # summarize metadata of recordings
             bids_path, _ = _parse_ext(scan)
-            datatype = op.dirname(scan)
+            datatype = str(Path(scan).parent)
             if datatype not in ["meg", "eeg", "ieeg"]:
                 continue
 
@@ -465,6 +465,8 @@ def make_report(root, session=None, verbose=None):
         The paragraph wrapped with 80 characters per line
         describing the summary of the subjects.
     """
+    root = Path(root)
+
     # high level summary
     subjects = get_entity_vals(root, entity_key="subject")
     sessions = get_entity_vals(root, entity_key="session")

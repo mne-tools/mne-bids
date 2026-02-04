@@ -17,8 +17,8 @@ checking out this group conversion example: :ref:`ex-convert-mne-sample`
 # %%
 # Let us import ``mne_bids``
 
-import os.path as op
 import shutil
+from pathlib import Path
 
 import mne
 from mne.datasets import eegbci
@@ -38,7 +38,7 @@ from mne_bids.stats import count_events
 subject_ids = [1, 2]
 
 # The run numbers in the eegbci are not consecutive ... we follow the online
-# documentation to get the 1st, 2nd, and 3rd run of one of the the motor
+# documentation to get the 1st, 2nd, and 3rd run of one of the motor
 # imagery task
 runs = [
     4,  # This is run #1 of imagining to open/close left or right fist
@@ -53,14 +53,15 @@ for subject_id in subject_ids:
     eegbci.load_data(subjects=subject_id, runs=runs, update_path=True)
 
 # get path to MNE directory with the downloaded example data
-mne_data_dir = mne.get_config("MNE_DATASETS_EEGBCI_PATH")
-data_dir = op.join(mne_data_dir, "MNE-eegbci-data")
+data_dir = eegbci.data_path
+mne_data_dir = Path(mne.get_config("MNE_DATASETS_EEGBCI_PATH"))
+data_dir = mne_data_dir / "MNE-eegbci-data"
 
 # %%
 # Let us loop over the subjects and create BIDS-compatible folder
 
 # Make a path where we can save the data to
-bids_root = op.join(mne_data_dir, "eegmmidb_bids_group_conversion")
+bids_root = mne_data_dir / "eegmmidb_bids_group_conversion"
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -69,7 +70,7 @@ bids_root = op.join(mne_data_dir, "eegmmidb_bids_group_conversion")
 # .. warning:: Do not delete directories that may contain important data!
 #
 
-if op.exists(bids_root):
+if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # %%

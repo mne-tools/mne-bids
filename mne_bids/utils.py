@@ -6,8 +6,7 @@
 import json
 import os
 import re
-from datetime import date, datetime, timedelta, timezone
-from os import path as op
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -17,6 +16,7 @@ from mne.io.kit.kit import get_kit_info
 from mne.utils import logger, verbose
 from mne.utils import warn as _warn
 
+from mne_bids._fileio import _open_lock
 from mne_bids.tsv_handler import _to_tsv
 
 # This regex matches key-val pairs. Any characters are allowed in the key and
@@ -135,7 +135,7 @@ def _handle_datatype(raw, datatype):
     raw : mne.io.Raw
         Raw object.
     datatype : str | None
-        Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``. If ``None``,
+        Can be one of either ``'meg'``, ``'eeg'``, ``'emg'`` or ``'ieeg'``. If ``None``,
         `mne.utils._handle_datatype()` will attempt to infer the datatype from
         the ``raw`` object. In case of multiple data types in the ``raw``
         object, ``datatype`` must not be ``None``.
@@ -143,7 +143,7 @@ def _handle_datatype(raw, datatype):
     Returns
     -------
     datatype : str
-        One of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.
+        One of either ``'meg'``, ``'eeg'``, ``'emg'``, or ``'ieeg'``.
     """
     if datatype is not None:
         _check_datatype(raw, datatype)
@@ -167,11 +167,13 @@ def _handle_datatype(raw, datatype):
             datatypes.append("meg")
         if "eeg" in raw:
             datatypes.append("eeg")
+        if "emg" in raw:
+            datatypes.append("emg")
         if "fnirs_cw_amplitude" in raw:
             datatypes.append("nirs")
         if len(datatypes) == 0:
             raise ValueError(
-                "No MEG, EEG or iEEG channels found in data. "
+                "No MEG, EEG, iEEG, EMG, or fNIRS channels found in data. "
                 "Please use raw.set_channel_types to set the "
                 "channel types in the data."
             )
@@ -228,13 +230,14 @@ def _check_types(variables):
 
 def _write_json(fname, dictionary, overwrite=False):
     """Write JSON to a file."""
-    if op.exists(fname) and not overwrite:
+    fname = Path(fname)
+    if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
 
     json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
-    with open(fname, "w", encoding="utf-8") as fid:
+    with _open_lock(fname, "w", encoding="utf-8") as fid:
         fid.write(json_output)
         fid.write("\n")
 
@@ -244,7 +247,8 @@ def _write_json(fname, dictionary, overwrite=False):
 @verbose
 def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
     """Write an ordered dictionary to a .tsv file."""
-    if op.exists(fname) and not overwrite:
+    fname = Path(fname)
+    if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
@@ -255,11 +259,11 @@ def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
 
 def _write_text(fname, text, overwrite=False):
     """Write text to a file."""
-    if op.exists(fname) and not overwrite:
+    if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    with open(fname, "w", encoding="utf-8-sig") as fid:
+    with _open_lock(fname, "w", encoding="utf-8-sig") as fid:
         fid.write(text)
         fid.write("\n")
 
@@ -467,7 +471,7 @@ def _stamp_to_dt(utc_stamp):
     stamp = [int(s) for s in utc_stamp]
     if len(stamp) == 1:  # In case there is no microseconds information
         stamp.append(0)
-    return datetime.fromtimestamp(0, tz=timezone.utc) + timedelta(
+    return datetime.fromtimestamp(0, tz=UTC) + timedelta(
         0, stamp[0], stamp[1]
     )  # day, sec, μs
 
@@ -486,7 +490,7 @@ def _check_datatype(raw, datatype):
     -------
     None
     """
-    supported_types = ("meg", "eeg", "ieeg", "nirs", "beh")
+    supported_types = ("beh", "eeg", "emg", "ieeg", "meg", "nirs")
     if datatype not in supported_types:
         raise ValueError(
             f"The specified datatype {datatype} is currently not supported. "
@@ -496,6 +500,8 @@ def _check_datatype(raw, datatype):
         )
     datatype_matches = False
     if datatype == "eeg" and datatype in raw:
+        datatype_matches = True
+    elif datatype == "emg" and datatype in raw:
         datatype_matches = True
     elif datatype == "meg" and datatype in raw:
         datatype_matches = True
@@ -538,7 +544,9 @@ def _example_sorter(filename):
     function is defined here (instead of in `conf.py`) because it must be *importable*
     in order for the sphinx gallery config dict in `conf.py` to remain serializable.
     """
-    with open(Path(__file__).parents[1] / "doc" / "example_order.json") as fid:
+    with _open_lock(
+        Path(__file__).parents[1] / "doc" / "example_order.json", encoding="utf-8"
+    ) as fid:
         EXAMPLE_ORDER = json.load(fid)
 
     if filename not in EXAMPLE_ORDER:

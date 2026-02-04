@@ -20,17 +20,19 @@ Optional:
 
 * ``nibabel`` (>=3.2.1, for processing MRI data)
 * ``pybv`` (>=0.7.5, for writing BrainVision data)
-* ``eeglabio`` (>=0.0.2, for writing EEGLAB data)
+* ``eeglabio`` (>=0.1.0, for writing EEGLAB data)
 * ``pymatreader`` (for other operations with EEGLAB data)
 * ``matplotlib`` (>=3.6, for using the interactive data inspector)
 * ``pandas`` (>=1.3.2, for generating event statistics)
-* ``edfio`` (>=0.2.1, for writing EDF data)
+* ``edfio`` (>=0.4.10, for writing EDF data)
+* ``curryreader`` (>=0.1.2, for reading Curry data)
 * ``defusedxml`` (for writing reading EGI MFF data and BrainVision montages)
+* ``filelock`` (for atomic file writing, and parallel processing support)
 
 We recommend installing ``mne-bids`` into an isolated Python environment,
 for example created via ``conda``
 (may be obtained through `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_).
-We require that you **use Python 3.10 or higher**.
+We require that you **use Python 3.11 or higher**.
 You may choose to install ``mne-bids`` into your isolated Python environment
 `via pip <#installation-via-pip>`_ or
 `via conda <#installation-via-conda>`_.
@@ -93,7 +95,7 @@ other packages in your existing ``conda`` environment.
 Alternatively, you may wish to take advantage of the fact that the
 ``mne-bids`` package on ``conda-forge`` in fact depends on ``mne``,
 meaning that a "full" installation of ``mne-bids`` (i.e., including its
-dependencies) will provide you with a working copy of of both ``mne`` and
+dependencies) will provide you with a working copy of both ``mne`` and
 ``mne-bids`` at once:
 
 .. code-block:: bash

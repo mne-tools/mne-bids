@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import json
-import os.path as op
 import shutil
 from pathlib import Path
 
@@ -43,7 +42,7 @@ bids_path = BIDSPath(
 def _get_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmp_path_factory.mktemp("mnebids_utils_test_bids_ds"))
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     event_id = {
         "Auditory/Left": 1,
@@ -53,11 +52,9 @@ def _get_bids_test_dir(tmp_path_factory):
         "Smiley": 5,
         "Button": 32,
     }
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
-    cal_fname = op.join(data_path, "SSS", "sss_cal_mgh.dat")
-    crosstalk_fname = op.join(data_path, "SSS", "ct_sparse.fif")
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
+    cal_fname = data_path / "SSS" / "sss_cal_mgh.dat"
+    crosstalk_fname = data_path / "SSS" / "ct_sparse.fif"
 
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info["line_freq"] = 60
@@ -70,19 +67,21 @@ def _get_bids_test_dir(tmp_path_factory):
     # Write multiple runs for test_purposes
     for run_idx in [run, "02"]:
         name = bids_path.copy().update(run=run_idx)
-        write_raw_bids(raw, name, events=events, event_id=event_id, overwrite=True)
+        write_raw_bids(
+            raw, name, events=events, event_id=event_id, overwrite=True, verbose="debug"
+        )
 
     write_meg_calibration(cal_fname, bids_path=bids_path)
     write_meg_crosstalk(crosstalk_fname, bids_path=bids_path)
-    return bids_root
+    return Path(bids_root)
 
 
 @pytest.fixture(scope="function")
 def _get_sidecar_json_update_file(_get_bids_test_dir):
     """Return path to a sidecar JSON updating file."""
     bids_root = _get_bids_test_dir
-    sample_scripts = op.join(bids_root, "sourcedata")
-    sidecar_fpath = op.join(sample_scripts, "sidecarjson_update.json")
+    sample_scripts = bids_root / "sourcedata"
+    sidecar_fpath = sample_scripts / "sidecarjson_update.json"
     _mkdir_p(sample_scripts)
 
     update_json = {
@@ -300,11 +299,11 @@ def test_update_anat_landmarks(tmp_path):
 def test_readme_conflicts(extension, _get_bids_test_dir):
     """Test that exisiting README files are respected with any extension."""
     bids_root = _get_bids_test_dir
-    assert Path(bids_root, "README").exists()
-    all_readmes = Path(bids_root).rglob("README*")
+    assert (bids_root / "README").exists()
+    all_readmes = bids_root.rglob("README*")
     assert len(list(all_readmes)) == 1
     if extension is not None:
-        shutil.move(Path(bids_root, "README"), Path(bids_root, f"README{extension}"))
+        shutil.move((bids_root / "README"), (bids_root / f"README{extension}"))
 
     bids_path = BIDSPath(
         subject="02",
@@ -316,11 +315,11 @@ def test_readme_conflicts(extension, _get_bids_test_dir):
         root=_get_bids_test_dir,
     )
 
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = mne.io.read_raw_fif(raw_fname)
 
     write_raw_bids(raw, bids_path, overwrite=False)
-    all_readmes = Path(bids_root).rglob("README*")
+    all_readmes = bids_root.rglob("README*")
     assert len(list(all_readmes)) == 1
     shutil.rmtree(bids_root)
 
@@ -329,8 +328,8 @@ def test_readme_conflicts(extension, _get_bids_test_dir):
 def test_multiple_readmes_invalid(_get_bids_test_dir):
     """Test that multiple README files are not allowed."""
     bids_root = _get_bids_test_dir
-    assert Path(bids_root, "README").exists()
-    shutil.copy(Path(bids_root, "README"), Path(bids_root, "README.md"))
+    assert (bids_root / "README").exists()
+    shutil.copy((bids_root / "README"), (bids_root / "README.md"))
     bids_path = BIDSPath(
         subject="02",
         session=session_id,
@@ -341,7 +340,7 @@ def test_multiple_readmes_invalid(_get_bids_test_dir):
         root=_get_bids_test_dir,
     )
 
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = mne.io.read_raw_fif(raw_fname)
 
     with pytest.raises(RuntimeError, match="Multiple README files found"):

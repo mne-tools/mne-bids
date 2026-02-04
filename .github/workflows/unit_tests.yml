@@ -19,23 +19,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12"]
+        python-version: ["3.13"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v4
+    - uses: actions/cache@v5
       with:
         path: ${{ env.pythonLocation }}
-        key: style-0-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+        key: style-2-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip check
         python -m pip install ruff
     - name: Display versions and environment information
       run: |
@@ -50,24 +51,25 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.10", "3.12"]  # Oldest and newest supported versions
+        python-version: ["3.11", "3.13"]  # Oldest and newest supported versions
     steps:
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
 
-    - uses: actions/cache@v4
+    - uses: actions/cache@v5
       with:
         path: ${{ env.pythonLocation }}
-        key: build-1-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+        key: build-3-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip check
         python -m pip install build twine
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -86,7 +88,7 @@ jobs:
     - name: Remove sdist install
       run: python -m pip uninstall -y mne-bids
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -105,7 +107,7 @@ jobs:
     - name: Remove wheel install
       run: python -m pip uninstall -y mne-bids
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -126,22 +128,23 @@ jobs:
     # For GitHub "required" CI checks, add in branch protection:
     #
     # 8 checks:
-    # for each machine type (ubuntu, macos, macos-13, windows):
-    # (NOTE: macos-13=x86_64, macos>13=arm64)
-    # 3.10 / mne-stable / full / validator-stable
-    # 3.12 / mne-stable / full / validator-stable
+    # for each machine type (ubuntu, macos, windows):
+    # 3.11 / mne-stable / full / validator-stable
+    # 3.13 / mne-stable / full / validator-stable
     #
-    # 3 additional checks with alternative MNE-Python and BIDS validator versions:
-    # ubuntu / 3.12 / mne-main / full / validator-main
-    # ubuntu / 3.10 / mne-prev / full / validator-stable
-    # ubuntu / 3.12 / mne-stable / minimal / validator-stable
+    # 4 additional checks with alternative MNE-Python and BIDS validator versions:
+    # ubuntu / 3.13 / mne-main / full / validator-main -->  to test cutting edge of everything
+    # ubuntu / 3.11 / mne-prev / full / validator-stable --> to test last supported of everything
+    # ubuntu / 3.13 / mne-stable / minimal / validator-stable --> to test a minimal installation
+    # ubuntu / 3.13 / mne-stable / full / validator-main-schema --> to test next-gen BIDS validator
+    # macos-15-intel / 3.13 / mne-stable / full / validator-stable --> to test macos x86_64
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-13, windows-latest]
-        python-version: ["3.10", "3.12"]  # Oldest and newest supported versions
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.11", "3.13"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         mne-bids-install: [full]
         bids-validator-version: [validator-stable]
@@ -150,65 +153,84 @@ jobs:
           # special test runs running only on single CI systems to save resources
           # Test development versions
           - os: ubuntu-latest
-            python-version: "3.12"
+            python-version: "3.13"
             mne-version: mne-main
             mne-bids-install: full
             bids-validator-version: validator-main
           # Test previous MNE stable version
           - os: ubuntu-latest
-            python-version: "3.10"
+            python-version: "3.11"
             mne-version: mne-prev-stable
             mne-bids-install: full
             bids-validator-version: validator-stable
           # Test minimal mne-bids install
           - os: ubuntu-latest
-            python-version: "3.12"
+            python-version: "3.13"
             mne-version: mne-stable
             mne-bids-install: minimal
             bids-validator-version: validator-stable
-
+          # Test next gen BIDS schema validator
+          - os: ubuntu-latest
+            python-version: "3.13"
+            mne-version: mne-stable
+            mne-bids-install: full
+            bids-validator-version: validator-main-schema
+          # Test macos on x86_64 architecture
+          - os: macos-15-intel
+            python-version: "3.13"
+            mne-version: mne-stable
+            mne-bids-install: full
+            bids-validator-version: validator-stable
 
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
+    - name: Set up Node.js (validator-stable and validator-main)
+      if: matrix.bids-validator-version == 'validator-stable' || matrix.bids-validator-version == 'validator-main'
+      uses: actions/setup-node@v6
       with:
         node-version: 20
 
+    - name: Set up deno (validator-main-schema)
+      if: matrix.bids-validator-version == 'validator-main-schema'
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v1.x
+
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
 
     - name: Restore cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.pythonLocation }}
-        key: test-0-${{ env.pythonLocation }}-${{ env.os }}-${{ hashFiles('pyproject.toml') }}
+        key: test-2-${{ env.pythonLocation }}-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.mne-version }}-${{ hashFiles('pyproject.toml') }}
 
     - name: Install Python dependencies using pip
       # This would be nicer once this feature is implemented: https://github.com/pypa/pip/issues/11440
       run: |
         python -m pip install --upgrade pip
+        pip check
         python -m pip install -e .[test]
 
     - name: Install MNE (stable)
       if: matrix.mne-version == 'mne-stable'
       run: |
-        git clone --single-branch --branch maint/1.9 https://github.com/mne-tools/mne-python.git
+        git clone --single-branch --branch maint/1.11 https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python
 
     - name: Install MNE (previous stable)
       if: matrix.mne-version == 'mne-prev-stable'
       run: |
-        git clone --single-branch --branch maint/1.8 https://github.com/mne-tools/mne-python.git
+        git clone --single-branch --branch maint/1.10 https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python
 
     - name: Install MNE (main)
@@ -221,6 +243,18 @@ jobs:
       if: matrix.bids-validator-version == 'validator-stable'
       run: |
         npm install -g bids-validator
+
+    - name: Install BIDS validator (main-schema)
+      if: matrix.bids-validator-version == 'validator-main-schema'
+      # Follow documentation here:
+      #  - https://github.com/bids-standard/bids-validator/tree/master/bids-validator/src
+      #  - https://github.com/bids-standard/bids-examples/blob/7c18d6840982518a0251cfeb59fe5c4610099ea1/.github/workflows/validate_datasets.yml#L69-L75
+      #
+      # Note: in the future, we may want to make it easy to use:
+      #  - a different version of the validator (stable, main)
+      #  - a different version of the schema (stable, main)
+      run: |
+        deno install -Agf https://github.com/bids-standard/bids-validator/raw/deno-build/bids-validator.js
 
     - name: Download BIDS validator (main)
       if: matrix.bids-validator-version == 'validator-main'
@@ -244,14 +278,16 @@ jobs:
         popd
 
     - name: Display versions and environment information
+      shell: bash
       run: |
         echo $TZ
         date
-        echo "npm"; npm --version
+        echo "(npm version)"; npm --version
         echo "node"; node --version
-        echo "bids-validator"; bids-validator --version
-        echo "python"; python --version
-        which python
+        echo "(deno version)"; deno --version || echo ""
+        echo "(bids-validator version)"; bids-validator --version
+        echo "(python version)"; python --version
+        echo "(which python)"; which python
         mne sys_info
 
     - name: Install MNE-BIDS (minimal)
@@ -265,7 +301,7 @@ jobs:
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
       run: make test
-      if: ${{ matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
+      if: ${{ matrix.python-version == '3.13' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
 
     # Get testing data
     - run: ./tools/get_testing_version.sh
@@ -273,9 +309,9 @@ jobs:
       shell: bash
       name: 'Get testing version'
 
-    - uses: actions/cache@v4
+    - uses: actions/cache@v5
       with:
-        key: ${{ env.TESTING_VERSION }}
+        key: testing_data-1-${{ env.TESTING_VERSION }}-${{ matrix.mne-version }}
         path: ~/mne_data
       name: 'Cache testing data'
 
@@ -299,30 +335,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12"]
+        python-version: ["3.13"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v4
+    - uses: actions/cache@v5
       with:
         path: ${{ env.pythonLocation }}
-        key: build_docs-1-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+        key: build_docs-3-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip check
         python -m pip install --upgrade https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip
         python -m pip install -e .[test,doc]
     - name: Build the documentation
       run: |
         make build-doc
     - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: documentation
         path: doc/_build/html

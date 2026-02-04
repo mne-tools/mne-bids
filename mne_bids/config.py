@@ -6,26 +6,31 @@
 from mne import io
 from mne.io.constants import FIFF
 
-BIDS_VERSION = "1.7.0"
+BIDS_VERSION = "1.9.0"
 
 PYBV_VERSION = "0.7.3"
 EEGLABIO_VERSION = "0.0.2"
+CURRYREADER_VERSION = "0.1.2"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-EPHY_ALLOWED_DATATYPES = ["meg", "eeg", "ieeg", "nirs"]
+EPHY_ALLOWED_DATATYPES = ["eeg", "emg", "ieeg", "meg", "nirs"]
 
-ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh"]
+ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh", "motion"]
 
 MEG_CONVERT_FORMATS = ["FIF", "auto"]
 EEG_CONVERT_FORMATS = ["BrainVision", "auto"]
+EMG_CONVERT_FORMATS = ["EDF", "BDF", "auto"]
 IEEG_CONVERT_FORMATS = ["BrainVision", "auto"]
 NIRS_CONVERT_FORMATS = ["auto"]
+MOTION_CONVERT_FORMATS = ["tsv", "auto"]
 CONVERT_FORMATS = {
     "meg": MEG_CONVERT_FORMATS,
     "eeg": EEG_CONVERT_FORMATS,
+    "emg": EMG_CONVERT_FORMATS,
     "ieeg": IEEG_CONVERT_FORMATS,
     "nirs": NIRS_CONVERT_FORMATS,
+    "motion": MOTION_CONVERT_FORMATS,
 }
 
 # Orientation of the coordinate system dependent on manufacturer
@@ -41,6 +46,26 @@ EXT_TO_UNIT_MAP = {".con": "m", ".ds": "cm", ".fif": "m", ".pdf": "m", ".sqd": "
 
 UNITS_MNE_TO_BIDS_MAP = {
     "C": "oC",  # temperature in deg. C
+}
+
+# Mapping from FIFF unit constants to BIDS unit strings for writing
+# This supplements MNE's _unit2human which doesn't include all FIFF units
+UNITS_FIFF_TO_BIDS_MAP = {
+    FIFF.FIFF_UNIT_RAD: "rad",
+}
+
+# Mapping from BIDS unit strings to FIFF unit constants for reading
+UNITS_BIDS_TO_FIFF_MAP = {
+    "V": FIFF.FIFF_UNIT_V,
+    "µV": FIFF.FIFF_UNIT_V,  # stored as V in FIFF, scaling handled separately
+    "mV": FIFF.FIFF_UNIT_V,
+    "T": FIFF.FIFF_UNIT_T,
+    "T/m": FIFF.FIFF_UNIT_T_M,
+    "rad": FIFF.FIFF_UNIT_RAD,
+    "S": FIFF.FIFF_UNIT_S,
+    "oC": FIFF.FIFF_UNIT_CEL,
+    "M": FIFF.FIFF_UNIT_MOL,
+    "px": FIFF.FIFF_UNIT_PX,
 }
 
 meg_manufacturers = {
@@ -84,6 +109,13 @@ ieeg_manufacturers = {
     ".EEG": "Nihon Kohden",
 }
 
+emg_manufacturers = {
+    ".edf": "n/a",
+    ".EDF": "n/a",
+    ".bdf": "Biosemi",
+    ".BDF": "Biosemi",
+}
+
 nirs_manufacturers = {".snirf": "SNIRF"}
 
 # file-extension map to mne-python readers
@@ -115,6 +147,7 @@ reader = {
 MANUFACTURERS = dict()
 MANUFACTURERS.update(meg_manufacturers)
 MANUFACTURERS.update(eeg_manufacturers)
+MANUFACTURERS.update(emg_manufacturers)
 MANUFACTURERS.update(ieeg_manufacturers)
 MANUFACTURERS.update(nirs_manufacturers)
 
@@ -135,6 +168,11 @@ allowed_extensions_eeg = [
     ".set",  # EEGLAB, potentially accompanied by .fdt
 ]
 
+allowed_extensions_emg = [
+    ".edf",  # European Data Format
+    ".bdf",  # Biosemi
+]
+
 allowed_extensions_ieeg = [
     ".vhdr",  # BrainVision, accompanied by .vmrk, .eeg
     ".edf",  # European Data Format
@@ -147,39 +185,49 @@ allowed_extensions_nirs = [
     ".snirf",  # SNIRF
 ]
 
-allowed_extensions_physio = [
-    ".tsv",
+allowed_extensions_motion = [
+    ".tsv",  # Tab-separated values
 ]
 
 # allowed extensions (data formats) in BIDS spec
 ALLOWED_DATATYPE_EXTENSIONS = {
     "meg": allowed_extensions_meg,
     "eeg": allowed_extensions_eeg,
+    "emg": allowed_extensions_emg,
     "ieeg": allowed_extensions_ieeg,
     "nirs": allowed_extensions_nirs,
-    "physio": allowed_extensions_physio
+    "motion": allowed_extensions_motion,
 }
 
 # allow additional extensions that are not BIDS
 # compliant, but we will convert to the
 # recommended formats
-ALLOWED_INPUT_EXTENSIONS = (
-    allowed_extensions_meg
-    + allowed_extensions_eeg
-    + allowed_extensions_ieeg
-    + allowed_extensions_nirs
-    + [".lay", ".EEG", ".cnt", ".CNT", ".bin", ".cdt"]
+ALLOWED_INPUT_EXTENSIONS = sorted(
+    set(
+        allowed_extensions_meg
+        + allowed_extensions_eeg
+        + allowed_extensions_emg
+        + allowed_extensions_ieeg
+        + allowed_extensions_nirs
+        + [".lay", ".EEG", ".cnt", ".CNT", ".bin", ".cdt"]
+    )
 )
+
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
 ALLOWED_FILENAME_SUFFIX = [
+    # datatypes:
     "meg",
     "markers",
     "eeg",
     "ieeg",
+    "emg",
+    "nirs",
     "T1w",
-    "FLASH",  # datatype
+    "T2w",
+    "FLASH",
+    # sidecars:
     "participants",
     "scans",
     "sessions",
@@ -187,13 +235,15 @@ ALLOWED_FILENAME_SUFFIX = [
     "optodes",
     "channels",
     "coordsystem",
-    "events",  # sidecars
+    "events",
+    # MEG-specific sidecars:
     "headshape",
-    "digitizer",  # meg-specific sidecars
+    "digitizer",
+    # behavioral:
     "beh",
     "physio",
-    "stim",  # behavioral
-    "nirs",
+    "stim",
+    "motion",
 ]
 
 # converts suffix to known path modalities
@@ -204,6 +254,7 @@ SUFFIX_TO_DATATYPE = {
     "markers": "meg",
     "eeg": "eeg",
     "ieeg": "ieeg",
+    "emg": "emg",
     "T1w": "anat",
     "FLASH": "anat",
 }
@@ -212,9 +263,9 @@ SUFFIX_TO_DATATYPE = {
 ALLOWED_FILENAME_EXTENSIONS = (
     ALLOWED_INPUT_EXTENSIONS
     + [".json", ".tsv", ".tsv.gz", ".nii", ".nii.gz"]
-    + [".pos", ".eeg", ".vmrk"]
-    + [".dat", ".EEG"]  # extra datatype-specific metadata files.
-    + [".mrk"]  # extra eeg extensions  # KIT/Yokogawa/Ricoh marker coil
+    + [".pos", ".eeg", ".vmrk"]  # extra datatype-specific metadata files.
+    + [".dat", ".EEG"]  # extra eeg extensions
+    + [".mrk"]  # KIT/Yokogawa/Ricoh marker coil
 )
 
 # allowed BIDSPath entities
@@ -231,6 +282,7 @@ ALLOWED_PATH_ENTITIES = (
     "description",
     "suffix",
     "extension",
+    "tracking_system",
 )
 ALLOWED_PATH_ENTITIES_SHORT = {
     "sub": "subject",
@@ -243,6 +295,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {
     "recording": "recording",
     "split": "split",
     "desc": "description",
+    "tracksys": "tracking_system",
 }
 
 # Annotations to never remove during reading or writing
@@ -311,6 +364,18 @@ BIDS_SHARED_COORDINATE_FRAMES = (
     + coordsys_wildcard
 )
 
+
+# EMG allows arbitrary (user-defined) coord frames
+class EmgCoordFrames(list):
+    """Container for arbitrary (user-defined) coordinate frames (spaces)."""
+
+    def __contains__(self, item):
+        """Pretends to contain any non-empty string."""
+        return isinstance(item, str) and len(item)
+
+
+BIDS_EMG_COORDINATE_FRAMES = EmgCoordFrames()
+
 ALLOWED_SPACES = dict()
 ALLOWED_SPACES["meg"] = ALLOWED_SPACES["eeg"] = (
     BIDS_SHARED_COORDINATE_FRAMES
@@ -318,8 +383,10 @@ ALLOWED_SPACES["meg"] = ALLOWED_SPACES["eeg"] = (
     + BIDS_EEG_COORDINATE_FRAMES
 )
 ALLOWED_SPACES["ieeg"] = BIDS_SHARED_COORDINATE_FRAMES + BIDS_IEEG_COORDINATE_FRAMES
+ALLOWED_SPACES["emg"] = BIDS_EMG_COORDINATE_FRAMES
 ALLOWED_SPACES["anat"] = None
 ALLOWED_SPACES["beh"] = None
+ALLOWED_SPACES["motion"] = None
 
 # See: https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa: E501
 ENTITY_VALUE_TYPE = {
@@ -335,6 +402,7 @@ ENTITY_VALUE_TYPE = {
     "description": "label",
     "suffix": "label",
     "extension": "label",
+    "tracking_system": "label",
 }
 
 # mapping from supported BIDs coordinate frames -> MNE
@@ -455,9 +523,9 @@ for letter in ("a", "b", "c"):
     for sym in ("Sym", "Asym"):
         BIDS_COORD_FRAME_DESCRIPTIONS[f"mni152nlin2009{letter}{sym}"] = (
             "Also known as ICBM (non-linear coregistration with 40 iterations,"
+            " released in 2009). It comes in three different flavours "
+            "each in symmetric or asymmetric version."
         )
-        " released in 2009). It comes in either three different flavours "
-        "each in symmetric or asymmetric version."
 
 REFERENCES = {
     "mne-bids": "Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., "
@@ -496,7 +564,8 @@ REFERENCES = {
     "Gau, R., Gregorova, K., Halchenko, Y.O., Huberty, S., Kling, S., Kulkarni, S., "
     "Markiewicz, C., Mikkelsen, M., Oostenveld, R., Pfarr, JK. (2026). "
     "Eye-Tracking-BIDS: the Brain Imaging Data Structure extended to gaze position "
-    "and pupil data. (In review)."
+    "and pupil data. (In review).",
+    "emg": "In preparation",
 }
 
 

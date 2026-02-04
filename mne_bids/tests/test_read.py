@@ -3,21 +3,26 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import contextlib
 import json
+import logging
+import multiprocessing as mp
 import os
 import os.path as op
+import re
 import shutil as sh
 from collections import OrderedDict
 from contextlib import nullcontext
-from datetime import datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import mne
 import numpy as np
+import pandas as pd
 import pytest
 from mne.datasets import testing
 from mne.io.constants import FIFF
-from mne.utils import assert_dig_allclose, object_diff
+from mne.utils import assert_dig_allclose, check_version, object_diff
 from numpy.testing import assert_almost_equal
 
 import mne_bids.write
@@ -29,9 +34,11 @@ from mne_bids.config import (
 )
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.read import (
+    _handle_channels_reading,
     _handle_events_reading,
     _handle_scans_reading,
     _read_raw,
+    events_file_to_annotation_kwargs,
     get_head_mri_trans,
     read_raw_bids,
 )
@@ -63,7 +70,7 @@ _bids_path_minimal = BIDSPath(subject=subject_id, task=task)
 
 # Get the MNE testing sample data - USA
 data_path = testing.data_path(download=False)
-raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
 # Data with cHPI info
 raw_fname_chpi = op.join(data_path, "SSS", "test_move_anon_raw.fif")
@@ -94,6 +101,49 @@ _read_raw_ctf = _wrap_read_raw(mne.io.read_raw_ctf)
 _read_raw_edf = _wrap_read_raw(mne.io.read_raw_edf)
 
 
+def _make_parallel_raw(subject, *, seed=None):
+    """Generate a lightweight Raw instance for parallel-reading tests."""
+    rng_seed = seed if seed is not None else sum(ord(ch) for ch in subject)
+    rng = np.random.default_rng(rng_seed)
+    info = mne.create_info(["MEG0113"], 100, ch_types="mag")
+    data = rng.standard_normal((1, 100)) * 1e-12
+    raw = mne.io.RawArray(data, info)
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
+    raw.info["line_freq"] = 60
+    raw.info["subject_info"] = {
+        "his_id": subject,
+        "sex": 1,
+        "hand": 2,
+        "birthday": date(1990, 1, 1),
+    }
+    return raw
+
+
+def _write_parallel_dataset(root, *, subject, run):
+    """Write a minimal dataset using write_raw_bids."""
+    root = Path(root)
+    raw = _make_parallel_raw(subject)
+    bids_path = BIDSPath(
+        subject=subject, task="rest", run=run, datatype="meg", root=root
+    )
+    write_raw_bids(raw, bids_path, allow_preload=True, format="FIF", verbose=False)
+
+
+def _parallel_read_participants(root, expected_ids):
+    """Read participants.tsv in a multiprocessing worker."""
+    participants_path = Path(root) / "participants.tsv"
+    participants = _from_tsv(participants_path)
+    assert set(participants["participant_id"]) == set(expected_ids)
+
+
+def _parallel_read_scans(root, expected_filenames):
+    """Read scans.tsv in a multiprocessing worker."""
+    scans_path = BIDSPath(subject="01", root=root, suffix="scans", extension=".tsv")
+    scans = _from_tsv(scans_path.fpath)
+    filenames = {str(filename) for filename in scans["filename"]}
+    assert filenames == set(expected_filenames)
+
+
 def test_read_raw():
     """Test the raw reading."""
     # Use a file ending that does not exist
@@ -122,6 +172,75 @@ def test_read_correct_inputs():
 
     with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         get_head_mri_trans(bids_path)
+
+    with pytest.raises(RuntimeError, match='"bids_path" must contain `root`'):
+        bids_path = BIDSPath(root=bids_path)
+        read_raw_bids(bids_path)
+
+
+@pytest.mark.filterwarnings(
+    "ignore:No events found or provided:RuntimeWarning",
+    "ignore:Found no extension for raw file.*:RuntimeWarning",
+)
+def test_parallel_participants_multiprocess(tmp_path):
+    """Ensure parallel reads keep all participants entries visible."""
+    bids_root = tmp_path / "parallel_multiprocess"
+    subjects = [f"{i:02d}" for i in range(1, 50)]
+
+    for subject in subjects:
+        _write_parallel_dataset(str(bids_root), subject=subject, run="01")
+
+    expected_ids = [f"sub-{subject}" for subject in subjects]
+    processes = []
+    for _ in range(len(subjects) // 10):  # spawn a few processes
+        proc = mp.Process(
+            target=_parallel_read_participants, args=(str(bids_root), expected_ids)
+        )
+        proc.start()
+        processes.append(proc)
+
+    for proc in processes:
+        proc.join()
+        assert proc.exitcode == 0
+
+    participants_path = bids_root / "participants.tsv"
+    assert participants_path.exists()
+    participants = _from_tsv(participants_path)
+    assert set(participants["participant_id"]) == set(expected_ids)
+    sh.rmtree(bids_root, ignore_errors=True)
+
+
+@pytest.mark.filterwarnings(
+    "ignore:No events found or provided:RuntimeWarning",
+    "ignore:Found no extension for raw file.*:RuntimeWarning",
+)
+def test_parallel_scans_multiprocessing(tmp_path):
+    """Ensure multiprocessing reads see all runs in scans.tsv."""
+    bids_root = tmp_path / "parallel_multiprocessing"
+    runs = [f"{i:02d}" for i in range(1, 50)]
+
+    for run in runs:
+        _write_parallel_dataset(str(bids_root), subject="01", run=run)
+
+    expected = {f"meg/sub-01_task-rest_run-{run}_meg.fif" for run in runs}
+    processes = []
+    for _ in range(4):
+        proc = mp.Process(target=_parallel_read_scans, args=(str(bids_root), expected))
+        proc.start()
+        processes.append(proc)
+
+    for proc in processes:
+        proc.join()
+        assert proc.exitcode == 0
+
+    scans_path = BIDSPath(
+        subject="01", root=bids_root, suffix="scans", extension=".tsv"
+    )
+    assert scans_path.fpath.exists()
+    scans = _from_tsv(scans_path.fpath)
+    filenames = {str(filename) for filename in scans["filename"]}
+    assert filenames == expected
+    sh.rmtree(bids_root, ignore_errors=True)
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
@@ -226,9 +345,7 @@ def test_get_head_mri_trans(tmp_path):
     """Test getting a trans object from BIDS data."""
     nib = pytest.importorskip("nibabel")
 
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
     subjects_dir = op.join(data_path, "subjects")
 
     # Drop unknown events.
@@ -249,7 +366,7 @@ def test_get_head_mri_trans(tmp_path):
         )
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
-    trans = mne.read_trans(raw_fname.replace("_raw.fif", "-trans.fif"))
+    trans = mne.read_trans(str(raw_fname).replace("_raw.fif", "-trans.fif"))
 
     # Get the T1 weighted MRI data file ... test write_anat with a nibabel
     # image instead of a file path
@@ -493,7 +610,8 @@ def test_get_head_mri_trans(tmp_path):
 
 
 @testing.requires_testing_data
-def test_handle_events_reading(tmp_path):
+@pytest.mark.parametrize("with_extras", [False, True])
+def test_handle_events_reading(tmp_path, with_extras):
     """Test reading events from a BIDS events.tsv file."""
     # We can use any `raw` for this
     raw = _read_raw_fif(raw_fname)
@@ -505,15 +623,34 @@ def test_handle_events_reading(tmp_path):
         "duration": ["n/a", "n/a", "n/a"],
         "trial_type": ["rec start", "trial #1", "trial #2!"],
     }
+    if with_extras:
+        events["foo"] = ["a", "b", "c"]
     events_fname = tmp_path / "bids1" / "sub-01_task-test_events.json"
     events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
-    raw, event_id = _handle_events_reading(events_fname, raw)
+    with (
+        pytest.warns(
+            RuntimeWarning,
+            match=re.escape(
+                "The version of MNE-Python you are using (<1.10) "
+                "does not support the extras argument in mne.Annotations. "
+                "The extra column(s) ['foo'] will be ignored."
+            ),
+        )
+        if with_extras and not check_version("mne", "1.10")
+        else contextlib.nullcontext()
+    ):
+        raw, event_id = _handle_events_reading(events_fname, raw)
+
     ev_arr, ev_dict = mne.events_from_annotations(raw)
     assert list(ev_dict.values()) == [1, 2]  # auto-assigned
     want = len(events["onset"]) - 1  # one onset was n/a
     assert want == len(raw.annotations) == len(ev_arr) == len(ev_dict)
+    if with_extras and check_version("mne", "1.10"):
+        for d, v in zip(raw.annotations.extras, "abc"):
+            assert "foo" in d
+            assert d["foo"] == v
 
     # Test with a `stim_type` column instead of `trial_type`.
     events = {
@@ -665,7 +802,7 @@ def test_handle_scans_reading(tmp_path):
     scans_tsv = _from_tsv(scans_path)
     acq_time_str = scans_tsv["acq_time"][0]
     acq_time = datetime.strptime(acq_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-    acq_time = acq_time.replace(tzinfo=timezone.utc)
+    acq_time = acq_time.replace(tzinfo=UTC)
     new_acq_time = acq_time_str.split(".")[0] + "Z"
     assert acq_time == raw_01.info["meas_date"]
     scans_tsv["acq_time"][0] = new_acq_time
@@ -676,7 +813,7 @@ def test_handle_scans_reading(tmp_path):
     raw_02 = read_raw_bids(bids_path)
     new_acq_time = new_acq_time.replace("Z", ".0Z")
     new_acq_time = datetime.strptime(new_acq_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-    new_acq_time = new_acq_time.replace(tzinfo=timezone.utc)
+    new_acq_time = new_acq_time.replace(tzinfo=UTC)
     assert raw_02.info["meas_date"] == new_acq_time
     assert new_acq_time != raw_01.info["meas_date"]
 
@@ -696,7 +833,20 @@ def test_handle_scans_reading(tmp_path):
         # from the original date and the same as the newly altered date
         raw_03 = read_raw_bids(bids_path)
         new_acq_time = datetime.strptime(new_acq_time_str, date_format)
-        assert raw_03.info["meas_date"] == new_acq_time.astimezone(timezone.utc)
+        assert raw_03.info["meas_date"] == new_acq_time.astimezone(UTC)
+
+    # Regression for naive, pre-epoch acquisition times (Windows bug GH-1399)
+    pre_epoch_str = "1950-06-15T13:45:30"
+    scans_tsv["acq_time"][0] = pre_epoch_str
+    _to_tsv(scans_tsv, scans_path)
+
+    raw_pre_epoch = read_raw_bids(bids_path)
+    pre_epoch_naive = datetime.strptime(pre_epoch_str, "%Y-%m-%dT%H:%M:%S")
+    local_tz = datetime.now().astimezone().tzinfo or UTC
+    expected_pre_epoch = pre_epoch_naive.replace(tzinfo=local_tz).astimezone(UTC)
+    assert raw_pre_epoch.info["meas_date"] == expected_pre_epoch
+    if raw_pre_epoch.annotations.orig_time is not None:
+        assert raw_pre_epoch.annotations.orig_time == expected_pre_epoch
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
@@ -1122,7 +1272,7 @@ def test_get_head_mri_trans_ctf(fname, tmp_path):
     write_raw_bids(raw_ctf, bids_path, overwrite=False)
 
     # Take a fake trans
-    trans = mne.read_trans(raw_fname.replace("_raw.fif", "-trans.fif"))
+    trans = mne.read_trans(str(raw_fname).replace("_raw.fif", "-trans.fif"))
 
     # Get the T1 weighted MRI data file ... test write_anat with a nibabel
     # image instead of a file path
@@ -1342,6 +1492,24 @@ def test_ignore_exclude_param(tmp_path):
     assert ch_name in raw.ch_names
 
 
+@testing.requires_testing_data
+def test_read_raw_bids_respects_verbose(tmp_path, caplog):
+    """Ensure ``verbose=False`` suppresses info-level logging."""
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg")
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
+
+    caplog.set_level("INFO", logger="mne")
+    read_raw_bids(bids_path=bids_path, verbose=False)
+
+    info_logs = [
+        record
+        for record in caplog.records
+        if record.levelno <= logging.INFO and record.name.startswith("mne")
+    ]
+    assert not info_logs
+
+
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_channels_tsv_raw_mismatch(tmp_path):
@@ -1418,7 +1586,7 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.reorder_channels(ch_names_new)
     raw.save(raw_path, overwrite=True)
 
-    raw = read_raw_bids(bids_path)
+    raw = read_raw_bids(bids_path, on_ch_mismatch="reorder")
     assert raw.ch_names == ch_names_orig
 
 
@@ -1452,10 +1620,6 @@ def test_file_not_found(tmp_path):
     ):
         read_raw_bids(bp)  # smoke test
 
-    bp.update(task=None)
-    with pytest.raises(FileNotFoundError, match="Did you mean"):
-        read_raw_bids(bp)
-
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_gsr_and_temp_reading():
@@ -1466,3 +1630,224 @@ def test_gsr_and_temp_reading():
     raw = read_raw_bids(bids_path)
     assert raw.get_channel_types(["GSR"]) == ["gsr"]
     assert raw.get_channel_types(["Temperature"]) == ["temperature"]
+
+
+def _setup_nirs_channel_mismatch(tmp_path):
+    ch_order_snirf = ["S1_D1 760", "S1_D2 760", "S1_D1 850", "S1_D2 850"]
+    ch_types = ["fnirs_cw_amplitude"] * len(ch_order_snirf)
+    info = mne.create_info(ch_order_snirf, sfreq=10, ch_types=ch_types)
+    data = np.arange(len(ch_order_snirf) * 10.0).reshape(len(ch_order_snirf), 10)
+    raw = mne.io.RawArray(data, info)
+
+    for i, ch_name in enumerate(raw.ch_names):
+        loc = np.zeros(12)
+        if "S1" in ch_name:
+            loc[3:6] = np.array([0, 0, 0])
+        if "D1" in ch_name:
+            loc[6:9] = np.array([1, 0, 0])
+        elif "D2" in ch_name:
+            loc[6:9] = np.array([0, 1, 0])
+        loc[9] = int(ch_name.split(" ")[1])
+        loc[0:3] = (loc[3:6] + loc[6:9]) / 2
+        raw.info["chs"][i]["loc"] = loc
+
+    orig_name_to_loc = {
+        name: raw.info["chs"][i]["loc"].copy() for i, name in enumerate(raw.ch_names)
+    }
+    orig_name_to_data = {
+        name: raw.get_data(picks=i).copy() for i, name in enumerate(raw.ch_names)
+    }
+
+    ch_order_bids = ["S1_D1 760", "S1_D1 850", "S1_D2 760", "S1_D2 850"]
+    ch_types_bids = ["NIRSCWAMPLITUDE"] * len(ch_order_bids)
+    channels_dict = OrderedDict([("name", ch_order_bids), ("type", ch_types_bids)])
+    channels_fname = tmp_path / "channels.tsv"
+    _to_tsv(channels_dict, channels_fname)
+
+    return (
+        raw,
+        ch_order_snirf,
+        ch_order_bids,
+        channels_fname,
+        orig_name_to_loc,
+        orig_name_to_data,
+    )
+
+
+def test_channel_mismatch_raise(tmp_path):
+    """Raise error when ``on_ch_mismatch='raise'`` and names differ."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    with pytest.raises(
+        RuntimeError,
+        match=("Channel mismatch between .*channels"),
+    ):
+        _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="raise")
+
+
+def test_channel_mismatch_reorder(tmp_path):
+    """Reorder channels to match ``channels.tsv`` ordering."""
+    raw, _, ch_order_bids, channels_fname, orig_name_to_loc, orig_name_to_data = (
+        _setup_nirs_channel_mismatch(tmp_path)
+    )
+    raw_out = _handle_channels_reading(channels_fname, raw, on_ch_mismatch="reorder")
+    assert raw_out.ch_names == ch_order_bids
+    for i, new_name in enumerate(raw_out.ch_names):
+        np.testing.assert_allclose(
+            raw_out.info["chs"][i]["loc"], orig_name_to_loc[new_name]
+        )
+        np.testing.assert_allclose(
+            raw_out.get_data(picks=i), orig_name_to_data[new_name]
+        )
+
+
+def test_channel_mismatch_rename(tmp_path):
+    """Rename channels to match ``channels.tsv`` names."""
+    (
+        raw,
+        ch_order_snirf,
+        ch_order_bids,
+        channels_fname,
+        orig_name_to_loc,
+        orig_name_to_data,
+    ) = _setup_nirs_channel_mismatch(tmp_path)
+    raw_out_rename = _handle_channels_reading(
+        channels_fname, raw.copy(), on_ch_mismatch="rename"
+    )
+    assert raw_out_rename.ch_names == ch_order_bids
+    for i in range(len(ch_order_bids)):
+        orig_name_at_i = ch_order_snirf[i]
+        np.testing.assert_allclose(
+            raw_out_rename.info["chs"][i]["loc"], orig_name_to_loc[orig_name_at_i]
+        )
+        np.testing.assert_allclose(
+            raw_out_rename.get_data(picks=i), orig_name_to_data[orig_name_at_i]
+        )
+
+
+def test_channel_mismatch_invalid_option(tmp_path):
+    """Invalid ``on_ch_mismatch`` value should raise ``ValueError``."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    with pytest.raises(ValueError, match="on_ch_mismatch must be one of"):
+        _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
+
+
+@pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
+def test_channel_units_from_tsv(tmp_path):
+    """Test that channel units are correctly read from channels.tsv."""
+    pytest.importorskip("edfio")
+
+    # Create synthetic raw data with EEG and misc channels
+    ch_names = ["EEG1", "EEG2", "MISC_RAD"]
+    ch_types = ["eeg", "eeg", "misc"]
+    info = mne.create_info(ch_names, sfreq=256, ch_types=ch_types)
+    data = np.zeros((len(ch_names), 256))
+    raw = mne.io.RawArray(data, info)
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
+    raw.info["line_freq"] = 60
+
+    raw.set_annotations(mne.Annotations(onset=[0], duration=[1], description=["test"]))
+
+    # Set the misc channel unit to radians before writing
+    raw.info["chs"][2]["unit"] = FIFF.FIFF_UNIT_RAD
+
+    # Write to BIDS as EDF
+    bids_root = tmp_path / "bids"
+    bids_path = _bids_path.copy().update(
+        root=bids_root, datatype="eeg", suffix="eeg", extension=".edf"
+    )
+    with pytest.warns(RuntimeWarning, match="Converting data files to EDF format"):
+        write_raw_bids(raw, bids_path, overwrite=True, allow_preload=True, format="EDF")
+
+    # Check that channels.tsv contains "rad" for the misc channel
+    channels_fname = _find_matching_sidecar(
+        bids_path, suffix="channels", extension=".tsv"
+    )
+    channels_tsv = _from_tsv(channels_fname)
+    ch_names_tsv = channels_tsv["name"]
+    units_tsv = channels_tsv["units"]
+    misc_idx = ch_names_tsv.index("MISC_RAD")
+    assert units_tsv[misc_idx] == "rad", (
+        f"Expected 'rad' in channels.tsv for MISC_RAD, got '{units_tsv[misc_idx]}'"
+    )
+
+    # Read back and verify units are set correctly
+    raw_read = read_raw_bids(bids_path)
+
+    # Verify the misc channel has radians unit after reading
+    misc_ch_idx = raw_read.ch_names.index("MISC_RAD")
+    assert raw_read.info["chs"][misc_ch_idx]["unit"] == FIFF.FIFF_UNIT_RAD
+
+
+def test_events_file_to_annotation_kwargs(tmp_path):
+    """Test that events file is read correctly."""
+    bids_path = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=tiny_bids_root
+    )
+    events_fname = _find_matching_sidecar(bids_path, suffix="events", extension=".tsv")
+
+    # ---------------- plain read --------------------------------------------
+    df = pd.read_csv(events_fname, sep="\t")
+    ev_kwargs = events_file_to_annotation_kwargs(events_fname=events_fname)
+
+    np.testing.assert_equal(ev_kwargs["onset"], df["onset"].values)
+    np.testing.assert_equal(ev_kwargs["duration"], df["duration"].values)
+    np.testing.assert_equal(ev_kwargs["description"], df["trial_type"].values)
+
+    # ---------------- filtering out n/a values ------------------------------
+    tmp_tsv_file = tmp_path / "events.tsv"
+    dext = pd.concat(
+        [df.copy().assign(onset=df.onset + i) for i in range(5)]
+    ).reset_index(drop=True)
+
+    dext = dext.assign(
+        ix=range(len(dext)),
+        value=dext.trial_type.map({"start_experiment": 1, "show_stimulus": 2}),
+        duration=1.0,
+    )
+
+    # nan values for `_drop` must be string values, `_drop` is called on
+    # `onset`, `value` and `trial_type`. `duration` n/a should end up as float 0
+    for c in ["onset", "value", "trial_type", "duration"]:
+        dext[c] = dext[c].astype(str)
+
+    dext.loc[0, "onset"] = "n/a"
+    dext.loc[1, "duration"] = "n/a"
+    dext.loc[4, "trial_type"] = "n/a"
+    dext.loc[4, "value"] = (
+        "n/a"  # to check that filtering is also applied when we drop the `trial_type`
+    )
+    dext.to_csv(tmp_tsv_file, sep="\t", index=False)
+
+    ev_kwargs_filtered = events_file_to_annotation_kwargs(events_fname=tmp_tsv_file)
+
+    dext_f = dext[
+        (dext["onset"] != "n/a")
+        & (dext["trial_type"] != "n/a")
+        & (dext["value"] != "n/a")
+    ]
+
+    assert (ev_kwargs_filtered["onset"] == dext_f["onset"].astype(float).values).all()
+    assert (
+        ev_kwargs_filtered["duration"]
+        == dext_f["duration"].replace("n/a", "0.0").astype(float).values
+    ).all()
+    assert (ev_kwargs_filtered["description"] == dext_f["trial_type"].values).all()
+    assert (
+        ev_kwargs_filtered["duration"][0] == 0.0
+    )  # now idx=0, as first row is filtered out
+
+    # ---------------- default if missing trial_type  ------------------------
+    dext.drop(columns="trial_type").to_csv(tmp_tsv_file, sep="\t", index=False)
+
+    ev_kwargs_default = events_file_to_annotation_kwargs(events_fname=tmp_tsv_file)
+    np.testing.assert_array_equal(
+        ev_kwargs_default["onset"], dext_f["onset"].astype(float).values
+    )
+    np.testing.assert_array_equal(
+        ev_kwargs_default["duration"],
+        dext_f["duration"].replace("n/a", "0.0").astype(float).values,
+    )
+    np.testing.assert_array_equal(
+        np.sort(np.unique(ev_kwargs_default["description"])),
+        np.sort(dext_f["value"].unique()),
+    )

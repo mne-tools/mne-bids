@@ -78,7 +78,7 @@ default_role = "autolink"  # XXX silently allows bad syntax, someone should fix
 
 # configure linkcheck
 # https://sphinx-doc.org/en/master/usage/configuration.html?#options-for-the-linkcheck-builder
-linkcheck_retries = 2
+linkcheck_retries = 3
 linkcheck_rate_limit_timeout = 15.0
 linkcheck_ignore = [
     r"https://www.researchgate.net/profile/.*",
@@ -115,7 +115,7 @@ release = version
 exclude_patterns = ["auto_examples/index.rst", "_build", "Thumbs.db", ".DS_Store"]
 
 nitpick_ignore_regex = [
-    # needs https://github.com/sphinx-doc/sphinx/issues/13178
+    # TODO can be removed when min. Sphinx version is 8.2
     ("py:class", r".*pathlib\._local\.Path"),
 ]
 
@@ -168,20 +168,26 @@ html_context = {
 html_sidebars = {}
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = get_intersphinx_mapping(
-    packages={
-        "matplotlib",
-        "mne",
-        "nibabel",
-        "nilearn",
-        "numpy",
-        "pandas",
-        "python",
-        "scipy",
-    }
+# When https://github.com/scipy/docs.scipy.org/issues/102 is resolved, we can
+# remove the scipy entry below and rely on intersphinx_registry.
+intersphinx_mapping = {
+    "mne-gui-addons": ("https://mne.tools/mne-gui-addons", None),
+}
+intersphinx_mapping.update(
+    get_intersphinx_mapping(
+        packages={
+            "matplotlib",
+            "mne",
+            "nibabel",
+            "nilearn",
+            "numpy",
+            "scipy",
+            "pandas",
+            "python",
+        }
+    )
 )
-intersphinx_mapping["mne-gui-addons"] = ("https://mne.tools/mne-gui-addons", None)
-intersphinx_timeout = 5
+intersphinx_timeout = 30
 
 sphinx_gallery_conf = {
     "doc_module": "mne_bids",

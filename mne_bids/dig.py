@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import json
-import os.path as op
 import re
 import warnings
 from collections import OrderedDict
@@ -14,8 +13,14 @@ import mne
 import numpy as np
 from mne.io.constants import FIFF
 from mne.io.pick import _picks_to_idx
-from mne.utils import _check_option, _validate_type, get_subjects_dir, logger
+from mne.utils import (
+    _check_option,
+    _validate_type,
+    get_subjects_dir,
+    logger,
+)
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_SPACES,
     BIDS_COORD_FRAME_DESCRIPTIONS,
@@ -79,7 +84,7 @@ def _handle_coordsystem_reading(coordsystem_fpath, datatype):
     Handle reading the coordinate frame and coordinate unit
     of each electrode.
     """
-    with open(coordsystem_fpath, encoding="utf-8-sig") as fin:
+    with _open_lock(coordsystem_fpath, encoding="utf-8-sig") as fin:
         coordsystem_json = json.load(fin)
 
     if datatype == "meg":
@@ -208,6 +213,7 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False):
     _write_tsv(fname, data, overwrite=True)
 
 
+@verbose
 def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
     """Create a optodes.tsv file and save it.
 
@@ -374,7 +380,7 @@ def _write_coordsystem_json(
     # XXX: improve later when BIDS is updated
     # check that there already exists a coordsystem.json
     if Path(fname).exists() and not overwrite:
-        with open(fname, encoding="utf-8-sig") as fin:
+        with _open_lock(fname, encoding="utf-8-sig") as fin:
             coordsystem_dict = json.load(fin)
         if fid_json != coordsystem_dict:
             raise RuntimeError(
@@ -386,7 +392,63 @@ def _write_coordsystem_json(
     _write_json(fname, fid_json, overwrite=True)
 
 
-def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False, overwrite=False):
+def _write_empty_ieeg_positions(
+    bids_path,
+    raw,
+    electrodes_tsv_task=False,
+    overwrite=False,
+):
+    """Write placeholder iEEG electrode and coordinate files when no montage."""
+    # I need to check the BIDS documentation for iEEG
+    if bids_path.datatype != "ieeg":  # pragma: no cover
+        raise RuntimeError(
+            f"Expected datatype 'ieeg' when writing default electrodes, "
+            f"got {bids_path.datatype!r}"
+        )
+
+    coord_entities = {
+        "root": bids_path.root,
+        "datatype": bids_path.datatype,
+        "subject": bids_path.subject,
+        "session": bids_path.session,
+        "acquisition": bids_path.acquisition,
+        "space": bids_path.space,
+    }
+    electrode_entities = coord_entities.copy()
+    if electrodes_tsv_task and bids_path.task is not None:
+        electrode_entities["task"] = bids_path.task
+
+    electrodes_path = BIDSPath(
+        **electrode_entities, suffix="electrodes", extension=".tsv"
+    )
+    coordsystem_path = BIDSPath(
+        **coord_entities, suffix="coordsystem", extension=".json"
+    )
+
+    logger.info(
+        "Writing placeholder iEEG electrodes.tsv and coordsystem.json files "
+        "with coordinates marked as unavailable."
+    )
+    _write_electrodes_tsv(raw, electrodes_path.fpath, bids_path.datatype, overwrite)
+    _write_coordsystem_json(
+        raw=raw,
+        unit="n/a",
+        hpi_coord_system="n/a",
+        sensor_coord_system="Other",
+        fname=coordsystem_path,
+        datatype=bids_path.datatype,
+        overwrite=overwrite,
+    )
+
+
+def _write_dig_bids(
+    bids_path,
+    raw,
+    montage=None,
+    acpc_aligned=False,
+    electrodes_tsv_task=False,
+    overwrite=False,
+):
     """Write BIDS formatted DigMontage from Raw instance.
 
     Handles coordsystem.json and electrodes.tsv writing
@@ -406,6 +468,9 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False, overwrite=
         must be transformed from the "head" coordinate frame.
     acpc_aligned : bool
         Whether "mri" space is aligned to ACPC.
+    electrodes_tsv_task : bool
+        Whether to add the ``task-`` entity to the ``electrodes.tsv`` filename.
+        Defaults to ``False``.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -501,12 +566,16 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False, overwrite=
         "acquisition": bids_path.acquisition,
         "space": None if bids_path.datatype == "nirs" else coord_frame,
     }
+    # add `task-` to the electrodes.tsv file if requested
+    electrode_file_entities = coord_file_entities.copy()
+    if electrodes_tsv_task and bids_path.task is not None:
+        electrode_file_entities["task"] = bids_path.task
     channels_suffix = "optodes" if bids_path.datatype == "nirs" else "electrodes"
     _channels_fun = (
         _write_optodes_tsv if bids_path.datatype == "nirs" else _write_electrodes_tsv
     )
     channels_path = BIDSPath(
-        **coord_file_entities, suffix=channels_suffix, extension=".tsv"
+        **electrode_file_entities, suffix=channels_suffix, extension=".tsv"
     )
     coordsystem_path = BIDSPath(
         **coord_file_entities, suffix="coordsystem", extension=".json"
@@ -722,8 +791,8 @@ def convert_montage_to_ras(montage, subject, subjects_dir=None, verbose=None):
     nib = _import_nibabel("converting a montage to RAS")
 
     subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-    T1_fname = op.join(subjects_dir, subject, "mri", "T1.mgz")
-    if not op.isfile(T1_fname):
+    T1_fname = subjects_dir / subject / "mri" / "T1.mgz"
+    if not T1_fname.is_file():
         raise RuntimeError(
             f"Freesurfer subject ({subject}) and/or "
             f"subjects_dir ({subjects_dir}, incorrectly "
@@ -767,8 +836,8 @@ def convert_montage_to_mri(montage, subject, subjects_dir=None, verbose=None):
     nib = _import_nibabel("converting a montage to MRI")
 
     subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-    T1_fname = op.join(subjects_dir, subject, "mri", "T1.mgz")
-    if not op.isfile(T1_fname):
+    T1_fname = subjects_dir / subject / "mri" / "T1.mgz"
+    if not T1_fname.is_file():
         raise RuntimeError(
             f"Freesurfer subject ({subject}) and/or "
             f"subjects_dir ({subjects_dir}, incorrectly "

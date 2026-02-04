@@ -34,8 +34,6 @@ for the :ref:`Python Command Line Interface <python_cli>`.
 
 # %%
 # We are importing everything we need for this example:
-import os.path as op
-
 import mne
 
 from mne_bids.copyfiles import copyfile_brainvision
@@ -50,7 +48,7 @@ from mne_bids.copyfiles import copyfile_brainvision
 # .. warning:: This will download 1.6 GB of data!
 
 data_path = mne.datasets.testing.data_path()
-examples_dir = op.join(data_path, "Brainvision")
+examples_dir = data_path / "Brainvision"
 
 # %%
 # Rename the recording
@@ -72,8 +70,8 @@ examples_dir = op.join(data_path, "Brainvision")
 # Here, we rename a test file name:
 
 # Rename the file
-vhdr_file = op.join(examples_dir, "Analyzer_nV_Export.vhdr")
-vhdr_file_renamed = op.join(examples_dir, "test_renamed.vhdr")
+vhdr_file = examples_dir / "Analyzer_nV_Export.vhdr"
+vhdr_file_renamed = examples_dir / "test_renamed.vhdr"
 copyfile_brainvision(vhdr_file, vhdr_file_renamed, verbose=True)
 
 # Check that MNE-Python can read in both, the original as well as the renamed
