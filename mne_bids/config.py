@@ -48,6 +48,26 @@ UNITS_MNE_TO_BIDS_MAP = {
     "C": "oC",  # temperature in deg. C
 }
 
+# Mapping from FIFF unit constants to BIDS unit strings for writing
+# This supplements MNE's _unit2human which doesn't include all FIFF units
+UNITS_FIFF_TO_BIDS_MAP = {
+    FIFF.FIFF_UNIT_RAD: "rad",
+}
+
+# Mapping from BIDS unit strings to FIFF unit constants for reading
+UNITS_BIDS_TO_FIFF_MAP = {
+    "V": FIFF.FIFF_UNIT_V,
+    "µV": FIFF.FIFF_UNIT_V,  # stored as V in FIFF, scaling handled separately
+    "mV": FIFF.FIFF_UNIT_V,
+    "T": FIFF.FIFF_UNIT_T,
+    "T/m": FIFF.FIFF_UNIT_T_M,
+    "rad": FIFF.FIFF_UNIT_RAD,
+    "S": FIFF.FIFF_UNIT_S,
+    "oC": FIFF.FIFF_UNIT_CEL,
+    "M": FIFF.FIFF_UNIT_MOL,
+    "px": FIFF.FIFF_UNIT_PX,
+}
+
 meg_manufacturers = {
     ".con": "KIT/Yokogawa",
     ".ds": "CTF",
