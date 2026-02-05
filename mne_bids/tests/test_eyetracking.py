@@ -1,4 +1,5 @@
-""""Code for I/O of BIDS Compliant eyetracking data (BEP 020)."""
+""" "Code for I/O of BIDS Compliant eyetracking data (BEP 020)."""
+
 import json
 
 import numpy as np
@@ -25,7 +26,7 @@ def test_eyetracking_io(_bids_validate, tmp_path):
         run="01",
         recording="eye1",
         suffix="physio",
-        extension=".tsv"
+        extension=".tsv",
     )
     write_raw_bids(
         raw,
@@ -33,7 +34,7 @@ def test_eyetracking_io(_bids_validate, tmp_path):
         allow_preload=True,
         format="auto",
         overwrite=False,
-        )
+    )
 
     # Check what was written
     out_path = bpath.fpath
@@ -42,7 +43,7 @@ def test_eyetracking_io(_bids_validate, tmp_path):
 
     eye1_json = json.loads(out_path.with_suffix(".json").read_text())
     assert eye1_json["RecordedEye"] == "left"
-    assert eye1_json['SampleCoordinateSystem'] == "gaze-on-screen"
+    assert eye1_json["SampleCoordinateSystem"] == "gaze-on-screen"
     assert "xpos_left" in eye1_json.keys()
 
     eye2_fname = out_path.parent / out_path.name.replace("eye1", "eye2")
@@ -60,11 +61,11 @@ def test_eyetracking_io(_bids_validate, tmp_path):
             "ypos_right": "eyegaze",
             "pupil_right": "pupil",
         },
-        )
+    )
 
     assert raw_in.ch_names == raw.ch_names
     assert raw_in.get_channel_types() == raw.get_channel_types()
-    assert raw_in.info['sfreq'] == raw.info['sfreq']
+    assert raw_in.info["sfreq"] == raw.info["sfreq"]
     for ch_orig, ch_in in zip(raw.info["chs"], raw_in.info["chs"]):
         np.testing.assert_array_equal(ch_orig["loc"], ch_in["loc"])
 
@@ -73,13 +74,15 @@ def test_eyetracking_io(_bids_validate, tmp_path):
 @pytest.mark.filterwarnings("ignore:Converting data:RuntimeWarning")
 @pytest.mark.filterwarnings(
     "ignore:Encountered unsupported non-voltage units:UserWarning"
-    )
+)
 def test_eeg_eyetracking_io(_bids_validate, tmp_path):
     """Test read/write of simultaneously collected EEG-eyetracking data."""
     # Let's Hack together an EEG-Eyetracking dataset
     eyetrack_fpath = testing.data_path(download=False) / "eyetrack" / "test_eyelink.asc"
     egi_fpath = testing.data_path(download=False) / "EGI" / "test_egi.mff"
-    raw_eye = read_raw_eyelink(eyetrack_fpath, )
+    raw_eye = read_raw_eyelink(
+        eyetrack_fpath,
+    )
     raw_egi = read_raw_egi(egi_fpath).load_data()
 
     # Make the two recordings the same length
@@ -87,7 +90,7 @@ def test_eeg_eyetracking_io(_bids_validate, tmp_path):
     raw_egi.resample(100)
 
     raw_eye.set_meas_date(None)
-    raw_egi.set_meas_date(None) # (raw_eye.info["meas_date"])
+    raw_egi.set_meas_date(None)  # (raw_eye.info["meas_date"])
 
     # Combine
     raw = raw_egi.copy().add_channels([raw_eye], force_update_info=True)
@@ -106,7 +109,9 @@ def test_eeg_eyetracking_io(_bids_validate, tmp_path):
         suffix="eeg",
     )
     bpath_et = bpath.copy().update(
-        suffix="physio", extension=".tsv", recording="eye1",
+        suffix="physio",
+        extension=".tsv",
+        recording="eye1",
     )
 
     write_raw_bids(
@@ -114,7 +119,7 @@ def test_eeg_eyetracking_io(_bids_validate, tmp_path):
         bpath,
         allow_preload=True,
         format="BrainVision",
-        )
+    )
 
     # Validate what we wrote
     out_path = bpath_et.fpath
@@ -126,18 +131,18 @@ def test_eeg_eyetracking_io(_bids_validate, tmp_path):
 
     # Now Read
     raw_eye_in = read_raw_bids(
-            bpath_et,
-            eyetrack_ch_types={
-                "xpos_left": "eyegaze",
-                "ypos_left": "eyegaze",
-                "pupil_left": "pupil",
-                "xpos_right": "eyegaze",
-                "ypos_right": "eyegaze",
-                "pupil_right": "pupil",
+        bpath_et,
+        eyetrack_ch_types={
+            "xpos_left": "eyegaze",
+            "ypos_left": "eyegaze",
+            "pupil_left": "pupil",
+            "xpos_right": "eyegaze",
+            "ypos_right": "eyegaze",
+            "pupil_right": "pupil",
         },
-     )
+    )
     assert raw_eye_in.ch_names == raw_eye.ch_names
     assert raw_eye_in.get_channel_types() == raw_eye.get_channel_types()
-    assert raw_eye_in.info['sfreq'] == raw_eye.info['sfreq']
+    assert raw_eye_in.info["sfreq"] == raw_eye.info["sfreq"]
     for ch_orig, ch_in in zip(raw_eye_in.info["chs"], raw_eye.info["chs"]):
         np.testing.assert_array_equal(ch_orig["loc"], ch_in["loc"])

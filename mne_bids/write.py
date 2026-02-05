@@ -1968,7 +1968,7 @@ def write_raw_bids(
         raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
     is_eyetracking_only = all(
         [ch in ["eyegaze", "pupil"] for ch in raw.get_channel_types()]
-        )
+    )
 
     if raw.preload is not False and not allow_preload:
         raise ValueError(
@@ -2134,7 +2134,7 @@ def write_raw_bids(
     bids_path = bids_path.copy().update(
         datatype=datatype,
         suffix=bids_path.suffix if datatype == "beh" else datatype,
-        extension=ext
+        extension=ext,
     )
 
     if datatype == "emg" and emg_placement not in (
@@ -2252,7 +2252,7 @@ def write_raw_bids(
         # FIXME: Is there another way that doesn't rely on hardcoded descriptions?
         is_ocular_ev = np.isin(
             raw.annotations.description, ["BAD_blink", "fixation", "saccade"]
-            )
+        )
         ocular_event_inds = np.where(is_ocular_ev)[0]
         raw.annotations.delete(ocular_event_inds)
 

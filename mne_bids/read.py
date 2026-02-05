@@ -99,7 +99,7 @@ def _read_raw(
         if not json_fpath.exists():
             raise ValueError(
                 f"Expected a corresponding JSON file for {raw_path}, but none exists"
-                )
+            )
         physio_type = _get_physio_type(json_fpath)
         if physio_type.lower() == "eyetrack":
             bpath = get_bids_path_from_fname(raw_path)
@@ -1236,7 +1236,7 @@ def read_raw_bids(
     if scans_fname.exists():
         try:
             raw = _handle_scans_reading(scans_fname, raw, bids_path)
-        except ValueError as e :
+        except ValueError as e:
             if bids_path.suffix == "physio":
                 pass
             else:

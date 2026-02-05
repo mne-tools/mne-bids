@@ -1,4 +1,5 @@
 """Code to facilitate I/O of BIDS compliant eyetracking data (BEP 020)."""
+
 import json
 from pathlib import Path
 
@@ -40,14 +41,16 @@ def _get_eyetrack_ch_names(raw):
     _validate_type(raw, mne.io.BaseRaw, item_name="raw")
     ch_types = raw.get_channel_types()
     eye_chs = [
-        ch for ch, ch_type in zip(raw.ch_names, ch_types)
+        ch
+        for ch, ch_type in zip(raw.ch_names, ch_types)
         if ch_type in ["eyegaze", "pupil"]
-        ]
+    ]
     return eye_chs
 
 
-def _write_single_eye_physio(*, raw, bids_path, eye_chs, eye_recording_tag,
-                             recorded_eye, overwrite):
+def _write_single_eye_physio(
+    *, raw, bids_path, eye_chs, eye_recording_tag, recorded_eye, overwrite
+):
     """Write TSV, JSON, and physioevents for a single eye.
 
     Parameters
@@ -69,9 +72,15 @@ def _write_single_eye_physio(*, raw, bids_path, eye_chs, eye_recording_tag,
     data = raw.get_data(picks=eye_chs)
 
     # Write physio TSV
-    fname_tsv = bids_path.copy().update(
-        recording=eye_recording_tag, suffix="physio", extension=".tsv",
-    ).fpath
+    fname_tsv = (
+        bids_path.copy()
+        .update(
+            recording=eye_recording_tag,
+            suffix="physio",
+            extension=".tsv",
+        )
+        .fpath
+    )
     _write_physio_tsv(times, data, fname_tsv, overwrite)
 
     # Build and write sidecar JSON
@@ -107,19 +116,28 @@ def _write_single_eye_physio(*, raw, bids_path, eye_chs, eye_recording_tag,
             "Units": "arbitrary",
         }
 
-
-    fname_json = bids_path.copy().update(
-        recording=eye_recording_tag, suffix="physio", extension=".json",
-    ).fpath
+    fname_json = (
+        bids_path.copy()
+        .update(
+            recording=eye_recording_tag,
+            suffix="physio",
+            extension=".json",
+        )
+        .fpath
+    )
     _write_physio_json(json_dict, fname_json, overwrite)
 
     # Write physioevents TSV
-    fname_events = bids_path.copy().update(
-        recording=eye_recording_tag,
-        suffix="physioevents",
-        extension=".tsv",
-        check=False,  # physioevents is not an allowed suffix
-    ).fpath
+    fname_events = (
+        bids_path.copy()
+        .update(
+            recording=eye_recording_tag,
+            suffix="physioevents",
+            extension=".tsv",
+            check=False,  # physioevents is not an allowed suffix
+        )
+        .fpath
+    )
     _write_eyetrack_events_tsv(raw=raw, fname_tsv=fname_events, overwrite=overwrite)
 
 
@@ -202,15 +220,12 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
     # Get the names of eyetracking channels
     eye_ch_names = [
         ch_name
-        for ch_name, ch_type
-        in zip(raw.ch_names, raw.get_channel_types())
+        for ch_name, ch_type in zip(raw.ch_names, raw.get_channel_types())
         if ch_type in ["eyegaze", "pupil"]
-        ]
+    ]
     # Get the indices of the annotations that contain eyetracking channels
     for annot_idx, this_annot in enumerate(annotations):
-        if any(
-            [ch_name in this_annot["ch_names"] for ch_name in eye_ch_names]
-            ):
+        if any([ch_name in this_annot["ch_names"] for ch_name in eye_ch_names]):
             eye_annot_indices.append(annot_idx)
     if len(eye_annot_indices) == 0:
         raise ValueError("No eyetracking annotations found.")
@@ -237,7 +252,7 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
     fname_json = fname_tsv.with_suffix(".json")
     _events_json(
         fname_json, extra_columns=None, has_trial_type=True, overwrite=overwrite
-        )
+    )
 
 
 def _write_physio_tsv(times, data, fname, overwrite):
@@ -258,12 +273,12 @@ def _write_physio_tsv(times, data, fname, overwrite):
     if Path(fname).exists() and not overwrite:
         raise FileExistsError(
             f"{fname} already exists. Set overwrite=True to overwrite."
-            )
+        )
     # Check the data
     if data.shape[1] != len(times):
         raise ValueError("Data and time must have the same length.")
     # put the times and data into a numpy array
-    times = np.array(times) # in seconds
+    times = np.array(times)  # in seconds
     eye_data = np.array(data)
     data = np.vstack((times, eye_data)).T
     # Write the file
@@ -286,7 +301,7 @@ def _write_physio_json(json_dict, fname, overwrite):
     if Path(fname).exists() and not overwrite:
         raise FileExistsError(
             f"{fname} already exists. Set overwrite=True to overwrite."
-            )
+        )
     # Write the file
     with open(fname, "w") as f:
         json.dump(json_dict, f, indent=4)
@@ -308,19 +323,15 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: dict[str, str]):
         values correspond to the MNE-Python compatible channel types for said channel,
         such as ``'eyegaze'``, ``'pupil'``, or ``'misc'``.
     """
-    ch_info = {
-        ch_name: {"ch_type": ch_type}
-        for ch_name, ch_type in ch_types.items()
-    }
+    ch_info = {ch_name: {"ch_type": ch_type} for ch_name, ch_type in ch_types.items()}
     fiff_to_func = {
         FIFF.FIFF_UNIT_PX: "px",
         FIFF.FIFF_UNIT_NONE: "au",
         FIFF.FIFF_UNIT_M: "m",
-        FIFF.FIFF_UNIT_RAD: "rad"
-        }
+        FIFF.FIFF_UNIT_RAD: "rad",
+    }
 
     raw_path = bids_path.fpath
-
 
     num_eyes = 1
     eye = bids_path.recording
@@ -367,7 +378,7 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: dict[str, str]):
         for ii, ch_name in enumerate(eye2_cols[1:]):
             unit = eye2_dict[ch_name]["Units"]
             ch_info[ch_name]["eye"] = eye2_eye
-            ch_info[ch_name]["unit"] =  UNITS_BIDS_TO_FIFF_MAP[unit]
+            ch_info[ch_name]["unit"] = UNITS_BIDS_TO_FIFF_MAP[unit]
             if ii == 0:
                 ch_info[ch_name]["axis"] = "x"
             elif ii == 1:
@@ -397,16 +408,13 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: dict[str, str]):
                 this_type,
                 fiff_to_func[ch_info[this_name]["unit"]],
                 ch_info[this_name]["eye"],
-                ch_info[this_name]["axis"]
-                )
+                ch_info[this_name]["axis"],
+            )
         elif this_type == "pupil":
             et_info[this_name] = (
                 this_type,
                 fiff_to_func[ch_info[this_name]["unit"]],
                 ch_info[this_name]["eye"],
-                )
+            )
     set_channel_types_eyetrack(raw, mapping=et_info)
     return raw
-
-
-
