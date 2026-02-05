@@ -1,7 +1,6 @@
+"""Code to facilitate I/O of BIDS compliant eyetracking data (BEP 020)."""
 import json
-import re
 from pathlib import Path
-from warnings import warn
 
 import mne
 import numpy as np
@@ -71,7 +70,7 @@ def _write_single_eye_physio(*, raw, bids_path, eye_chs, eye_recording_tag,
 
     # Write physio TSV
     fname_tsv = bids_path.copy().update(
-        recording=eye_recording_tag, suffix="physio", extension=".tsv", check=False
+        recording=eye_recording_tag, suffix="physio", extension=".tsv",
     ).fpath
     _write_physio_tsv(times, data, fname_tsv, overwrite)
 
@@ -110,13 +109,16 @@ def _write_single_eye_physio(*, raw, bids_path, eye_chs, eye_recording_tag,
 
 
     fname_json = bids_path.copy().update(
-        recording=eye_recording_tag, suffix="physio", extension=".json", check=False
+        recording=eye_recording_tag, suffix="physio", extension=".json",
     ).fpath
     _write_physio_json(json_dict, fname_json, overwrite)
 
     # Write physioevents TSV
     fname_events = bids_path.copy().update(
-        recording=eye_recording_tag, suffix="physioevents", extension=".tsv", check=False
+        recording=eye_recording_tag,
+        suffix="physioevents",
+        extension=".tsv",
+        check=False,  # physioevents is not an allowed suffix
     ).fpath
     _write_eyetrack_events_tsv(raw=raw, fname_tsv=fname_events, overwrite=overwrite)
 
@@ -254,7 +256,9 @@ def _write_physio_tsv(times, data, fname, overwrite):
     """
     # Check for overwrite
     if Path(fname).exists() and not overwrite:
-        raise FileExistsError(f"{fname} already exists. Set overwrite=True to overwrite.")
+        raise FileExistsError(
+            f"{fname} already exists. Set overwrite=True to overwrite."
+            )
     # Check the data
     if data.shape[1] != len(times):
         raise ValueError("Data and time must have the same length.")
@@ -280,13 +284,30 @@ def _write_physio_json(json_dict, fname, overwrite):
     """
     # Check for overwrite
     if Path(fname).exists() and not overwrite:
-        raise FileExistsError(f"{fname} already exists. Set overwrite=True to overwrite.")
+        raise FileExistsError(
+            f"{fname} already exists. Set overwrite=True to overwrite."
+            )
     # Write the file
     with open(fname, "w") as f:
         json.dump(json_dict, f, indent=4)
 
 
-def read_raw_eyetracking_bids(bpath, *, ch_types: dict[str, str]):
+def read_raw_eyetracking_bids(bids_path, *, ch_types: dict[str, str]):
+    """Read BIDS compliant eyetracking data from TSV sidecar files.
+
+    bids_path : mne_bids.BIDSPath
+        the BIDSPath instance that points to the ``<match>_recording-eye1_physio.tsv``
+        eyetracking file. You must specify the following entities in the BIDSPath
+        constructor: ``recording="eye1"``, ``suffix="physio"``, ``extension=".tsv"``.
+        If the eyetracking data was recorded without another modality, you must also
+        specify ``datatype="beh"``. Otherwise, if the eyetracking was collected
+        alongside another modality such as ``eeg``, then you must specify
+        ``datatype="eeg"``.
+    ch_types : dict of str
+        a dictionary whose keys correspond to eyetracking channel names, and whose
+        values correspond to the MNE-Python compatible channel types for said channel,
+        such as ``'eyegaze'``, ``'pupil'``, or ``'misc'``.
+    """
     ch_info = {
         ch_name: {"ch_type": ch_type}
         for ch_name, ch_type in ch_types.items()
@@ -298,11 +319,11 @@ def read_raw_eyetracking_bids(bpath, *, ch_types: dict[str, str]):
         FIFF.FIFF_UNIT_RAD: "rad"
         }
 
-    raw_path = bpath.fpath
+    raw_path = bids_path.fpath
 
 
     num_eyes = 1
-    eye = bpath.recording
+    eye = bids_path.recording
     if not eye:
         raise RuntimeError(
             "To read eyetracking data, you must specify a recording entity in the "

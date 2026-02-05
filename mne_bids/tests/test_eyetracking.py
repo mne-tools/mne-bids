@@ -1,4 +1,6 @@
+""""Code for I/O of BIDS Compliant eyetracking data (BEP 020)."""
 import json
+
 import numpy as np
 import pytest
 from mne.datasets import testing
