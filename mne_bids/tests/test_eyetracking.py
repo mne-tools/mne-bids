@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import pytest
 from mne.datasets import testing
@@ -31,6 +32,22 @@ def test_eyetracking_io(_bids_validate, tmp_path):
         format="auto",
         overwrite=False,
         )
+
+    # Check what was written
+    out_path = bpath.fpath
+    assert out_path.exists()
+    assert out_path.parent.name == "beh"
+
+    eye1_json = json.loads(out_path.with_suffix(".json").read_text())
+    assert eye1_json["RecordedEye"] == "left"
+    assert eye1_json['SampleCoordinateSystem'] == "gaze-on-screen"
+    assert "xpos_left" in eye1_json.keys()
+
+    eye2_fname = out_path.parent / out_path.name.replace("eye1", "eye2")
+    eye2_json = json.loads(eye2_fname.with_suffix(".json").read_text())
+    assert eye2_json["RecordedEye"] == "right"
+    assert "pupil_right" in eye2_json.keys()
+
     raw_in = read_raw_bids(
         bpath,
         eyetrack_ch_types={
@@ -86,6 +103,9 @@ def test_eeg_eyetracking_io(_bids_validate, tmp_path):
         datatype="eeg",
         suffix="eeg",
     )
+    bpath_et = bpath.copy().update(
+        suffix="physio", extension=".tsv", recording="eye1",
+    )
 
     write_raw_bids(
         raw,
@@ -94,10 +114,15 @@ def test_eeg_eyetracking_io(_bids_validate, tmp_path):
         format="BrainVision",
         )
 
-    raw_egi_in = read_raw_bids(bpath)
-    bpath_et = bpath.copy().update(
-        suffix="physio", extension=".tsv", recording="eye1",
-        )
+    # Validate what we wrote
+    out_path = bpath_et.fpath
+    assert out_path.parent.name == "eeg"
+    eye1_json = json.loads(out_path.with_suffix(".json").read_text())
+    assert eye1_json["RecordedEye"] == "left"
+    physio_events = out_path.parent / out_path.name.replace("physio", "physioevents")
+    assert physio_events.exists()
+
+    # Now Read
     raw_eye_in = read_raw_bids(
             bpath_et,
             eyetrack_ch_types={

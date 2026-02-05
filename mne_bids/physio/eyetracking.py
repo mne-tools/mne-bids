@@ -125,7 +125,6 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
     """Write eyetracking physio files (per-eye TSV, JSON, and physioevents)."""
     logger.info("Writing eyetracking data to physio.tsv files.")
     # Write the physio files to the modality that eyetracking was collected with.
-    # TODO: Support writing eyetracking data collected without another modality
     datatype = bids_path.datatype
     if datatype is None:
         raise ValueError("datatype must be specified in the BIDSPath object.")
@@ -156,13 +155,17 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
     if all([len(left_eye_chs) and len(right_eye_chs)]):
         eye1_chs = left_eye_chs
         eye2_chs = right_eye_chs
+        recorded_eye_1 = "left"
+        recorded_eye_2 = "right"
     # Otherwise, if we only have data for one eye, that eye is eye1
     elif len(left_eye_chs):
         eye1_chs = left_eye_chs
         eye2_chs = []
+        recorded_eye_1 = "left"
     elif len(right_eye_chs):
-        eye1_chs = []
-        eye2_chs = right_eye_chs
+        eye1_chs = right_eye_chs
+        eye2_chs = []
+        recorded_eye_1 = "right"
     # Write the *_physio.tsv/.json and *_physioevents.tsv files for each eye
     if eye1_chs:
         _write_single_eye_physio(
@@ -170,7 +173,7 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
             bids_path=bids_path,
             eye_chs=eye1_chs,
             eye_recording_tag="eye1",
-            recorded_eye="left",
+            recorded_eye=recorded_eye_1,
             overwrite=overwrite,
         )
     if eye2_chs:
@@ -179,7 +182,7 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
             bids_path=bids_path,
             eye_chs=eye2_chs,
             eye_recording_tag="eye2",
-            recorded_eye="right",
+            recorded_eye=recorded_eye_2,
             overwrite=overwrite,
         )
 
@@ -356,7 +359,7 @@ def read_raw_eyetracking_bids(bpath, *, ch_types: dict[str, str]):
 
         data = np.concat([eye1_array, eye2_array], axis=1)
         ch_names = eye1_cols[1:] + eye2_cols[1:]
-        types = [ch_info[name]["ch_type"] for name in ch_info]
+        types = [ch_info[name]["ch_type"] for name in ch_names]
     else:
         data = eye1_array
         ch_names = eye1_cols[1:]

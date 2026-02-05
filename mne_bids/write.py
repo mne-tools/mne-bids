@@ -2246,6 +2246,7 @@ def write_raw_bids(
         _write_eyetrack_tsvs(raw, bids_path, overwrite=overwrite)
         if not is_eyetracking_only:
             logger.debug(f"Dropping eyetracking channels from raw: {eyetrack_ch_names}")
+            raw = raw.copy()
             raw.drop_channels(eyetrack_ch_names)
         # Now delete ocular annotations so they aren't written to the _events.json
         # FIXME: Is there another way that doesn't rely on hardcoded descriptions?
