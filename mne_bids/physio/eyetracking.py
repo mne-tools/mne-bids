@@ -10,6 +10,7 @@ from mne.preprocessing.eyetracking import set_channel_types_eyetrack
 from mne.utils import _validate_type, logger
 
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP
+from mne_bids.physio._utils import _get_physio_type
 
 
 def _has_eyetracking(bids_path):
@@ -22,26 +23,6 @@ def _has_eyetracking(bids_path):
     phys_json = phys_tsv.with_suffix(".json")
     phys_type = _get_physio_type(phys_json)
     return True if phys_type == "eyetrack" else False
-
-
-def _get_physio_type(physio_json_fpath):
-    """Return the type of data that is stored in a <match>_physio.tsv file.
-
-    https://bids-specification.readthedocs.io/en/latest/glossary.html#physiotypegeneric-enums
-    """  # noqa: E501
-    default = "generic"
-    fpath = physio_json_fpath  # shorter
-    contents = json.loads(fpath.read_text())
-    physio_type = contents.get("PhysioType", None)  # e.g. "eyetracking"
-
-    if not physio_type:
-        warn(
-            "Expected a key labeled 'PhysioType', with a value such as 'eyetrack', but "
-            f"none exists. Falling back to {default}:\n  Files {fpath.name}"
-        )
-        physio_type = default
-    _validate_type(physio_type, str, "physio_type")
-    return physio_type
 
 
 def _get_eyetrack_ch_names(raw):
