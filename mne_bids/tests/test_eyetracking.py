@@ -8,6 +8,7 @@ from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
 
 @testing.requires_testing_data
 def test_eyetracking_io(_bids_validate, tmp_path):
+    """Test Read/Write of BEP 020 compiant binocular eyetracking data."""
     eyetrack_fpath = testing.data_path(download=False) / "eyetrack" / "test_eyelink.asc"
     raw = read_raw_eyelink(eyetrack_fpath)
     root = tmp_path / "bids"
@@ -55,7 +56,7 @@ def test_eyetracking_io(_bids_validate, tmp_path):
     "ignore:Encountered unsupported non-voltage units:UserWarning"
     )
 def test_eeg_eyetracking_io(_bids_validate, tmp_path):
-    """Test writing eyetracking data into the EEG datatype sub-folder."""
+    """Test read/write of simultaneously collected EEG-eyetracking data."""
     # Let's Hack together an EEG-Eyetracking dataset
     eyetrack_fpath = testing.data_path(download=False) / "eyetrack" / "test_eyelink.asc"
     egi_fpath = testing.data_path(download=False) / "EGI" / "test_egi.mff"

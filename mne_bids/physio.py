@@ -29,6 +29,7 @@ def _get_physio_type(physio_json_fpath):
 
     https://bids-specification.readthedocs.io/en/latest/glossary.html#physiotypegeneric-enums
     """  # noqa: E501
+    default = "generic"
     fpath = physio_json_fpath  # shorter
     contents = json.loads(fpath.read_text())
     physio_type = contents.get("PhysioType", None)  # e.g. "eyetracking"
@@ -36,9 +37,9 @@ def _get_physio_type(physio_json_fpath):
     if not physio_type:
         warn(
             "Expected a key labeled 'PhysioType', with a value such as 'eyetrack', but "
-            f"none exists. Falling back to 'Generic':\n  Files: {fpath.name}.<tsv|json>"
+            f"none exists. Falling back to {default}:\n  Files {fpath.name}"
         )
-        physio_type = "Generic"
+        physio_type = default
     _validate_type(physio_type, str, "physio_type")
     return physio_type
 
@@ -56,8 +57,7 @@ def _get_eyetrack_ch_names(raw):
     list
         A list with the names of the eyetracking channels, if any.
     """
-    if not isinstance(raw, mne.io.BaseRaw):
-        raise ValueError("raw must be an instance of BaseRaw.")
+    _validate_type(raw, mne.io.BaseRaw, item_name="raw")
     ch_types = raw.get_channel_types()
     eye_chs = [
         ch for ch, ch_type in zip(raw.ch_names, ch_types)
@@ -118,7 +118,7 @@ def _write_single_eye_physio(*, raw, bids_path, eye_chs, eye_recording_tag,
             "Description": "The y-coordinate of the gaze on the screen in pixels.",
             "Units": "pixel",
         }
-    elif len(eye_chs) >= 3:
+    if len(eye_chs) >= 3:
         json_dict[eye_chs[2]] = {
             "Description": (
                 "Pupil area of the recorded eye as calculated by the eye-tracker "
@@ -335,10 +335,7 @@ def read_raw_eyetracking_bids(bpath, *, ch_types: dict[str, str]):
     eye1_json = raw_path.with_suffix(".json")
     eye1_dict = json.loads(eye1_json.read_text())
 
-    try:
-        eye1_cols = eye1_dict["Columns"]
-    except KeyError:
-        eye1_cols = eye1_dict["columns"]
+    eye1_cols = eye1_dict["Columns"]
     eye1_eye = eye1_dict["RecordedEye"]
 
     for ii, ch_name in enumerate(eye1_cols[1:]):
@@ -360,10 +357,7 @@ def read_raw_eyetracking_bids(bpath, *, ch_types: dict[str, str]):
         eye2_json = eye2_fpath.with_suffix(".json")
         eye2_dict = json.loads(eye2_json.read_text())
 
-        try:
-            eye2_cols = eye2_dict["Columns"]
-        except KeyError:
-            eye2_cols = eye2_dict["columns"]
+        eye2_cols = eye2_dict["Columns"]
         eye2_eye = eye2_dict["RecordedEye"]
         for ii, ch_name in enumerate(eye2_cols[1:]):
             unit = eye2_dict[ch_name]["Units"]
