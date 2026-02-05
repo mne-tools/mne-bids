@@ -1011,6 +1011,10 @@ def read_raw_bids(
           channel order in the channels.tsv file.
         * ``'rename'`` will rename the channels in the raw data file to match the
           channel names in the channels.tsv file.
+    eyetrack_ch_types : dict[str, str]
+        a dictionary whose keys correspond to eyetracking channel names, and whose
+        values correspond to the MNE-Python compatible channel types for said channel,
+        such as ``'eyegaze'``, ``'pupil'``, or ``'misc'``.
 
     %(verbose)s
 
