@@ -822,7 +822,7 @@ def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
         raise ValueError("on_ch_mismatch must be one of {'reorder','raise','rename'}")
 
 
-def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="rename"):
+def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     """Read associated channels.tsv and populate raw.
 
     Updates status (bad) and types of channels.
@@ -958,7 +958,7 @@ def read_raw_bids(
     extra_params=None,
     *,
     return_event_dict=False,
-    on_ch_mismatch="rename",
+    on_ch_mismatch="raise",
     verbose=None,
 ):
     """Read BIDS compatible data.
@@ -993,7 +993,7 @@ def read_raw_bids(
     on_ch_mismatch : str
         How to handle a mismatch between channel names in channels.tsv file
         and channel names in the raw data file.
-        Must be one of ``'raise'``, ``'reorder'``, ``'rename'`` (default ``'rename'``).
+        Must be one of ``'raise'``, ``'reorder'``, ``'rename'`` (default ``'raise'``).
 
         * ``'raise'`` will raise a RuntimeError if there is a channel mismatch.
         * ``'reorder'`` will reorder the channels in the raw data file to match the

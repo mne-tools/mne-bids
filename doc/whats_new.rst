@@ -41,7 +41,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Change the default ``on_ch_mismatch`` behavior in :func:`mne_bids.read_raw_bids` from ``'raise'`` to ``'rename'`` to handle channel-name mismatches more leniently, by `Bruno Aristimunha`_ (:gh:`1511`)
+- None yet
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
