@@ -1182,14 +1182,14 @@ def read_raw_bids(
         bids_path, suffix="coordsystem", extension=".json", on_error=on_error
     )
     if electrodes_fname is not None:
+        if coordsystem_fname is None:
+            raise RuntimeError(
+                f"BIDS mandates that the coordsystem.json "
+                f"should exist if electrodes.tsv does. "
+                f"Please create coordsystem.json for "
+                f"{bids_path.basename}"
+            )
         if datatype in ["meg", "eeg", "ieeg"]:
-            if coordsystem_fname is None:
-                raise RuntimeError(
-                    f"BIDS mandates that the coordsystem.json "
-                    f"should exist if electrodes.tsv does. "
-                    f"Please create coordsystem.json for "
-                    f"{bids_path.basename}"
-                )
             _read_dig_bids(
                 electrodes_fname, coordsystem_fname, raw=raw, datatype=datatype
             )

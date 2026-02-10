@@ -1897,12 +1897,26 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
 
     candidate_list = glob.glob(search_str_complete, recursive=True)
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)
+
+    # If no candidates found within subject directory, search at dataset root
+    # level per BIDS inheritance principle. Root-level sidecars apply to all
+    # subjects and have no subject/session entities in the filename.
+    root_candidates = []
+    if len(best_candidates) == 0:
+        root_search_str = str(Path(bids_root) / f"*{search_suffix}")
+        root_candidates = glob.glob(root_search_str)
+        # Filter to only files without subject entity (true root-level sidecars)
+        root_candidates = [c for c in root_candidates if "sub-" not in Path(c).name]
+        if root_candidates:
+            # For root-level sidecars, use the one with no conflicting entities
+            best_candidates = _find_best_candidates(bids_path.entities, root_candidates)
     if len(best_candidates) == 1:
         # Success
         return Path(best_candidates[0])
 
     # We failed. Construct a helpful error message.
     # If this was expected, simply return None, otherwise, raise an exception.
+    all_candidates = candidate_list + root_candidates
     msg = None
     if len(best_candidates) == 0:
         msg = f"Did not find any {search_suffix} associated with {bids_path.basename}."
@@ -1911,7 +1925,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         msg = (
             f"Expected to find a single {search_suffix} file "
             f"associated with {bids_path.basename}, "
-            f"but found {len(candidate_list)}:\n\n" + "\n".join(candidate_list)
+            f"but found {len(all_candidates)}:\n\n" + "\n".join(all_candidates)
         )
     msg += f'\n\nThe search_str was "{search_str_complete}"'
     if on_error == "raise":
