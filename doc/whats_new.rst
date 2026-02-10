@@ -33,6 +33,7 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^
 
 - Save ``Annotations.extras`` fields in events.tsv files when writing events, by `Pierre Guetschel`_ (:gh:`1502`)
+- Added support for ``EEGLAB`` and ``EEGLAB-HJ`` coordinate systems as defined in the BIDS specification. Both use ALS orientation (identical to CTF) and map to MNE's ``ctf_head`` coordinate frame, by `Bruno Aristimunha`_ (:gh:`XXX`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

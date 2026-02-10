@@ -1087,6 +1087,16 @@ def test_handle_eeg_coords_reading(tmp_path):
         raw_test = read_raw_bids(bids_path)
         assert raw_test.info["dig"] is None
 
+    # Test EEGLAB and EEGLAB-HJ coordinate systems are accepted and
+    # map to ctf_head
+    for eeglab_frame in ("EEGLAB", "EEGLAB-HJ"):
+        _update_sidecar(coordsystem_fname, "EEGCoordinateSystem", eeglab_frame)
+        raw_test = read_raw_bids(bids_path)
+        assert raw_test.info["dig"] is not None
+        montage = raw_test.get_montage()
+        pos = montage.get_positions()
+        assert pos["coord_frame"] == "ctf_head"
+
 
 @pytest.mark.parametrize("bids_path", [_bids_path, _bids_path_minimal])
 @pytest.mark.filterwarnings(warning_str["nasion_not_found"])
