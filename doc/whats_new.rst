@@ -19,11 +19,13 @@ Version 0.19 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* None Yet
+* None yet
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* None Yet
+* `Bruno Aristimunha`_
+* `Pierre Guetschel`_
+* `Alexandre Gramfort`_
 
 
 Detailed list of changes
@@ -34,6 +36,7 @@ Detailed list of changes
 
 - Save ``Annotations.extras`` fields in events.tsv files when writing events, by `Pierre Guetschel`_ (:gh:`1502`)
 - Added support for ``EEGLAB`` and ``EEGLAB-HJ`` coordinate systems as defined in the BIDS specification. Both use ALS orientation (identical to CTF) and map to MNE's ``ctf_head`` coordinate frame, by `Bruno Aristimunha`_ (:gh:`1514`)
+- :func:`mne_bids.read_raw_bids` now reads channel units from ``channels.tsv`` and sets them on the raw object. This includes support for units like ``rad`` (radians), ``V``, ``µV``, ``mV``, ``T``, ``T/m``, ``S``, ``oC``, ``M``, and ``px``. The write path was also updated to correctly write ``rad`` units to ``channels.tsv``, by `Alexandre Gramfort`_ (:gh:`1509`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -48,7 +51,8 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- None yet
+- Fix :func:`mne_bids.BIDSPath.find_matching_sidecar` to search for sidecar files at the dataset root level per the BIDS inheritance principle, by `Bruno Aristimunha`_ (:gh:`1508`)
+- Reinstate the requirement for ``coordsystem.json`` whenever ``electrodes.tsv`` is present (including EMG), by `Bruno Aristimunha`_ (:gh:`1508`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

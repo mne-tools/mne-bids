@@ -1741,6 +1741,53 @@ def test_channel_mismatch_invalid_option(tmp_path):
         _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
 
 
+@pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
+def test_channel_units_from_tsv(tmp_path):
+    """Test that channel units are correctly read from channels.tsv."""
+    pytest.importorskip("edfio")
+
+    # Create synthetic raw data with EEG and misc channels
+    ch_names = ["EEG1", "EEG2", "MISC_RAD"]
+    ch_types = ["eeg", "eeg", "misc"]
+    info = mne.create_info(ch_names, sfreq=256, ch_types=ch_types)
+    data = np.zeros((len(ch_names), 256))
+    raw = mne.io.RawArray(data, info)
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
+    raw.info["line_freq"] = 60
+
+    raw.set_annotations(mne.Annotations(onset=[0], duration=[1], description=["test"]))
+
+    # Set the misc channel unit to radians before writing
+    raw.info["chs"][2]["unit"] = FIFF.FIFF_UNIT_RAD
+
+    # Write to BIDS as EDF
+    bids_root = tmp_path / "bids"
+    bids_path = _bids_path.copy().update(
+        root=bids_root, datatype="eeg", suffix="eeg", extension=".edf"
+    )
+    with pytest.warns(RuntimeWarning, match="Converting data files to EDF format"):
+        write_raw_bids(raw, bids_path, overwrite=True, allow_preload=True, format="EDF")
+
+    # Check that channels.tsv contains "rad" for the misc channel
+    channels_fname = _find_matching_sidecar(
+        bids_path, suffix="channels", extension=".tsv"
+    )
+    channels_tsv = _from_tsv(channels_fname)
+    ch_names_tsv = channels_tsv["name"]
+    units_tsv = channels_tsv["units"]
+    misc_idx = ch_names_tsv.index("MISC_RAD")
+    assert units_tsv[misc_idx] == "rad", (
+        f"Expected 'rad' in channels.tsv for MISC_RAD, got '{units_tsv[misc_idx]}'"
+    )
+
+    # Read back and verify units are set correctly
+    raw_read = read_raw_bids(bids_path)
+
+    # Verify the misc channel has radians unit after reading
+    misc_ch_idx = raw_read.ch_names.index("MISC_RAD")
+    assert raw_read.info["chs"][misc_ch_idx]["unit"] == FIFF.FIFF_UNIT_RAD
+
+
 def test_events_file_to_annotation_kwargs(tmp_path):
     """Test that events file is read correctly."""
     bids_path = BIDSPath(

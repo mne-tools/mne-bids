@@ -21,6 +21,7 @@ from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
+    UNITS_BIDS_TO_FIFF_MAP,
     _map_options,
     reader,
 )
@@ -913,6 +914,15 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
         channel_type_bids_mne_map_available_channels, on_unit_change="ignore"
     )
 
+    # Set channel units based on channels.tsv
+    if "units" in channels_dict:
+        ch_names_tsv = channels_dict["name"]
+        units_tsv = channels_dict["units"]
+        for ch_name, unit_str in zip(ch_names_tsv, units_tsv):
+            if ch_name in raw.ch_names and unit_str in UNITS_BIDS_TO_FIFF_MAP:
+                ch_idx = raw.ch_names.index(ch_name)
+                raw.info["chs"][ch_idx]["unit"] = UNITS_BIDS_TO_FIFF_MAP[unit_str]
+
     # Set bad channels based on _channels.tsv sidecar
     if "status" in channels_dict:
         bads_tsv = _get_bads_from_tsv_data(channels_dict)
@@ -1161,14 +1171,14 @@ def read_raw_bids(
         bids_path, suffix="coordsystem", extension=".json", on_error=on_error
     )
     if electrodes_fname is not None:
+        if coordsystem_fname is None:
+            raise RuntimeError(
+                f"BIDS mandates that the coordsystem.json "
+                f"should exist if electrodes.tsv does. "
+                f"Please create coordsystem.json for "
+                f"{bids_path.basename}"
+            )
         if datatype in ["meg", "eeg", "ieeg"]:
-            if coordsystem_fname is None:
-                raise RuntimeError(
-                    f"BIDS mandates that the coordsystem.json "
-                    f"should exist if electrodes.tsv does. "
-                    f"Please create coordsystem.json for "
-                    f"{bids_path.basename}"
-                )
             _read_dig_bids(
                 electrodes_fname, coordsystem_fname, raw=raw, datatype=datatype
             )
