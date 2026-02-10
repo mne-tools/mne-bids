@@ -349,7 +349,7 @@ coordsys_standard_template_deprecated = [
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification
-BIDS_IEEG_COORDINATE_FRAMES = ["ACPC", "Pixels"]
+BIDS_IEEG_COORDINATE_FRAMES = ["ACPC", "Pixels", "ScanRAS"]
 BIDS_MEG_COORDINATE_FRAMES = [
     "CTF",
     "ElektaNeuromag",
@@ -418,6 +418,8 @@ BIDS_TO_MNE_FRAMES = {
     "ChietiItab": "head",
     "CapTrak": "head",
     "ACPC": "ras",  # assumes T1 is ACPC-aligned, if not the coordinates are lost
+    # ScanRAS: scanner-based RAS coordinates from the T1w image
+    "ScanRAS": "ras",
     "fsaverage": "mni_tal",  # XXX: note fsaverage and MNI305 are the same
     "MNI305": "mni_tal",
     # MNI152 templates - all map to mni_tal as they are MNI-based
@@ -470,6 +472,14 @@ BIDS_COORD_FRAME_DESCRIPTIONS = {
     "In this case, coordinates must be (row,column) pairs, with "
     "(0,0) corresponding to the upper left pixel and (N,0) "
     "corresponding to the lower left pixel.",
+    "scanras": (
+        "The origin of the coordinate system is the center of the "
+        "gradient coil for the corresponding T1w image. The X-axis "
+        "increases from left to right, the Y-axis increases from "
+        "posterior to anterior, and the Z-axis increases from inferior "
+        "to superior. "
+        "See Appendix VIII in the BIDS specification."
+    ),
     "ctf": "ALS orientation and the origin between the ears",
     "elektaneuromag": "RAS orientation and the origin between the ears",
     "4dbti": "ALS orientation and the origin between the ears",
