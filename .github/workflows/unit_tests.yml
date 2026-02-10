@@ -349,11 +349,6 @@ jobs:
       with:
         path: ${{ env.pythonLocation }}
         key: build_docs-3-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
-    - name: Cache doc example data
-      uses: actions/cache@v5
-      with:
-        key: doc-data-cache-0
-        path: ~/mne_data
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
