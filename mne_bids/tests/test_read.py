@@ -1135,8 +1135,12 @@ def test_read_eeg_missing_coordsystem_warns(tmp_path):
 
     with pytest.warns(
         RuntimeWarning, match=r"Could not find coordsystem\.json for electrodes file:"
-    ):
+    ) as warning_record:
         raw = read_raw_bids(bids_path=bids_path)
+    assert "BIDS requires coordsystem.json whenever electrodes.tsv is present" in str(
+        warning_record[0].message
+    )
+    assert "re-run the BIDS validator." in str(warning_record[0].message)
     assert raw.info["dig"] is None
 
 
@@ -1172,8 +1176,12 @@ def test_read_eeg_root_level_electrodes_missing_coordsystem_warns(tmp_path):
 
     with pytest.warns(
         RuntimeWarning, match=r"Could not find coordsystem\.json for electrodes file:"
-    ):
+    ) as warning_record:
         raw = read_raw_bids(bids_path=bids_path)
+    assert "BIDS requires coordsystem.json whenever electrodes.tsv is present" in str(
+        warning_record[0].message
+    )
+    assert "re-run the BIDS validator." in str(warning_record[0].message)
     assert raw.info["dig"] is None
 
 
