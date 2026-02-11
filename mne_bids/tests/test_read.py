@@ -84,6 +84,7 @@ warning_str = dict(
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:mne",
     nasion_not_found="ignore:.*nasion not found:RuntimeWarning:mne",
     maxshield="ignore:.*Internal Active Shielding:RuntimeWarning:mne",
+    synthetic_fiducials="ignore:No fiducial points found:RuntimeWarning:mne_bids",
 )
 
 
@@ -1023,7 +1024,7 @@ def test_handle_chpi_reading(tmp_path):
 @pytest.mark.filterwarnings(warning_str["nasion_not_found"])
 @testing.requires_testing_data
 def test_handle_eeg_coords_reading(tmp_path):
-    """Test reading iEEG coordinates from BIDS files."""
+    """Test reading EEG coordinates from BIDS files."""
     bids_path = BIDSPath(
         subject=subject_id,
         session=session_id,
@@ -1088,14 +1089,39 @@ def test_handle_eeg_coords_reading(tmp_path):
         assert raw_test.info["dig"] is None
 
     # Test EEGLAB and EEGLAB-HJ coordinate systems are accepted and
-    # map to ctf_head
+    # map to ctf_head, then get transformed to head via synthetic fiducials
     for eeglab_frame in ("EEGLAB", "EEGLAB-HJ"):
         _update_sidecar(coordsystem_fname, "EEGCoordinateSystem", eeglab_frame)
-        raw_test = read_raw_bids(bids_path)
+        with pytest.warns(RuntimeWarning, match="No fiducial points found"):
+            raw_test = read_raw_bids(bids_path)
         assert raw_test.info["dig"] is not None
         montage = raw_test.get_montage()
         pos = montage.get_positions()
-        assert pos["coord_frame"] == "ctf_head"
+        # Synthetic fiducials enable ctf_head -> head transform
+        assert pos["coord_frame"] == "head"
+
+    # Test "n/a" coordinate units are handled by inferring from magnitudes
+    # Reset to a known good coordinate system first
+    _update_sidecar(coordsystem_fname, "EEGCoordinateSystem", "CTF")
+    _update_sidecar(coordsystem_fname, "EEGCoordinateUnits", "n/a")
+    with pytest.warns(RuntimeWarning) as record:
+        raw_test = read_raw_bids(bids_path)
+    messages = [str(w.message) for w in record]
+    assert any('Coordinate unit is "n/a"' in m for m in messages)
+    assert any("No fiducial points found" in m for m in messages)
+    assert raw_test.info["dig"] is not None
+    montage = raw_test.get_montage()
+    pos = montage.get_positions()
+    # CTF maps to ctf_head, then synthetic fiducials transform to head
+    assert pos["coord_frame"] == "head"
+
+    # Test that non-"n/a" invalid units still skip electrodes.tsv
+    _update_sidecar(coordsystem_fname, "EEGCoordinateUnits", "km")
+    with pytest.warns(
+        RuntimeWarning, match="Coordinate unit is not an accepted BIDS unit"
+    ):
+        raw_test = read_raw_bids(bids_path)
+    assert raw_test.info["dig"] is None
 
 
 @pytest.mark.parametrize("bids_path", [_bids_path, _bids_path_minimal])

@@ -23,6 +23,8 @@ from mne_bids.config import (
     MNE_STR_TO_FRAME,
 )
 from mne_bids.dig import (
+    _ensure_fiducials_ctf_head,
+    _infer_coord_unit,
     _read_dig_bids,
     _write_dig_bids,
     convert_montage_to_mri,
@@ -450,3 +452,108 @@ def test_task_specific_electrodes_sidecar(tmp_path):
 
     elpath_foo = bpath_foo.find_matching_sidecar(suffix="electrodes", extension=".tsv")
     assert elpath_foo.name == "sub-01_ses-01_acq-01_space-CapTrak_electrodes.tsv"
+
+
+def test_infer_coord_unit(tmp_path):
+    """Test unit inference from electrode coordinate magnitudes."""
+    # Test meters: typical EEG head coords have max ~0.1
+    electrodes_m = tmp_path / "electrodes_m.tsv"
+    electrodes_m.write_text(
+        "name\tx\ty\tz\nFp1\t0.0949\t0.0307\t-0.0047\nFp2\t0.0949\t-0.0307\t-0.0047\n"
+    )
+    assert _infer_coord_unit(electrodes_m) == "m"
+
+    # Test centimeters: coords ~1-10
+    electrodes_cm = tmp_path / "electrodes_cm.tsv"
+    electrodes_cm.write_text(
+        "name\tx\ty\tz\nFp1\t9.49\t3.07\t-0.47\nFp2\t9.49\t-3.07\t-0.47\n"
+    )
+    assert _infer_coord_unit(electrodes_cm) == "cm"
+
+    # Test millimeters: coords >= 100
+    electrodes_mm = tmp_path / "electrodes_mm.tsv"
+    electrodes_mm.write_text(
+        "name\tx\ty\tz\nFp1\t104.9\t30.7\t-4.7\nFp2\t104.9\t-30.7\t-4.7\n"
+    )
+    assert _infer_coord_unit(electrodes_mm) == "mm"
+
+    # Test with n/a values: should ignore them and still infer correctly
+    electrodes_na = tmp_path / "electrodes_na.tsv"
+    electrodes_na.write_text(
+        "name\tx\ty\tz\nFp1\t0.0949\t0.0307\t-0.0047\nEMG\tn/a\tn/a\tn/a\n"
+    )
+    assert _infer_coord_unit(electrodes_na) == "m"
+
+    # Test all n/a: should default to meters
+    electrodes_all_na = tmp_path / "electrodes_allna.tsv"
+    electrodes_all_na.write_text("name\tx\ty\tz\nEMG\tn/a\tn/a\tn/a\n")
+    assert _infer_coord_unit(electrodes_all_na) == "m"
+
+    # Test boundary: max_abs exactly 1.0 should be cm (not meters)
+    electrodes_boundary_1 = tmp_path / "electrodes_b1.tsv"
+    electrodes_boundary_1.write_text("name\tx\ty\tz\nFp1\t1.0\t0.0\t0.0\n")
+    assert _infer_coord_unit(electrodes_boundary_1) == "cm"
+
+    # Test boundary: max_abs exactly 100.0 should be mm (not cm)
+    electrodes_boundary_100 = tmp_path / "electrodes_b100.tsv"
+    electrodes_boundary_100.write_text("name\tx\ty\tz\nFp1\t100.0\t0.0\t0.0\n")
+    assert _infer_coord_unit(electrodes_boundary_100) == "mm"
+
+
+def test_ensure_fiducials_ctf_head():
+    """Test synthesis of approximate fiducials for ctf_head montages."""
+    # Create a ctf_head montage without fiducials
+    ch_pos = {
+        "Fp1": np.array([0.09, 0.03, 0.0]),
+        "Fp2": np.array([0.09, -0.03, 0.0]),
+        "Oz": np.array([-0.08, 0.0, 0.0]),
+    }
+    montage = mne.channels.make_dig_montage(ch_pos=ch_pos, coord_frame="ctf_head")
+    pos = montage.get_positions()
+    assert pos["nasion"] is None
+    assert pos["lpa"] is None
+    assert pos["rpa"] is None
+
+    # Synthesize fiducials – should emit a warning
+    with pytest.warns(RuntimeWarning, match="No fiducial points found"):
+        _ensure_fiducials_ctf_head(montage)
+    pos = montage.get_positions()
+    assert pos["nasion"] is not None
+    assert pos["lpa"] is not None
+    assert pos["rpa"] is not None
+    assert pos["coord_frame"] == "ctf_head"
+
+    # In CTF/ALS: nasion along +X, LPA along +Y, RPA along -Y
+    assert pos["nasion"][0] > 0  # +X
+    assert pos["lpa"][1] > 0  # +Y
+    assert pos["rpa"][1] < 0  # -Y
+
+    # Test that existing fiducials are not overwritten
+    montage_with_fids = mne.channels.make_dig_montage(
+        ch_pos=ch_pos,
+        nasion=[0.1, 0, 0],
+        lpa=[0, 0.08, 0],
+        rpa=[0, -0.08, 0],
+        coord_frame="ctf_head",
+    )
+    original_nasion = montage_with_fids.get_positions()["nasion"].copy()
+    _ensure_fiducials_ctf_head(montage_with_fids)
+    np.testing.assert_array_equal(
+        montage_with_fids.get_positions()["nasion"], original_nasion
+    )
+
+    # Test all-NaN positions: should return without modification
+    ch_pos_nan = {
+        "Fp1": np.array([np.nan, np.nan, np.nan]),
+        "Fp2": np.array([np.nan, np.nan, np.nan]),
+    }
+    montage_nan = mne.channels.make_dig_montage(
+        ch_pos=ch_pos_nan, coord_frame="ctf_head"
+    )
+    _ensure_fiducials_ctf_head(montage_nan)
+    assert montage_nan.get_positions()["nasion"] is None
+
+    # Test non-ctf_head frame is ignored
+    montage_head = mne.channels.make_dig_montage(ch_pos=ch_pos, coord_frame="head")
+    _ensure_fiducials_ctf_head(montage_head)
+    assert montage_head.get_positions()["nasion"] is None
