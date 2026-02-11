@@ -357,7 +357,7 @@ BIDS_MEG_COORDINATE_FRAMES = [
     "KitYokogawa",
     "ChietiItab",
 ]
-BIDS_EEG_COORDINATE_FRAMES = ["CapTrak"]
+BIDS_EEG_COORDINATE_FRAMES = ["CapTrak", "EEGLAB", "EEGLAB-HJ"]
 
 # accepted coordinate SI units
 BIDS_COORDINATE_UNITS = ["m", "cm", "mm"]
@@ -417,6 +417,11 @@ BIDS_TO_MNE_FRAMES = {
     "ElektaNeuromag": "head",
     "ChietiItab": "head",
     "CapTrak": "head",
+    # EEGLAB uses ALS orientation, same as CTF (FieldTrip: ctf2eeglab = eye(4))
+    # https://www.fieldtriptoolbox.org/faq/coordsys/
+    "EEGLAB": "ctf_head",
+    # EEGLAB-HJ: same as EEGLAB but uses helix-tragus junction landmarks
+    "EEGLAB-HJ": "ctf_head",
     "ACPC": "ras",  # assumes T1 is ACPC-aligned, if not the coordinates are lost
     # ScanRAS: scanner-based RAS coordinates from the T1w image
     "ScanRAS": "ras",
@@ -493,6 +498,24 @@ BIDS_COORD_FRAME_DESCRIPTIONS = {
         "the head. "
         'This corresponds to a "RAS" orientation with the origin of the '
         "coordinate system approximately between the ears. "
+        "See Appendix VIII in the BIDS specification."
+    ),
+    "eeglab": (
+        "The X-axis goes from the origin towards the nasion (NAS). "
+        "The Y-axis goes from the origin towards the left pre-auricular "
+        "point (LPA). The Z-axis goes orthogonally to the XY-plane through "
+        "the vertex of the head. "
+        'This corresponds to an "ALS" orientation with the origin of the '
+        "coordinate system exactly between LPA and RPA. "
+        "See Appendix VIII in the BIDS specification."
+    ),
+    "eeglab-hj": (
+        "The X-axis goes from the origin towards the nasion (NAS). "
+        "The Y-axis goes from the origin towards the left helix-tragus "
+        "junction point (LHJ). The Z-axis goes orthogonally to the "
+        "XY-plane through the vertex of the head. "
+        'This corresponds to an "ALS" orientation with the origin of the '
+        "coordinate system exactly between LHJ and RHJ. "
         "See Appendix VIII in the BIDS specification."
     ),
     "fsaverage": "Defined by FreeSurfer, the MRI (surface RAS) origin is "
