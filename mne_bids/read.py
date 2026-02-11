@@ -1163,7 +1163,7 @@ def read_raw_bids(
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
-    on_error = "warn" if suffix == "ieeg" else "ignore"
+    on_error = "warn" if datatype == "ieeg" else "ignore"
     electrodes_fname = _find_matching_sidecar(
         bids_path, suffix="electrodes", extension=".tsv", on_error=on_error
     )
@@ -1171,14 +1171,21 @@ def read_raw_bids(
         bids_path, suffix="coordsystem", extension=".json", on_error=on_error
     )
     if electrodes_fname is not None:
-        if coordsystem_fname is None:
-            raise RuntimeError(
-                f"BIDS mandates that the coordsystem.json "
-                f"should exist if electrodes.tsv does. "
-                f"Please create coordsystem.json for "
-                f"{bids_path.basename}"
-            )
         if datatype in ["meg", "eeg", "ieeg"]:
+            if coordsystem_fname is None:
+                msg = (
+                    "BIDS requires coordsystem.json whenever electrodes.tsv is "
+                    "present. "
+                    f"Could not find coordsystem.json for electrodes file: "
+                    f"{electrodes_fname}. "
+                    f"Please add coordsystem.json for {bids_path.basename} and "
+                    "re-run the BIDS validator."
+                )
+                if datatype == "ieeg":
+                    raise RuntimeError(msg)
+                warn(msg + " Skipping reading electrode locations.")
+                coordsystem_fname = None
+        if datatype in ["meg", "eeg", "ieeg"] and coordsystem_fname is not None:
             _read_dig_bids(
                 electrodes_fname, coordsystem_fname, raw=raw, datatype=datatype
             )

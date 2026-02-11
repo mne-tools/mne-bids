@@ -1088,6 +1088,95 @@ def test_handle_eeg_coords_reading(tmp_path):
         assert raw_test.info["dig"] is None
 
 
+def test_read_eeg_missing_coordsystem_warns(tmp_path):
+    """EEG reads should warn, not fail, if electrodes.tsv lacks coordsystem."""
+    bids_root = tmp_path / "tiny_bids_missing_coordsystem"
+    sh.copytree(tiny_bids_root, bids_root)
+
+    coordsystem_files = [
+        (
+            bids_root
+            / "sub-01"
+            / "ses-eeg"
+            / "eeg"
+            / "sub-01_ses-eeg_coordsystem.json"
+        ),
+        (
+            bids_root
+            / "sub-01"
+            / "ses-eeg"
+            / "eeg"
+            / "sub-01_ses-eeg_space-CapTrak_coordsystem.json"
+        ),
+    ]
+    for coordsystem_file in coordsystem_files:
+        coordsystem_file.unlink()
+    (
+        bids_root
+        / "sub-01"
+        / "ses-eeg"
+        / "eeg"
+        / "sub-01_ses-eeg_space-CapTrak_electrodes.tsv"
+    ).unlink()
+
+    bids_path = BIDSPath(
+        subject="01",
+        session="eeg",
+        task="rest",
+        datatype="eeg",
+        root=bids_root,
+    )
+    assert (
+        _find_matching_sidecar(
+            bids_path, suffix="electrodes", extension=".tsv", on_error="raise"
+        )
+        is not None
+    )
+
+    with pytest.warns(
+        RuntimeWarning, match=r"Could not find coordsystem\.json for electrodes file:"
+    ):
+        raw = read_raw_bids(bids_path=bids_path)
+    assert raw.info["dig"] is None
+
+
+def test_read_eeg_root_level_electrodes_missing_coordsystem_warns(tmp_path):
+    """Root-level electrodes.tsv without coordsystem.json should not hard-fail."""
+    bids_root = tmp_path / "tiny_bids_root_level_electrodes"
+    sh.copytree(tiny_bids_root, bids_root)
+
+    subj_eeg_dir = bids_root / "sub-01" / "ses-eeg" / "eeg"
+    coordsystem_files = [
+        subj_eeg_dir / "sub-01_ses-eeg_coordsystem.json",
+        subj_eeg_dir / "sub-01_ses-eeg_space-CapTrak_coordsystem.json",
+    ]
+    for coordsystem_file in coordsystem_files:
+        coordsystem_file.unlink()
+
+    electrodes_src = subj_eeg_dir / "sub-01_ses-eeg_electrodes.tsv"
+    electrodes_dst = bids_root / "electrodes.tsv"
+    electrodes_src.replace(electrodes_dst)
+    (subj_eeg_dir / "sub-01_ses-eeg_space-CapTrak_electrodes.tsv").unlink()
+
+    bids_path = BIDSPath(
+        subject="01",
+        session="eeg",
+        task="rest",
+        datatype="eeg",
+        root=bids_root,
+    )
+    electrodes_fname = _find_matching_sidecar(
+        bids_path, suffix="electrodes", extension=".tsv", on_error="raise"
+    )
+    assert electrodes_fname == electrodes_dst
+
+    with pytest.warns(
+        RuntimeWarning, match=r"Could not find coordsystem\.json for electrodes file:"
+    ):
+        raw = read_raw_bids(bids_path=bids_path)
+    assert raw.info["dig"] is None
+
+
 @pytest.mark.parametrize("bids_path", [_bids_path, _bids_path_minimal])
 @pytest.mark.filterwarnings(warning_str["nasion_not_found"])
 @testing.requires_testing_data
@@ -1214,7 +1303,10 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
 
     # if we delete the coordsystem.json file, an error will be raised
     os.remove(coordsystem_fname)
-    with pytest.raises(RuntimeError, match="BIDS mandates that the coordsystem.json"):
+    with pytest.raises(
+        RuntimeError,
+        match="BIDS requires coordsystem.json whenever electrodes.tsv is present",
+    ):
         raw = read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # test error message if electrodes is not a subset of Raw
