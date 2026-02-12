@@ -53,7 +53,7 @@ build-doc:
 	@echo "Building documentation"
 	make -C doc/ clean
 	make -C doc/ html
-	cd doc/ && make view
+	@if [ -z "$$CI" ]; then cd doc/ && make view; fi
 
 dist-build:
 	@echo "Building dist"
