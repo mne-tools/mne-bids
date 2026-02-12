@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</title>
+    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.19.0.dev16+g42778d289 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=65f8a104"></script>
+    <script src="../../_static/documentation_options.js?v=ad0d9ef5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev15+g5dac73215" />
+  <meta name="docsearch:version" content="0.19.0.dev16+g42778d289" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev16+g42778d289 documentation</p>
   
 </a></div>
     
@@ -640,6 +640,7 @@
 <span class="sd">    copyfile_edf</span>
 <span class="sd">    copyfile_eeglab</span>
 <span class="sd">    copyfile_kit</span>
+<span class="sd">    copyfile_mef</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
@@ -670,6 +671,33 @@
         <span class="n">ext</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">fname</span><span class="p">),</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">bids_folder_name</span> <span class="o">+</span> <span class="n">ext</span><span class="p">))</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_mef</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy MEF3 files to a new location.</span>
+
+<span class="sd">    MEF3 (Multiscale Electrophysiology Format) data is stored in a directory</span>
+<span class="sd">    with the ``.mefd`` extension. This function copies the entire directory</span>
+<span class="sd">    structure to the destination.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : path-like</span>
+<span class="sd">        Path to the source raw .mefd folder.</span>
+<span class="sd">    dest : path-like</span>
+<span class="sd">        Path to the destination of the new bids folder.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    copyfile_kit</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="copyfile_kit">

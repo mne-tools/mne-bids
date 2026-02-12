@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.dig &#8212; MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</title>
+    <title>mne_bids.dig &#8212; MNE-BIDS 0.19.0.dev16+g42778d289 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=65f8a104"></script>
+    <script src="../../_static/documentation_options.js?v=ad0d9ef5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev15+g5dac73215" />
+  <meta name="docsearch:version" content="0.19.0.dev16+g42778d289" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev16+g42778d289 documentation</p>
   
 </a></div>
     
@@ -1115,15 +1115,19 @@
         <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># just a space, use that</span>
             <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># space and raw have coordinate frame, check match</span>
-            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span> <span class="o">!=</span> <span class="n">coord_frame</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
-                <span class="n">coord_frame</span> <span class="o">==</span> <span class="s2">&quot;fsaverage&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span> <span class="o">==</span> <span class="s2">&quot;MNI305&quot;</span>
-            <span class="p">):</span>  <span class="c1"># fsaverage == MNI305</span>
+            <span class="c1"># Check if frames are compatible (same or map to same MNE frame)</span>
+            <span class="n">coord_mne</span> <span class="o">=</span> <span class="n">BIDS_TO_MNE_FRAMES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">coord_frame</span><span class="p">)</span>
+            <span class="n">space_mne</span> <span class="o">=</span> <span class="n">BIDS_TO_MNE_FRAMES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">space</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span> <span class="o">==</span> <span class="n">coord_frame</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">coord_mne</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">coord_mne</span> <span class="o">==</span> <span class="n">space_mne</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Coordinates in the raw object or montage &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;are in the </span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s2"> coordinate &quot;</span>
-                    <span class="s2">&quot;frame but BIDSPath.space is &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Coordinates in the raw object or montage are in the &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s2"> coordinate frame but BIDSPath.space is &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">space</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
+            <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span>  <span class="c1"># use BIDSPath.space for output</span>
 
     <span class="c1"># create electrodes/coordsystem files using a subset of entities</span>
     <span class="c1"># that are specified for these files in the specification</span>

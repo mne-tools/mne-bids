@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev16+g42778d289 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=65f8a104"></script>
+    <script src="_static/documentation_options.js?v=ad0d9ef5"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev15+g5dac73215" />
+  <meta name="docsearch:version" content="0.19.0.dev16+g42778d289" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev16+g42778d289 documentation</p>
   
 </a></div>
     
@@ -507,6 +507,7 @@
 <section id="enhancements">
 <h4>🚀 Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading">#</a></h4>
 <ul class="simple">
+<li><p>Add support for reading and writing MEF3 (Multiscale Electrophysiology Format) iEEG data with the <code class="docutils literal notranslate"><span class="pre">.mefd</span></code> extension. Requires MNE-Python 1.12 or later, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1511">#1511</a>)</p></li>
 <li><p>Save <code class="docutils literal notranslate"><span class="pre">Annotations.extras</span></code> fields in events.tsv files when writing events, by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1502">#1502</a>)</p></li>
 <li><p>Added support for <code class="docutils literal notranslate"><span class="pre">EEGLAB</span></code> and <code class="docutils literal notranslate"><span class="pre">EEGLAB-HJ</span></code> coordinate systems as defined in the BIDS specification. Both use ALS orientation (identical to CTF) and map to MNE’s <code class="docutils literal notranslate"><span class="pre">ctf_head</span></code> coordinate frame, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1514">#1514</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now reads channel units from <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> and sets them on the raw object. This includes support for units like <code class="docutils literal notranslate"><span class="pre">rad</span></code> (radians), <code class="docutils literal notranslate"><span class="pre">V</span></code>, <code class="docutils literal notranslate"><span class="pre">µV</span></code>, <code class="docutils literal notranslate"><span class="pre">mV</span></code>, <code class="docutils literal notranslate"><span class="pre">T</span></code>, <code class="docutils literal notranslate"><span class="pre">T/m</span></code>, <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">oC</span></code>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, and <code class="docutils literal notranslate"><span class="pre">px</span></code>. The write path was also updated to correctly write <code class="docutils literal notranslate"><span class="pre">rad</span></code> units to <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code>, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1509">#1509</a>)</p></li>
@@ -521,7 +522,7 @@
 <section id="requirements">
 <h4>🛠 Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h4>
 <ul class="simple">
-<li><p>None yet</p></li>
+<li><p>MEF3 (<code class="docutils literal notranslate"><span class="pre">.mefd</span></code>) file format support requires MNE-Python 1.12 or later, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1511">#1511</a>)</p></li>
 </ul>
 </section>
 <section id="bug-fixes">

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev16+g42778d289 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=65f8a104"></script>
+    <script src="../../_static/documentation_options.js?v=ad0d9ef5"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev15+g5dac73215" />
+  <meta name="docsearch:version" content="0.19.0.dev16+g42778d289" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev16+g42778d289 documentation</p>
   
 </a></div>
     
@@ -546,6 +546,7 @@
     <span class="n">copyfile_edf</span><span class="p">,</span>
     <span class="n">copyfile_eeglab</span><span class="p">,</span>
     <span class="n">copyfile_kit</span><span class="p">,</span>
+    <span class="n">copyfile_mef</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.dig</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_write_coordsystem_json</span><span class="p">,</span>
@@ -3058,9 +3059,13 @@
                 <span class="s2">&quot;The true anonymized date is stored in the scans.tsv file.&quot;</span>
             <span class="p">)</span>
         <span class="n">copyfile_edf</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="n">anonymize</span><span class="p">)</span>
-    <span class="c1"># EEGLAB .set might be accompanied by a .fdt - find out and copy it too</span>
-    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.set&quot;</span><span class="p">:</span>
-        <span class="n">copyfile_eeglab</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
+    <span class="c1"># EEGLAB .set might be accompanied by a .fdt; MEF3 is directory-based.</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.set&quot;</span><span class="p">,</span> <span class="s2">&quot;.mefd&quot;</span><span class="p">]:</span>
+        <span class="n">copyfile_func</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;.set&quot;</span><span class="p">:</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
+            <span class="s2">&quot;.mefd&quot;</span><span class="p">:</span> <span class="n">copyfile_mef</span><span class="p">,</span>
+        <span class="p">}[</span><span class="n">ext</span><span class="p">]</span>
+        <span class="n">copyfile_func</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">use_bti_pdf_suffix</span><span class="p">:</span>
             <span class="n">raw_dir</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
