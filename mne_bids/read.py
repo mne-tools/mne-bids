@@ -33,6 +33,10 @@ from mne_bids.path import (
     _parse_ext,
     get_bids_path_from_fname,
 )
+from mne_bids.physio import (
+    _get_physio_type,
+    read_raw_eyetracking_bids,
+)
 from mne_bids.tsv_handler import _drop, _from_tsv
 from mne_bids.utils import _get_ch_type_mapping, _import_nibabel, verbose, warn
 
@@ -45,6 +49,7 @@ def _read_raw(
     hpi=None,
     allow_maxshield=False,
     config_path=None,
+    eyetrack_ch_types=None,
     verbose=None,
     **kwargs,
 ):
@@ -105,6 +110,22 @@ def _read_raw(
             f"extension but there is no IO support for this "
             f"file format yet."
         )
+    elif ext in [".tsv"]:
+        # Only Eye-tracking data..
+        json_fpath = raw_path.with_suffix(".json")
+        if not json_fpath.exists():
+            raise ValueError(
+                f"Expected a corresponding JSON file for {raw_path}, but none exists"
+            )
+        physio_type = _get_physio_type(json_fpath)
+        if physio_type.lower() == "eyetrack":
+            bpath = get_bids_path_from_fname(raw_path)
+            raw = read_raw_eyetracking_bids(bpath, ch_types=eyetrack_ch_types)
+        else:
+            raise ValueError(
+                "Only eyetracking <match>_physio.tsv files are supported.\n"
+                f"Got {physio_type}. Please open an issue with mne-bids developers."
+            )  # pragma: no cover
 
     # No supported data found ...
     # ---------------------------
@@ -964,6 +985,7 @@ def read_raw_bids(
     extra_params=None,
     *,
     return_event_dict=False,
+    eyetrack_ch_types=None,
     on_ch_mismatch="raise",
     verbose=None,
 ):
@@ -1006,6 +1028,10 @@ def read_raw_bids(
           channel order in the channels.tsv file.
         * ``'rename'`` will rename the channels in the raw data file to match the
           channel names in the channels.tsv file.
+    eyetrack_ch_types : dict[str, str]
+        a dictionary whose keys correspond to eyetracking channel names, and whose
+        values correspond to the MNE-Python compatible channel types for said channel,
+        such as ``'eyegaze'``, ``'pupil'``, or ``'misc'``.
 
     %(verbose)s
 
@@ -1143,12 +1169,15 @@ def read_raw_bids(
 
     if raw_path.suffix == ".fif" and "allow_maxshield" not in extra_params:
         extra_params["allow_maxshield"] = True
+    if eyetrack_ch_types is None:
+        eyetrack_ch_types = dict()
     raw = _read_raw(
         raw_path,
         electrode=None,
         hsp=None,
         hpi=None,
         config_path=config_path,
+        eyetrack_ch_types=eyetrack_ch_types,
         verbose=verbose,
         **extra_params,
     )
@@ -1168,15 +1197,17 @@ def read_raw_bids(
     if events_fname is not None:
         raw, event_id = _handle_events_reading(events_fname, raw)
 
-    # Try to find an associated channels.tsv to get information about the
-    # status and type of present channels
-    channels_fname = _find_matching_sidecar(
-        bids_path, suffix="channels", extension=".tsv", on_error="warn"
-    )
-    if channels_fname is not None:
-        raw = _handle_channels_reading(
-            channels_fname, raw, on_ch_mismatch=on_ch_mismatch
+    # Eyetracking-only data will be under a 'beh' sub-directory. It has no channels.
+    if bids_path.datatype != "beh" and bids_path.suffix != "physio":
+        # Try to find an associated channels.tsv to get information about the
+        # status and type of present channels
+        channels_fname = _find_matching_sidecar(
+            bids_path, suffix="channels", extension=".tsv", on_error="warn"
         )
+        if channels_fname is not None:
+            raw = _handle_channels_reading(
+                channels_fname, raw, on_ch_mismatch=on_ch_mismatch
+            )
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
@@ -1200,13 +1231,15 @@ def read_raw_bids(
                 electrodes_fname, coordsystem_fname, raw=raw, datatype=datatype
             )
 
-    # Try to find an associated sidecar .json to get information about the
-    # recording snapshot
-    sidecar_fname = _find_matching_sidecar(
-        bids_path, suffix=datatype, extension=".json", on_error="warn"
-    )
-    if sidecar_fname is not None:
-        raw = _handle_info_reading(sidecar_fname, raw)
+    # Eyetracking-only data is under the 'beh' modality. There will be no '*_beh.json'
+    if bids_path.datatype != "beh":
+        # Try to find an associated sidecar .json to get information about the
+        # recording snapshot
+        sidecar_fname = _find_matching_sidecar(
+            bids_path, suffix=datatype, extension=".json", on_error="warn"
+        )
+        if sidecar_fname is not None:
+            raw = _handle_info_reading(sidecar_fname, raw)
 
     # read in associated scans filename
     scans_fname = BIDSPath(
@@ -1218,7 +1251,13 @@ def read_raw_bids(
     ).fpath
 
     if scans_fname.exists():
-        raw = _handle_scans_reading(scans_fname, raw, bids_path)
+        try:
+            raw = _handle_scans_reading(scans_fname, raw, bids_path)
+        except ValueError as e:
+            if bids_path.suffix == "physio":
+                pass
+            else:
+                raise e
 
     # read in associated subject info from participants.tsv
     participants_tsv_path = bids_root / "participants.tsv"
