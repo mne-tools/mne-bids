@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.dig &#8212; MNE-BIDS 0.19.0.dev11+g47b49127e documentation</title>
+    <title>mne_bids.dig &#8212; MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=313baddd"></script>
+    <script src="../../_static/documentation_options.js?v=65f8a104"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev11+g47b49127e" />
+  <meta name="docsearch:version" content="0.19.0.dev15+g5dac73215" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev11+g47b49127e documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</p>
   
 </a></div>
     
@@ -520,6 +520,98 @@
 <span class="p">)</span>
 
 <span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_coord_unit</span><span class="p">(</span><span class="n">electrodes_fpath</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Infer coordinate units from electrode coordinate magnitudes.</span>
+
+<span class="sd">    When coordinate units are specified as ``&quot;n/a&quot;`` in the BIDS dataset,</span>
+<span class="sd">    this function reads the electrode coordinates and infers the unit</span>
+<span class="sd">    based on the magnitude of the coordinate values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    electrodes_fpath : str | Path</span>
+<span class="sd">        Filepath of the electrodes.tsv to read.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    unit : str</span>
+<span class="sd">        The inferred unit: ``&quot;m&quot;``, ``&quot;cm&quot;``, or ``&quot;mm&quot;``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">electrodes_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">electrodes_fpath</span><span class="p">)</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">):</span>
+        <span class="n">coords</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">electrodes_dict</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">if</span> <span class="n">val</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">coords</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;m&quot;</span>
+    <span class="n">max_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coords</span><span class="p">))</span>
+    <span class="c1"># Typical EEG head radius: ~0.1 m, ~10 cm, ~100 mm.</span>
+    <span class="c1"># Thresholds chosen so values &lt; 1 are meters, 1–99 are cm, &gt;= 100 are mm.</span>
+    <span class="k">if</span> <span class="n">max_abs</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;m&quot;</span>
+    <span class="k">elif</span> <span class="n">max_abs</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;cm&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;mm&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_fiducials_ctf_head</span><span class="p">(</span><span class="n">montage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Synthesize approximate fiducial points for a ctf_head montage.</span>
+
+<span class="sd">    When electrode positions are in the ``ctf_head`` coordinate frame but</span>
+<span class="sd">    no fiducial landmarks (nasion, LPA, RPA) are present, this function</span>
+<span class="sd">    estimates their positions from the electrode geometry. In the CTF/ALS</span>
+<span class="sd">    coordinate system, the origin is between the left and right preauricular</span>
+<span class="sd">    points, ``+X`` points toward the nasion, ``+Y`` toward the left ear, and</span>
+<span class="sd">    ``+Z`` upward.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    montage : mne.channels.DigMontage</span>
+<span class="sd">        The montage in ``ctf_head`` frame. Modified in place.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">pos</span><span class="p">[</span><span class="s2">&quot;coord_frame&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;ctf_head&quot;</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="c1"># check if fiducials already exist</span>
+    <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nasion&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">ch_pos</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="s2">&quot;ch_pos&quot;</span><span class="p">]</span>
+    <span class="n">locs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ch_pos</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">locs</span> <span class="o">=</span> <span class="n">locs</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">locs</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">locs</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Estimate head radius from the electrode distribution.</span>
+    <span class="c1"># In CTF/ALS coordinates, the origin is between the ears.</span>
+    <span class="n">centroid</span> <span class="o">=</span> <span class="n">locs</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">locs</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">head_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;No fiducial points found for ctf_head montage. Synthesizing &quot;</span>
+        <span class="s2">&quot;approximate fiducials (nasion, LPA, RPA) from electrode geometry &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;with estimated head radius </span><span class="si">{</span><span class="n">head_radius</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># In CTF (ALS): +X = anterior (nasion), +Y = left (LPA), -Y = right (RPA)</span>
+    <span class="c1"># Place fiducials at the estimated head radius along each axis</span>
+    <span class="n">nasion</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">head_radius</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+    <span class="n">lpa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">head_radius</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+    <span class="n">rpa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">head_radius</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+
+    <span class="c1"># Create a new montage with fiducials and existing channels</span>
+    <span class="n">new_montage</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span><span class="p">(</span>
+        <span class="n">ch_pos</span><span class="o">=</span><span class="n">ch_pos</span><span class="p">,</span>
+        <span class="n">nasion</span><span class="o">=</span><span class="n">nasion</span><span class="p">,</span>
+        <span class="n">lpa</span><span class="o">=</span><span class="n">lpa</span><span class="p">,</span>
+        <span class="n">rpa</span><span class="o">=</span><span class="n">rpa</span><span class="p">,</span>
+        <span class="n">coord_frame</span><span class="o">=</span><span class="s2">&quot;ctf_head&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">montage</span><span class="o">.</span><span class="n">dig</span> <span class="o">=</span> <span class="n">new_montage</span><span class="o">.</span><span class="n">dig</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_handle_electrodes_reading</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">,</span> <span class="n">coord_unit</span><span class="p">):</span>
@@ -1112,12 +1204,23 @@
 
     <span class="c1"># check coordinate units</span>
     <span class="k">if</span> <span class="n">bids_coord_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">BIDS_COORDINATE_UNITS</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Coordinate unit is not an accepted BIDS unit for &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">electrodes_fpath</span><span class="si">}</span><span class="s2">. Please specify to be one of &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BIDS_COORDINATE_UNITS</span><span class="si">}</span><span class="s2">. Skipping electrodes.tsv reading...&quot;</span>
-        <span class="p">)</span>
-        <span class="n">coord_frame</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bids_coord_unit</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
+            <span class="c1"># Attempt to infer the unit from electrode coordinate magnitudes</span>
+            <span class="n">inferred_unit</span> <span class="o">=</span> <span class="n">_infer_coord_unit</span><span class="p">(</span><span class="n">electrodes_fpath</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Coordinate unit is &quot;n/a&quot; for </span><span class="si">{</span><span class="n">electrodes_fpath</span><span class="si">}</span><span class="s1">. &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Inferring unit as &quot;</span><span class="si">{</span><span class="n">inferred_unit</span><span class="si">}</span><span class="s1">&quot; based on coordinate &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;magnitudes. Please update the coordsystem.json to specify &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;one of </span><span class="si">{</span><span class="n">BIDS_COORDINATE_UNITS</span><span class="si">}</span><span class="s2"> for accurate results.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">bids_coord_unit</span> <span class="o">=</span> <span class="n">inferred_unit</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Coordinate unit is not an accepted BIDS unit for &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">electrodes_fpath</span><span class="si">}</span><span class="s2">. Please specify to be one of &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BIDS_COORDINATE_UNITS</span><span class="si">}</span><span class="s2">. Skipping electrodes.tsv reading...&quot;</span>
+            <span class="p">)</span>
+            <span class="n">coord_frame</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># montage is interpretable only if coordinate frame was properly parsed</span>
     <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1129,6 +1232,11 @@
         <span class="n">montage</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">montage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># For ctf_head montages without fiducials, synthesize approximate</span>
+        <span class="c1"># fiducials to enable the ctf_head -&gt; head coordinate transform</span>
+        <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="s2">&quot;ctf_head&quot;</span><span class="p">:</span>
+            <span class="n">_ensure_fiducials_ctf_head</span><span class="p">(</span><span class="n">montage</span><span class="p">)</span>
+
         <span class="c1"># determine if there are problematic channels</span>
         <span class="n">ch_pos</span> <span class="o">=</span> <span class="n">montage</span><span class="o">.</span><span class="n">_get_ch_pos</span><span class="p">()</span>
         <span class="n">nan_chs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1385,7 +1493,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-12.
       <br/>
     
   </p>

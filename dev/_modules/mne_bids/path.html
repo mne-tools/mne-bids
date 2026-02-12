@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev11+g47b49127e documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=313baddd"></script>
+    <script src="../../_static/documentation_options.js?v=65f8a104"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev11+g47b49127e" />
+  <meta name="docsearch:version" content="0.19.0.dev15+g5dac73215" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev11+g47b49127e documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</p>
   
 </a></div>
     
@@ -2413,12 +2413,26 @@
 
     <span class="n">candidate_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">search_str_complete</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">best_candidates</span> <span class="o">=</span> <span class="n">_find_best_candidates</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">entities</span><span class="p">,</span> <span class="n">candidate_list</span><span class="p">)</span>
+
+    <span class="c1"># If no candidates found within subject directory, search at dataset root</span>
+    <span class="c1"># level per BIDS inheritance principle. Root-level sidecars apply to all</span>
+    <span class="c1"># subjects and have no subject/session entities in the filename.</span>
+    <span class="n">root_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">root_search_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">search_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">root_candidates</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">root_search_str</span><span class="p">)</span>
+        <span class="c1"># Filter to only files without subject entity (true root-level sidecars)</span>
+        <span class="n">root_candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">root_candidates</span> <span class="k">if</span> <span class="s2">&quot;sub-&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">root_candidates</span><span class="p">:</span>
+            <span class="c1"># For root-level sidecars, use the one with no conflicting entities</span>
+            <span class="n">best_candidates</span> <span class="o">=</span> <span class="n">_find_best_candidates</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">entities</span><span class="p">,</span> <span class="n">root_candidates</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># Success</span>
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># We failed. Construct a helpful error message.</span>
     <span class="c1"># If this was expected, simply return None, otherwise, raise an exception.</span>
+    <span class="n">all_candidates</span> <span class="o">=</span> <span class="n">candidate_list</span> <span class="o">+</span> <span class="n">root_candidates</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Did not find any </span><span class="si">{</span><span class="n">search_suffix</span><span class="si">}</span><span class="s2"> associated with </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">.&quot;</span>
@@ -2427,7 +2441,7 @@
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Expected to find a single </span><span class="si">{</span><span class="n">search_suffix</span><span class="si">}</span><span class="s2"> file &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;associated with </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;but found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">candidate_list</span><span class="p">)</span><span class="si">}</span><span class="s2">:</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">candidate_list</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;but found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_candidates</span><span class="p">)</span><span class="si">}</span><span class="s2">:</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">all_candidates</span><span class="p">)</span>
         <span class="p">)</span>
     <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">The search_str was &quot;</span><span class="si">{</span><span class="n">search_str_complete</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
     <span class="k">if</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
@@ -3299,7 +3313,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-12.
       <br/>
     
   </p>

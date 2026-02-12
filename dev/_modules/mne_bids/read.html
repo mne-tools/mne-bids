@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev11+g47b49127e documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=313baddd"></script>
+    <script src="../../_static/documentation_options.js?v=65f8a104"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev11+g47b49127e" />
+  <meta name="docsearch:version" content="0.19.0.dev15+g5dac73215" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev11+g47b49127e documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev15+g5dac73215 documentation</p>
   
 </a></div>
     
@@ -1653,14 +1653,14 @@
         <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;coordsystem&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">electrodes_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;should exist if electrodes.tsv does. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Please create coordsystem.json for &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;should exist if electrodes.tsv does. &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;Please create coordsystem.json for &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
             <span class="n">_read_dig_bids</span><span class="p">(</span>
                 <span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span>
             <span class="p">)</span>
@@ -1984,7 +1984,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-12.
       <br/>
     
   </p>
