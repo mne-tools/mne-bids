@@ -77,13 +77,19 @@ def _read_raw(
     elif ext == ".fif":
         raw = reader[ext](raw_path, allow_maxshield, verbose=verbose, **kwargs)
 
-    elif ext in [".ds", ".vhdr", ".set", ".edf", ".bdf", ".EDF", ".snirf", ".cdt"]:
-        raw_path = Path(raw_path)
-        raw = reader[ext](raw_path, verbose=verbose, **kwargs)
-
-    # MEF3 directory-based format (requires MNE >= 1.12)
-    elif ext == ".mefd":
-        if ext not in reader:
+    elif ext in [
+        ".ds",
+        ".vhdr",
+        ".set",
+        ".edf",
+        ".bdf",
+        ".EDF",
+        ".snirf",
+        ".cdt",
+        ".mefd",
+    ]:
+        # MEF3 directory-based format requires MNE >= 1.12.
+        if ext == ".mefd" and ext not in reader:
             raise ValueError(
                 f'Got "{ext}" as extension. MEF3 support requires '
                 f"MNE-Python >= 1.12. Please upgrade MNE-Python to use "

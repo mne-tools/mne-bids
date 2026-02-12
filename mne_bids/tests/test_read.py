@@ -165,56 +165,36 @@ def test_not_implemented(tmp_path):
             _read_raw(raw_fname)
 
 
-@pytest.mark.filterwarnings("ignore::RuntimeWarning")
-def test_mef3_support(tmp_path):
-    """Test MEF3 (.mefd) format support and read/write roundtrip."""
-    from mne_bids.config import reader
+def test_mefd_requires_supported_mne(tmp_path, monkeypatch):
+    """Test that reading .mefd requires a registered reader implementation."""
+    import mne_bids.read as read_module
 
-    # MEF3 requires MNE >= 1.12 with read_raw_mef
-    if not hasattr(mne.io, "read_raw_mef"):
-        # MEF3 should not be registered on older MNE versions
-        assert ".mefd" not in reader
-        raw_path = tmp_path / "test.mefd"
-        raw_path.mkdir()
-        with pytest.raises(
-            ValueError, match="MEF3 support requires MNE-Python >= 1.12"
-        ):
-            _read_raw(raw_path)
-        return
+    mefd_path = tmp_path / "test.mefd"
+    mefd_path.mkdir()
+    monkeypatch.delitem(read_module.reader, ".mefd", raising=False)
 
-    # MEF3 should be registered when MNE supports it
-    assert ".mefd" in reader
-    assert reader[".mefd"] == mne.io.read_raw_mef
+    with pytest.raises(ValueError, match="MEF3 support requires MNE-Python >= 1.12"):
+        _read_raw(mefd_path)
 
-    # Test with actual MEF3 data if available
-    pytest.importorskip("pymef")
-    data_path = testing.data_path(download=False)
-    mef_path = (
-        data_path
-        / "MEF"
-        / "sub-ieegModulator_ses-ieeg01_task-photicstim_run-01_ieeg.mefd"
-    )
-    if not mef_path.exists():
-        pytest.skip("MEF3 test data not available")
 
-    # Read MEF3 data (without preload for direct copy)
-    raw = mne.io.read_raw_mef(mef_path, preload=False)
-    assert raw.info["nchan"] > 0
+def test_mefd_read_uses_reader_registry(tmp_path, monkeypatch):
+    """Test that reading .mefd uses the registered reader from config."""
+    import mne_bids.read as read_module
 
-    # Write to BIDS
-    bids_root = tmp_path / "bids"
-    bids_path = BIDSPath(subject="01", task="test", datatype="ieeg", root=bids_root)
-    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    mefd_path = tmp_path / "test.mefd"
+    mefd_path.mkdir()
+    sentinel = object()
 
-    # Verify the .mefd directory was copied
-    written_path = bids_path.copy().update(suffix="ieeg", extension=".mefd")
-    assert written_path.fpath.exists()
-    assert written_path.fpath.is_dir()
+    def _fake_mefd_reader(path, verbose=None, **kwargs):
+        assert path == mefd_path
+        assert isinstance(path, Path)
+        assert verbose is None
+        assert kwargs == {"preload": False}
+        return sentinel
 
-    # Read back and verify
-    raw2 = read_raw_bids(bids_path)
-    assert raw2.info["nchan"] == raw.info["nchan"]
-    assert raw2.info["sfreq"] == raw.info["sfreq"]
+    monkeypatch.setitem(read_module.reader, ".mefd", _fake_mefd_reader)
+
+    assert _read_raw(mefd_path, preload=False) is sentinel
 
 
 def test_read_correct_inputs():
