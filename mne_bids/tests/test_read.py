@@ -155,7 +155,7 @@ def test_read_raw():
 
 def test_not_implemented(tmp_path):
     """Test the not yet implemented data formats raise an adequate error."""
-    for not_implemented_ext in [".mef", ".nwb"]:
+    for not_implemented_ext in [".nwb"]:
         raw_fname = tmp_path / f"test{not_implemented_ext}"
         with open(raw_fname, "w", encoding="utf-8"):
             pass
@@ -163,6 +163,38 @@ def test_not_implemented(tmp_path):
             ValueError, match=("there is no IO support for this file format yet")
         ):
             _read_raw(raw_fname)
+
+
+def test_mefd_requires_supported_mne(tmp_path, monkeypatch):
+    """Test that reading .mefd requires a registered reader implementation."""
+    import mne_bids.read as read_module
+
+    mefd_path = tmp_path / "test.mefd"
+    mefd_path.mkdir()
+    monkeypatch.delitem(read_module.reader, ".mefd", raising=False)
+
+    with pytest.raises(ValueError, match="MEF3 support requires MNE-Python >= 1.12"):
+        _read_raw(mefd_path)
+
+
+def test_mefd_read_uses_reader_registry(tmp_path, monkeypatch):
+    """Test that reading .mefd uses the registered reader from config."""
+    import mne_bids.read as read_module
+
+    mefd_path = tmp_path / "test.mefd"
+    mefd_path.mkdir()
+    sentinel = object()
+
+    def _fake_mefd_reader(path, verbose=None, **kwargs):
+        assert path == mefd_path
+        assert isinstance(path, Path)
+        assert verbose is None
+        assert kwargs == {"preload": False}
+        return sentinel
+
+    monkeypatch.setitem(read_module.reader, ".mefd", _fake_mefd_reader)
+
+    assert _read_raw(mefd_path, preload=False) is sentinel
 
 
 def test_read_correct_inputs():
@@ -1243,6 +1275,13 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
 
     # ACPC should be read in as RAS for iEEG
     _update_sidecar(coordsystem_fname, "iEEGCoordinateSystem", "ACPC")
+    raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
+    coord_frame_int = MNE_STR_TO_FRAME["ras"]
+    for digpoint in raw_test.info["dig"]:
+        assert digpoint["coord_frame"] == coord_frame_int
+
+    # ScanRAS should be read in as RAS for iEEG
+    _update_sidecar(coordsystem_fname, "iEEGCoordinateSystem", "ScanRAS")
     raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
     coord_frame_int = MNE_STR_TO_FRAME["ras"]
     for digpoint in raw_test.info["dig"]:
