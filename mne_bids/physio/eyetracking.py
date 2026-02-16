@@ -208,7 +208,7 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
 
 
 def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
-    """Write a *_events.tsv file."""
+    """Write a <match>_physioevents.tsv file."""
     from mne_bids.write import _events_json, _events_tsv
 
     raw = raw.copy()

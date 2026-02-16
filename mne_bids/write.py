@@ -2260,6 +2260,7 @@ def write_raw_bids(
             raw.annotations.description, ["BAD_blink", "fixation", "saccade"]
         )
         ocular_event_inds = np.where(is_ocular_ev)[0]
+        # FIXME: don't mutate raw.annotatios in-place
         raw.annotations.delete(ocular_event_inds)
 
     # create *_scans.tsv
@@ -2295,6 +2296,8 @@ def write_raw_bids(
 
     sidecar_path = bids_path.copy().update(suffix=bids_path.datatype, extension=".json")
     events_tsv_path = bids_path.copy().update(suffix="events", extension=".tsv")
+    if is_eyetracking_only:
+        events_tsv_path.update(recording=None)
     events_json_path = events_tsv_path.copy().update(extension=".json")
     channels_path = bids_path.copy().update(suffix="channels", extension=".tsv")
 
