@@ -1742,19 +1742,7 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
 
 
 def _suggest_fix_for_segment(segment, known_keys):
-    """Try to split a malformed segment into valid BIDS key-value pairs.
-
-    This is an internal helper and not part of the public API.
-
-    When a filename segment between underscores contains multiple hyphens
-    (e.g., ``"task-ECONrun-1"``), this function attempts to decompose it
-    into valid ``key-value`` pairs by finding known BIDS entity keys at the
-    end of each "middle" part (the parts between hyphens that are neither
-    the first key nor the last value).
-
-    The matching is greedy left-to-right: for each middle part, the function
-    checks whether it ends with a known entity key and splits at the first
-    unambiguous match.
+    """Decompose a multi-hyphen segment into valid BIDS key-value pairs.
 
     Parameters
     ----------
@@ -1766,8 +1754,8 @@ def _suggest_fix_for_segment(segment, known_keys):
     Returns
     -------
     list of str or None
-        List of corrected segments (e.g., ``["task-ECON", "run-1"]``),
-        or ``None`` if the decomposition is ambiguous or impossible.
+        Corrected segments (e.g., ``["task-ECON", "run-1"]``), or ``None``
+        if the decomposition is ambiguous or impossible.
     """
     parts = segment.split("-")
     if len(parts) < 3:
@@ -1809,25 +1797,19 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
     ----------
     fname : BIDSPath | path-like
         The path to parse.
-    on_error : 'raise' | 'warn' | 'ignore'
+    on_error : 'raise' | 'warn' | 'autofix' | 'ignore'
         If any unsupported labels in the filename are found and this is set
-        to ``'raise'``, raise a ``RuntimeError``. If ``'warn'``,
-        emit a warning and continue, and if ``'ignore'``,
+        to ``'raise'``, raise a ``ValueError``.
+        If ``'warn'``, emit a warning and continue without modifying
+        the parsed filename. If ``'autofix'``, emit a warning and apply
+        unambiguous fixes for missing underscore separators between entities
+        (e.g., ``"task-ECONrun-1"`` to ``"task-ECON_run-1"``).
+        If ``'ignore'``,
         neither raise an exception nor a warning, and
         return all entities found. For example, currently MNE-BIDS does not
         support derivatives yet, but the ``desc`` entity label is used to
         differentiate different derivatives and will work with this function
         if ``on_error='ignore'``.
-
-        .. note::
-           When ``on_error`` is ``'raise'`` or ``'warn'``, this function
-           also checks for filename segments containing multiple hyphens,
-           which typically indicates a missing underscore separator between
-           entities (e.g., ``"task-ECONrun-1"`` instead of
-           ``"task-ECON_run-1"``). When ``on_error='warn'`` and the
-           segment can be unambiguously decomposed into valid BIDS
-           entity key-value pairs, the fix is applied automatically
-           and the corrected entities are returned.
     %(verbose)s
 
     Returns
@@ -1852,10 +1834,10 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
 'description': None, \
 'tracking_system': None}
     """
-    if on_error not in ("warn", "raise", "ignore"):
+    if on_error not in ("warn", "raise", "ignore", "autofix"):
         raise ValueError(
             f"Acceptable values for on_error are: warn, raise, "
-            f"ignore, but got: {on_error}"
+            f"autofix, ignore, but got: {on_error}"
         )
 
     fname = str(fname)  # to accept also BIDSPath or Path instances
@@ -1869,52 +1851,35 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
     # attempt to decompose the segment into valid key-value pairs.
     parse_basename = op.basename(fname)
     if on_error != "ignore":
-        stem = parse_basename
-        ext = ""
-        # Strip extension(s) using _get_bids_suffix_and_ext logic:
-        # handle compound extensions like .nii.gz
-        if "." in stem:
-            split_str = stem.split(".")
-            stem = split_str[0]
-            ext = "." + ".".join(split_str[1:])
+        stem, dot, ext_part = parse_basename.partition(".")
+        ext = dot + ext_part  # "" if no extension
         segments = stem.split("_")
         fixed_segments = []
         needs_fix = False
         for segment_idx, segment in enumerate(segments):
-            if segment.count("-") >= 2:
-                fix = _suggest_fix_for_segment(segment, fname_vals)
-                if fix is not None:
-                    suggested_segments = list(fixed_segments) + fix
-                    # Append remaining untouched segments after this one
-                    suggested_segments.extend(segments[segment_idx + 1 :])
-                    suggested_fname = "_".join(suggested_segments) + ext
-                    msg = (
-                        f'Found segment "{segment}" with multiple hyphens '
-                        f'in filename "{fname}". This likely indicates a '
-                        f"missing underscore separator between entities. "
-                        f'Suggested fix: "{suggested_fname}".'
-                    )
-                    if on_error == "raise":
-                        raise ValueError(msg)
-                    # on_error == "warn": apply fix and continue parsing
-                    warn(msg)
-                    fixed_segments.extend(fix)
-                    needs_fix = True
-                    continue
-                else:
-                    msg = (
-                        f'Found segment "{segment}" with multiple hyphens '
-                        f'in filename "{fname}". This likely indicates a '
-                        f"missing underscore separator between entities."
-                    )
-                    if on_error == "raise":
-                        raise ValueError(msg)
-                    # on_error == "warn": keep the original segment so
-                    # best-effort regex parsing behavior is preserved.
-                    warn(msg)
-                    fixed_segments.append(segment)
-                    continue
-            fixed_segments.append(segment)
+            if segment.count("-") < 2:
+                fixed_segments.append(segment)
+                continue
+
+            fix = _suggest_fix_for_segment(segment, fname_vals)
+            msg = (
+                f'Found segment "{segment}" with multiple hyphens '
+                f'in filename "{fname}". This likely indicates a '
+                f"missing underscore separator between entities."
+            )
+            if fix is not None:
+                suggested_segments = list(fixed_segments) + fix
+                suggested_segments.extend(segments[segment_idx + 1 :])
+                suggested_fname = "_".join(suggested_segments) + ext
+                msg += f' Suggested fix: "{suggested_fname}".'
+            if on_error == "raise":
+                raise ValueError(msg)
+            warn(msg)
+            if fix is not None and on_error == "autofix":
+                fixed_segments.extend(fix)
+                needs_fix = True
+            else:
+                fixed_segments.append(segment)
 
         if needs_fix:
             parse_basename = "_".join(fixed_segments) + ext
@@ -1924,12 +1889,12 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
     for match in re.finditer(param_regex, parse_basename):
         key, value = match.groups()
 
-        if on_error in ("raise", "warn"):
+        if on_error in ("raise", "warn", "autofix"):
             if key not in fname_vals:
                 msg = f'Unexpected entity "{key}" found in filename "{fname}"'
                 if on_error == "raise":
                     raise KeyError(msg)
-                elif on_error == "warn":
+                else:
                     warn(msg)
                     continue
             if fname_vals.index(key) < idx_key:

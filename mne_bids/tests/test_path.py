@@ -625,12 +625,14 @@ def test_get_entities_from_fname_errors(fname):
 
 
 @pytest.mark.parametrize(
-    "fname, expected_task, expected_other_key, expected_other_val",
+    "fname, expected_warn_task, expected_fixed_task, expected_other_key,"
+    " expected_other_val",
     [
-        ("sub-01_task-ECONrun-1_eeg.set", "ECON", "run", "1"),
-        ("sub-01_task-restacq-full_eeg.set", "rest", "acquisition", "full"),
+        ("sub-01_task-ECONrun-1_eeg.set", "ECONrun", "ECON", "run", "1"),
+        ("sub-01_task-restacq-full_eeg.set", "restacq", "rest", "acquisition", "full"),
         (
             "/bids_root/sub-01/eeg/sub-01_task-ECONrun-1_eeg.set",
+            "ECONrun",
             "ECON",
             "run",
             "1",
@@ -638,21 +640,31 @@ def test_get_entities_from_fname_errors(fname):
     ],
 )
 def test_get_entities_from_fname_missing_separator(
-    fname, expected_task, expected_other_key, expected_other_val
+    fname,
+    expected_warn_task,
+    expected_fixed_task,
+    expected_other_key,
+    expected_other_val,
 ):
-    """Test detection and autofix of missing underscore separators."""
+    """Test missing separator handling across warn/autofix modes."""
     # on_error="raise" should raise with a suggested fix showing
     # the full corrected filename
     with pytest.raises(ValueError, match="Suggested fix.*\\.set"):
         get_entities_from_fname(fname, on_error="raise")
-    # on_error="warn" should warn and return autofixed entities
+    # on_error="warn" should warn but not apply autofix
     with pytest.warns(RuntimeWarning, match="Suggested fix"):
-        params = get_entities_from_fname(fname, on_error="warn")
-    assert params["task"] == expected_task
-    assert params[expected_other_key] == expected_other_val
+        params_warn = get_entities_from_fname(fname, on_error="warn")
+    assert params_warn["task"] == expected_warn_task
+    assert params_warn[expected_other_key] is None
+    # on_error="autofix" should warn and return autofixed entities
+    with pytest.warns(RuntimeWarning, match="Suggested fix"):
+        params_fix = get_entities_from_fname(fname, on_error="autofix")
+    assert params_fix["task"] == expected_fixed_task
+    assert params_fix[expected_other_key] == expected_other_val
     # on_error="ignore" should not raise or warn, and the merged segment
     # is parsed as-is by the regex (only the first key-value is captured)
     params = get_entities_from_fname(fname, on_error="ignore")
+    assert params["task"] == expected_warn_task
     assert params[expected_other_key] is None
 
 
@@ -662,7 +674,7 @@ def test_get_entities_from_fname_missing_separator_three_entities():
     with pytest.raises(ValueError, match="Suggested fix"):
         get_entities_from_fname(fname, on_error="raise")
     with pytest.warns(RuntimeWarning, match="Suggested fix"):
-        params = get_entities_from_fname(fname, on_error="warn")
+        params = get_entities_from_fname(fname, on_error="autofix")
     assert params["subject"] == "01"
     assert params["task"] == "ECON"
     assert params["run"] == "1"
@@ -686,24 +698,13 @@ def test_get_entities_from_fname_missing_separator_repeated_segment_suggestions(
     """Test suggested fixes are correct for repeated malformed segments."""
     fname = "sub-01_foo-ECONrun-1_foo-ECONrun-1_eeg.set"
     with pytest.warns(RuntimeWarning) as warnings:
-        get_entities_from_fname(fname, on_error="warn")
+        get_entities_from_fname(fname, on_error="autofix")
 
     messages = [str(w.message) for w in warnings]
     suggestion_msgs = [msg for msg in messages if "Suggested fix:" in msg]
-    assert suggestion_msgs == [
-        (
-            'Found segment "foo-ECONrun-1" with multiple hyphens in filename '
-            '"sub-01_foo-ECONrun-1_foo-ECONrun-1_eeg.set". This likely '
-            "indicates a missing underscore separator between entities. "
-            'Suggested fix: "sub-01_foo-ECON_run-1_foo-ECONrun-1_eeg.set".'
-        ),
-        (
-            'Found segment "foo-ECONrun-1" with multiple hyphens in filename '
-            '"sub-01_foo-ECONrun-1_foo-ECONrun-1_eeg.set". This likely '
-            "indicates a missing underscore separator between entities. "
-            'Suggested fix: "sub-01_foo-ECON_run-1_foo-ECON_run-1_eeg.set".'
-        ),
-    ]
+    assert len(suggestion_msgs) == 2
+    assert "foo-ECON_run-1_foo-ECONrun-1" in suggestion_msgs[0]
+    assert "foo-ECON_run-1_foo-ECON_run-1" in suggestion_msgs[1]
 
 
 @pytest.mark.parametrize(
