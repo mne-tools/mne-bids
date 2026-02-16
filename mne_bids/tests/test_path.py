@@ -34,6 +34,7 @@ from mne_bids.path import (
     _find_best_candidates,
     _parse_ext,
     _return_root_paths,
+    _suggest_fix_for_segment,
     find_matching_paths,
     get_bids_path_from_fname,
     get_entities_from_fname,
@@ -719,6 +720,70 @@ def test_get_entities_from_fname_no_false_positive(fname):
     """Test that valid filenames do not trigger missing separator warning."""
     # Should not raise or warn
     get_entities_from_fname(fname, on_error="raise")
+
+
+@pytest.mark.parametrize(
+    "segment, known_keys, expected",
+    [
+        # Line 1762: segments with fewer than 3 parts after split on "-"
+        pytest.param("nohyphen", ["task", "run"], None, id="no_hyphen"),
+        pytest.param("task-rest", ["task", "run"], None, id="single_hyphen"),
+        pytest.param("", ["task", "run"], None, id="empty_string"),
+        # Line 1772: ambiguous — two known keys match as suffix of middle part
+        pytest.param(
+            "k1-xcab-v",
+            ["ab", "cab", "k1"],
+            None,
+            id="ambiguous_two_keys_match",
+        ),
+        # Line 1784: trailing hyphen produces empty last value
+        pytest.param(
+            "task-ECONrun-",
+            list(ALLOWED_PATH_ENTITIES_SHORT.keys()),
+            None,
+            id="trailing_hyphen_empty_value",
+        ),
+        # No known key matches the middle part suffix
+        pytest.param("task-FOOxyz-1", ["task", "run"], None, id="no_key_match"),
+        # Positive: valid decomposition for regression
+        pytest.param(
+            "task-ECONrun-1",
+            list(ALLOWED_PATH_ENTITIES_SHORT.keys()),
+            ["task-ECON", "run-1"],
+            id="valid_decomposition",
+        ),
+    ],
+)
+def test_suggest_fix_for_segment_edge_cases(segment, known_keys, expected):
+    """Test _suggest_fix_for_segment handles edge cases correctly."""
+    assert _suggest_fix_for_segment(segment, known_keys) == expected
+
+
+@pytest.mark.parametrize(
+    "fname",
+    [
+        pytest.param(
+            "sub-01_task-ECONrun-_eeg.set", id="trailing_hyphen_with_ext"
+        ),
+        pytest.param(
+            "sub-01_task-myexprun-_bold.nii.gz", id="trailing_hyphen_compound_ext"
+        ),
+    ],
+)
+def test_get_entities_from_fname_trailing_hyphen(fname):
+    """Test that trailing-hyphen segments warn without suggesting a fix."""
+    # on_error="raise" should raise about multiple hyphens, not suggest a fix
+    with pytest.raises(ValueError, match="multiple hyphens") as exc_info:
+        get_entities_from_fname(fname, on_error="raise")
+    assert "Suggested fix" not in str(exc_info.value)
+
+    # on_error="warn" should warn without suggesting a fix
+    with pytest.warns(RuntimeWarning, match="multiple hyphens") as warnings:
+        params = get_entities_from_fname(fname, on_error="warn")
+    messages = [str(w.message) for w in warnings]
+    assert all("Suggested fix" not in msg for msg in messages)
+    # Should still parse what it can
+    assert params["subject"] == "01"
 
 
 @pytest.mark.parametrize(
