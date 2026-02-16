@@ -246,6 +246,7 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
         fname=fname_tsv,
         trial_type=event_id,
         event_metadata=None,
+        include_column_names=False,
         overwrite=overwrite,
     )
     # Write the JSON file

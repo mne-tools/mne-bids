@@ -51,6 +51,11 @@ def test_eyetracking_io(_bids_validate, tmp_path):
     assert eye2_json["RecordedEye"] == "right"
     assert "pupil_right" in eye2_json.keys()
 
+    # column names should NOT be written to physioevents.tsv files
+    eye_ev = bpath.find_matching_sidecar(suffix="physioevents", extension=".tsv")
+    eye_ev = eye_ev.read_text(encoding="utf-8-sig")
+    assert "onset" not in eye_ev.splitlines()[0].split()
+
     raw_in = read_raw_bids(
         bpath,
         eyetrack_ch_types={

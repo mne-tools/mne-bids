@@ -183,7 +183,7 @@ def _from_tsv(fname, dtypes=None):
     return data_dict
 
 
-def _to_tsv(data, fname):
+def _to_tsv(data, fname, *, include_column_names=True):
     """Write an OrderedDict into a tsv file.
 
     Parameters
@@ -194,14 +194,14 @@ def _to_tsv(data, fname):
         Path to the file being written.
     """
     n_rows = len(data[list(data.keys())[0]])
-    output = _tsv_to_str(data, n_rows)
+    output = _tsv_to_str(data, n_rows, include_column_names)
 
     with _open_lock(fname, "w", encoding="utf-8-sig") as f:
         f.write(output)
         f.write("\n")
 
 
-def _tsv_to_str(data, rows=5):
+def _tsv_to_str(data, rows=5, include_column_names=True):
     """Return a string representation of the OrderedDict.
 
     Parameters
@@ -210,6 +210,8 @@ def _tsv_to_str(data, rows=5):
         OrderedDict to return string representation of.
     rows : int, optional
         Maximum number of rows of data to output.
+    include_column_names : bool
+        Whether to include the column names in the TSV file.
 
     Returns
     -------
@@ -221,7 +223,8 @@ def _tsv_to_str(data, rows=5):
     n_rows = len(data[col_names[0]])
     output = list()
     # write headings.
-    output.append("\t".join(col_names))
+    if include_column_names:
+        output.append("\t".join(col_names))
 
     # write column data.
     max_rows = min(n_rows, rows)

@@ -289,7 +289,7 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         ch_data.move_to_end("type", last=False)
         ch_data.move_to_end("name", last=False)
 
-    _write_tsv(fname, ch_data, overwrite)
+    _write_tsv(fname, ch_data, overwrite=overwrite)
 
 
 _cardinal_ident_mapping = {
@@ -388,7 +388,9 @@ def _events_tsv(
     raw,
     fname,
     trial_type,
+    *,
     event_metadata=None,
+    include_column_names=True,
     extras_columns=None,
     overwrite=False,
 ):
@@ -418,6 +420,8 @@ def _events_tsv(
     event_metadata : pandas.DataFrame | None
         Additional metadata to be stored in the events.tsv file. Must have one
         row per event.
+    include_column_names : bool
+        Whether to include column names, e.g. "onset", in the Events TSV file.
     extras_columns : dict | None
         Optional column data derived from annotation extras, mapping column name to
         per-event values.
@@ -477,7 +481,9 @@ def _events_tsv(
             continue
         data[key] = values
 
-    _write_tsv(fname, data, overwrite)
+    _write_tsv(
+        fname, data, include_column_names=include_column_names, overwrite=overwrite
+    )
 
 
 def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False):

@@ -277,7 +277,7 @@ def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
         "y": ys,
         "z": zs,
     }
-    _write_tsv(fname, ch_data, overwrite, verbose)
+    _write_tsv(fname, ch_data, overwrite=overwrite, verbose=verbose)
 
 
 def _write_coordsystem_json(
