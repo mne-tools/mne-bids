@@ -84,6 +84,7 @@ warning_str = dict(
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:mne",
     nasion_not_found="ignore:.*nasion not found:RuntimeWarning:mne",
     maxshield="ignore:.*Internal Active Shielding:RuntimeWarning:mne",
+    synthetic_fiducials="ignore:No fiducial points found:RuntimeWarning:mne_bids",
 )
 
 
@@ -154,7 +155,7 @@ def test_read_raw():
 
 def test_not_implemented(tmp_path):
     """Test the not yet implemented data formats raise an adequate error."""
-    for not_implemented_ext in [".mef", ".nwb"]:
+    for not_implemented_ext in [".nwb"]:
         raw_fname = tmp_path / f"test{not_implemented_ext}"
         with open(raw_fname, "w", encoding="utf-8"):
             pass
@@ -162,6 +163,38 @@ def test_not_implemented(tmp_path):
             ValueError, match=("there is no IO support for this file format yet")
         ):
             _read_raw(raw_fname)
+
+
+def test_mefd_requires_supported_mne(tmp_path, monkeypatch):
+    """Test that reading .mefd requires a registered reader implementation."""
+    import mne_bids.read as read_module
+
+    mefd_path = tmp_path / "test.mefd"
+    mefd_path.mkdir()
+    monkeypatch.delitem(read_module.reader, ".mefd", raising=False)
+
+    with pytest.raises(ValueError, match="MEF3 support requires MNE-Python >= 1.12"):
+        _read_raw(mefd_path)
+
+
+def test_mefd_read_uses_reader_registry(tmp_path, monkeypatch):
+    """Test that reading .mefd uses the registered reader from config."""
+    import mne_bids.read as read_module
+
+    mefd_path = tmp_path / "test.mefd"
+    mefd_path.mkdir()
+    sentinel = object()
+
+    def _fake_mefd_reader(path, verbose=None, **kwargs):
+        assert path == mefd_path
+        assert isinstance(path, Path)
+        assert verbose is None
+        assert kwargs == {"preload": False}
+        return sentinel
+
+    monkeypatch.setitem(read_module.reader, ".mefd", _fake_mefd_reader)
+
+    assert _read_raw(mefd_path, preload=False) is sentinel
 
 
 def test_read_correct_inputs():
@@ -1023,7 +1056,7 @@ def test_handle_chpi_reading(tmp_path):
 @pytest.mark.filterwarnings(warning_str["nasion_not_found"])
 @testing.requires_testing_data
 def test_handle_eeg_coords_reading(tmp_path):
-    """Test reading iEEG coordinates from BIDS files."""
+    """Test reading EEG coordinates from BIDS files."""
     bids_path = BIDSPath(
         subject=subject_id,
         session=session_id,
@@ -1086,6 +1119,41 @@ def test_handle_eeg_coords_reading(tmp_path):
     ):
         raw_test = read_raw_bids(bids_path)
         assert raw_test.info["dig"] is None
+
+    # Test EEGLAB and EEGLAB-HJ coordinate systems are accepted and
+    # map to ctf_head, then get transformed to head via synthetic fiducials
+    for eeglab_frame in ("EEGLAB", "EEGLAB-HJ"):
+        _update_sidecar(coordsystem_fname, "EEGCoordinateSystem", eeglab_frame)
+        with pytest.warns(RuntimeWarning, match="No fiducial points found"):
+            raw_test = read_raw_bids(bids_path)
+        assert raw_test.info["dig"] is not None
+        montage = raw_test.get_montage()
+        pos = montage.get_positions()
+        # Synthetic fiducials enable ctf_head -> head transform
+        assert pos["coord_frame"] == "head"
+
+    # Test "n/a" coordinate units are handled by inferring from magnitudes
+    # Reset to a known good coordinate system first
+    _update_sidecar(coordsystem_fname, "EEGCoordinateSystem", "CTF")
+    _update_sidecar(coordsystem_fname, "EEGCoordinateUnits", "n/a")
+    with pytest.warns(RuntimeWarning) as record:
+        raw_test = read_raw_bids(bids_path)
+    messages = [str(w.message) for w in record]
+    assert any('Coordinate unit is "n/a"' in m for m in messages)
+    assert any("No fiducial points found" in m for m in messages)
+    assert raw_test.info["dig"] is not None
+    montage = raw_test.get_montage()
+    pos = montage.get_positions()
+    # CTF maps to ctf_head, then synthetic fiducials transform to head
+    assert pos["coord_frame"] == "head"
+
+    # Test that non-"n/a" invalid units still skip electrodes.tsv
+    _update_sidecar(coordsystem_fname, "EEGCoordinateUnits", "km")
+    with pytest.warns(
+        RuntimeWarning, match="Coordinate unit is not an accepted BIDS unit"
+    ):
+        raw_test = read_raw_bids(bids_path)
+    assert raw_test.info["dig"] is None
 
 
 @pytest.mark.parametrize("bids_path", [_bids_path, _bids_path_minimal])
@@ -1207,6 +1275,13 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
 
     # ACPC should be read in as RAS for iEEG
     _update_sidecar(coordsystem_fname, "iEEGCoordinateSystem", "ACPC")
+    raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
+    coord_frame_int = MNE_STR_TO_FRAME["ras"]
+    for digpoint in raw_test.info["dig"]:
+        assert digpoint["coord_frame"] == coord_frame_int
+
+    # ScanRAS should be read in as RAS for iEEG
+    _update_sidecar(coordsystem_fname, "iEEGCoordinateSystem", "ScanRAS")
     raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
     coord_frame_int = MNE_STR_TO_FRAME["ras"]
     for digpoint in raw_test.info["dig"]:

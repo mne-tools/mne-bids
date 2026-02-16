@@ -964,7 +964,7 @@ class BIDSPath:
         - ``extension`` should be one of the accepted file
         extensions in the file path: ``.con``, ``.sqd``, ``.fif``,
         ``.pdf``, ``.ds``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``,
-        ``.edf``, ``.set``, ``.mef``, ``.nwb``
+        ``.edf``, ``.set``, ``.mefd``, ``.nwb``
         - ``suffix`` should be one of the acceptable file suffixes in: ``meg``,
         ``markers``, ``eeg``, ``ieeg``, ``T1w``,
         ``participants``, ``scans``, ``electrodes``, ``channels``,
