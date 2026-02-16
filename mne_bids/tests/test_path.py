@@ -762,9 +762,7 @@ def test_suggest_fix_for_segment_edge_cases(segment, known_keys, expected):
 @pytest.mark.parametrize(
     "fname",
     [
-        pytest.param(
-            "sub-01_task-ECONrun-_eeg.set", id="trailing_hyphen_with_ext"
-        ),
+        pytest.param("sub-01_task-ECONrun-_eeg.set", id="trailing_hyphen_with_ext"),
         pytest.param(
             "sub-01_task-myexprun-_bold.nii.gz", id="trailing_hyphen_compound_ext"
         ),
