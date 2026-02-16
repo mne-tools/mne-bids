@@ -1880,14 +1880,13 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
         segments = stem.split("_")
         fixed_segments = []
         needs_fix = False
-        for segment in segments:
+        for segment_idx, segment in enumerate(segments):
             if segment.count("-") >= 2:
                 fix = _suggest_fix_for_segment(segment, fname_vals)
                 if fix is not None:
                     suggested_segments = list(fixed_segments) + fix
                     # Append remaining untouched segments after this one
-                    remaining_idx = segments.index(segment) + 1
-                    suggested_segments.extend(segments[remaining_idx:])
+                    suggested_segments.extend(segments[segment_idx + 1 :])
                     suggested_fname = "_".join(suggested_segments) + ext
                     msg = (
                         f'Found segment "{segment}" with multiple hyphens '
@@ -1910,10 +1909,10 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
                     )
                     if on_error == "raise":
                         raise ValueError(msg)
-                    # on_error == "warn": skip the broken segment so
-                    # the regex doesn't mismatch its entities
+                    # on_error == "warn": keep the original segment so
+                    # best-effort regex parsing behavior is preserved.
                     warn(msg)
-                    needs_fix = True
+                    fixed_segments.append(segment)
                     continue
             fixed_segments.append(segment)
 

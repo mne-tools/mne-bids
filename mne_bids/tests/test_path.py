@@ -669,17 +669,41 @@ def test_get_entities_from_fname_missing_separator_three_entities():
 
 
 def test_get_entities_from_fname_missing_separator_no_autofix():
-    """Test that non-fixable segments still warn/raise without suggestion."""
+    """Test non-fixable segments still preserve best-effort parsing in warn mode."""
     # "rest" doesn't end with any known BIDS entity key, so autofix fails
     fname = "sub-01_task-rest-state_eeg.set"
     with pytest.raises(ValueError, match="multiple hyphens"):
         get_entities_from_fname(fname, on_error="raise")
     with pytest.warns(RuntimeWarning, match="multiple hyphens"):
         params = get_entities_from_fname(fname, on_error="warn")
-    # The broken segment is skipped, so task should be None
-    assert params["task"] is None
+    # Warn mode should still parse the key-value part it can extract.
+    assert params["task"] == "rest"
     # But other valid entities are still parsed
     assert params["subject"] == "01"
+
+
+def test_get_entities_from_fname_missing_separator_repeated_segment_suggestions():
+    """Test suggested fixes are correct for repeated malformed segments."""
+    fname = "sub-01_foo-ECONrun-1_foo-ECONrun-1_eeg.set"
+    with pytest.warns(RuntimeWarning) as warnings:
+        get_entities_from_fname(fname, on_error="warn")
+
+    messages = [str(w.message) for w in warnings]
+    suggestion_msgs = [msg for msg in messages if "Suggested fix:" in msg]
+    assert suggestion_msgs == [
+        (
+            'Found segment "foo-ECONrun-1" with multiple hyphens in filename '
+            '"sub-01_foo-ECONrun-1_foo-ECONrun-1_eeg.set". This likely '
+            "indicates a missing underscore separator between entities. "
+            'Suggested fix: "sub-01_foo-ECON_run-1_foo-ECONrun-1_eeg.set".'
+        ),
+        (
+            'Found segment "foo-ECONrun-1" with multiple hyphens in filename '
+            '"sub-01_foo-ECONrun-1_foo-ECONrun-1_eeg.set". This likely '
+            "indicates a missing underscore separator between entities. "
+            'Suggested fix: "sub-01_foo-ECON_run-1_foo-ECON_run-1_eeg.set".'
+        ),
+    ]
 
 
 @pytest.mark.parametrize(
