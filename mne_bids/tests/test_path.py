@@ -625,6 +625,59 @@ def test_get_entities_from_fname_errors(fname):
 
 
 @pytest.mark.parametrize(
+    "fname, expected_task, expected_other_key, expected_other_val",
+    [
+        ("sub-01_task-ECONrun-1_eeg.set", "ECON", "run", "1"),
+        ("sub-01_task-restacq-full_eeg.set", "rest", "acquisition", "full"),
+        (
+            "/bids_root/sub-01/eeg/sub-01_task-ECONrun-1_eeg.set",
+            "ECON",
+            "run",
+            "1",
+        ),
+    ],
+)
+def test_get_entities_from_fname_missing_separator(
+    fname, expected_task, expected_other_key, expected_other_val
+):
+    """Test detection and autofix of missing underscore separators."""
+    # on_error="raise" should raise with a suggested fix
+    with pytest.raises(ValueError, match="Suggested fix"):
+        get_entities_from_fname(fname, on_error="raise")
+    # on_error="warn" should warn and return autofixed entities
+    with pytest.warns(RuntimeWarning, match="Suggested fix"):
+        params = get_entities_from_fname(fname, on_error="warn")
+    assert params["task"] == expected_task
+    assert params[expected_other_key] == expected_other_val
+    # on_error="ignore" should not raise or warn
+    get_entities_from_fname(fname, on_error="ignore")
+
+
+def test_get_entities_from_fname_missing_separator_no_autofix():
+    """Test that non-fixable segments still warn/raise without suggestion."""
+    # "rest" doesn't end with any known BIDS entity key, so autofix fails
+    fname = "sub-01_task-rest-state_eeg.set"
+    with pytest.raises(ValueError, match="multiple hyphens"):
+        get_entities_from_fname(fname, on_error="raise")
+    with pytest.warns(RuntimeWarning, match="multiple hyphens"):
+        get_entities_from_fname(fname, on_error="warn")
+
+
+@pytest.mark.parametrize(
+    "fname",
+    [
+        "sub-01_ses-02_task-test_run-3_split-01_meg.fif",
+        "sub-01_ses-02_task-test_run-3_bold.nii.gz",
+        "sub-01_ses-02_task-test_channels.tsv.gz",
+    ],
+)
+def test_get_entities_from_fname_no_false_positive(fname):
+    """Test that valid filenames do not trigger missing separator warning."""
+    # Should not raise or warn
+    get_entities_from_fname(fname, on_error="raise")
+
+
+@pytest.mark.parametrize(
     "candidate_list, best_candidates",
     [
         # Only one candidate
