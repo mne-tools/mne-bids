@@ -663,14 +663,14 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     # specify a datatype, but points to a directory with both MEG and EEG modalities,
     # then 2 coordystems can be discovered..
     meg_dir = bids_path.directory / "meg"
-    eeg_dir = (bids_path.directory / "eeg")
+    eeg_dir = bids_path.directory / "eeg"
     eeg_dir.mkdir(parents=False)
     file_to_copy = "sub-01_ses-01_coordsystem.json"
     shutil.copy(meg_dir / file_to_copy, eeg_dir / file_to_copy)
     with pytest.raises(RuntimeError, match="Expected to find a single"):
         print_dir_tree(bids_root)
         bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
-    shutil.rmtree(eeg_dir) # clean up extra file
+    shutil.rmtree(eeg_dir)  # clean up extra file
 
     # Find nothing and raise.
     with pytest.raises(RuntimeError, match="Did not find any"):
