@@ -641,16 +641,31 @@ def test_get_entities_from_fname_missing_separator(
     fname, expected_task, expected_other_key, expected_other_val
 ):
     """Test detection and autofix of missing underscore separators."""
-    # on_error="raise" should raise with a suggested fix
-    with pytest.raises(ValueError, match="Suggested fix"):
+    # on_error="raise" should raise with a suggested fix showing
+    # the full corrected filename
+    with pytest.raises(ValueError, match="Suggested fix.*\\.set"):
         get_entities_from_fname(fname, on_error="raise")
     # on_error="warn" should warn and return autofixed entities
     with pytest.warns(RuntimeWarning, match="Suggested fix"):
         params = get_entities_from_fname(fname, on_error="warn")
     assert params["task"] == expected_task
     assert params[expected_other_key] == expected_other_val
-    # on_error="ignore" should not raise or warn
-    get_entities_from_fname(fname, on_error="ignore")
+    # on_error="ignore" should not raise or warn, and the merged segment
+    # is parsed as-is by the regex (only the first key-value is captured)
+    params = get_entities_from_fname(fname, on_error="ignore")
+    assert params[expected_other_key] is None
+
+
+def test_get_entities_from_fname_missing_separator_three_entities():
+    """Test detection and autofix when three entities are merged."""
+    fname = "sub-01task-ECONrun-1_eeg.set"
+    with pytest.raises(ValueError, match="Suggested fix"):
+        get_entities_from_fname(fname, on_error="raise")
+    with pytest.warns(RuntimeWarning, match="Suggested fix"):
+        params = get_entities_from_fname(fname, on_error="warn")
+    assert params["subject"] == "01"
+    assert params["task"] == "ECON"
+    assert params["run"] == "1"
 
 
 def test_get_entities_from_fname_missing_separator_no_autofix():
@@ -660,7 +675,11 @@ def test_get_entities_from_fname_missing_separator_no_autofix():
     with pytest.raises(ValueError, match="multiple hyphens"):
         get_entities_from_fname(fname, on_error="raise")
     with pytest.warns(RuntimeWarning, match="multiple hyphens"):
-        get_entities_from_fname(fname, on_error="warn")
+        params = get_entities_from_fname(fname, on_error="warn")
+    # The broken segment is skipped, so task should be None
+    assert params["task"] is None
+    # But other valid entities are still parsed
+    assert params["subject"] == "01"
 
 
 @pytest.mark.parametrize(

@@ -1744,11 +1744,17 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
 def _suggest_fix_for_segment(segment, known_keys):
     """Try to split a malformed segment into valid BIDS key-value pairs.
 
+    This is an internal helper and not part of the public API.
+
     When a filename segment between underscores contains multiple hyphens
     (e.g., ``"task-ECONrun-1"``), this function attempts to decompose it
     into valid ``key-value`` pairs by finding known BIDS entity keys at the
     end of each "middle" part (the parts between hyphens that are neither
     the first key nor the last value).
+
+    The matching is greedy left-to-right: for each middle part, the function
+    checks whether it ends with a known entity key and splits at the first
+    unambiguous match.
 
     Parameters
     ----------
@@ -1863,12 +1869,14 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
     # attempt to decompose the segment into valid key-value pairs.
     parse_basename = op.basename(fname)
     if on_error != "ignore":
-        basename = parse_basename
-        stem, ext = op.splitext(basename)
-        # Handle compound extensions like .nii.gz and .tsv.gz
-        if ext == ".gz" and stem.endswith((".nii", ".tsv")):
-            stem, ext2 = op.splitext(stem)
-            ext = ext2 + ext
+        stem = parse_basename
+        ext = ""
+        # Strip extension(s) using _get_bids_suffix_and_ext logic:
+        # handle compound extensions like .nii.gz
+        if "." in stem:
+            split_str = stem.split(".")
+            stem = split_str[0]
+            ext = "." + ".".join(split_str[1:])
         segments = stem.split("_")
         fixed_segments = []
         needs_fix = False
@@ -1876,12 +1884,16 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
             if segment.count("-") >= 2:
                 fix = _suggest_fix_for_segment(segment, fname_vals)
                 if fix is not None:
-                    suggested = "_".join(fix)
+                    suggested_segments = list(fixed_segments) + fix
+                    # Append remaining untouched segments after this one
+                    remaining_idx = segments.index(segment) + 1
+                    suggested_segments.extend(segments[remaining_idx:])
+                    suggested_fname = "_".join(suggested_segments) + ext
                     msg = (
                         f'Found segment "{segment}" with multiple hyphens '
                         f'in filename "{fname}". This likely indicates a '
                         f"missing underscore separator between entities. "
-                        f'Suggested fix: "{suggested}".'
+                        f'Suggested fix: "{suggested_fname}".'
                     )
                     if on_error == "raise":
                         raise ValueError(msg)
@@ -1898,7 +1910,11 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
                     )
                     if on_error == "raise":
                         raise ValueError(msg)
+                    # on_error == "warn": skip the broken segment so
+                    # the regex doesn't mismatch its entities
                     warn(msg)
+                    needs_fix = True
+                    continue
             fixed_segments.append(segment)
 
         if needs_fix:
