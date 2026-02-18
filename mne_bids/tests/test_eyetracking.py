@@ -86,6 +86,11 @@ def test_eyetracking_io(_bids_validate, tmp_path):
     invalid = set(description_col) - allowed
     assert not invalid
 
+    # Quick check that we didn't mutate raw during write
+    assert "xpos_left" in raw.ch_names
+    assert "fixation" in raw.annotations.description
+
+    # Check read
     raw_in = read_raw_bids(
         bpath,
         eyetrack_ch_types={

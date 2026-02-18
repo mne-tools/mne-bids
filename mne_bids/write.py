@@ -77,7 +77,6 @@ from mne_bids.dig import (
 )
 from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
 from mne_bids.physio import (
-    _get_eyetrack_annotation_inds,
     _get_eyetrack_ch_names,
     _write_eyetrack_tsvs,
 )
@@ -2258,11 +2257,6 @@ def write_raw_bids(
             logger.debug(f"Dropping eyetracking channels from raw: {eyetrack_ch_names}")
             raw = raw.copy()
             raw.drop_channels(eyetrack_ch_names)
-        # Now delete annotations tied to eyetracking channels so they aren't written
-        # to the main *_events files.
-        ocular_event_inds = _get_eyetrack_annotation_inds(raw)
-        # FIXME: don't mutate raw.annotatios in-place
-        raw.annotations.delete(ocular_event_inds)
 
     # create *_scans.tsv
     session_path = BIDSPath(
