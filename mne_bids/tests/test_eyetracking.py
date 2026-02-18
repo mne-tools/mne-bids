@@ -2,12 +2,37 @@
 
 import json
 
+import mne
 import numpy as np
 import pytest
 from mne.datasets import testing
-from mne.io import read_raw_egi, read_raw_eyelink
+from mne.io import RawArray, read_raw_egi, read_raw_eyelink
 
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
+from mne_bids.physio import _get_eyetrack_annotation_inds
+
+
+def test_get_eyetrack_annotation_inds():
+    """Test selecting annotations tied to eyetracking channels."""
+    # XXX: Should we only unit test public API functions?
+    info = mne.create_info(
+        ch_names=["xpos_left", "pupil_left", "eeg"],
+        sfreq=100,
+        ch_types=["eyegaze", "pupil", "eeg"],
+    )
+    raw = RawArray(np.zeros((3, 400)), info)
+    raw.set_annotations(
+        mne.Annotations(
+            onset=[0.0, 1.0, 2.0, 3.0],
+            duration=[0.1, 0.1, 0.1, 0.1],
+            description=["fixation", "stim", "blink", "misc"],
+            ch_names=[("xpos_left",), ("eeg",), ("pupil_left",), ()],
+        )
+    )
+
+    got = _get_eyetrack_annotation_inds(raw)
+    want = np.array([0, 2])
+    np.testing.assert_array_equal(got, want)
 
 
 @testing.requires_testing_data
@@ -52,9 +77,14 @@ def test_eyetracking_io(_bids_validate, tmp_path):
     assert "pupil_right" in eye2_json.keys()
 
     # column names should NOT be written to physioevents.tsv files
-    eye_ev = bpath.find_matching_sidecar(suffix="physioevents", extension=".tsv")
-    eye_ev = eye_ev.read_text(encoding="utf-8-sig")
+    phys_ev_fpath = bpath.find_matching_sidecar(suffix="physioevents", extension=".tsv")
+    eye_ev = phys_ev_fpath.read_text(encoding="utf-8-sig")
     assert "onset" not in eye_ev.splitlines()[0].split()
+    allowed = {"blink", "fixation", "saccade"}
+    phys_ev = np.loadtxt(phys_ev_fpath, encoding="utf-8-sig", dtype=str, delimiter="\t")
+    description_col = phys_ev[:, 2]
+    invalid = set(description_col) - allowed
+    assert not invalid
 
     raw_in = read_raw_bids(
         bpath,
@@ -74,7 +104,7 @@ def test_eyetracking_io(_bids_validate, tmp_path):
     for ch_orig, ch_in in zip(raw.info["chs"], raw_in.info["chs"]):
         np.testing.assert_array_equal(ch_orig["loc"], ch_in["loc"])
 
-    # Test for warnings/error cases
+    # Tests for expected warnings/error are below
     with pytest.warns(RuntimeWarning, match="Assigning channel type 'misc'"):
         raw = read_raw_bids(bpath)
         want = ["eyegaze", "eyegaze", "misc", "eyegaze", "eyegaze", "misc"]

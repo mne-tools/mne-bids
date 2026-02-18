@@ -48,6 +48,23 @@ def _get_eyetrack_ch_names(raw):
     return eye_chs
 
 
+def _get_eyetrack_annotation_inds(raw):
+    """Get indices of annotations associated with eyetracking channels."""
+    _validate_type(raw, mne.io.BaseRaw, item_name="raw")
+    eye_ch_names = _get_eyetrack_ch_names(raw)
+    if len(eye_ch_names) == 0:
+        return np.array([], dtype=int)
+
+    return np.array(
+        [
+            annot_idx
+            for annot_idx, this_annot in enumerate(raw.annotations)
+            if any(ch_name in eye_ch_names for ch_name in this_annot["ch_names"])
+        ],
+        dtype=int,
+    )
+
+
 def _write_single_eye_physio(
     *, raw, bids_path, eye_chs, eye_recording_tag, recorded_eye, overwrite
 ):
@@ -216,17 +233,7 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
     if "BAD_blink" in annotations.description:
         annotations.rename({"BAD_blink": "blink"})
     raw.set_annotations(annotations)
-    eye_annot_indices = []
-    # Get the names of eyetracking channels
-    eye_ch_names = [
-        ch_name
-        for ch_name, ch_type in zip(raw.ch_names, raw.get_channel_types())
-        if ch_type in ["eyegaze", "pupil"]
-    ]
-    # Get the indices of the annotations that contain eyetracking channels
-    for annot_idx, this_annot in enumerate(annotations):
-        if any([ch_name in this_annot["ch_names"] for ch_name in eye_ch_names]):
-            eye_annot_indices.append(annot_idx)
+    eye_annot_indices = _get_eyetrack_annotation_inds(raw)
     if len(eye_annot_indices) == 0:
         raise ValueError("No eyetracking annotations found.")
     # Get the descriptions of the eyetracking annotations

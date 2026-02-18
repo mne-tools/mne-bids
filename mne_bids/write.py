@@ -76,7 +76,11 @@ from mne_bids.dig import (
     _write_empty_ieeg_positions,
 )
 from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
-from mne_bids.physio import _get_eyetrack_ch_names, _write_eyetrack_tsvs
+from mne_bids.physio import (
+    _get_eyetrack_annotation_inds,
+    _get_eyetrack_ch_names,
+    _write_eyetrack_tsvs,
+)
 from mne_bids.pick import coil_type
 from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.sidecar_updates import update_sidecar_json
@@ -2254,12 +2258,9 @@ def write_raw_bids(
             logger.debug(f"Dropping eyetracking channels from raw: {eyetrack_ch_names}")
             raw = raw.copy()
             raw.drop_channels(eyetrack_ch_names)
-        # Now delete ocular annotations so they aren't written to the _events.json
-        # FIXME: Is there another way that doesn't rely on hardcoded descriptions?
-        is_ocular_ev = np.isin(
-            raw.annotations.description, ["BAD_blink", "fixation", "saccade"]
-        )
-        ocular_event_inds = np.where(is_ocular_ev)[0]
+        # Now delete annotations tied to eyetracking channels so they aren't written
+        # to the main *_events files.
+        ocular_event_inds = _get_eyetrack_annotation_inds(raw)
         # FIXME: don't mutate raw.annotatios in-place
         raw.annotations.delete(ocular_event_inds)
 
