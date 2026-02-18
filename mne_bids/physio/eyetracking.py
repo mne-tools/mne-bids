@@ -334,9 +334,8 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: None | dict[str, str]):
         ``<match>_recording-{eye1,eye2}_physio.tsv`` will be set to ``eyegaze``, and
         data from all subsequent columns will be set to ``'misc'``.
     """
-
-    def infer_et_type(column_idx):
-        return "eyegaze" if column_idx in [1, 2] else "misc"
+    if ch_types is None:
+        ch_types = {}
 
     ch_info = {}
     fiff_to_func = {
@@ -363,60 +362,21 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: None | dict[str, str]):
             num_eyes += 1
     logger.info(f"Reading data recorded from {num_eyes} eye(s)")
 
-    eye1_json = raw_path.with_suffix(".json")
-    eye1_dict = json.loads(eye1_json.read_text())
-
-    eye1_cols = eye1_dict["Columns"]
-    eye1_eye = eye1_dict["RecordedEye"]
-
-    for col_idx, ch_name in enumerate(eye1_cols[1:], start=1):
-        ch_info[ch_name] = dict()
-        unknown_types = []
-        unit = eye1_dict[ch_name]["Units"]
-        ch_type = ch_types.get(ch_name, infer_et_type(col_idx))
-        if col_idx > 1 and ch_type == "misc":
-            unknown_types.append(ch_name)
-        ch_info[ch_name]["ch_type"] = ch_type
-
-        ch_info[ch_name]["unit"] = UNITS_BIDS_TO_FIFF_MAP[unit]
-        ch_info[ch_name]["eye"] = eye1_eye
-        if col_idx == 1:
-            ch_info[ch_name]["axis"] = "x"
-        elif col_idx == 2:
-            ch_info[ch_name]["axis"] = "y"
-        else:
-            ch_info[ch_name]["axis"] = None
-    # first columns is always 'time'
-    n_cols = len(eye1_cols)
-
-    eye1_array = np.loadtxt(raw_path, usecols=range(1, n_cols))
+    eye1_cols, eye1_array, eye1_ch_info, unknown_types = _read_one_eye_physio(
+        raw_path,
+        ch_types,
+    )
+    ch_info.update(eye1_ch_info)
+    json_sidecar_fpath = raw_path.with_suffix(".json")
+    eye1_sfreq = json.loads(json_sidecar_fpath.read_text())["SamplingFrequency"]
 
     if num_eyes == 2:
-        eye2_json = eye2_fpath.with_suffix(".json")
-        eye2_dict = json.loads(eye2_json.read_text())
-
-        eye2_cols = eye2_dict["Columns"]
-        eye2_eye = eye2_dict["RecordedEye"]
-        for col_idx, ch_name in enumerate(eye2_cols[1:], start=1):
-            ch_info[ch_name] = dict()
-
-            unit = eye2_dict[ch_name]["Units"]
-            ch_type = ch_types.get(ch_name, infer_et_type(col_idx))
-            if col_idx > 1 and ch_type == "misc":
-                unknown_types.append(ch_name)
-
-            ch_info[ch_name]["ch_type"] = ch_type
-            ch_info[ch_name]["eye"] = eye2_eye
-            ch_info[ch_name]["unit"] = UNITS_BIDS_TO_FIFF_MAP[unit]
-            if col_idx == 1:
-                ch_info[ch_name]["axis"] = "x"
-            elif col_idx == 2:
-                ch_info[ch_name]["axis"] = "y"
-            else:
-                ch_info[ch_name]["axis"] = None
-
-        n_cols = len(eye2_cols)
-        eye2_array = np.loadtxt(eye2_fpath, usecols=range(1, n_cols))
+        eye2_cols, eye2_array, eye2_ch_info, eye2_unknown_types = _read_one_eye_physio(
+            eye2_fpath,
+            ch_types,
+        )
+        ch_info.update(eye2_ch_info)
+        unknown_types.extend(eye2_unknown_types)
 
         data = np.concat([eye1_array, eye2_array], axis=1)
         ch_names = eye1_cols[1:] + eye2_cols[1:]
@@ -424,7 +384,7 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: None | dict[str, str]):
     else:
         data = eye1_array
         ch_names = eye1_cols[1:]
-        types = [ch_info[name]["ch_type"] for name in ch_info]
+        types = [ch_info[name]["ch_type"] for name in ch_names]
 
     if unknown_types:
         warn(
@@ -432,8 +392,7 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: None | dict[str, str]):
             "If this is incorrect, pass the correct channel types to the "
             "eyetrack_ch_types parameter."
         )
-    sfreq = eye1_dict["SamplingFrequency"]
-    info = mne.create_info(ch_names=ch_names, ch_types=types, sfreq=sfreq)
+    info = mne.create_info(ch_names=ch_names, ch_types=types, sfreq=eye1_sfreq)
     raw = mne.io.RawArray(data.T, info)
 
     et_info = dict()
@@ -453,3 +412,35 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: None | dict[str, str]):
             )
     set_channel_types_eyetrack(raw, mapping=et_info)
     return raw
+
+
+def _read_one_eye_physio(raw_tsv_fpath, ch_types):
+    """Read one eye's physio.tsv/.json and return channel metadata and samples."""
+
+    def _infer_et_type(column_idx):
+        return "eyegaze" if column_idx in [1, 2] else "misc"
+
+    json_fpath = raw_tsv_fpath.with_suffix(".json")
+    sidecar = json.loads(json_fpath.read_text())
+
+    cols = sidecar["Columns"]
+    recorded_eye = sidecar["RecordedEye"]
+
+    ch_info = {}
+    unknown_types = []
+    for col_idx, ch_name in enumerate(cols[1:], start=1):
+        unit_str = sidecar[ch_name]["Units"]
+        ch_type = ch_types.get(ch_name, _infer_et_type(col_idx))
+        if col_idx > 2 and ch_type == "misc":
+            unknown_types.append(ch_name)
+
+        ch_info[ch_name] = dict(
+            ch_type=ch_type,
+            unit=UNITS_BIDS_TO_FIFF_MAP[unit_str],
+            eye=recorded_eye,
+            axis=("x" if col_idx == 1 else "y" if col_idx == 2 else None),
+        )
+
+    n_cols = len(cols)
+    data = np.loadtxt(raw_tsv_fpath, usecols=range(1, n_cols))
+    return cols, data, ch_info, unknown_types
