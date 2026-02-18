@@ -6,11 +6,13 @@ from pathlib import Path
 import mne
 import numpy as np
 from mne._fiff.constants import FIFF
-from mne.preprocessing.eyetracking import set_channel_types_eyetrack
+from mne.preprocessing.eyetracking import Calibration, set_channel_types_eyetrack
 from mne.utils import _validate_type, logger, warn
 
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP
+from mne_bids.path import BIDSPath
 from mne_bids.physio._utils import _get_physio_type
+from mne_bids.utils import _write_json
 
 
 def _has_eyetracking(bids_path):
@@ -293,6 +295,7 @@ def _write_physio_tsv(times, data, fname, overwrite):
     np.savetxt(fname, data, delimiter="\t", fmt="%1.3f", encoding="utf-8")
 
 
+# FIXME: I think we can just use _write_json
 def _write_physio_json(json_dict, fname, overwrite):
     """Write a *_physio.json file.
 
@@ -313,6 +316,118 @@ def _write_physio_json(json_dict, fname, overwrite):
     # Write the file
     with open(fname, "w") as f:
         json.dump(json_dict, f, indent=4)
+
+
+def _json_safe(value):
+    """Convert values to JSON-serializable equivalents when needed."""
+    if isinstance(value, np.ndarray):
+        return value.tolist()
+    if isinstance(value, np.generic):
+        # np.int32 etc
+        return value.item()
+    return value
+
+
+def _calibration_to_sidecar_updates(calibrations):
+    """Convert calibration object(s) for one eye to sidecar updates."""
+    updates = {}
+    updates["CalibrationCount"] = len(calibrations)
+    # FIXME: BEP020 allows CalibrationCount (per session/run) yet only provides one set
+    # of Calibration* fields per physio sidecar. For now, if more than 1 calibrations
+    # were run, I guess it makes most sense to take the last calibration.
+    cal = calibrations[-1].copy()
+
+    mne_to_bids_map = {
+        "avg_error": "AverageCalibrationError",
+        "max_error": "MaximalCalibrationError",
+        "model": "CalibrationType",
+        "positions": "CalibrationPosition",
+        "calibration_unit": "CalibrationUnit",  # FIXME: Add this to MNE's Calibration
+        "screen_distance": "CalibrationDistance",
+    }
+    for from_key, to_key in mne_to_bids_map.items():
+        value = cal.get(from_key)
+        if value is not None:
+            updates[to_key] = _json_safe(value)
+    return updates
+
+
+def write_eyetracking_calibration(
+    bids_path: BIDSPath,
+    calibrations: Calibration | list[Calibration],
+) -> list[Path]:
+    """Write eyetracking calibration metadata into an existing ``*_physio.json`` sidecar.
+
+    Parameters
+    ----------
+    bids_path : mne_bids.BIDSPath
+        BIDSPath for the eyetracking recording. The BIDSPath should point to a modality
+        directory (e.g. ``beh`` or ``eeg``) that contains ``<match>_physio.json``
+        file(s). If the BIDSPath contains a ``recording`` entity (e.g. ``'eye1'`), it
+        will be ignored (see the notes section).
+    calibration : mne.preprocessing.eyetracking.Calibration | list of mne.preprocessing.eyetracking.Calibration
+        Calibration instance(s) (e.g., an item returned by
+        :func:`~mne.preprocessing.eyetracking.read_eyelink_calibration`). Each instance
+        must expose an ``eye`` attribute with value ``"left"`` or ``"right"``
+
+    Returns
+    -------
+    Updated sidecar filepaths : list of pathlib.Path
+        a list of filepaths pointing to the ``<match>_physio.tsv`` files that were
+        updated with calibration information.
+
+    Notes
+    -----
+    This function routes calibration metadata to the correct per-eye physio sidecar(s):
+
+    - Binocular recordings: left eye -> ``<match>_recording-eye1_physio.tsv``,
+    right eye -> ``<match>_recording-eye2_physio.tsv``
+    - Monocular recordings: whichever eye was recorded ->
+    ``<match>_recording-eye1_physio.tsv``
+
+    If more than one calibration was run on the participant, this function will write
+    the last calibration in the sequence passed to the ``calibration`` parameter.
+
+    `BIDS supported Calibration fields <https://bids-specification.readthedocs.io/en/stable/modality-specific-files/physiological-recordings.html#eye-tracking>`_
+    """  # noqa: E501 FIXME: Can we use an alias to make the long line fit?
+    _validate_type(bids_path, BIDSPath, item_name="bids_path")
+
+    if isinstance(calibrations, mne.preprocessing.eyetracking.Calibration):
+        calibrations = [calibrations]
+
+    cals_by_eye = {"left": [], "right": []}
+    for cal in calibrations:
+        eye = cal["eye"]
+        cals_by_eye[eye].append(cal)
+    eyes_present = set(cals_by_eye.keys())
+
+    # Determine monocular vs binocular mapping to the *_physio.tsv files
+    if eyes_present == {"left", "right"}:
+        eye_to_recording = {"left": "eye1", "right": "eye2"}
+    else:
+        only_eye = next(iter(eyes_present))
+        eye_to_recording = {only_eye: "eye1"}
+
+    # Construct base path eye1 and/or eye2 <match>_physio.tsv files
+    base_path = bids_path.copy().update(suffix="physio", extension=".json")
+
+    updated_sidecar_fpaths = []
+    for eye, recording_tag in eye_to_recording.items():
+        sidecar_fpath = base_path.copy().update(recording=recording_tag).fpath
+        if not sidecar_fpath.exists():
+            msg = (
+                "Eyetracking sidecar not found at "
+                f"{sidecar_fpath}. Write the BIDS dataset first using write_raw_bids."
+            )
+            raise FileNotFoundError(msg)
+
+        updates = _calibration_to_sidecar_updates(cals_by_eye[eye])
+        if updates:
+            sidecar = json.loads(sidecar_fpath.read_text(encoding="utf-8-sig"))
+            sidecar.update(updates)
+            _write_json(sidecar_fpath, sidecar, overwrite=True)
+            updated_sidecar_fpaths.append(sidecar_fpath)
+    return updated_sidecar_fpaths
 
 
 def read_raw_eyetracking_bids(bids_path, *, ch_types: None | dict[str, str]):

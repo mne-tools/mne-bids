@@ -9,7 +9,10 @@ from mne.datasets import testing
 from mne.io import RawArray, read_raw_egi, read_raw_eyelink
 
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
-from mne_bids.physio import _get_eyetrack_annotation_inds
+from mne_bids.physio import (
+    _get_eyetrack_annotation_inds,
+    write_eyetracking_calibration,
+)
 
 
 def test_get_eyetrack_annotation_inds():
@@ -40,8 +43,9 @@ def test_eyetracking_io(_bids_validate, tmp_path):
     """Test Read/Write of BEP 020 compiant binocular eyetracking data."""
     eyetrack_fpath = testing.data_path(download=False) / "eyetrack" / "test_eyelink.asc"
     raw = read_raw_eyelink(eyetrack_fpath)
-    root = tmp_path / "bids"
+    cals = mne.preprocessing.eyetracking.read_eyelink_calibration(eyetrack_fpath)
 
+    root = tmp_path / "bids"
     bpath = BIDSPath(
         root=root,
         datatype="beh",
@@ -61,14 +65,19 @@ def test_eyetracking_io(_bids_validate, tmp_path):
         overwrite=False,
     )
 
+    # Write calibration
+    write_eyetracking_calibration(bpath, cals)
+
     # Check what was written
     out_path = bpath.fpath
     assert out_path.exists()
     assert out_path.parent.name == "beh"
 
-    eye1_json = json.loads(out_path.with_suffix(".json").read_text())
+    eye1_json_fname = out_path.with_suffix(".json")
+    eye1_json = json.loads(eye1_json_fname.read_text())
     assert eye1_json["RecordedEye"] == "left"
     assert eye1_json["SampleCoordinateSystem"] == "gaze-on-screen"
+    assert eye1_json["CalibrationCount"] == 1
     assert "xpos_left" in eye1_json.keys()
 
     eye2_fname = out_path.parent / out_path.name.replace("eye1", "eye2")
@@ -114,6 +123,10 @@ def test_eyetracking_io(_bids_validate, tmp_path):
         raw = read_raw_bids(bpath)
         want = ["eyegaze", "eyegaze", "misc", "eyegaze", "eyegaze", "misc"]
         assert raw.get_channel_types() == want
+
+    eye1_json_fname.unlink()
+    with pytest.raises(FileNotFoundError, match="Eyetracking sidecar not found"):
+        write_eyetracking_calibration(bpath, cals)
 
 
 @testing.requires_testing_data

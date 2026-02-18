@@ -20,12 +20,15 @@ MNE-BIDS.
 # %%
 import json
 import shutil
+from pprint import pprint
 
 import mne
 from mne.datasets import testing
 from mne.datasets.eyelink import data_path as eyelink_data_path
+from mne.preprocessing.eyetracking import read_eyelink_calibration
 
 from mne_bids import BIDSPath, print_dir_tree, read_raw_bids, write_raw_bids
+from mne_bids.physio import write_eyetracking_calibration
 
 # %%
 # Load example eyetracking data
@@ -72,15 +75,30 @@ bids_path = BIDSPath(
 write_raw_bids(raw=raw, bids_path=bids_path, allow_preload=True, overwrite=True)
 
 # %%
+# Add calibration metadata to the eyetracking sidecar
+# ---------------------------------------------------
+#
+# We can update the ``*_physio.json`` sidecar with calibration eyetracking
+# calibration information.
+
+cals = read_eyelink_calibration(eyetrack_fpath)
+write_eyetracking_calibration(bids_path, cals)
+
+# %%
 # Inspect the generated BIDS directory tree.
 
+# %%
 print_dir_tree(bids_root)
 
 # %%
 # Inspect one sidecar JSON file.
+# ------------------------------
+# Notice that the calibration information was written to this phsyio.json file
 
+# %%
 eye1_json = bids_path.fpath.with_suffix(".json")
-print(json.loads(eye1_json.read_text()))
+print(f"Filepath: {eye1_json}")
+pprint(json.loads(eye1_json.read_text()), indent=2)
 
 # %%
 # Read the eyetracking data back from BIDS
@@ -102,12 +120,14 @@ raw_in = read_raw_bids(
 raw_in
 
 # %%
-# Convert simultaneous EEG + eyetracking to BIDS
-# -----------------------------------------------
+# Convert simultaneous EEG + eyetracking data to BIDS
+# ---------------------------------------------------
 #
-# We can also handle simultaneously recorded EEG and eyetracking data. Here we
-# use the ``mne.datasets.eyelink`` example dataset (``eeg-et``), read each
-# recording, and merge them into a single :class:`mne.io.Raw` object.
+# When eyetracking data is collected simultaneously with another BIDS modality, then the
+# eyetracking files will be written to that modality folder. In other words, instead of
+# being written to a ``beh`` director, as the stand-alone eyetracking data that we just
+# used was, the dataset below will be written alongside the EEG data in the ``eeg``
+# directory.
 
 eyelink_root = eyelink_data_path()
 et_fpath = eyelink_root / "eeg-et" / "sub-01_task-plr_eyetrack.asc"
