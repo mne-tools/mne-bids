@@ -7,7 +7,7 @@ import mne
 import numpy as np
 from mne._fiff.constants import FIFF
 from mne.preprocessing.eyetracking import set_channel_types_eyetrack
-from mne.utils import _validate_type, logger
+from mne.utils import _validate_type, logger, warn
 
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP
 from mne_bids.physio._utils import _get_physio_type
@@ -308,7 +308,7 @@ def _write_physio_json(json_dict, fname, overwrite):
         json.dump(json_dict, f, indent=4)
 
 
-def read_raw_eyetracking_bids(bids_path, *, ch_types: dict[str, str]):
+def read_raw_eyetracking_bids(bids_path, *, ch_types: None | dict[str, str]):
     """Read BIDS compliant eyetracking data from TSV sidecar files.
 
     bids_path : mne_bids.BIDSPath
@@ -319,12 +319,19 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: dict[str, str]):
         specify ``datatype="beh"``. Otherwise, if the eyetracking was collected
         alongside another modality such as ``eeg``, then you must specify
         ``datatype="eeg"``.
-    ch_types : dict of str
-        a dictionary whose keys correspond to eyetracking channel names, and whose
-        values correspond to the MNE-Python compatible channel types for said channel,
-        such as ``'eyegaze'``, ``'pupil'``, or ``'misc'``.
+    ch_types : None | dict of str
+        Either ``None``, or a dictionary whose keys correspond to eyetracking channel
+        names, and whose values correspond to the MNE-Python compatible channel types
+        for said channel, such as ``'eyegaze'``, ``'pupil'``, or ``'misc'``. If
+        ``None``, then the data in the 2nd and 3rd columns of
+        ``<match>_recording-{eye1,eye2}_physio.tsv`` will be set to ``eyegaze``, and
+        data from all subsequent columns will be set to ``'misc'``.
     """
-    ch_info = {ch_name: {"ch_type": ch_type} for ch_name, ch_type in ch_types.items()}
+
+    def infer_et_type(column_idx):
+        return "eyegaze" if column_idx in [1, 2] else "misc"
+
+    ch_info = {}
     fiff_to_func = {
         FIFF.FIFF_UNIT_PX: "px",
         FIFF.FIFF_UNIT_NONE: "au",
@@ -355,13 +362,20 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: dict[str, str]):
     eye1_cols = eye1_dict["Columns"]
     eye1_eye = eye1_dict["RecordedEye"]
 
-    for ii, ch_name in enumerate(eye1_cols[1:]):
+    for col_idx, ch_name in enumerate(eye1_cols[1:], start=1):
+        ch_info[ch_name] = dict()
+        unknown_types = []
         unit = eye1_dict[ch_name]["Units"]
-        ch_info[ch_name]["eye"] = eye1_eye
+        ch_type = ch_types.get(ch_name, infer_et_type(col_idx))
+        if col_idx > 1 and ch_type == "misc":
+            unknown_types.append(ch_name)
+        ch_info[ch_name]["ch_type"] = ch_type
+
         ch_info[ch_name]["unit"] = UNITS_BIDS_TO_FIFF_MAP[unit]
-        if ii == 0:
+        ch_info[ch_name]["eye"] = eye1_eye
+        if col_idx == 1:
             ch_info[ch_name]["axis"] = "x"
-        elif ii == 1:
+        elif col_idx == 2:
             ch_info[ch_name]["axis"] = "y"
         else:
             ch_info[ch_name]["axis"] = None
@@ -376,13 +390,20 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: dict[str, str]):
 
         eye2_cols = eye2_dict["Columns"]
         eye2_eye = eye2_dict["RecordedEye"]
-        for ii, ch_name in enumerate(eye2_cols[1:]):
+        for col_idx, ch_name in enumerate(eye2_cols[1:], start=1):
+            ch_info[ch_name] = dict()
+
             unit = eye2_dict[ch_name]["Units"]
+            ch_type = ch_types.get(ch_name, infer_et_type(col_idx))
+            if col_idx > 1 and ch_type == "misc":
+                unknown_types.append(ch_name)
+
+            ch_info[ch_name]["ch_type"] = ch_type
             ch_info[ch_name]["eye"] = eye2_eye
             ch_info[ch_name]["unit"] = UNITS_BIDS_TO_FIFF_MAP[unit]
-            if ii == 0:
+            if col_idx == 1:
                 ch_info[ch_name]["axis"] = "x"
-            elif ii == 1:
+            elif col_idx == 2:
                 ch_info[ch_name]["axis"] = "y"
             else:
                 ch_info[ch_name]["axis"] = None
@@ -398,6 +419,12 @@ def read_raw_eyetracking_bids(bids_path, *, ch_types: dict[str, str]):
         ch_names = eye1_cols[1:]
         types = [ch_info[name]["ch_type"] for name in ch_info]
 
+    if unknown_types:
+        warn(
+            f"Assigning channel type 'misc' to {unknown_types}.\n"
+            "If this is incorrect, pass the correct channel types to the "
+            "eyetrack_ch_types parameter."
+        )
     sfreq = eye1_dict["SamplingFrequency"]
     info = mne.create_info(ch_names=ch_names, ch_types=types, sfreq=sfreq)
     raw = mne.io.RawArray(data.T, info)

@@ -1012,9 +1012,12 @@ def read_raw_bids(
         * ``'rename'`` will rename the channels in the raw data file to match the
           channel names in the channels.tsv file.
     eyetrack_ch_types : dict[str, str]
-        a dictionary whose keys correspond to eyetracking channel names, and whose
-        values correspond to the MNE-Python compatible channel types for said channel,
-        such as ``'eyegaze'``, ``'pupil'``, or ``'misc'``.
+        Either ``None``, or a dictionary whose keys correspond to eyetracking channel
+        names, and whose values correspond to the MNE-Python compatible channel types
+        for said channel, such as ``'eyegaze'``, ``'pupil'``, or ``'misc'``. If
+        ``None``, then the data in the 2nd and 3rd columns of
+        ``<match>_recording-{eye1,eye2}_physio.tsv`` will be set to ``eyegaze``, and
+        data from all subsequent columns will be set to ``'misc'``.
 
     %(verbose)s
 

@@ -74,6 +74,12 @@ def test_eyetracking_io(_bids_validate, tmp_path):
     for ch_orig, ch_in in zip(raw.info["chs"], raw_in.info["chs"]):
         np.testing.assert_array_equal(ch_orig["loc"], ch_in["loc"])
 
+    # Test for warnings/error cases
+    with pytest.warns(RuntimeWarning, match="Assigning channel type 'misc'"):
+        raw = read_raw_bids(bpath)
+        want = ["eyegaze", "eyegaze", "misc", "eyegaze", "eyegaze", "misc"]
+        assert raw.get_channel_types() == want
+
 
 @testing.requires_testing_data
 @pytest.mark.filterwarnings("ignore:Converting data:RuntimeWarning")
