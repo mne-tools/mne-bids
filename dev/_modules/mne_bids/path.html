@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev17+geab64963a documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev18+g35d2352a7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=3376529f"></script>
+    <script src="../../_static/documentation_options.js?v=5e5f8c38"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev17+geab64963a" />
+  <meta name="docsearch:version" content="0.19.0.dev18+g35d2352a7" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev17+geab64963a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev18+g35d2352a7 documentation</p>
   
 </a></div>
     
@@ -2254,6 +2254,52 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_suggest_fix_for_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">known_keys</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decompose a multi-hyphen segment into valid BIDS key-value pairs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    segment : str</span>
+<span class="sd">        A filename segment with 2+ hyphens (e.g., ``&quot;task-ECONrun-1&quot;``).</span>
+<span class="sd">    known_keys : list of str</span>
+<span class="sd">        Known BIDS entity short keys (e.g., ``[&quot;sub&quot;, &quot;ses&quot;, &quot;task&quot;, ...]``).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of str or None</span>
+<span class="sd">        Corrected segments (e.g., ``[&quot;task-ECON&quot;, &quot;run-1&quot;]``), or ``None``</span>
+<span class="sd">        if the decomposition is ambiguous or impossible.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">segment</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">current_key</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">middle</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">found_key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">known_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">middle</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="n">middle</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">found_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># Ambiguous: two keys match</span>
+                <span class="n">found_key</span> <span class="o">=</span> <span class="n">k</span>
+
+        <span class="k">if</span> <span class="n">found_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="n">middle</span><span class="p">[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">found_key</span><span class="p">)]</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_key</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">current_key</span> <span class="o">=</span> <span class="n">found_key</span>
+
+    <span class="n">last_value</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">last_value</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_key</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">last_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
 <div class="viewcode-block" id="get_entities_from_fname">
 <a class="viewcode-back" href="../../generated/mne_bids.get_entities_from_fname.html#mne_bids.get_entities_from_fname">[docs]</a>
 <span class="nd">@verbose</span>
@@ -2266,10 +2312,14 @@
 <span class="sd">    ----------</span>
 <span class="sd">    fname : BIDSPath | path-like</span>
 <span class="sd">        The path to parse.</span>
-<span class="sd">    on_error : &#39;raise&#39; | &#39;warn&#39; | &#39;ignore&#39;</span>
+<span class="sd">    on_error : &#39;raise&#39; | &#39;warn&#39; | &#39;autofix&#39; | &#39;ignore&#39;</span>
 <span class="sd">        If any unsupported labels in the filename are found and this is set</span>
-<span class="sd">        to ``&#39;raise&#39;``, raise a ``RuntimeError``. If ``&#39;warn&#39;``,</span>
-<span class="sd">        emit a warning and continue, and if ``&#39;ignore&#39;``,</span>
+<span class="sd">        to ``&#39;raise&#39;``, raise a ``ValueError``.</span>
+<span class="sd">        If ``&#39;warn&#39;``, emit a warning and continue without modifying</span>
+<span class="sd">        the parsed filename. If ``&#39;autofix&#39;``, emit a warning and apply</span>
+<span class="sd">        unambiguous fixes for missing underscore separators between entities</span>
+<span class="sd">        (e.g., ``&quot;task-ECONrun-1&quot;`` to ``&quot;task-ECON_run-1&quot;``).</span>
+<span class="sd">        If ``&#39;ignore&#39;``,</span>
 <span class="sd">        neither raise an exception nor a warning, and</span>
 <span class="sd">        return all entities found. For example, currently MNE-BIDS does not</span>
 <span class="sd">        support derivatives yet, but the ``desc`` entity label is used to</span>
@@ -2299,10 +2349,10 @@
 <span class="sd">&#39;description&#39;: None, \</span>
 <span class="sd">&#39;tracking_system&#39;: None}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">on_error</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">on_error</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;autofix&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Acceptable values for on_error are: warn, raise, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;ignore, but got: </span><span class="si">{</span><span class="n">on_error</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;autofix, ignore, but got: </span><span class="si">{</span><span class="n">on_error</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="n">fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>  <span class="c1"># to accept also BIDSPath or Path instances</span>
@@ -2311,17 +2361,55 @@
     <span class="n">entity_vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ALLOWED_PATH_ENTITIES_SHORT</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
     <span class="n">fname_vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ALLOWED_PATH_ENTITIES_SHORT</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
+    <span class="c1"># Check for segments with multiple hyphens, which likely indicates</span>
+    <span class="c1"># missing underscore separators between entities. When possible,</span>
+    <span class="c1"># attempt to decompose the segment into valid key-value pairs.</span>
+    <span class="n">parse_basename</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">on_error</span> <span class="o">!=</span> <span class="s2">&quot;ignore&quot;</span><span class="p">:</span>
+        <span class="n">stem</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">ext_part</span> <span class="o">=</span> <span class="n">parse_basename</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">dot</span> <span class="o">+</span> <span class="n">ext_part</span>  <span class="c1"># &quot;&quot; if no extension</span>
+        <span class="n">segments</span> <span class="o">=</span> <span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="n">fixed_segments</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">needs_fix</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">segment_idx</span><span class="p">,</span> <span class="n">segment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">segments</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">segment</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">fixed_segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">fix</span> <span class="o">=</span> <span class="n">_suggest_fix_for_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">fname_vals</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Found segment &quot;</span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s1">&quot; with multiple hyphens &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;in filename &quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot;. This likely indicates a &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;missing underscore separator between entities.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">fix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">suggested_segments</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fixed_segments</span><span class="p">)</span> <span class="o">+</span> <span class="n">fix</span>
+                <span class="n">suggested_segments</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="n">segment_idx</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:])</span>
+                <span class="n">suggested_fname</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suggested_segments</span><span class="p">)</span> <span class="o">+</span> <span class="n">ext</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; Suggested fix: &quot;</span><span class="si">{</span><span class="n">suggested_fname</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
+            <span class="k">if</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s2">&quot;autofix&quot;</span><span class="p">:</span>
+                <span class="n">fixed_segments</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fix</span><span class="p">)</span>
+                <span class="n">needs_fix</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fixed_segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">needs_fix</span><span class="p">:</span>
+            <span class="n">parse_basename</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fixed_segments</span><span class="p">)</span> <span class="o">+</span> <span class="n">ext</span>
+
     <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">entity_vals</span><span class="p">}</span>
     <span class="n">idx_key</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">param_regex</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">param_regex</span><span class="p">,</span> <span class="n">parse_basename</span><span class="p">):</span>
         <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">on_error</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">on_error</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;autofix&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fname_vals</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Unexpected entity &quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot; found in filename &quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
                 <span class="k">if</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
+                <span class="k">else</span><span class="p">:</span>
                     <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                     <span class="k">continue</span>
             <span class="k">if</span> <span class="n">fname_vals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">idx_key</span><span class="p">:</span>
@@ -3313,7 +3401,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-16.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-02-18.
       <br/>
     
   </p>
