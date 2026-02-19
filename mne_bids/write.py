@@ -77,6 +77,11 @@ from mne_bids.dig import (
     _write_empty_ieeg_positions,
 )
 from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
+from mne_bids.physio import (
+    _get_eyetrack_annotation_inds,
+    _get_eyetrack_ch_names,
+    _write_eyetrack_tsvs,
+)
 from mne_bids.pick import coil_type
 from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.sidecar_updates import update_sidecar_json
@@ -289,7 +294,7 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         ch_data.move_to_end("type", last=False)
         ch_data.move_to_end("name", last=False)
 
-    _write_tsv(fname, ch_data, overwrite)
+    _write_tsv(fname, ch_data, overwrite=overwrite)
 
 
 _cardinal_ident_mapping = {
@@ -388,7 +393,9 @@ def _events_tsv(
     raw,
     fname,
     trial_type,
+    *,
     event_metadata=None,
+    include_column_names=True,
     extras_columns=None,
     overwrite=False,
 ):
@@ -418,6 +425,8 @@ def _events_tsv(
     event_metadata : pandas.DataFrame | None
         Additional metadata to be stored in the events.tsv file. Must have one
         row per event.
+    include_column_names : bool
+        Whether to include column names, e.g. "onset", in the Events TSV file.
     extras_columns : dict | None
         Optional column data derived from annotation extras, mapping column name to
         per-event values.
@@ -477,7 +486,9 @@ def _events_tsv(
             continue
         data[key] = values
 
-    _write_tsv(fname, data, overwrite)
+    _write_tsv(
+        fname, data, include_column_names=include_column_names, overwrite=overwrite
+    )
 
 
 def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False):
@@ -1966,6 +1977,9 @@ def write_raw_bids(
     """
     if not isinstance(raw, BaseRaw):
         raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
+    is_eyetracking_only = all(
+        [ch in ["eyegaze", "pupil"] for ch in raw.get_channel_types()]
+    )
 
     if raw.preload is not False and not allow_preload:
         raise ValueError(
@@ -2041,8 +2055,8 @@ def write_raw_bids(
     convert = False  # flag if converting not copying
 
     # Load file, filename, extension
+    raw_fname = raw.filenames[0]
     if not allow_preload:
-        raw_fname = raw.filenames[0]
         if ".ds" in op.dirname(raw.filenames[0]):
             raw_fname = op.dirname(raw.filenames[0])
         # point to file containing header info for multifile systems
@@ -2083,6 +2097,8 @@ def write_raw_bids(
             ext = ".set"
         elif format == "FIF":
             ext = ".fif"
+        elif is_eyetracking_only:
+            ext = ".tsv"  # Data will be saved in TSV files
         else:
             msg = (
                 'For preloaded data, you must set the "format" parameter '
@@ -2127,7 +2143,9 @@ def write_raw_bids(
     # Initialize BIDSPath
     datatype = _handle_datatype(raw, bids_path.datatype)
     bids_path = bids_path.copy().update(
-        datatype=datatype, suffix=datatype, extension=ext
+        datatype=datatype,
+        suffix=bids_path.suffix if datatype == "beh" else datatype,
+        extension=ext,
     )
 
     if datatype == "emg" and emg_placement not in (
@@ -2233,6 +2251,19 @@ def write_raw_bids(
 
     data_path = bids_path.mkdir().directory
 
+    # If eyetrack channels are alongside eeg, meg etc. Then
+    eyetrack_ch_names = _get_eyetrack_ch_names(raw)
+    if eyetrack_ch_names:
+        _write_eyetrack_tsvs(raw, bids_path, overwrite=overwrite)
+        if not is_eyetracking_only:
+            logger.debug(f"Dropping eyetracking channels from raw: {eyetrack_ch_names}")
+            raw = raw.copy()
+            raw.drop_channels(eyetrack_ch_names)
+        # Now delete annotations tied to eyetracking channels so they aren't written
+        # to the main *_events files.
+        ocular_event_inds = _get_eyetrack_annotation_inds(raw)
+        raw.annotations.delete(ocular_event_inds)
+
     # create *_scans.tsv
     session_path = BIDSPath(
         subject=bids_path.subject, session=bids_path.session, root=bids_path.root
@@ -2266,6 +2297,8 @@ def write_raw_bids(
 
     sidecar_path = bids_path.copy().update(suffix=bids_path.datatype, extension=".json")
     events_tsv_path = bids_path.copy().update(suffix="events", extension=".tsv")
+    if is_eyetracking_only:
+        events_tsv_path.update(recording=None)
     events_json_path = events_tsv_path.copy().update(extension=".json")
     channels_path = bids_path.copy().update(suffix="channels", extension=".tsv")
 
@@ -2415,23 +2448,24 @@ def write_raw_bids(
     # this function.
     make_dataset_description(path=bids_path.root, name="[Unspecified]", overwrite=False)
 
-    _sidecar_json(
-        raw,
-        task=bids_path.task,
-        manufacturer=manufacturer,
-        fname=sidecar_path.fpath,
-        datatype=bids_path.datatype,
-        emptyroom_fname=associated_er_path,
-        emg_placement=emg_placement,
-        overwrite=overwrite,
-    )
+    if not is_eyetracking_only:
+        _sidecar_json(
+            raw,
+            task=bids_path.task,
+            manufacturer=manufacturer,
+            fname=sidecar_path.fpath,
+            datatype=bids_path.datatype,
+            emptyroom_fname=associated_er_path,
+            emg_placement=emg_placement,
+            overwrite=overwrite,
+        )
 
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
 
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
-    if not convert:
+    if not convert and not is_eyetracking_only:
         convert = ext not in ALLOWED_DATATYPE_EXTENSIONS[bids_path.datatype]
 
         if convert and symlink:
@@ -2509,7 +2543,7 @@ def write_raw_bids(
 
     # otherwise if the BIDSPath currently exists, check if we
     # would like to overwrite the existing dataset
-    if bids_path.fpath.exists():
+    if bids_path.fpath.exists() and not is_eyetracking_only:
         if overwrite:
             # Need to load data before removing its source
             raw.load_data()
@@ -2554,6 +2588,8 @@ def write_raw_bids(
             _write_raw_brainvision(
                 raw, bids_path.fpath, events=events_array, overwrite=overwrite
             )
+    elif is_eyetracking_only:
+        pass
     elif ext == ".fif":
         if symlink:
             link_target = Path(raw.filenames[0])
