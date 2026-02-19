@@ -12,7 +12,7 @@ from mne.utils import _validate_type, logger, warn
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP
 from mne_bids.path import BIDSPath
 from mne_bids.physio._utils import _get_physio_type
-from mne_bids.utils import _write_json
+from mne_bids.utils import _write_json, _write_tsv
 
 
 def _has_eyetracking(bids_path):
@@ -87,20 +87,19 @@ def _write_single_eye_physio(
     overwrite : bool
         Whether to overwrite existing files.
     """
-    times = raw.times
-    data = raw.get_data(picks=eye_chs)
-
-    # Write physio TSV
-    fname_tsv = (
-        bids_path.copy()
-        .update(
-            recording=eye_recording_tag,
-            suffix="physio",
-            extension=".tsv",
-        )
-        .fpath
+    phys_bpath = bids_path.copy().update(
+        recording=eye_recording_tag,
+        suffix="physio",
+        extension=".tsv",
     )
-    _write_physio_tsv(times, data, fname_tsv, overwrite)
+    fname_tsv = phys_bpath.fpath
+
+    data, times = raw.get_data(picks=eye_chs, return_times=True)
+    data_dict = {}
+    data_dict["time"] = times
+    for ch_i, ch_name in enumerate(eye_chs):
+        data_dict[ch_name] = data[ch_i]
+    _write_tsv(fname_tsv, data_dict, include_column_names=False, overwrite=overwrite)
 
     # Build and write sidecar JSON
     json_dict = {
@@ -144,7 +143,7 @@ def _write_single_eye_physio(
         )
         .fpath
     )
-    _write_physio_json(json_dict, fname_json, overwrite)
+    _write_json(fname_json, json_dict, overwrite)
 
     # Write physioevents TSV
     fname_events = (
@@ -263,59 +262,6 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
     _events_json(
         fname_json, extra_columns=None, has_trial_type=True, overwrite=overwrite
     )
-
-
-def _write_physio_tsv(times, data, fname, overwrite):
-    """Write a *_physio.tsv file.
-
-    Parameters
-    ----------
-    time : np.ndarray
-        The time.
-    data : np.ndarray
-        The data.
-    fname : str
-        The file name.
-    overwrite : bool
-        Whether to overwrite existing files.
-    """
-    # Check for overwrite
-    if Path(fname).exists() and not overwrite:
-        raise FileExistsError(
-            f"{fname} already exists. Set overwrite=True to overwrite."
-        )
-    # Check the data
-    if data.shape[1] != len(times):
-        raise ValueError("Data and time must have the same length.")
-    # put the times and data into a numpy array
-    times = np.array(times)  # in seconds
-    eye_data = np.array(data)
-    data = np.vstack((times, eye_data)).T
-    # Write the file
-    np.savetxt(fname, data, delimiter="\t", fmt="%1.3f", encoding="utf-8")
-
-
-# FIXME: I think we can just use _write_json
-def _write_physio_json(json_dict, fname, overwrite):
-    """Write a *_physio.json file.
-
-    Parameters
-    ----------
-    json_dict : dict
-        The JSON dictionary.
-    fname : str
-        The file name.
-    overwrite : bool
-        Whether to overwrite existing files.
-    """
-    # Check for overwrite
-    if Path(fname).exists() and not overwrite:
-        raise FileExistsError(
-            f"{fname} already exists. Set overwrite=True to overwrite."
-        )
-    # Write the file
-    with open(fname, "w") as f:
-        json.dump(json_dict, f, indent=4)
 
 
 def _json_safe(value):
