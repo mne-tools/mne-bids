@@ -399,7 +399,9 @@ def write_eyetracking_calibration(
     for cal in calibrations:
         eye = cal["eye"]
         cals_by_eye[eye].append(cal)
-    eyes_present = set(cals_by_eye.keys())
+    eyes_present = {eye for eye, cals in cals_by_eye.items() if len(cals)}
+    if not eyes_present:
+        raise ValueError("No calibration entries were provided.")
 
     # Determine monocular vs binocular mapping to the *_physio.tsv files
     if eyes_present == {"left", "right"}:
@@ -428,6 +430,92 @@ def write_eyetracking_calibration(
             _write_json(sidecar_fpath, sidecar, overwrite=True)
             updated_sidecar_fpaths.append(sidecar_fpath)
     return updated_sidecar_fpaths
+
+
+def read_eyetracking_calibration(bids_path: BIDSPath) -> list[dict]:
+    """Read eyetracking calibration metadata from ``*_physio.json`` sidecars.
+
+    Parameters
+    ----------
+    bids_path : mne_bids.BIDSPath
+        BIDSPath for the eyetracking recording. If ``recording`` is provided, only the
+        matching eye sidecar is inspected. Otherwise, ``eye1`` and ``eye2`` sidecars
+        are checked if present.
+
+    Returns
+    -------
+    calibrations : list of mne.preprocessing.eyetracking.Calibration
+        Calibration metadata entries using MNE-style keys
+        (e.g. ``avg_error``, ``max_error``, ``model``, ``positions``, ``eye``). If
+        ``CalibrationCount`` is present in the sidecar, it is returned as
+        ``calibration_count``.
+
+    Notes
+    -----
+    .. Warning::
+        BIDS does not provide fields to store the time of the calibration, nor the
+        actual participant gaze positions to each calibration dot, or the offset between
+        each dot and the participants gaze to it. However, MNE-Python
+        :class:`~mne.preprocessing.eyetracking.Calibration` instances typically do store
+        this information. Thus, when reading calibration info from a BIDS dataset, note
+        that the ``'onset'``, ``'offsets'``, and ``'gaze'`` keys of
+        :class:`~mne.preprocessing.eyetracking.Calibration` instance(s) will be set
+        to ``np.nan``.
+    """
+    _validate_type(bids_path, BIDSPath, item_name="bids_path")
+    base_path = bids_path.copy().update(suffix="physio", extension=".json")
+
+    if base_path.recording is not None:
+        candidate_sidecars = [base_path.fpath]
+    else:
+        candidate_sidecars = []
+        for recording_tag in ("eye1", "eye2"):
+            fpath = base_path.copy().update(recording=recording_tag).fpath
+            if fpath.exists():
+                candidate_sidecars.append(fpath)
+
+    if not candidate_sidecars:
+        raise FileNotFoundError(
+            "No eyetracking physio sidecar JSON files found. "
+            f"Tried base path: {base_path.fpath.parent}"
+        )
+
+    # Below are the parameters accepted by MNE's Calibration class
+    bids_to_mne_map = {
+        "AverageCalibrationError": "avg_error",
+        "MaximalCalibrationError": "max_error",
+        "CalibrationType": "model",
+        "CalibrationPosition": "positions",
+        "CalibrationDistance": "screen_distance",
+    }
+
+    calibrations = []
+    for sidecar_fpath in candidate_sidecars:
+        sidecar = json.loads(sidecar_fpath.read_text(encoding="utf-8-sig"))
+        calibration = {}
+        for bids_key, mne_key in bids_to_mne_map.items():
+            if bids_key in sidecar:
+                value = sidecar[bids_key]
+                if bids_key == "CalibrationPosition":
+                    value = np.array(value)
+                calibration[mne_key] = value
+        if "RecordedEye" in sidecar:
+            calibration["eye"] = sidecar["RecordedEye"]
+
+        # And unfortunately BIDS doesnt have these fields..
+        onset = np.nan
+        gaze = np.full_like(calibration["positions"], np.nan)
+        offsets = np.full_like(calibration["positions"], np.nan)
+        if calibration:
+            mne_cal = Calibration(
+                onset=onset, gaze=gaze, offsets=offsets, **calibration
+            )
+            calibrations.append(mne_cal)
+
+    if not calibrations:
+        raise ValueError(f"No calibration metadata found in {candidate_sidecars}.")
+
+    return calibrations
 
 
 def read_raw_eyetracking_bids(bids_path, *, ch_types: None | dict[str, str]):
