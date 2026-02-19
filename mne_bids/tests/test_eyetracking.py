@@ -9,7 +9,7 @@ from mne.datasets import testing
 from mne.io import RawArray, read_raw_egi, read_raw_eyelink
 
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
-from mne_bids.physio import _get_eyetrack_annotation_inds, write_eyetracking_calibration
+from mne_bids.physio import _get_eyetrack_annotation_inds, write_eyetrack_calibration
 
 EYETRACK_CH_TYPES = {
     "xpos_left": "eyegaze",
@@ -110,7 +110,7 @@ def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
             "screen_distance": 0.6,
         },
     ]
-    updated = write_eyetracking_calibration(eyetrack_bpath, calibrations)
+    updated = write_eyetrack_calibration(eyetrack_bpath, calibrations)
 
     assert set(updated) == {eye1_json, eye2_json}
     eye1 = json.loads(eye1_json.read_text())
@@ -129,7 +129,7 @@ def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
     # If no BIDS dataset on disk, should raise
     dupe_bpath = eyetrack_bpath.update(root=tmp_path)
     with pytest.raises(FileNotFoundError, match="Eyetracking sidecar not found"):
-        write_eyetracking_calibration(dupe_bpath, calibrations)
+        write_eyetrack_calibration(dupe_bpath, calibrations)
 
 
 @testing.requires_testing_data
@@ -203,6 +203,7 @@ def test_eeg_eyetracking_io_roundtrip(_bids_validate, tmp_path, eyetrack_bpath):
     egi_fpath = testing.data_path(download=False) / "EGI" / "test_egi.mff"
     raw_eye = read_raw_eyelink(eyetrack_fpath)
     raw_egi = read_raw_egi(egi_fpath).load_data()
+    cals = mne.preprocessing.eyetracking.read_eyelink_calibration(eyetrack_fpath)
 
     # Hack together the raws
     raw_eye.crop(tmax=raw_egi.times[-1]).resample(100, method="polyphase")
@@ -220,6 +221,7 @@ def test_eeg_eyetracking_io_roundtrip(_bids_validate, tmp_path, eyetrack_bpath):
     bpath_et = bpath.copy().update(suffix="physio", extension=".tsv", recording="eye1")
 
     write_raw_bids(raw, bpath, allow_preload=True, format="BrainVision")
+    write_eyetrack_calibration(bpath, cals)
 
     assert bpath_et.fpath.parent.name == "eeg"
     eye1_json = json.loads(bpath_et.fpath.with_suffix(".json").read_text())

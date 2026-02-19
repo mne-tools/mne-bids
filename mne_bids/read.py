@@ -35,7 +35,7 @@ from mne_bids.path import (
 )
 from mne_bids.physio import (
     _get_physio_type,
-    read_raw_eyetracking_bids,
+    read_raw_bids_eyetrack,
 )
 from mne_bids.tsv_handler import _drop, _from_tsv
 from mne_bids.utils import _get_ch_type_mapping, _import_nibabel, verbose, warn
@@ -103,7 +103,7 @@ def _read_raw(
         physio_type = _get_physio_type(json_fpath)
         if physio_type.lower() == "eyetrack":
             bpath = get_bids_path_from_fname(raw_path)
-            raw = read_raw_eyetracking_bids(bpath, ch_types=eyetrack_ch_types)
+            raw = read_raw_bids_eyetrack(bpath, ch_types=eyetrack_ch_types)
         else:
             raise ValueError(
                 "Only eyetracking <match>_physio.tsv files are supported.\n"

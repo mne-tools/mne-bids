@@ -13,7 +13,7 @@ MNE-BIDS.
 .. seealso::
 
    | `Working with eyetracking data in MNE-Python <https://mne.tools/stable/auto_tutorials/preprocessing/90_eyetracking_data.html>`_
-   | `The Eyetracking BIDS specification <https://bids-specification.readthedocs.io/en/stable/modality-specific-files/physiological-recordings.html#eye-tracking`>_
+   | `The Eyetracking BIDS specification`_
 """  # noqa: D400
 
 # Authors: The MNE-BIDS developers
@@ -30,7 +30,7 @@ from mne.datasets.eyelink import data_path as eyelink_data_path
 from mne.preprocessing.eyetracking import read_eyelink_calibration
 
 from mne_bids import BIDSPath, print_dir_tree, read_raw_bids, write_raw_bids
-from mne_bids.physio import read_eyetracking_calibration, write_eyetracking_calibration
+from mne_bids.physio import read_eyetrack_calibration, write_eyetrack_calibration
 
 # %%
 # Load example eyetracking data
@@ -84,7 +84,7 @@ write_raw_bids(raw=raw, bids_path=bids_path, allow_preload=True, overwrite=True)
 # calibration information.
 
 cals = read_eyelink_calibration(eyetrack_fpath)
-write_eyetracking_calibration(bids_path, cals)
+write_eyetrack_calibration(bids_path, cals)
 
 # %%
 # Inspect the generated BIDS directory tree.
@@ -106,7 +106,6 @@ pprint(json.loads(eye1_json.read_text()), indent=2)
 # Read the eyetracking data back from BIDS
 # ----------------------------------------
 #
-# For this we use :func:`~mne_bids.physio.read_raw_bids_eyetracking`.
 # We pass channel types so MNE-BIDS can restore eyegaze and pupil channels.
 
 raw_in = read_raw_bids(
@@ -123,7 +122,7 @@ raw_in = read_raw_bids(
 raw_in
 
 # %%
-cals_in = read_eyetracking_calibration(bids_path)
+cals_in = read_eyetrack_calibration(bids_path)
 
 # %%
 # Convert simultaneous EEG + eyetracking data to BIDS

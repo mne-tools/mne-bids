@@ -304,7 +304,7 @@ def _calibration_to_sidecar_updates(calibrations):
     return updates
 
 
-def write_eyetracking_calibration(
+def write_eyetrack_calibration(
     bids_path: BIDSPath,
     calibrations: Calibration | list[Calibration],
 ) -> list[Path]:
@@ -315,9 +315,9 @@ def write_eyetracking_calibration(
     bids_path : mne_bids.BIDSPath
         BIDSPath for the eyetracking recording. The BIDSPath should point to a modality
         directory (e.g. ``beh`` or ``eeg``) that contains ``<match>_physio.json``
-        file(s). If the BIDSPath contains a ``recording`` entity (e.g. ``'eye1'`), it
+        file(s). If the BIDSPath contains a ``recording`` entity (e.g. ``eye1`), it
         will be ignored (see the notes section).
-    calibration : mne.preprocessing.eyetracking.Calibration | list of mne.preprocessing.eyetracking.Calibration
+    calibration : CalibrationObject | list of CalibrationObject
         Calibration instance(s) (e.g., an item returned by
         :func:`~mne.preprocessing.eyetracking.read_eyelink_calibration`). Each instance
         must expose an ``eye`` attribute with value ``"left"`` or ``"right"``
@@ -333,14 +333,14 @@ def write_eyetracking_calibration(
     This function routes calibration metadata to the correct per-eye physio sidecar(s):
 
     - Binocular recordings: left eye -> ``<match>_recording-eye1_physio.tsv``,
-    right eye -> ``<match>_recording-eye2_physio.tsv``
+      right eye -> ``<match>_recording-eye2_physio.tsv``
     - Monocular recordings: whichever eye was recorded ->
-    ``<match>_recording-eye1_physio.tsv``
+      ``<match>_recording-eye1_physio.tsv``
 
     If more than one calibration was run on the participant, this function will write
     the last calibration in the sequence passed to the ``calibration`` parameter.
 
-    `BIDS supported Calibration fields <https://bids-specification.readthedocs.io/en/stable/modality-specific-files/physiological-recordings.html#eye-tracking>`_
+    See `The Eyetracking BIDS specification`_.
     """  # noqa: E501 FIXME: Can we use an alias to make the long line fit?
     _validate_type(bids_path, BIDSPath, item_name="bids_path")
 
@@ -384,7 +384,7 @@ def write_eyetracking_calibration(
     return updated_sidecar_fpaths
 
 
-def read_eyetracking_calibration(bids_path: BIDSPath) -> list[dict]:
+def read_eyetrack_calibration(bids_path: BIDSPath) -> list[dict]:
     """Read eyetracking calibration metadata from ``*_physio.json`` sidecars.
 
     Parameters
@@ -461,7 +461,7 @@ def read_eyetracking_calibration(bids_path: BIDSPath) -> list[dict]:
     return calibrations
 
 
-def read_raw_eyetracking_bids(bids_path, *, ch_types: None | dict[str, str]):
+def read_raw_bids_eyetrack(bids_path, *, ch_types: None | dict[str, str]):
     """Read BIDS compliant eyetracking data from TSV sidecar files.
 
     bids_path : mne_bids.BIDSPath
