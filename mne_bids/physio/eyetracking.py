@@ -315,7 +315,7 @@ def write_eyetrack_calibration(
     bids_path : mne_bids.BIDSPath
         BIDSPath for the eyetracking recording. The BIDSPath should point to a modality
         directory (e.g. ``beh`` or ``eeg``) that contains ``<match>_physio.json``
-        file(s). If the BIDSPath contains a ``recording`` entity (e.g. ``eye1`), it
+        file(s). If the BIDSPath contains a ``recording`` entity (e.g. ``eye1``), it
         will be ignored (see the notes section).
     calibration : CalibrationObject | list of CalibrationObject
         Calibration instance(s) (e.g., an item returned by
