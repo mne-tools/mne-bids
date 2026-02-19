@@ -11,8 +11,9 @@ This example shows how to convert Eyelink eyetracking data to BIDS using
 MNE-BIDS.
 
 .. seealso::
-   `Working with eyetracking data in MNE-Python <https://mne.tools/stable/auto_tutorials/preprocessing/90_eyetracking_data.html>`_
-   `The Eyetracking BIDS specification <https://bids-specification.readthedocs.io/en/stable/modality-specific-files/physiological-recordings.html#eye-tracking`>_
+
+   | `Working with eyetracking data in MNE-Python <https://mne.tools/stable/auto_tutorials/preprocessing/90_eyetracking_data.html>`_
+   | `The Eyetracking BIDS specification <https://bids-specification.readthedocs.io/en/stable/modality-specific-files/physiological-recordings.html#eye-tracking`>_
 """  # noqa: D400
 
 # Authors: The MNE-BIDS developers

@@ -14,6 +14,20 @@ from mne_bids.path import BIDSPath
 from mne_bids.physio._utils import _get_physio_type
 from mne_bids.utils import _write_json, _write_tsv
 
+# Parameters accepted by MNE's Calibration class
+BIDS_CALIBRATION_TO_MNE = {
+    "AverageCalibrationError": "avg_error",
+    "MaximalCalibrationError": "max_error",
+    "CalibrationType": "model",
+    "CalibrationPosition": "positions",
+    "CalibrationDistance": "screen_distance",
+    # FIXME: Add CalibrationUnit to MNE's Calibration constructor
+    "CalibrationUnit": "unit",
+}
+MNE_CALIBRATION_TO_BIDS = {
+    bids_key: mne_key for mne_key, bids_key in BIDS_CALIBRATION_TO_MNE.items()
+}
+
 
 def _has_eyetracking(bids_path):
     directory = bids_path.directory
@@ -283,15 +297,7 @@ def _calibration_to_sidecar_updates(calibrations):
     # were run, I guess it makes most sense to take the last calibration.
     cal = calibrations[-1].copy()
 
-    mne_to_bids_map = {
-        "avg_error": "AverageCalibrationError",
-        "max_error": "MaximalCalibrationError",
-        "model": "CalibrationType",
-        "positions": "CalibrationPosition",
-        "calibration_unit": "CalibrationUnit",  # FIXME: Add this to MNE's Calibration
-        "screen_distance": "CalibrationDistance",
-    }
-    for from_key, to_key in mne_to_bids_map.items():
+    for from_key, to_key in MNE_CALIBRATION_TO_BIDS.items():
         value = cal.get(from_key)
         if value is not None:
             updates[to_key] = _json_safe(value)
@@ -426,20 +432,11 @@ def read_eyetracking_calibration(bids_path: BIDSPath) -> list[dict]:
             f"Tried base path: {base_path.fpath.parent}"
         )
 
-    # Below are the parameters accepted by MNE's Calibration class
-    bids_to_mne_map = {
-        "AverageCalibrationError": "avg_error",
-        "MaximalCalibrationError": "max_error",
-        "CalibrationType": "model",
-        "CalibrationPosition": "positions",
-        "CalibrationDistance": "screen_distance",
-    }
-
     calibrations = []
     for sidecar_fpath in candidate_sidecars:
         sidecar = json.loads(sidecar_fpath.read_text(encoding="utf-8-sig"))
         calibration = {}
-        for bids_key, mne_key in bids_to_mne_map.items():
+        for bids_key, mne_key in BIDS_CALIBRATION_TO_MNE.items():
             if bids_key in sidecar:
                 value = sidecar[bids_key]
                 if bids_key == "CalibrationPosition":

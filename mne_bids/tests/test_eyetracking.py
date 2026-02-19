@@ -99,7 +99,6 @@ def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
             "max_error": 0.2,
             "model": "HV3",
             "positions": np.array([[0.0, 1.0], [2.0, 3.0], [4.0, 5.0]]),
-            "calibration_unit": "pixel",
             "screen_distance": 0.6,
         },
         {
@@ -108,7 +107,6 @@ def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
             "max_error": 0.5,
             "model": "HV3",
             "positions": np.array([[1.0, 1.0], [3.0, 3.0], [5.0, 5.0]]),
-            "calibration_unit": "pixel",
             "screen_distance": 0.6,
         },
     ]
@@ -122,7 +120,6 @@ def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
     assert eye1["AverageCalibrationError"] == 0.1
     assert eye1["MaximalCalibrationError"] == 0.2
     assert eye1["CalibrationType"] == "HV3"
-    assert eye1["CalibrationUnit"] == "pixel"
     assert eye1["CalibrationDistance"] == 0.6
 
     assert eye2["CalibrationCount"] == 1
@@ -166,7 +163,7 @@ def test_eyetracking_io_roundtrip(_bids_validate, raw_eye_and_cals, eyetrack_bpa
     assert "onset" not in first_line
     # Only ocular events should be in physioevents
     trial_types = set(phys_ev[:, 2])
-    assert trial_types <= {"blink", "fixation", "saccade"}
+    assert trial_types == {"blink", "fixation", "saccade"}
 
 
 @testing.requires_testing_data
