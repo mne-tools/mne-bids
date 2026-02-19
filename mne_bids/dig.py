@@ -45,6 +45,98 @@ from mne_bids.utils import (
 data_dir = Path(__file__).parent / "data"
 
 
+def _infer_coord_unit(electrodes_fpath):
+    """Infer coordinate units from electrode coordinate magnitudes.
+
+    When coordinate units are specified as ``"n/a"`` in the BIDS dataset,
+    this function reads the electrode coordinates and infers the unit
+    based on the magnitude of the coordinate values.
+
+    Parameters
+    ----------
+    electrodes_fpath : str | Path
+        Filepath of the electrodes.tsv to read.
+
+    Returns
+    -------
+    unit : str
+        The inferred unit: ``"m"``, ``"cm"``, or ``"mm"``.
+    """
+    electrodes_dict = _from_tsv(electrodes_fpath)
+    coords = []
+    for axis in ("x", "y", "z"):
+        coords.extend(float(val) for val in electrodes_dict[axis] if val != "n/a")
+    if not coords:
+        return "m"
+    max_abs = np.max(np.abs(coords))
+    # Typical EEG head radius: ~0.1 m, ~10 cm, ~100 mm.
+    # Thresholds chosen so values < 1 are meters, 1–99 are cm, >= 100 are mm.
+    if max_abs < 1:
+        return "m"
+    elif max_abs < 100:
+        return "cm"
+    else:
+        return "mm"
+
+
+def _ensure_fiducials_ctf_head(montage):
+    """Synthesize approximate fiducial points for a ctf_head montage.
+
+    When electrode positions are in the ``ctf_head`` coordinate frame but
+    no fiducial landmarks (nasion, LPA, RPA) are present, this function
+    estimates their positions from the electrode geometry. In the CTF/ALS
+    coordinate system, the origin is between the left and right preauricular
+    points, ``+X`` points toward the nasion, ``+Y`` toward the left ear, and
+    ``+Z`` upward.
+
+    Parameters
+    ----------
+    montage : mne.channels.DigMontage
+        The montage in ``ctf_head`` frame. Modified in place.
+    """
+    pos = montage.get_positions()
+    if pos["coord_frame"] != "ctf_head":
+        return
+
+    # check if fiducials already exist
+    if pos.get("nasion") is not None:
+        return
+
+    ch_pos = pos["ch_pos"]
+    locs = np.array(list(ch_pos.values()))
+    locs = locs[~np.any(np.isnan(locs), axis=1)]
+    if locs.size == 0:
+        return
+
+    # Estimate head radius from the electrode distribution.
+    # In CTF/ALS coordinates, the origin is between the ears.
+    centroid = locs.mean(axis=0)
+    dists = np.linalg.norm(locs - centroid, axis=1)
+    head_radius = np.median(dists)
+
+    warn(
+        "No fiducial points found for ctf_head montage. Synthesizing "
+        "approximate fiducials (nasion, LPA, RPA) from electrode geometry "
+        f"with estimated head radius {head_radius:.4f}."
+    )
+
+    # In CTF (ALS): +X = anterior (nasion), +Y = left (LPA), -Y = right (RPA)
+    # Place fiducials at the estimated head radius along each axis
+    nasion = np.array([head_radius, 0.0, 0.0])
+    lpa = np.array([0.0, head_radius, 0.0])
+    rpa = np.array([0.0, -head_radius, 0.0])
+
+    # Create a new montage with fiducials and existing channels
+    new_montage = mne.channels.make_dig_montage(
+        ch_pos=ch_pos,
+        nasion=nasion,
+        lpa=lpa,
+        rpa=rpa,
+        coord_frame="ctf_head",
+    )
+    montage.dig = new_montage.dig
+
+
 def _handle_electrodes_reading(electrodes_fname, coord_frame, coord_unit):
     """Read associated electrodes.tsv and populate raw.
 
@@ -546,15 +638,19 @@ def _write_dig_bids(
         if coord_frame is None:  # just a space, use that
             coord_frame = bids_path.space
         else:  # space and raw have coordinate frame, check match
-            if bids_path.space != coord_frame and not (
-                coord_frame == "fsaverage" and bids_path.space == "MNI305"
-            ):  # fsaverage == MNI305
+            # Check if frames are compatible (same or map to same MNE frame)
+            coord_mne = BIDS_TO_MNE_FRAMES.get(coord_frame)
+            space_mne = BIDS_TO_MNE_FRAMES.get(bids_path.space)
+            if not (
+                bids_path.space == coord_frame
+                or (coord_mne is not None and coord_mne == space_mne)
+            ):
                 raise ValueError(
-                    "Coordinates in the raw object or montage "
-                    f"are in the {coord_frame} coordinate "
-                    "frame but BIDSPath.space is "
+                    f"Coordinates in the raw object or montage are in the "
+                    f"{coord_frame} coordinate frame but BIDSPath.space is "
                     f"{bids_path.space}"
                 )
+            coord_frame = bids_path.space  # use BIDSPath.space for output
 
     # create electrodes/coordsystem files using a subset of entities
     # that are specified for these files in the specification
@@ -635,12 +731,23 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath, datatype, raw):
 
     # check coordinate units
     if bids_coord_unit not in BIDS_COORDINATE_UNITS:
-        warn(
-            f"Coordinate unit is not an accepted BIDS unit for "
-            f"{electrodes_fpath}. Please specify to be one of "
-            f"{BIDS_COORDINATE_UNITS}. Skipping electrodes.tsv reading..."
-        )
-        coord_frame = None
+        if coord_frame is not None and bids_coord_unit == "n/a":
+            # Attempt to infer the unit from electrode coordinate magnitudes
+            inferred_unit = _infer_coord_unit(electrodes_fpath)
+            warn(
+                f'Coordinate unit is "n/a" for {electrodes_fpath}. '
+                f'Inferring unit as "{inferred_unit}" based on coordinate '
+                f"magnitudes. Please update the coordsystem.json to specify "
+                f"one of {BIDS_COORDINATE_UNITS} for accurate results."
+            )
+            bids_coord_unit = inferred_unit
+        else:
+            warn(
+                f"Coordinate unit is not an accepted BIDS unit for "
+                f"{electrodes_fpath}. Please specify to be one of "
+                f"{BIDS_COORDINATE_UNITS}. Skipping electrodes.tsv reading..."
+            )
+            coord_frame = None
 
     # montage is interpretable only if coordinate frame was properly parsed
     if coord_frame is not None:
@@ -652,6 +759,11 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath, datatype, raw):
         montage = None
 
     if montage is not None:
+        # For ctf_head montages without fiducials, synthesize approximate
+        # fiducials to enable the ctf_head -> head coordinate transform
+        if coord_frame == "ctf_head":
+            _ensure_fiducials_ctf_head(montage)
+
         # determine if there are problematic channels
         ch_pos = montage._get_ch_pos()
         nan_chs = []

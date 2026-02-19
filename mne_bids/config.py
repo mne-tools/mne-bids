@@ -106,7 +106,7 @@ ieeg_manufacturers = {
     ".EDF": "n/a",
     ".set": "n/a",
     ".fdt": "n/a",
-    ".mef": "n/a",
+    ".mefd": "n/a",
     ".nwb": "n/a",
     ".lay": "Persyst",
     ".dat": "Persyst",
@@ -142,6 +142,10 @@ reader = {
     ".snirf": io.read_raw_snirf,
     ".cdt": io.read_raw_curry,
 }
+
+# MEF3 support requires MNE >= 1.12
+if hasattr(io, "read_raw_mef"):
+    reader[".mefd"] = io.read_raw_mef
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
@@ -181,7 +185,7 @@ allowed_extensions_ieeg = [
     ".vhdr",  # BrainVision, accompanied by .vmrk, .eeg
     ".edf",  # European Data Format
     ".set",  # EEGLAB, potentially accompanied by .fdt
-    ".mef",  # MEF: Multiscale Electrophysiology File
+    ".mefd",  # MEF3: Multiscale Electrophysiology File (directory)
     ".nwb",  # Neurodata without borders
 ]
 
@@ -349,7 +353,7 @@ coordsys_standard_template_deprecated = [
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification
-BIDS_IEEG_COORDINATE_FRAMES = ["ACPC", "Pixels"]
+BIDS_IEEG_COORDINATE_FRAMES = ["ACPC", "Pixels", "ScanRAS"]
 BIDS_MEG_COORDINATE_FRAMES = [
     "CTF",
     "ElektaNeuromag",
@@ -357,7 +361,7 @@ BIDS_MEG_COORDINATE_FRAMES = [
     "KitYokogawa",
     "ChietiItab",
 ]
-BIDS_EEG_COORDINATE_FRAMES = ["CapTrak"]
+BIDS_EEG_COORDINATE_FRAMES = ["CapTrak", "EEGLAB", "EEGLAB-HJ"]
 
 # accepted coordinate SI units
 BIDS_COORDINATE_UNITS = ["m", "cm", "mm"]
@@ -417,9 +421,28 @@ BIDS_TO_MNE_FRAMES = {
     "ElektaNeuromag": "head",
     "ChietiItab": "head",
     "CapTrak": "head",
+    # EEGLAB uses ALS orientation, same as CTF (FieldTrip: ctf2eeglab = eye(4))
+    # https://www.fieldtriptoolbox.org/faq/coordsys/
+    "EEGLAB": "ctf_head",
+    # EEGLAB-HJ: same as EEGLAB but uses helix-tragus junction landmarks
+    "EEGLAB-HJ": "ctf_head",
     "ACPC": "ras",  # assumes T1 is ACPC-aligned, if not the coordinates are lost
+    # ScanRAS: scanner-based RAS coordinates from the T1w image
+    "ScanRAS": "ras",
     "fsaverage": "mni_tal",  # XXX: note fsaverage and MNI305 are the same
     "MNI305": "mni_tal",
+    # MNI152 templates - all map to mni_tal as they are MNI-based
+    "MNI152Lin": "mni_tal",
+    "MNI152NLin6Sym": "mni_tal",
+    "MNI152NLin6ASym": "mni_tal",
+    "MNI152NLin2009aSym": "mni_tal",
+    "MNI152NLin2009bSym": "mni_tal",
+    "MNI152NLin2009cSym": "mni_tal",
+    "MNI152NLin2009aAsym": "mni_tal",
+    "MNI152NLin2009bAsym": "mni_tal",
+    "MNI152NLin2009cAsym": "mni_tal",
+    "MNIColin27": "mni_tal",
+    "Talairach": "mni_tal",  # Talairach is similar to MNI
 }
 
 # mapping from supported MNE coordinate frames -> BIDS
@@ -458,6 +481,14 @@ BIDS_COORD_FRAME_DESCRIPTIONS = {
     "In this case, coordinates must be (row,column) pairs, with "
     "(0,0) corresponding to the upper left pixel and (N,0) "
     "corresponding to the lower left pixel.",
+    "scanras": (
+        "The origin of the coordinate system is the center of the "
+        "gradient coil for the corresponding T1w image. The X-axis "
+        "increases from left to right, the Y-axis increases from "
+        "posterior to anterior, and the Z-axis increases from inferior "
+        "to superior. "
+        "See Appendix VIII in the BIDS specification."
+    ),
     "ctf": "ALS orientation and the origin between the ears",
     "elektaneuromag": "RAS orientation and the origin between the ears",
     "4dbti": "ALS orientation and the origin between the ears",
@@ -471,6 +502,24 @@ BIDS_COORD_FRAME_DESCRIPTIONS = {
         "the head. "
         'This corresponds to a "RAS" orientation with the origin of the '
         "coordinate system approximately between the ears. "
+        "See Appendix VIII in the BIDS specification."
+    ),
+    "eeglab": (
+        "The X-axis goes from the origin towards the nasion (NAS). "
+        "The Y-axis goes from the origin towards the left pre-auricular "
+        "point (LPA). The Z-axis goes orthogonally to the XY-plane through "
+        "the vertex of the head. "
+        'This corresponds to an "ALS" orientation with the origin of the '
+        "coordinate system exactly between LPA and RPA. "
+        "See Appendix VIII in the BIDS specification."
+    ),
+    "eeglab-hj": (
+        "The X-axis goes from the origin towards the nasion (NAS). "
+        "The Y-axis goes from the origin towards the left helix-tragus "
+        "junction point (LHJ). The Z-axis goes orthogonally to the "
+        "XY-plane through the vertex of the head. "
+        'This corresponds to an "ALS" orientation with the origin of the '
+        "coordinate system exactly between LHJ and RHJ. "
         "See Appendix VIII in the BIDS specification."
     ),
     "fsaverage": "Defined by FreeSurfer, the MRI (surface RAS) origin is "

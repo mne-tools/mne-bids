@@ -21,6 +21,7 @@ from mne_bids.copyfiles import (
     copyfile_edf,
     copyfile_eeglab,
     copyfile_kit,
+    copyfile_mef,
 )
 from mne_bids.path import _parse_ext
 
@@ -193,6 +194,22 @@ def test_copyfile_edfbdf_uppercase(tmp_path):
         with pytest.warns(RuntimeWarning, match="Upper-case extension"):
             copyfile_edf(raw_fname, new_name)
         assert Path(new_name).with_suffix(ext).exists()
+
+
+def test_copyfile_mef(tmp_path):
+    """Test copying MEF3 directory trees."""
+    src = tmp_path / "sub-01_task-test_ieeg.mefd"
+    src.mkdir()
+    (src / "meta.xml").write_text("header", encoding="utf-8")
+    nested = src / "session"
+    nested.mkdir()
+    (nested / "segment.dat").write_bytes(b"\x00\x01\x02")
+
+    dest = tmp_path / "sub-01_task-test_run-01_ieeg.mefd"
+    copyfile_mef(src, dest)
+
+    assert (dest / "meta.xml").read_text(encoding="utf-8") == "header"
+    assert (dest / "session" / "segment.dat").read_bytes() == b"\x00\x01\x02"
 
 
 @pytest.mark.parametrize(

@@ -161,6 +161,7 @@ def copyfile_ctf(src, dest):
     copyfile_edf
     copyfile_eeglab
     copyfile_kit
+    copyfile_mef
 
     """
     _copytree(src, dest)
@@ -190,6 +191,33 @@ def copyfile_ctf(src, dest):
     for fname in fnames:
         ext = op.splitext(fname)[-1]
         os.replace(op.join(dest, fname), op.join(dest, bids_folder_name + ext))
+
+
+def copyfile_mef(src, dest):
+    """Copy MEF3 files to a new location.
+
+    MEF3 (Multiscale Electrophysiology Format) data is stored in a directory
+    with the ``.mefd`` extension. This function copies the entire directory
+    structure to the destination.
+
+    Parameters
+    ----------
+    src : path-like
+        Path to the source raw .mefd folder.
+    dest : path-like
+        Path to the destination of the new bids folder.
+
+    See Also
+    --------
+    copyfile_brainvision
+    copyfile_bti
+    copyfile_ctf
+    copyfile_edf
+    copyfile_eeglab
+    copyfile_kit
+
+    """
+    _copytree(src, dest)
 
 
 def copyfile_kit(src, dest, subject_id, session_id, task, run, _init_kwargs):
