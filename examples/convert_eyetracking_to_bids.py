@@ -106,19 +106,9 @@ pprint(json.loads(eye1_json.read_text()), indent=2)
 # Read the eyetracking data back from BIDS
 # ----------------------------------------
 #
-# We pass channel types so MNE-BIDS can restore eyegaze and pupil channels.
 
-raw_in = read_raw_bids(
-    bids_path=bids_path,
-    eyetrack_ch_types={
-        "xpos_left": "eyegaze",
-        "ypos_left": "eyegaze",
-        "pupil_left": "pupil",
-        "xpos_right": "eyegaze",
-        "ypos_right": "eyegaze",
-        "pupil_right": "pupil",
-    },
-)
+# %%
+raw_in = read_raw_bids(bids_path=bids_path)
 raw_in
 
 # %%
@@ -208,12 +198,5 @@ bids_path_eye1 = bids_path_eeg.copy().update(
     extension=".tsv",
     recording="eye1",
 )
-raw_eye1 = read_raw_bids(
-    bids_path_eye1,
-    eyetrack_ch_types={
-        "xpos_right": "eyegaze",
-        "ypos_right": "eyegaze",
-        "pupil_right": "pupil",
-    },
-)
+raw_eye1 = read_raw_bids(bids_path_eye1)
 raw_eye1
