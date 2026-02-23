@@ -49,7 +49,6 @@ def _read_raw(
     hpi=None,
     allow_maxshield=False,
     config_path=None,
-    eyetrack_ch_types=None,
     verbose=None,
     **kwargs,
 ):
@@ -120,7 +119,7 @@ def _read_raw(
         physio_type = _get_physio_type(json_fpath)
         if physio_type.lower() == "eyetrack":
             bpath = get_bids_path_from_fname(raw_path)
-            raw = read_raw_bids_eyetrack(bpath, ch_types=eyetrack_ch_types)
+            raw = read_raw_bids_eyetrack(bpath)
         else:
             raise ValueError(
                 "Only eyetracking <match>_physio.tsv files are supported.\n"
@@ -985,7 +984,6 @@ def read_raw_bids(
     extra_params=None,
     *,
     return_event_dict=False,
-    eyetrack_ch_types=None,
     on_ch_mismatch="raise",
     verbose=None,
 ):
@@ -1028,13 +1026,6 @@ def read_raw_bids(
           channel order in the channels.tsv file.
         * ``'rename'`` will rename the channels in the raw data file to match the
           channel names in the channels.tsv file.
-    eyetrack_ch_types : dict[str, str]
-        Either ``None``, or a dictionary whose keys correspond to eyetracking channel
-        names, and whose values correspond to the MNE-Python compatible channel types
-        for said channel, such as ``'eyegaze'``, ``'pupil'``, or ``'misc'``. If
-        ``None``, then the data in the 2nd and 3rd columns of
-        ``<match>_recording-{eye1,eye2}_physio.tsv`` will be set to ``eyegaze``, and
-        data from all subsequent columns will be set to ``'misc'``.
 
     %(verbose)s
 
@@ -1172,15 +1163,12 @@ def read_raw_bids(
 
     if raw_path.suffix == ".fif" and "allow_maxshield" not in extra_params:
         extra_params["allow_maxshield"] = True
-    if eyetrack_ch_types is None:
-        eyetrack_ch_types = dict()
     raw = _read_raw(
         raw_path,
         electrode=None,
         hsp=None,
         hpi=None,
         config_path=config_path,
-        eyetrack_ch_types=eyetrack_ch_types,
         verbose=verbose,
         **extra_params,
     )

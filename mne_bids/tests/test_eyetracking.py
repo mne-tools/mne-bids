@@ -11,15 +11,6 @@ from mne.io import RawArray, read_raw_egi, read_raw_eyelink
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
 from mne_bids.physio import _get_eyetrack_annotation_inds, write_eyetrack_calibration
 
-EYETRACK_CH_TYPES = {
-    "xpos_left": "eyegaze",
-    "ypos_left": "eyegaze",
-    "pupil_left": "pupil",
-    "xpos_right": "eyegaze",
-    "ypos_right": "eyegaze",
-    "pupil_right": "pupil",
-}
-
 
 @pytest.fixture(scope="module")
 def eyelink_fpath():
@@ -53,7 +44,6 @@ def eyetrack_bpath(tmp_path):
 
 def _assert_roundtrip_raw(raw_in, raw):
     """Assert basic roundtrip equivalence for raw objects."""
-    assert raw_in.ch_names == raw.ch_names
     assert raw_in.get_channel_types() == raw.get_channel_types()
     assert raw_in.info["sfreq"] == raw.info["sfreq"]
     for ch_orig, ch_in in zip(raw.info["chs"], raw_in.info["chs"]):
@@ -144,14 +134,28 @@ def test_eyetracking_io_roundtrip(_bids_validate, raw_eye_and_cals, eyetrack_bpa
         format="auto",
         overwrite=False,
     )
-    raw_in = read_raw_bids(eyetrack_bpath, eyetrack_ch_types=EYETRACK_CH_TYPES)
-    _assert_roundtrip_raw(raw_in, raw)
+    raw_in = read_raw_bids(eyetrack_bpath)
 
-    # Without specifying channel types, non-eyegaze types become MISC channels
-    with pytest.warns(RuntimeWarning, match="Assigning channel type 'misc'"):
-        raw_misc = read_raw_bids(eyetrack_bpath)
-    want = ["eyegaze", "eyegaze", "misc", "eyegaze", "eyegaze", "misc"]
-    assert raw_misc.get_channel_types() == want
+    want_names = [
+        "x_coordinate_left",
+        "y_coordinate_left",
+        "pupil_size_left",
+        "x_coordinate_right",
+        "y_coordinate_right",
+        "pupil_size_right",
+    ]
+    assert raw_in.ch_names == want_names
+    _assert_roundtrip_raw(raw_in, raw)
+    assert len(raw_in.ch_names) == len(set(raw_in.ch_names))
+    assert "x_coordinate_left" in raw_in.ch_names
+    assert "y_coordinate_left" in raw_in.ch_names
+    assert "pupil_size_left" in raw_in.ch_names
+
+    eye1_json = json.loads(
+        eyetrack_bpath.copy().update(extension=".json").fpath.read_text()
+    )
+    assert "x_coordinate" in eye1_json["Columns"]
+    assert "y_coordinate" in eye1_json["Columns"]
 
     # The Physioevents TSV should be headerless
     phys_ev_fpath = (
@@ -227,5 +231,6 @@ def test_eeg_eyetracking_io_roundtrip(_bids_validate, tmp_path, eyetrack_bpath):
     eye1_json = json.loads(bpath_et.fpath.with_suffix(".json").read_text())
     assert eye1_json["RecordedEye"] == "left"
 
-    raw_eye_in = read_raw_bids(bpath_et, eyetrack_ch_types=EYETRACK_CH_TYPES)
+    raw_eye_in = read_raw_bids(bpath_et)
     _assert_roundtrip_raw(raw_eye_in, raw_eye)
+    assert len(raw_eye_in.ch_names) == len(set(raw_eye_in.ch_names))

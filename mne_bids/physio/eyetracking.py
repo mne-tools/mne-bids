@@ -7,7 +7,7 @@ import mne
 import numpy as np
 from mne._fiff.constants import FIFF
 from mne.preprocessing.eyetracking import Calibration, set_channel_types_eyetrack
-from mne.utils import _validate_type, logger, warn
+from mne.utils import _validate_type, logger
 
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP
 from mne_bids.path import BIDSPath
@@ -109,45 +109,66 @@ def _write_single_eye_physio(
     fname_tsv = phys_bpath.fpath
 
     data, times = raw.get_data(picks=eye_chs, return_times=True)
-    data_dict = {}
-    data_dict["time"] = times
-    for ch_i, ch_name in enumerate(eye_chs):
-        data_dict[ch_name] = data[ch_i]
+    ch_types = raw.get_channel_types(picks=eye_chs)
+    output_ch_names = []
+    data_dict = {"time": times}
+    for ch_i, (ch_name, ch_type) in enumerate(zip(eye_chs, ch_types)):
+        out_name = ch_name
+        if ch_type == "eyegaze":
+            ch_idx = raw.ch_names.index(ch_name)
+            axis_code = raw.info["chs"][ch_idx]["loc"][4]
+            if axis_code == -1:
+                out_name = "x_coordinate"
+            elif axis_code == 1:
+                out_name = "y_coordinate"
+            else:
+                raise ValueError(
+                    "Eyegaze channels must set "
+                    "raw.info['chs'][channel_index]['loc'][4] to -1 for x-coordinate "
+                    f"or 1 for y-coordinate. Got {axis_code} for channel {ch_name}. "
+                    "Please use  "
+                    "`mne.preprocessing.eyetracking.set_channel_types_eyetrack` to "
+                    "Set eyetrack channel info according to MNE expectations."
+                )
+        elif ch_type == "pupil":
+            out_name = "pupil_size"
+        if out_name in data_dict:
+            raise ValueError(f"Duplicate eyetracking column name: {out_name}")
+        output_ch_names.append(out_name)
+        data_dict[out_name] = data[ch_i]
     _write_tsv(fname_tsv, data_dict, include_column_names=False, overwrite=overwrite)
 
     # Build and write sidecar JSON
     json_dict = {
         "SamplingFrequency": raw.info["sfreq"],
         "StartTime": times[0],
-        "Columns": ["time"] + eye_chs,
+        "Columns": ["time"] + output_ch_names,
         "PhysioType": "eyetrack",
         "RecordedEye": recorded_eye,
         "SampleCoordinateSystem": "gaze-on-screen",
+        # These 3 columns/channels are REQUIRED by eyetracking BIDS
         "time": {
             "Description": "The timestamp of the data, in seconds.",
             "Units": "s",
         },
-    }
-    # Add per-channel descriptions when available (x, y, pupil).
-    if len(eye_chs) >= 1:
-        json_dict[eye_chs[0]] = {
+        "x_coordinate": {
             "Description": "The x-coordinate of the gaze on the screen in pixels.",
-            "Units": "pixel",
-        }
-    if len(eye_chs) >= 2:
-        json_dict[eye_chs[1]] = {
+            "Units": "pixel",  # TODO: dynamically check for pixel vs deg/rad
+        },
+        "y_coordinate": {
             "Description": "The y-coordinate of the gaze on the screen in pixels.",
             "Units": "pixel",
-        }
-    if len(eye_chs) >= 3:
-        json_dict[eye_chs[2]] = {
-            "Description": (
-                "Pupil area of the recorded eye as calculated by the eye-tracker "
-                "in arbitrary units"
-            ),
-            "Units": "arbitrary",
-        }
-
+        },
+    }
+    for out_name, ch_type in zip(output_ch_names, ch_types):
+        if ch_type == "pupil":
+            json_dict[out_name] = {
+                "Description": (
+                    "Pupil area of the recorded eye as calculated by the eye-tracker "
+                    "in arbitrary units"
+                ),
+                "Units": "arbitrary",
+            }
     fname_json = (
         bids_path.copy()
         .update(
@@ -461,7 +482,7 @@ def read_eyetrack_calibration(bids_path: BIDSPath) -> list[dict]:
     return calibrations
 
 
-def read_raw_bids_eyetrack(bids_path, *, ch_types: None | dict[str, str]):
+def read_raw_bids_eyetrack(bids_path):
     """Read BIDS compliant eyetracking data from TSV sidecar files.
 
     bids_path : mne_bids.BIDSPath
@@ -472,17 +493,7 @@ def read_raw_bids_eyetrack(bids_path, *, ch_types: None | dict[str, str]):
         specify ``datatype="beh"``. Otherwise, if the eyetracking was collected
         alongside another modality such as ``eeg``, then you must specify
         ``datatype="eeg"``.
-    ch_types : None | dict of str
-        Either ``None``, or a dictionary whose keys correspond to eyetracking channel
-        names, and whose values correspond to the MNE-Python compatible channel types
-        for said channel, such as ``'eyegaze'``, ``'pupil'``, or ``'misc'``. If
-        ``None``, then the data in the 2nd and 3rd columns of
-        ``<match>_recording-{eye1,eye2}_physio.tsv`` will be set to ``eyegaze``, and
-        data from all subsequent columns will be set to ``'misc'``.
     """
-    if ch_types is None:
-        ch_types = {}
-
     ch_info = {}
     fiff_to_func = {
         FIFF.FIFF_UNIT_PX: "px",
@@ -508,37 +519,28 @@ def read_raw_bids_eyetrack(bids_path, *, ch_types: None | dict[str, str]):
             num_eyes += 1
     logger.info(f"Reading data recorded from {num_eyes} eye(s)")
 
-    eye1_cols, eye1_array, eye1_ch_info, unknown_types = _read_one_eye_physio(
+    eye1_array, eye1_ch_info = _read_one_eye_physio(
         raw_path,
-        ch_types,
     )
     ch_info.update(eye1_ch_info)
+
     json_sidecar_fpath = raw_path.with_suffix(".json")
+    # We are assuming that sfreq is consistent across eyes but I think that is safe..
     eye1_sfreq = json.loads(json_sidecar_fpath.read_text())["SamplingFrequency"]
 
     if num_eyes == 2:
-        eye2_cols, eye2_array, eye2_ch_info, eye2_unknown_types = _read_one_eye_physio(
+        eye2_array, eye2_ch_info = _read_one_eye_physio(
             eye2_fpath,
-            ch_types,
         )
         ch_info.update(eye2_ch_info)
-        unknown_types.extend(eye2_unknown_types)
 
         data = np.concat([eye1_array, eye2_array], axis=1)
-        ch_names = eye1_cols[1:] + eye2_cols[1:]
-        types = [ch_info[name]["ch_type"] for name in ch_names]
     else:
         data = eye1_array
-        ch_names = eye1_cols[1:]
-        types = [ch_info[name]["ch_type"] for name in ch_names]
 
-    if unknown_types:
-        warn(
-            f"Assigning channel type 'misc' to {unknown_types}.\n"
-            "If this is incorrect, pass the correct channel types to the "
-            "eyetrack_ch_types parameter."
-        )
-    info = mne.create_info(ch_names=ch_names, ch_types=types, sfreq=eye1_sfreq)
+    ch_names = [ch_name for ch_name in ch_info]
+    ch_types = [ch_info[ch_name]["ch_type"] for ch_name in ch_info]
+    info = mne.create_info(ch_names=ch_names, ch_types=ch_types, sfreq=eye1_sfreq)
     raw = mne.io.RawArray(data.T, info)
 
     et_info = dict()
@@ -560,11 +562,18 @@ def read_raw_bids_eyetrack(bids_path, *, ch_types: None | dict[str, str]):
     return raw
 
 
-def _read_one_eye_physio(raw_tsv_fpath, ch_types):
+def _read_one_eye_physio(raw_tsv_fpath):
     """Read one eye's physio.tsv/.json and return channel metadata and samples."""
 
-    def _infer_et_type(column_idx):
-        return "eyegaze" if column_idx in [1, 2] else "misc"
+    def _infer_et_type(ch_name):
+        """Eyetracking BIDS pre-specifies valid column names for x/y + pupil data."""
+        return (
+            "eyegaze"
+            if ch_name in ["x_coordinate", "y_coordinate"]
+            else "pupil"
+            if ch_name == "pupil_size"
+            else "misc"
+        )
 
     json_fpath = raw_tsv_fpath.with_suffix(".json")
     sidecar = json.loads(json_fpath.read_text())
@@ -573,20 +582,24 @@ def _read_one_eye_physio(raw_tsv_fpath, ch_types):
     recorded_eye = sidecar["RecordedEye"]
 
     ch_info = {}
-    unknown_types = []
+    # The first column is 'time' so skip it
     for col_idx, ch_name in enumerate(cols[1:], start=1):
         unit_str = sidecar[ch_name]["Units"]
-        ch_type = ch_types.get(ch_name, _infer_et_type(col_idx))
-        if col_idx > 2 and ch_type == "misc":
-            unknown_types.append(ch_name)
+        ch_type = _infer_et_type(ch_name)
 
-        ch_info[ch_name] = dict(
+        ch_info[f"{ch_name}_{recorded_eye}"] = dict(
             ch_type=ch_type,
             unit=UNITS_BIDS_TO_FIFF_MAP[unit_str],
             eye=recorded_eye,
-            axis=("x" if col_idx == 1 else "y" if col_idx == 2 else None),
+            axis=(
+                "x"
+                if ch_name == "x_coordinate"
+                else "y"
+                if ch_name == "y_coordinate"
+                else None
+            ),
         )
 
     n_cols = len(cols)
     data = np.loadtxt(raw_tsv_fpath, usecols=range(1, n_cols))
-    return cols, data, ch_info, unknown_types
+    return data, ch_info
