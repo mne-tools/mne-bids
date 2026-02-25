@@ -12,6 +12,7 @@ from mne.utils import _validate_type, logger
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP, UNITS_FIFF_TO_BIDS_MAP
 from mne_bids.path import BIDSPath
 from mne_bids.physio._utils import _get_physio_type
+from mne_bids.tsv_handler import _from_compressed_tsv
 from mne_bids.utils import _write_json, _write_tsv
 
 # Parameters accepted by MNE's Calibration class
@@ -499,6 +500,7 @@ def read_raw_bids_eyetrack(bids_path):
         ``datatype="eeg"``.
     """
     ch_info = {}
+    # Mapping from FIFF units to the str codes wanted by set_channel_types_eyetrack
     fiff_to_func = {
         FIFF.FIFF_UNIT_PX: "px",
         FIFF.FIFF_UNIT_NONE: "au",
@@ -523,29 +525,32 @@ def read_raw_bids_eyetrack(bids_path):
             num_eyes += 1
     logger.info(f"Reading data recorded from {num_eyes} eye(s)")
 
-    eye1_array, eye1_ch_info = _read_one_eye_physio(
+    eye1_data_dict, eye1_ch_info = _read_one_eye_physio(
         raw_path,
     )
     ch_info.update(eye1_ch_info)
+    eye1_array = np.array(list(eye1_data_dict.values()))
 
     json_sidecar_fpath = raw_path.with_suffix("").with_suffix(".json")
     # We are assuming that sfreq is consistent across eyes but I think that is safe..
     eye1_sfreq = json.loads(json_sidecar_fpath.read_text())["SamplingFrequency"]
 
     if num_eyes == 2:
-        eye2_array, eye2_ch_info = _read_one_eye_physio(
+        eye2_data_dict, eye2_ch_info = _read_one_eye_physio(
             eye2_fpath,
         )
         ch_info.update(eye2_ch_info)
+        eye2_array = np.array(list(eye2_data_dict.values()))
 
-        data = np.concat([eye1_array, eye2_array], axis=1)
+        # timestamp is row 0. Exclude it
+        data = np.concat([eye1_array[1:, :], eye2_array[1:, :]], axis=0)
     else:
-        data = eye1_array
+        data = eye1_array[1:, :]  # timestamp is row 0. Exclude it
 
     ch_names = [ch_name for ch_name in ch_info]
     ch_types = [ch_info[ch_name]["ch_type"] for ch_name in ch_info]
     info = mne.create_info(ch_names=ch_names, ch_types=ch_types, sfreq=eye1_sfreq)
-    raw = mne.io.RawArray(data.T, info)
+    raw = mne.io.RawArray(data, info)
 
     et_info = dict()
     for this_name, this_type in zip(raw.ch_names, raw.get_channel_types()):
@@ -604,6 +609,9 @@ def _read_one_eye_physio(raw_tsv_fpath):
             ),
         )
 
-    n_cols = len(cols)
-    data = np.loadtxt(raw_tsv_fpath, usecols=range(1, n_cols))
-    return data, ch_info
+    data_dict = _from_compressed_tsv(raw_tsv_fpath)
+    # append eye to ch_name
+    for col_name in list(data_dict.keys()):
+        if col_name != "time":
+            data_dict[f"{col_name}_{recorded_eye}"] = data_dict.pop(col_name)
+    return data_dict, ch_info
