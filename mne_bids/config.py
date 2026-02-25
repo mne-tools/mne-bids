@@ -51,9 +51,10 @@ UNITS_MNE_TO_BIDS_MAP = {
 # Mapping from FIFF unit constants to BIDS unit strings for writing
 # This supplements MNE's _unit2human which doesn't include all FIFF units
 UNITS_FIFF_TO_BIDS_MAP = {
-    FIFF.FIFF_UNIT_RAD: "rad",
-    FIFF.FIFF_UNIT_PX: "px",
+    FIFF.FIFF_UNIT_M: "m",
     FIFF.FIFF_UNIT_NONE: "arbitrary",
+    FIFF.FIFF_UNIT_PX: "pixel",
+    FIFF.FIFF_UNIT_RAD: "rad",
 }
 
 # Mapping from BIDS unit strings to FIFF unit constants for reading

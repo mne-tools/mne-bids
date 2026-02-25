@@ -51,6 +51,7 @@ from mne_bids.config import (
     BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
     BIDS_VERSION,
     CONVERT_FORMATS,
+    EPHY_ALLOWED_DATATYPES,
     EXT_TO_UNIT_MAP,
     IGNORED_CHANNELS,
     MANUFACTURERS,
@@ -395,8 +396,8 @@ def _events_tsv(
     trial_type,
     *,
     event_metadata=None,
-    include_column_names=True,
     extras_columns=None,
+    compress=False,
     overwrite=False,
 ):
     """Create an events.tsv file and save it.
@@ -425,8 +426,8 @@ def _events_tsv(
     event_metadata : pandas.DataFrame | None
         Additional metadata to be stored in the events.tsv file. Must have one
         row per event.
-    include_column_names : bool
-        Whether to include column names, e.g. "onset", in the Events TSV file.
+    compress : bool
+        Whether to gzip the tsv file, e.g. for <match>_physioevents.tsv.gz files.
     extras_columns : dict | None
         Optional column data derived from annotation extras, mapping column name to
         per-event values.
@@ -486,9 +487,7 @@ def _events_tsv(
             continue
         data[key] = values
 
-    _write_tsv(
-        fname, data, include_column_names=include_column_names, overwrite=overwrite
-    )
+    _write_tsv(fname, data, compress=compress, overwrite=overwrite)
 
 
 def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False):
@@ -1078,7 +1077,7 @@ def _sidecar_json(
     fname : str | mne_bids.BIDSPath
         Filename to save the sidecar json to.
     datatype : str
-        Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.
+        Type of the data as in EPHY_ALLOWED_DATATYPES.
     emg_placement : "Measured" | "ChannelSpecific" | "Other" | None
         How the EMG sensor locations were determined. Must be one of the literal strings
         if ``datatype="emg"`` and should be ``None`` for all other datatypes.
@@ -1977,6 +1976,7 @@ def write_raw_bids(
     """
     if not isinstance(raw, BaseRaw):
         raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
+    # TODO: Maybe this should generalize to physio data.
     is_eyetracking_only = all(
         [ch in ["eyegaze", "pupil"] for ch in raw.get_channel_types()]
     )
@@ -2098,7 +2098,7 @@ def write_raw_bids(
         elif format == "FIF":
             ext = ".fif"
         elif is_eyetracking_only:
-            ext = ".tsv"  # Data will be saved in TSV files
+            ext = ".tsv.gz"  # Data will be saved in gzipped TSV files
         else:
             msg = (
                 'For preloaded data, you must set the "format" parameter '
@@ -2448,7 +2448,8 @@ def write_raw_bids(
     # this function.
     make_dataset_description(path=bids_path.root, name="[Unspecified]", overwrite=False)
 
-    if not is_eyetracking_only:
+    # This function is specifically for writing sidecar for datatype with channel info
+    if bids_path.datatype in EPHY_ALLOWED_DATATYPES:
         _sidecar_json(
             raw,
             task=bids_path.task,
@@ -2521,12 +2522,15 @@ def write_raw_bids(
             )
 
     # this can't happen until after value of `convert` has been determined
-    _channels_tsv(
-        raw,
-        channels_path.fpath,
-        convert_fmt=format if convert else None,
-        overwrite=overwrite,
-    )
+    if bids_path.datatype in EPHY_ALLOWED_DATATYPES:
+        _channels_tsv(
+            raw,
+            channels_path.fpath,
+            convert_fmt=format if convert else None,
+            overwrite=overwrite,
+        )
+    else:
+        logger.debug(f"Did not write channnels_tsv for {bids_path.fpath}")
 
     # raise error when trying to copy files (copyfile_*) into same location
     # (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)
@@ -2543,6 +2547,7 @@ def write_raw_bids(
 
     # otherwise if the BIDSPath currently exists, check if we
     # would like to overwrite the existing dataset
+    # TODO: Why did I gatekeep eyetracking from this path. Remove and see if it breaks.
     if bids_path.fpath.exists() and not is_eyetracking_only:
         if overwrite:
             # Need to load data before removing its source

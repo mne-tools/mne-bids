@@ -38,7 +38,7 @@ def eyetrack_bpath(tmp_path):
         run="01",
         recording="eye1",
         suffix="physio",
-        extension=".tsv",
+        extension=".tsv.gz",
     )
 
 
@@ -169,6 +169,10 @@ def test_eyetracking_io_roundtrip(_bids_validate, raw_eye_and_cals, eyetrack_bpa
     trial_types = set(phys_ev[:, 2])
     assert trial_types == {"blink", "fixation", "saccade"}
 
+    # Eyetracking only Data should not have a *_channels.tsv file
+    with pytest.raises(RuntimeError, match="Did not find any"):
+        eyetrack_bpath.find_matching_sidecar(suffix="channels", extension=".tsv")
+
 
 @testing.requires_testing_data
 def test_write_raw_bids_does_not_mutate_raw(
@@ -218,19 +222,27 @@ def test_eeg_eyetracking_io_roundtrip(_bids_validate, tmp_path, eyetrack_bpath):
     raw = raw_egi.copy().add_channels([raw_eye], force_update_info=True)
     raw.set_annotations(raw.annotations + raw_eye.annotations)
 
-    bpath = eyetrack_bpath.copy().update(
-        root=tmp_path / "bids", datatype="eeg", suffix="eeg"
+    eyetrack_bpath.update(datatype="eeg")
+    eeg_bpath = eyetrack_bpath.copy().update(
+        recording=None, datatype="eeg", suffix="eeg", extension=".vhdr"
     )
 
-    bpath_et = bpath.copy().update(suffix="physio", extension=".tsv", recording="eye1")
+    write_raw_bids(raw, eeg_bpath, allow_preload=True, format="BrainVision")
+    write_eyetrack_calibration(eyetrack_bpath, cals)
 
-    write_raw_bids(raw, bpath, allow_preload=True, format="BrainVision")
-    write_eyetrack_calibration(bpath, cals)
+    assert eyetrack_bpath.fpath.parent.name == "eeg"
 
-    assert bpath_et.fpath.parent.name == "eeg"
-    eye1_json = json.loads(bpath_et.fpath.with_suffix(".json").read_text())
+    # e.g. in EEG-eytracking, the recording-eye{1,2} entity is only for the physio files
+    for suffix, ext in zip(("channels", "eeg", "events"), (".tsv", ".json", ".tsv")):
+        sidecar_fname = eeg_bpath.find_matching_sidecar(suffix=suffix, extension=ext)
+        assert sidecar_fname.exists()
+        assert "recording-eye" not in str(sidecar_fname.name)
+
+    eye1_json = json.loads(
+        eyetrack_bpath.fpath.with_suffix("").with_suffix(".json").read_text()
+    )
     assert eye1_json["RecordedEye"] == "left"
 
-    raw_eye_in = read_raw_bids(bpath_et)
+    raw_eye_in = read_raw_bids(eyetrack_bpath)
     _assert_roundtrip_raw(raw_eye_in, raw_eye)
     assert len(raw_eye_in.ch_names) == len(set(raw_eye_in.ch_names))

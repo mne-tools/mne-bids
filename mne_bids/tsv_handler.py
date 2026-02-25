@@ -3,10 +3,14 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import gzip
+import json
 from collections import OrderedDict
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
+from mne.utils import _validate_type
 
 from mne_bids._fileio import _open_lock
 
@@ -138,6 +142,8 @@ def _from_tsv(fname, dtypes=None):
         List of types to cast the values loaded as. This is specified column by
         column.
         Defaults to None. In this case all the data is loaded as strings.
+        For gzipped files (``*.gz``), note there are no in-file header names;
+        generated keys ``column_0``, ``column_1``, ... will be used.
 
     Returns
     -------
@@ -146,6 +152,9 @@ def _from_tsv(fname, dtypes=None):
 
     """
     from .utils import warn  # avoid circular import
+
+    fname = Path(fname)
+    compressed = fname.suffix == ".gz"
 
     data = np.loadtxt(
         fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding="utf-8-sig"
@@ -158,8 +167,14 @@ def _from_tsv(fname, dtypes=None):
     # If data is 1-dimensional (only header), make it 2D
     data = np.atleast_2d(data)
 
-    column_names = data[0, :].tolist()  # cast to list to avoid `np.str_()` keys in dict
-    info = data[1:, :]
+    if compressed:
+        # Compressed TSVs are headerless
+        info = data
+        column_names = [f"column_{i}" for i in range(info.shape[1])]
+    else:
+        # Cast to list to avoid `np.str_()` keys in dict
+        column_names = data[0, :].tolist()
+        info = data[1:, :]
     data_dict = OrderedDict()
     if dtypes is None:
         dtypes = [str] * info.shape[1]
@@ -183,7 +198,40 @@ def _from_tsv(fname, dtypes=None):
     return data_dict
 
 
-def _to_tsv(data, fname, *, include_column_names=True):
+def _from_compressed_tsv(fname, dtypes=None):
+    """Wrap _from_tsv and then read column names from corresponding JSON."""
+    fname = Path(fname)
+    if fname.suffix != ".gz":
+        raise ValueError(
+            f"_from_compressed_tsv expects a .gz file, got '{fname.name}'."
+        )
+
+    data_dict = _from_tsv(fname=fname, dtypes=dtypes)
+
+    sidecar_json = fname.with_suffix("").with_suffix(".json")
+    if not sidecar_json.exists():
+        raise ValueError(
+            "To read a compressed tsv file, a corresponding sidecar JSON is needed. "
+            f"searched for:\n {sidecar_json}"
+        )
+
+    sidecar = json.loads(sidecar_json.read_text(encoding="utf-8-sig"))
+    columns = sidecar.get("Columns")
+    _validate_type(columns, list)
+
+    if len(columns) != len(data_dict):
+        raise ValueError(
+            f"'{fname.name}' has {len(columns)} columns but '{sidecar_json.name}' only "
+            f"provides names for {len(data_dict)} columns in its 'Columns' field."
+        )
+
+    renamed = dict()
+    for idx, values in enumerate(data_dict.values()):
+        renamed[columns[idx]] = values
+    return renamed
+
+
+def _to_tsv(data, fname, *, compress=False):
     """Write an OrderedDict into a tsv file.
 
     Parameters
@@ -193,15 +241,23 @@ def _to_tsv(data, fname, *, include_column_names=True):
     fname : str
         Path to the file being written.
     """
+    include_header = False if compress else True
+    encoding = "utf-8-sig"
+
     n_rows = len(data[list(data.keys())[0]])
-    output = _tsv_to_str(data, n_rows, include_column_names)
+    output = _tsv_to_str(data, n_rows, include_header=include_header)
+    output = f"{output}\n"
 
-    with _open_lock(fname, "w", encoding="utf-8-sig") as f:
-        f.write(output)
-        f.write("\n")
+    if compress:
+        # TODO: need to test that this works as expected during parallel write.
+        with _open_lock(fname, "wb") as f:  # XXX: Would 'wt' mode work?
+            f.write(gzip.compress(output.encode(encoding)))
+    else:
+        with _open_lock(fname, "w", encoding=encoding) as f:
+            f.write(output)
 
 
-def _tsv_to_str(data, rows=5, include_column_names=True):
+def _tsv_to_str(data, rows=5, *, include_header=True):
     """Return a string representation of the OrderedDict.
 
     Parameters
@@ -210,8 +266,9 @@ def _tsv_to_str(data, rows=5, include_column_names=True):
         OrderedDict to return string representation of.
     rows : int, optional
         Maximum number of rows of data to output.
-    include_column_names : bool
-        Whether to include the column names in the TSV file.
+    include_header : bool
+        Whether to include the column names in the TSV file. For writing gzipped text
+        files, this should be False
 
     Returns
     -------
@@ -223,7 +280,7 @@ def _tsv_to_str(data, rows=5, include_column_names=True):
     n_rows = len(data[col_names[0]])
     output = list()
     # write headings.
-    if include_column_names:
+    if include_header:
         output.append("\t".join(col_names))
 
     # write column data.

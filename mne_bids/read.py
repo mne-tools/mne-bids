@@ -21,6 +21,7 @@ from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
+    EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
     _map_options,
     reader,
@@ -109,9 +110,8 @@ def _read_raw(
             f"extension but there is no IO support for this "
             f"file format yet."
         )
-    elif ext in [".tsv"]:
-        # Only Eye-tracking data..
-        json_fpath = raw_path.with_suffix(".json")
+    elif ext == ".tsv.gz":  # Physiological data
+        json_fpath = raw_path.with_suffix("").with_suffix(".json")
         if not json_fpath.exists():
             raise ValueError(
                 f"Expected a corresponding JSON file for {raw_path}, but none exists"
@@ -120,7 +120,7 @@ def _read_raw(
         if physio_type.lower() == "eyetrack":
             bpath = get_bids_path_from_fname(raw_path)
             raw = read_raw_bids_eyetrack(bpath)
-        else:
+        else:  # e.g. 'generic'
             raise ValueError(
                 "Only eyetracking <match>_physio.tsv files are supported.\n"
                 f"Got {physio_type}. Please open an issue with mne-bids developers."
@@ -1188,8 +1188,9 @@ def read_raw_bids(
     if events_fname is not None:
         raw, event_id = _handle_events_reading(events_fname, raw)
 
-    # Eyetracking-only data will be under a 'beh' sub-directory. It has no channels.
-    if bids_path.datatype != "beh" and bids_path.suffix != "physio":
+    # E.g. Eyetracking-only data will be in 'beh' sub-directory. It has no channels.tsv
+    # and e.g. for eyetrack-meg data, dont use channels.tsv when reading eyetrack data
+    if bids_path.datatype in EPHY_ALLOWED_DATATYPES and bids_path.suffix != "physio":
         # Try to find an associated channels.tsv to get information about the
         # status and type of present channels
         channels_fname = _find_matching_sidecar(

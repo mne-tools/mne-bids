@@ -9,7 +9,7 @@ from mne._fiff.constants import FIFF
 from mne.preprocessing.eyetracking import Calibration, set_channel_types_eyetrack
 from mne.utils import _validate_type, logger
 
-from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP
+from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP, UNITS_FIFF_TO_BIDS_MAP
 from mne_bids.path import BIDSPath
 from mne_bids.physio._utils import _get_physio_type
 from mne_bids.utils import _write_json, _write_tsv
@@ -104,23 +104,42 @@ def _write_single_eye_physio(
     phys_bpath = bids_path.copy().update(
         recording=eye_recording_tag,
         suffix="physio",
-        extension=".tsv",
+        extension="tsv.gz",
     )
     fname_tsv = phys_bpath.fpath
 
     data, times = raw.get_data(picks=eye_chs, return_times=True)
     ch_types = raw.get_channel_types(picks=eye_chs)
-    output_ch_names = []
     data_dict = {"time": times}
+
+    # Build sidecar JSON template
+    json_dict = {
+        "SamplingFrequency": raw.info["sfreq"],
+        "StartTime": times[0],
+        "Columns": ["time"],
+        "PhysioType": "eyetrack",
+        "RecordedEye": recorded_eye,
+        "SampleCoordinateSystem": "gaze-on-screen",
+        "time": {
+            "Description": "The timestamp of the data, in seconds.",
+            "Units": "s",
+        },
+    }
+    # Update sidecar JSON with channels specific info
+    raw_ch_names_to_bids = {}
     for ch_i, (ch_name, ch_type) in enumerate(zip(eye_chs, ch_types)):
-        out_name = ch_name
+        ch_idx = raw.ch_names.index(ch_name)
+        bids_ch_name = ch_name
+        unit = UNITS_FIFF_TO_BIDS_MAP[raw.info["chs"][ch_idx]["unit"]]
+        # FIXME: Assumes only 1 x-coordinate and 1 y-coordinate eyegaze ch per eye
         if ch_type == "eyegaze":
-            ch_idx = raw.ch_names.index(ch_name)
             axis_code = raw.info["chs"][ch_idx]["loc"][4]
             if axis_code == -1:
-                out_name = "x_coordinate"
+                bids_ch_name = "x_coordinate"
+                description = "The x-coordinate of the gaze on the screen."
             elif axis_code == 1:
-                out_name = "y_coordinate"
+                bids_ch_name = "y_coordinate"
+                description = "The y-coordinate of the gaze on the screen."
             else:
                 raise ValueError(
                     "Eyegaze channels must set "
@@ -131,44 +150,29 @@ def _write_single_eye_physio(
                     "Set eyetrack channel info according to MNE expectations."
                 )
         elif ch_type == "pupil":
-            out_name = "pupil_size"
-        if out_name in data_dict:
-            raise ValueError(f"Duplicate eyetracking column name: {out_name}")
-        output_ch_names.append(out_name)
-        data_dict[out_name] = data[ch_i]
-    _write_tsv(fname_tsv, data_dict, include_column_names=False, overwrite=overwrite)
+            bids_ch_name = "pupil_size"
+            description = "Pupil size of the recorded eye"
+        else:
+            description = "Additional Channel written by MNE-Python"
 
-    # Build and write sidecar JSON
-    json_dict = {
-        "SamplingFrequency": raw.info["sfreq"],
-        "StartTime": times[0],
-        "Columns": ["time"] + output_ch_names,
-        "PhysioType": "eyetrack",
-        "RecordedEye": recorded_eye,
-        "SampleCoordinateSystem": "gaze-on-screen",
-        # These 3 columns/channels are REQUIRED by eyetracking BIDS
-        "time": {
-            "Description": "The timestamp of the data, in seconds.",
-            "Units": "s",
-        },
-        "x_coordinate": {
-            "Description": "The x-coordinate of the gaze on the screen in pixels.",
-            "Units": "pixel",  # TODO: dynamically check for pixel vs deg/rad
-        },
-        "y_coordinate": {
-            "Description": "The y-coordinate of the gaze on the screen in pixels.",
-            "Units": "pixel",
-        },
-    }
-    for out_name, ch_type in zip(output_ch_names, ch_types):
-        if ch_type == "pupil":
-            json_dict[out_name] = {
-                "Description": (
-                    "Pupil area of the recorded eye as calculated by the eye-tracker "
-                    "in arbitrary units"
-                ),
-                "Units": "arbitrary",
-            }
+        raw_ch_names_to_bids[ch_name] = bids_ch_name
+        if bids_ch_name in data_dict:
+            raise ValueError(
+                f"Trying to rename {ch_name} to a BIDS compliant eyetracking name of "
+                f"{bids_ch_name}, but this will result in duplicate BIDS names. Is it "
+                "possible that  you have more than 1 x-coordinate, y-coordinate, "
+                "and/or pupil size channel(s) for a single eye? Here is the current "
+                f"mapping of your channel names to BIDS names:\n {raw_ch_names_to_bids}"
+            )
+
+        data_dict[bids_ch_name] = data[ch_i]
+        json_dict["Columns"].append(bids_ch_name)
+        json_dict[bids_ch_name] = {
+            "Description": description,
+            "Units": unit,
+        }
+    _write_tsv(fname_tsv, data_dict, compress=True, overwrite=overwrite)
+
     fname_json = (
         bids_path.copy()
         .update(
@@ -186,7 +190,7 @@ def _write_single_eye_physio(
         .update(
             recording=eye_recording_tag,
             suffix="physioevents",
-            extension=".tsv",
+            extension=".tsv.gz",
             check=False,  # physioevents is not an allowed suffix
         )
         .fpath
@@ -289,7 +293,7 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
         fname=fname_tsv,
         trial_type=event_id,
         event_metadata=None,
-        include_column_names=False,
+        compress=True,
         overwrite=overwrite,
     )
     # Write the JSON file
@@ -524,7 +528,7 @@ def read_raw_bids_eyetrack(bids_path):
     )
     ch_info.update(eye1_ch_info)
 
-    json_sidecar_fpath = raw_path.with_suffix(".json")
+    json_sidecar_fpath = raw_path.with_suffix("").with_suffix(".json")
     # We are assuming that sfreq is consistent across eyes but I think that is safe..
     eye1_sfreq = json.loads(json_sidecar_fpath.read_text())["SamplingFrequency"]
 
@@ -575,7 +579,7 @@ def _read_one_eye_physio(raw_tsv_fpath):
             else "misc"
         )
 
-    json_fpath = raw_tsv_fpath.with_suffix(".json")
+    json_fpath = raw_tsv_fpath.with_suffix("").with_suffix(".json")
     sidecar = json.loads(json_fpath.read_text())
 
     cols = sidecar["Columns"]

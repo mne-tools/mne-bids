@@ -245,16 +245,14 @@ def _write_json(fname, dictionary, overwrite=False):
 
 
 @verbose
-def _write_tsv(
-    fname, dictionary, *, include_column_names=True, overwrite=False, verbose=None
-):
+def _write_tsv(fname, dictionary, *, compress=False, overwrite=False, verbose=None):
     """Write an ordered dictionary to a .tsv file."""
     fname = Path(fname)
     if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    _to_tsv(dictionary, fname, include_column_names=include_column_names)
+    _to_tsv(dictionary, fname, compress=compress)
 
     logger.info(f"Writing '{fname}'...")
 
