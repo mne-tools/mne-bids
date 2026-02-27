@@ -6,4 +6,4 @@ from .eyetracking import (
     read_raw_bids_eyetrack,
     write_eyetrack_calibration,
 )
-from ._utils import _get_physio_type
+from ._utils import _get_physio_type, _read_physioevents

@@ -3,9 +3,9 @@
 
 .. _ex-convert-eyetracking-to-bids:
 
-================================
-Convert eyetracking data to BIDS
-================================
+=======================================
+Convert eyetracking data to BIDS Format
+=======================================
 
 This example shows how to convert Eyelink eyetracking data to BIDS using
 MNE-BIDS.
@@ -45,13 +45,23 @@ cals = read_eyelink_calibration(eyetrack_fpath)
 raw
 
 # %%
-# Define where to write BIDS output
-# ---------------------------------
-#
-# Eyetracking-only data should typically be stored under ``datatype="beh"``
-# and use ``suffix="physio"``, and ``recording`` entity ``'eye1'`` (even for binocular
-# data).
+raw.plot(scalings="auto")
 
+# %%
+# Where are BIDS compliant eyetracking files stored?
+# --------------------------------------------------
+#
+# Eyetracking-only data is stored in the ``'beh'`` modality directory. Eyetracking data
+# that was collected alongside another modality (``eeg``, ``meg``, etc) will be stored
+# in the same directory as that modality (``'eeg'``, ``'meg'``, etc). As such, when
+# defining a BIDSPath instance to read or write eyetracking data, pass
+# ``datatype="beh"`` for eyetracking-only data. If the data were collected alongside
+# EEG data, then you would pass ``datatype='eeg'``. Either way, you should also pass
+# ``suffix="physio"``, and ``recording='eye1'`` to the BIDSPath constructor
+# (even for binocular data, where there is also a ``<match>_recording-eye2.tsv.gz``
+# file. MNE-BIDS will handle reading and writing of ``eye2`` data for us.)
+
+# %%
 bids_root = data_path.parent / "MNE-eyetrack-data-bids-example"
 if bids_root.exists():
     shutil.rmtree(bids_root)
@@ -72,9 +82,9 @@ bids_path = BIDSPath(
 # Write BIDS eyetracking files
 # ----------------------------
 #
-# MNE-BIDS will write one ``*_physio.tsv`` + ``*_physio.json`` pair per eye,
-# and matching ``*_physioevents.tsv`` files. Additionally, we are going to convert our
-# eyetracking eyegaze channels from pixels-on-screen to radians-of-visual-angle, to
+# MNE-BIDS will write one ``*_physio.tsv.gz`` + ``*_physio.json`` pair per eye,
+# and matching ``*_physioevents.tsv.gz`` files. Additionally, we are going to convert
+# our eyetracking eyegaze channels from pixels-on-screen to radians-of-visual-angle, to
 # demonstrate how BIDS stores the units.
 
 cal = cals[0]
@@ -93,6 +103,7 @@ write_raw_bids(raw=raw, bids_path=bids_path, allow_preload=True, overwrite=True)
 # We can update the ``*_physio.json`` sidecar with calibration eyetracking
 # calibration information.
 
+# %%
 write_eyetrack_calibration(bids_path, cals)
 
 # %%
@@ -104,7 +115,7 @@ print_dir_tree(bids_root)
 # %%
 # Inspect one sidecar JSON file.
 # ------------------------------
-# Notice 1) that the calibration information was written to this phsyio.json file, and
+# Notice 1) that the calibration information was written to this physio.json file, and
 # 2) that the units for the eyegaze channels are ``'rad'``, meaning "radians of visual
 # angle."
 
@@ -123,6 +134,9 @@ raw_in = read_raw_bids(bids_path=bids_path)
 raw_in
 
 # %%
+raw_in.plot(scalings=dict(pupil="auto"))
+
+# %%
 cals_in = read_eyetrack_calibration(bids_path)
 
 # %%
@@ -131,8 +145,8 @@ cals_in = read_eyetrack_calibration(bids_path)
 #
 # When eyetracking data is collected simultaneously with another BIDS modality, then the
 # eyetracking files will be written to that modality folder. In other words, instead of
-# being written to a ``beh`` directory as the stand-alone eyetracking data that we just
-# used was, the dataset below will be written alongside the EEG data in the ``eeg``
+# being written to a ``beh`` directory, as the stand-alone eyetracking data that we just
+# used was, the dataset below will be written alongside the EEG data in the ``'eeg'``
 # directory. Additionally, unlike the previous example, where we converted our eyegaze
 # channel units from pixels-on-screen to radians-of-visual-angle, in this example we'll
 # keep the data as pixels-on-screen, and this will be reflected in the BIDS metadata.

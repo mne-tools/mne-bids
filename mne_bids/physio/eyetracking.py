@@ -7,7 +7,7 @@ import mne
 import numpy as np
 from mne._fiff.constants import FIFF
 from mne.preprocessing.eyetracking import Calibration, set_channel_types_eyetrack
-from mne.utils import _validate_type, logger
+from mne.utils import _check_option, _validate_type, logger
 
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP, UNITS_FIFF_TO_BIDS_MAP
 from mne_bids.path import BIDSPath
@@ -287,7 +287,7 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
     events, event_id = mne.events_from_annotations(raw, event_id=event_ids)
     # Let's use the _events_tsv function to write the file.
     assert len(durations) == len(events)
-    _events_tsv(
+    ev_dict = _events_tsv(
         events=events,
         durations=durations,
         raw=raw,
@@ -298,10 +298,9 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
         overwrite=overwrite,
     )
     # Write the JSON file
-    fname_json = fname_tsv.with_suffix(".json")
-    _events_json(
-        fname_json, extra_columns=None, has_trial_type=True, overwrite=overwrite
-    )
+    columns = list(ev_dict.keys())
+    fname_json = fname_tsv.with_suffix("").with_suffix(".json")
+    _events_json(fname_json, columns=columns, has_trial_type=True, overwrite=overwrite)
 
 
 def _json_safe(value):
@@ -493,11 +492,16 @@ def read_raw_bids_eyetrack(bids_path):
     bids_path : mne_bids.BIDSPath
         the BIDSPath instance that points to the ``<match>_recording-eye1_physio.tsv``
         eyetracking file. You must specify the following entities in the BIDSPath
-        constructor: ``recording="eye1"``, ``suffix="physio"``, ``extension=".tsv"``.
+        constructor: ``recording="eye1"``, ``suffix="physio"``, ``extension=".tsv.gz"``.
         If the eyetracking data was recorded without another modality, you must also
         specify ``datatype="beh"``. Otherwise, if the eyetracking was collected
-        alongside another modality such as ``eeg``, then you must specify
-        ``datatype="eeg"``.
+        alongside another modality (such as ``eeg``), then you must specify that
+        modality, e.g. ``datatype="eeg"``.
+
+    Returns
+    -------
+    raw : mne.io.Raw
+        The data as MNE-Python Raw object
     """
     ch_info = {}
     # Mapping from FIFF units to the str codes wanted by set_channel_types_eyetrack
@@ -532,8 +536,9 @@ def read_raw_bids_eyetrack(bids_path):
     eye1_array = np.array(list(eye1_data_dict.values()))
 
     json_sidecar_fpath = raw_path.with_suffix("").with_suffix(".json")
+    physio_sidecar = json.loads(json_sidecar_fpath.read_text())
     # We are assuming that sfreq is consistent across eyes but I think that is safe..
-    eye1_sfreq = json.loads(json_sidecar_fpath.read_text())["SamplingFrequency"]
+    eye1_sfreq = physio_sidecar["SamplingFrequency"]
 
     if num_eyes == 2:
         eye2_data_dict, eye2_ch_info = _read_one_eye_physio(
@@ -568,11 +573,12 @@ def read_raw_bids_eyetrack(bids_path):
                 ch_info[this_name]["eye"],
             )
     set_channel_types_eyetrack(raw, mapping=et_info)
+
     return raw
 
 
 def _read_one_eye_physio(raw_tsv_fpath):
-    """Read one eye's physio.tsv/.json and return channel metadata and samples."""
+    """Read one eye's physio.tsv.gz/.json and return channel metadata and samples."""
 
     def _infer_et_type(ch_name):
         """Eyetracking BIDS pre-specifies valid column names for x/y + pupil data."""
@@ -589,6 +595,15 @@ def _read_one_eye_physio(raw_tsv_fpath):
 
     cols = sidecar["Columns"]
     recorded_eye = sidecar["RecordedEye"]
+    _check_option(
+        parameter="RecordedEye",
+        value=recorded_eye,
+        allowed_values=["left", "right", "cyclopean"],
+        extra=(
+            f"The RecordedEye field of {json_fpath} must be "
+            "'left', 'right' or 'cyclopean'"
+        ),
+    )
 
     ch_info = {}
     # The first column is 'time' so skip it
@@ -615,3 +630,168 @@ def _read_one_eye_physio(raw_tsv_fpath):
         if col_name != "time":
             data_dict[f"{col_name}_{recorded_eye}"] = data_dict.pop(col_name)
     return data_dict, ch_info
+
+
+def _read_eyetrack_physioevents(bids_path, raw=None):
+    from mne_bids.physio._utils import _read_json, _read_physioevents
+
+    KEYS = ("onset", "duration", "description", "ch_names")
+
+    def _mark_blinks_bad(ev):
+        """Rename 'blink' to 'BAD_blink'."""
+        # events_file_to_annotation_kwargs returns a fixed length string dtype..
+        out_desc = np.asarray(ev["description"], dtype=object).copy()
+        out_desc[out_desc == "blink"] = "BAD_blink"
+        out_ev = ev.copy()
+        out_ev["description"] = out_desc
+        return out_ev
+
+    def _get_recording_physioevents(bpath):
+        """Read physioevents for one recording, keyed by RecordedEye."""
+        physio_json = bpath.find_matching_sidecar(suffix="physio", extension=".json")
+        sidecar = _read_json(physio_json)
+        eye = sidecar["RecordedEye"]
+
+        ch_names = None
+        if isinstance(raw, mne.io.BaseRaw):
+            ch_names = _get_channels_for_eye(raw, eye)
+
+        ev = _read_physioevents(bpath, ch_names=ch_names)
+        return eye, ev, sidecar
+
+    ocular_events = {}
+    eye1_eye, eye1_ev, eye1_info = _get_recording_physioevents(bids_path)
+    ocular_events[eye1_eye] = eye1_ev
+
+    eye2_bpath = bids_path.copy().update(recording="eye2")
+    eye2_physioevents = eye2_bpath.find_matching_sidecar(
+        suffix="physioevents", extension=".tsv.gz", on_error="ignore"
+    )
+    if eye2_physioevents is not None:
+        eye2_eye, eye2_ev, eye2_info = _get_recording_physioevents(eye2_bpath)
+        ocular_events[eye2_eye] = eye2_ev
+
+    # binocular
+    eyes = set(ocular_events)
+    if eyes == {"left", "right"}:
+        merged = merge_binocular_physioevents(
+            ocular_events["left"], ocular_events["right"], sfreq=500.0
+        )
+        return _mark_blinks_bad(merged)
+
+    # monocular
+    (ev,) = ocular_events.values()
+    out = {k: ev[k] for k in KEYS}
+    return _mark_blinks_bad(out)
+
+
+def _get_channels_for_eye(raw, eye):
+    _check_option(parameter="eye", value=eye, allowed_values=["left", "right"])
+
+    channel_types = raw.get_channel_types()
+    eye_types = ["eyegaze", "pupil"]
+    eye_code = -1 if eye == "left" else 1
+
+    this_eye_chs = []
+    for ch_idx, ch_info in enumerate(raw.info["chs"]):
+        if channel_types[ch_idx] in eye_types and ch_info["loc"][3] == eye_code:
+            this_eye_chs.append(ch_info["ch_name"])
+    return this_eye_chs
+
+
+def merge_binocular_physioevents(
+    left,
+    right,
+    *,
+    sfreq,
+    tol_samples=1,
+):
+    """Merge left/right physioevents that represent the same event (blink/saccade etc).
+
+    BIDS eyetracking stipulates that each eye gets its own physioevents file. That means
+    that a single blink event can be duplicated across 2 files. But when we read
+    these files back in, we do not want to create 2 duplicate "blink" annotations. What
+    we want is a single blink annotation, and to list the left/right channel names in
+    the annotations ch_names attribute. So we need to identify the left-eye and
+    right-eye events that conceptually represent 1 single event...
+
+    Parameters
+    ----------
+    left, right : dict[str, np.array]
+        Physioevents with keys: onset, duration, description, ch_names.
+        onset/duration are in seconds. ch_names is a 1D array (len n_events) where each
+        entry is a tuple. e.g. Just like annotations.ch_names
+    sfreq : float
+        Sampling frequency
+    tol_samples : int
+        Max allowed difference (in samples) in both onset and duration to consider two
+        events the same. default is 1 sample.
+
+    Returns
+    -------
+    merged : dict[str, np.array]
+        Dict with keys onset, duration, description, ch_names.
+        Matched events are collapsed and their ch_names merged.
+    """
+
+    def _get_annot_arrays(ev):
+        # Make copies to avoid mutating input arrays.
+        onsets = ev["onset"].copy()
+        durs = ev["duration"].copy()
+        descs = ev["description"].copy()
+        chs = ev["ch_names"].copy()
+        # we will compare events in sample space, to avoid floating point comparisons.
+        onsets_samp = np.round(onsets * sfreq).astype(np.int64)
+        durs_samp = np.round(durs * sfreq).astype(np.int64)
+        return onsets, durs, descs, chs, onsets_samp, durs_samp
+
+    def _merge_ch_names(left, right):
+        # Assumes ch_names in left/right eye annots are exclusive.
+        return np.concatenate([left, right])
+
+    l_on, l_du, l_de, l_ch, l_os, l_ds = _get_annot_arrays(left)
+    r_on, r_du, r_de, r_ch, r_os, r_ds = _get_annot_arrays(right)
+
+    # Which right-eye events have already been matched to a left-eye event.
+    used_r = np.zeros(len(r_os), dtype=bool)
+
+    # For each left event, find the best matching right event (if any)
+    for li in range(len(l_os)):
+        # restrict comparisons to events of the same description
+        # and filter out right eye events that have already been matched..
+        cands = np.where((~used_r) & (r_de == l_de[li]))[0]
+        if cands.size == 0:
+            continue
+
+        # if an event was written to both files, their onsets/durations will be the same
+        onset_ok = np.abs(r_os[cands] - l_os[li]) <= tol_samples
+        dur_ok = np.abs(r_ds[cands] - l_ds[li]) <= tol_samples
+        cands = cands[onset_ok & dur_ok]
+        if cands.size == 0:
+            continue
+
+        # Conceptually only 1 event from each eye should be paired together.
+        # So we choose best the candidate, by onset diff then duration diff
+        onset_diff = np.abs(r_os[cands] - l_os[li])
+        dur_diff = np.abs(r_ds[cands] - l_ds[li])
+        ri = cands[np.lexsort((dur_diff, onset_diff))[0]]
+
+        # put right-eye-event ch_names into left-eye-event
+        l_ch[li] = _merge_ch_names(l_ch[li], r_ch[ri])
+        used_r[ri] = True
+
+    # now append all remaining unmatched right events
+    keep_r = ~used_r
+    on = np.concatenate([l_on, r_on[keep_r]])
+    du = np.concatenate([l_du, r_du[keep_r]])
+    de = np.concatenate([l_de, r_de[keep_r]])
+    ch = np.concatenate([l_ch, r_ch[keep_r]])
+
+    # mne.Annotations will sort by onsets for us.. but its 1 line so doesn't hurt?
+    order = np.argsort(on)
+    return dict(
+        onset=on[order],
+        duration=du[order],
+        description=de[order],
+        ch_names=ch[order],
+    )

@@ -488,9 +488,12 @@ def _events_tsv(
         data[key] = values
 
     _write_tsv(fname, data, compress=compress, overwrite=overwrite)
+    return data
 
 
-def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False):
+def _events_json(
+    fname, extra_columns=None, has_trial_type=True, overwrite=False, columns=None
+):
     """Create participants.json for non-default columns in accompanying TSV.
 
     Parameters
@@ -545,6 +548,8 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
     for key, value in extra_columns.items():
         new_data[key] = {"Description": value}
 
+    if columns:
+        new_data["Columns"] = columns
     # make sure to append any JSON fields added by the user
     fname = Path(fname)
     if fname.exists():

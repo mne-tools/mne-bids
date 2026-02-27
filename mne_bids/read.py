@@ -8,6 +8,7 @@ import os
 import re
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
+from inspect import signature
 from pathlib import Path
 
 import mne
@@ -38,7 +39,7 @@ from mne_bids.physio import (
     _get_physio_type,
     read_raw_bids_eyetrack,
 )
-from mne_bids.tsv_handler import _drop, _from_tsv
+from mne_bids.tsv_handler import _drop, _from_compressed_tsv, _from_tsv
 from mne_bids.utils import _get_ch_type_mapping, _import_nibabel, verbose, warn
 
 
@@ -657,7 +658,10 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
 
     """  # noqa E501
     logger.info(f"Reading events from {events_fname}.")
-    events_dict = _from_tsv(events_fname)
+    if events_fname.suffixes[-1] == ".gz":  # e.g. <match>_physioevents.tsv.gz
+        events_dict = _from_compressed_tsv(events_fname)
+    else:
+        events_dict = _from_tsv(events_fname)
 
     # drop events where onset is n/a; we can't annotate them and thus don't need entries
     # for them in event_id either
@@ -814,6 +818,34 @@ def _handle_events_reading(events_fname, raw):
         raw.set_annotations(raw.annotations + annot_to_keep)
 
     return raw, event_id
+
+
+def _handle_physioevents_reading(bids_path, raw):
+    """Read physioevents sidecars and append them to existing annotations."""
+    from mne_bids.physio.eyetracking import _read_eyetrack_physioevents
+
+    if bids_path.suffix != "physio":
+        return raw
+
+    physio_json_fname = _find_matching_sidecar(
+        bids_path, suffix="physio", extension=".json", on_error="ignore"
+    )
+    if physio_json_fname is None:
+        return raw
+    # TODO: create annotations from generic physioevents files in a standalone PR
+    if _get_physio_type(physio_json_fname) != "eyetrack":
+        return raw
+
+    # Eyetracking physioevents
+    annot_kwargs = _read_eyetrack_physioevents(bids_path, raw)
+
+    spec = signature(mne.Annotations)
+    # MNE <1.10 does not accept `extras`.
+    if "extras" not in spec.parameters:
+        annot_kwargs.pop("extras", None)
+    physio_annots = mne.Annotations(**annot_kwargs)
+    raw.set_annotations(raw.annotations + physio_annots)
+    return raw
 
 
 def _get_bads_from_tsv_data(tsv_data):
@@ -1187,6 +1219,8 @@ def read_raw_bids(
     )
     if events_fname is not None:
         raw, event_id = _handle_events_reading(events_fname, raw)
+    # Read <match>_physioevents.{tsv.gz, json} files e.g. eyetrack blinks/saccades
+    raw = _handle_physioevents_reading(bids_path, raw)
 
     # E.g. Eyetracking-only data will be in 'beh' sub-directory. It has no channels.tsv
     # and e.g. for eyetrack-meg data, dont use channels.tsv when reading eyetrack data

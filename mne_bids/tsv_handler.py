@@ -216,7 +216,7 @@ def _from_compressed_tsv(fname, dtypes=None):
         )
 
     sidecar = json.loads(sidecar_json.read_text(encoding="utf-8-sig"))
-    columns = sidecar.get("Columns")
+    columns = sidecar["Columns"]
     _validate_type(columns, list)
 
     if len(columns) != len(data_dict):
