@@ -1251,18 +1251,14 @@ def test_read_meg_missing_coordsystem_warns(tmp_path):
     electrodes_tsv = bids_path.copy().update(
         suffix="electrodes", extension=".tsv", task=None, run=None
     )
-    Path(electrodes_tsv.fpath).write_text(
-        "name\tx\ty\tz\nEEG001\t0.0\t0.0\t0.0\n"
-    )
+    Path(electrodes_tsv.fpath).write_text("name\tx\ty\tz\nEEG001\t0.0\t0.0\t0.0\n")
 
     with pytest.warns(
         RuntimeWarning, match=r"Could not find coordsystem\.json for electrodes file:"
     ) as warning_record:
         read_raw_bids(bids_path=bids_path, verbose=False)
     coord_warnings = [
-        w
-        for w in warning_record
-        if "coordsystem.json is REQUIRED" in str(w.message)
+        w for w in warning_record if "coordsystem.json is REQUIRED" in str(w.message)
     ]
     assert len(coord_warnings) == 1
 
