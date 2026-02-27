@@ -34,6 +34,7 @@ from mne_bids.path import (
     _find_best_candidates,
     _parse_ext,
     _return_root_paths,
+    _suggest_fix_for_segment,
     find_matching_paths,
     get_bids_path_from_fname,
     get_entities_from_fname,
@@ -622,6 +623,165 @@ def test_get_entities_from_fname_errors(fname):
         assert params["foo"] == "tfr"
         expected_keys.append("foo")
     assert list(params.keys()) == expected_keys
+
+
+@pytest.mark.parametrize(
+    "fname, expected_warn_task, expected_fixed_task, expected_other_key,"
+    " expected_other_val",
+    [
+        ("sub-01_task-ECONrun-1_eeg.set", "ECONrun", "ECON", "run", "1"),
+        ("sub-01_task-restacq-full_eeg.set", "restacq", "rest", "acquisition", "full"),
+        (
+            "/bids_root/sub-01/eeg/sub-01_task-ECONrun-1_eeg.set",
+            "ECONrun",
+            "ECON",
+            "run",
+            "1",
+        ),
+    ],
+)
+def test_get_entities_from_fname_missing_separator(
+    fname,
+    expected_warn_task,
+    expected_fixed_task,
+    expected_other_key,
+    expected_other_val,
+):
+    """Test missing separator handling across warn/autofix modes."""
+    # on_error="raise" should raise with a suggested fix showing
+    # the full corrected filename
+    with pytest.raises(ValueError, match="Suggested fix.*\\.set"):
+        get_entities_from_fname(fname, on_error="raise")
+    # on_error="warn" should warn but not apply autofix
+    with pytest.warns(RuntimeWarning, match="Suggested fix"):
+        params_warn = get_entities_from_fname(fname, on_error="warn")
+    assert params_warn["task"] == expected_warn_task
+    assert params_warn[expected_other_key] is None
+    # on_error="autofix" should warn and return autofixed entities
+    with pytest.warns(RuntimeWarning, match="Suggested fix"):
+        params_fix = get_entities_from_fname(fname, on_error="autofix")
+    assert params_fix["task"] == expected_fixed_task
+    assert params_fix[expected_other_key] == expected_other_val
+    # on_error="ignore" should not raise or warn, and the merged segment
+    # is parsed as-is by the regex (only the first key-value is captured)
+    params = get_entities_from_fname(fname, on_error="ignore")
+    assert params["task"] == expected_warn_task
+    assert params[expected_other_key] is None
+
+
+def test_get_entities_from_fname_missing_separator_three_entities():
+    """Test detection and autofix when three entities are merged."""
+    fname = "sub-01task-ECONrun-1_eeg.set"
+    with pytest.raises(ValueError, match="Suggested fix"):
+        get_entities_from_fname(fname, on_error="raise")
+    with pytest.warns(RuntimeWarning, match="Suggested fix"):
+        params = get_entities_from_fname(fname, on_error="autofix")
+    assert params["subject"] == "01"
+    assert params["task"] == "ECON"
+    assert params["run"] == "1"
+
+
+def test_get_entities_from_fname_missing_separator_no_autofix():
+    """Test non-fixable segments still preserve best-effort parsing in warn mode."""
+    # "rest" doesn't end with any known BIDS entity key, so autofix fails
+    fname = "sub-01_task-rest-state_eeg.set"
+    with pytest.raises(ValueError, match="multiple hyphens"):
+        get_entities_from_fname(fname, on_error="raise")
+    with pytest.warns(RuntimeWarning, match="multiple hyphens"):
+        params = get_entities_from_fname(fname, on_error="warn")
+    # Warn mode should still parse the key-value part it can extract.
+    assert params["task"] == "rest"
+    # But other valid entities are still parsed
+    assert params["subject"] == "01"
+
+
+def test_get_entities_from_fname_missing_separator_repeated_segment_suggestions():
+    """Test suggested fixes are correct for repeated malformed segments."""
+    fname = "sub-01_foo-ECONrun-1_foo-ECONrun-1_eeg.set"
+    with pytest.warns(RuntimeWarning) as warnings:
+        get_entities_from_fname(fname, on_error="autofix")
+
+    messages = [str(w.message) for w in warnings]
+    suggestion_msgs = [msg for msg in messages if "Suggested fix:" in msg]
+    assert len(suggestion_msgs) == 2
+    assert "foo-ECON_run-1_foo-ECONrun-1" in suggestion_msgs[0]
+    assert "foo-ECON_run-1_foo-ECON_run-1" in suggestion_msgs[1]
+
+
+@pytest.mark.parametrize(
+    "fname",
+    [
+        "sub-01_ses-02_task-test_run-3_split-01_meg.fif",
+        "sub-01_ses-02_task-test_run-3_bold.nii.gz",
+        "sub-01_ses-02_task-test_channels.tsv.gz",
+    ],
+)
+def test_get_entities_from_fname_no_false_positive(fname):
+    """Test that valid filenames do not trigger missing separator warning."""
+    # Should not raise or warn
+    get_entities_from_fname(fname, on_error="raise")
+
+
+@pytest.mark.parametrize(
+    "segment, known_keys, expected",
+    [
+        # Line 1762: segments with fewer than 3 parts after split on "-"
+        pytest.param("nohyphen", ["task", "run"], None, id="no_hyphen"),
+        pytest.param("task-rest", ["task", "run"], None, id="single_hyphen"),
+        pytest.param("", ["task", "run"], None, id="empty_string"),
+        # Line 1772: ambiguous — two known keys match as suffix of middle part
+        pytest.param(
+            "k1-xcab-v",
+            ["ab", "cab", "k1"],
+            None,
+            id="ambiguous_two_keys_match",
+        ),
+        # Line 1784: trailing hyphen produces empty last value
+        pytest.param(
+            "task-ECONrun-",
+            list(ALLOWED_PATH_ENTITIES_SHORT.keys()),
+            None,
+            id="trailing_hyphen_empty_value",
+        ),
+        # No known key matches the middle part suffix
+        pytest.param("task-FOOxyz-1", ["task", "run"], None, id="no_key_match"),
+        # Positive: valid decomposition for regression
+        pytest.param(
+            "task-ECONrun-1",
+            list(ALLOWED_PATH_ENTITIES_SHORT.keys()),
+            ["task-ECON", "run-1"],
+            id="valid_decomposition",
+        ),
+    ],
+)
+def test_suggest_fix_for_segment_edge_cases(segment, known_keys, expected):
+    """Test _suggest_fix_for_segment handles edge cases correctly."""
+    assert _suggest_fix_for_segment(segment, known_keys) == expected
+
+
+@pytest.mark.parametrize(
+    "fname",
+    [
+        pytest.param("sub-01_task-ECONrun-_eeg.set", id="trailing_hyphen_with_ext"),
+        pytest.param(
+            "sub-01_task-myexprun-_bold.nii.gz", id="trailing_hyphen_compound_ext"
+        ),
+    ],
+)
+def test_get_entities_from_fname_trailing_hyphen(fname):
+    """Test that trailing-hyphen segments warn without suggesting a fix."""
+    # on_error="raise" should raise about multiple hyphens, not suggest a fix
+    with pytest.raises(ValueError, match="multiple hyphens") as exc_info:
+        get_entities_from_fname(fname, on_error="raise")
+    assert "Suggested fix" not in str(exc_info.value)
+
+    # on_error="warn" should warn without suggesting a fix
+    with pytest.warns(RuntimeWarning, match="multiple hyphens") as warnings:
+        params = get_entities_from_fname(fname, on_error="warn")
+    messages = [str(w.message) for w in warnings]
+    assert all("Suggested fix" not in msg for msg in messages)
+    # Should still parse what it can
+    assert params["subject"] == "01"
 
 
 @pytest.mark.parametrize(

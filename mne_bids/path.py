@@ -964,7 +964,7 @@ class BIDSPath:
         - ``extension`` should be one of the accepted file
         extensions in the file path: ``.con``, ``.sqd``, ``.fif``,
         ``.pdf``, ``.ds``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``,
-        ``.edf``, ``.set``, ``.mef``, ``.nwb``
+        ``.edf``, ``.set``, ``.mefd``, ``.nwb``
         - ``suffix`` should be one of the acceptable file suffixes in: ``meg``,
         ``markers``, ``eeg``, ``ieeg``, ``T1w``,
         ``participants``, ``scans``, ``electrodes``, ``channels``,
@@ -1741,6 +1741,52 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
     return bids_path
 
 
+def _suggest_fix_for_segment(segment, known_keys):
+    """Decompose a multi-hyphen segment into valid BIDS key-value pairs.
+
+    Parameters
+    ----------
+    segment : str
+        A filename segment with 2+ hyphens (e.g., ``"task-ECONrun-1"``).
+    known_keys : list of str
+        Known BIDS entity short keys (e.g., ``["sub", "ses", "task", ...]``).
+
+    Returns
+    -------
+    list of str or None
+        Corrected segments (e.g., ``["task-ECON", "run-1"]``), or ``None``
+        if the decomposition is ambiguous or impossible.
+    """
+    parts = segment.split("-")
+    if len(parts) < 3:
+        return None
+
+    current_key = parts[0]
+    result = []
+
+    for middle in parts[1:-1]:
+        found_key = None
+        for k in known_keys:
+            if len(middle) > len(k) and middle.endswith(k):
+                if found_key is not None:
+                    return None  # Ambiguous: two keys match
+                found_key = k
+
+        if found_key is None:
+            return None
+
+        value = middle[: -len(found_key)]
+        result.append(f"{current_key}-{value}")
+        current_key = found_key
+
+    last_value = parts[-1]
+    if not last_value:
+        return None
+    result.append(f"{current_key}-{last_value}")
+
+    return result
+
+
 @verbose
 def get_entities_from_fname(fname, on_error="raise", verbose=None):
     """Retrieve a dictionary of BIDS entities from a filename.
@@ -1751,10 +1797,14 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
     ----------
     fname : BIDSPath | path-like
         The path to parse.
-    on_error : 'raise' | 'warn' | 'ignore'
+    on_error : 'raise' | 'warn' | 'autofix' | 'ignore'
         If any unsupported labels in the filename are found and this is set
-        to ``'raise'``, raise a ``RuntimeError``. If ``'warn'``,
-        emit a warning and continue, and if ``'ignore'``,
+        to ``'raise'``, raise a ``ValueError``.
+        If ``'warn'``, emit a warning and continue without modifying
+        the parsed filename. If ``'autofix'``, emit a warning and apply
+        unambiguous fixes for missing underscore separators between entities
+        (e.g., ``"task-ECONrun-1"`` to ``"task-ECON_run-1"``).
+        If ``'ignore'``,
         neither raise an exception nor a warning, and
         return all entities found. For example, currently MNE-BIDS does not
         support derivatives yet, but the ``desc`` entity label is used to
@@ -1784,10 +1834,10 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
 'description': None, \
 'tracking_system': None}
     """
-    if on_error not in ("warn", "raise", "ignore"):
+    if on_error not in ("warn", "raise", "ignore", "autofix"):
         raise ValueError(
             f"Acceptable values for on_error are: warn, raise, "
-            f"ignore, but got: {on_error}"
+            f"autofix, ignore, but got: {on_error}"
         )
 
     fname = str(fname)  # to accept also BIDSPath or Path instances
@@ -1796,17 +1846,55 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
     entity_vals = list(ALLOWED_PATH_ENTITIES_SHORT.values())
     fname_vals = list(ALLOWED_PATH_ENTITIES_SHORT.keys())
 
+    # Check for segments with multiple hyphens, which likely indicates
+    # missing underscore separators between entities. When possible,
+    # attempt to decompose the segment into valid key-value pairs.
+    parse_basename = op.basename(fname)
+    if on_error != "ignore":
+        stem, dot, ext_part = parse_basename.partition(".")
+        ext = dot + ext_part  # "" if no extension
+        segments = stem.split("_")
+        fixed_segments = []
+        needs_fix = False
+        for segment_idx, segment in enumerate(segments):
+            if segment.count("-") < 2:
+                fixed_segments.append(segment)
+                continue
+
+            fix = _suggest_fix_for_segment(segment, fname_vals)
+            msg = (
+                f'Found segment "{segment}" with multiple hyphens '
+                f'in filename "{fname}". This likely indicates a '
+                f"missing underscore separator between entities."
+            )
+            if fix is not None:
+                suggested_segments = list(fixed_segments) + fix
+                suggested_segments.extend(segments[segment_idx + 1 :])
+                suggested_fname = "_".join(suggested_segments) + ext
+                msg += f' Suggested fix: "{suggested_fname}".'
+            if on_error == "raise":
+                raise ValueError(msg)
+            warn(msg)
+            if fix is not None and on_error == "autofix":
+                fixed_segments.extend(fix)
+                needs_fix = True
+            else:
+                fixed_segments.append(segment)
+
+        if needs_fix:
+            parse_basename = "_".join(fixed_segments) + ext
+
     params = {key: None for key in entity_vals}
     idx_key = 0
-    for match in re.finditer(param_regex, op.basename(fname)):
+    for match in re.finditer(param_regex, parse_basename):
         key, value = match.groups()
 
-        if on_error in ("raise", "warn"):
+        if on_error in ("raise", "warn", "autofix"):
             if key not in fname_vals:
                 msg = f'Unexpected entity "{key}" found in filename "{fname}"'
                 if on_error == "raise":
                     raise KeyError(msg)
-                elif on_error == "warn":
+                else:
                     warn(msg)
                     continue
             if fname_vals.index(key) < idx_key:

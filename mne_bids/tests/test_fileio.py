@@ -538,10 +538,12 @@ def test_lock_refcount_multiprocess(tmp_path):
     lock_file = tmp_path / f"{test_file.name}.lock"
     refcount_file = tmp_path / f"{test_file.name}.lock.refcount"
 
-    # Give a small delay for cleanup
-    time.sleep(2)  # increasing the delay.
+    # Wait for lock files to be cleaned up (may take longer on slow CI)
+    for _ in range(20):  # up to 10 seconds
+        if not lock_file.exists() or not refcount_file.exists():
+            break
+        time.sleep(0.5)
 
-    # Files should be cleaned up (refcount should be 0)
     assert not lock_file.exists() or not refcount_file.exists()
 
 
