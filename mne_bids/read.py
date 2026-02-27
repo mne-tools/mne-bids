@@ -21,6 +21,7 @@ from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
+    EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
     _map_options,
     reader,
@@ -1188,7 +1189,7 @@ def read_raw_bids(
         bids_path, suffix="coordsystem", extension=".json", on_error=on_error
     )
     if electrodes_fname is not None:
-        if datatype in ["meg", "eeg", "ieeg"]:
+        if datatype in EPHY_ALLOWED_DATATYPES:
             if coordsystem_fname is None:
                 msg = (
                     "Per the BIDS specification, coordsystem.json is REQUIRED "
@@ -1201,7 +1202,7 @@ def read_raw_bids(
                 if datatype == "ieeg":
                     raise RuntimeError(msg)
                 warn(msg + " Skipping reading electrode locations.")
-            else:
+            elif datatype in ("meg", "eeg", "ieeg"):
                 _read_dig_bids(
                     electrodes_fname,
                     coordsystem_fname,
