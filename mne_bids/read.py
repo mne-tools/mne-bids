@@ -1174,8 +1174,8 @@ def read_raw_bids(
         if datatype in ["meg", "eeg", "ieeg"]:
             if coordsystem_fname is None:
                 msg = (
-                    "BIDS requires coordsystem.json whenever electrodes.tsv is "
-                    "present. "
+                    "Per the BIDS specification, coordsystem.json is REQUIRED "
+                    "whenever electrodes.tsv is present. "
                     f"Could not find coordsystem.json for electrodes file: "
                     f"{electrodes_fname}. "
                     f"Please add coordsystem.json for {bids_path.basename} and "
@@ -1184,11 +1184,13 @@ def read_raw_bids(
                 if datatype == "ieeg":
                     raise RuntimeError(msg)
                 warn(msg + " Skipping reading electrode locations.")
-                coordsystem_fname = None
-        if datatype in ["meg", "eeg", "ieeg"] and coordsystem_fname is not None:
-            _read_dig_bids(
-                electrodes_fname, coordsystem_fname, raw=raw, datatype=datatype
-            )
+            else:
+                _read_dig_bids(
+                    electrodes_fname,
+                    coordsystem_fname,
+                    raw=raw,
+                    datatype=datatype,
+                )
 
     # Try to find an associated sidecar .json to get information about the
     # recording snapshot
