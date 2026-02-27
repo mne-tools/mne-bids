@@ -127,7 +127,8 @@ pprint(json.loads(eye1_json.read_text()), indent=2)
 # %%
 # Read the eyetracking data back from BIDS
 # ----------------------------------------
-#
+# Note: The file recording entities (``'eye1'`` / ``'eye2'``) are appended to the
+# eyetracking data channel names.
 
 # %%
 raw_in = read_raw_bids(bids_path=bids_path)

@@ -189,21 +189,21 @@ def test_eyetracking_io_roundtrip(_bids_validate, raw_eye_and_cals, eyetrack_bpa
     raw_in = read_raw_bids(eyetrack_bpath)
 
     want_names = [
-        "x_coordinate_left",
-        "y_coordinate_left",
-        "pupil_size_left",
-        "x_coordinate_right",
-        "y_coordinate_right",
-        "pupil_size_right",
+        "x_coordinate_eye1",
+        "y_coordinate_eye1",
+        "pupil_size_eye1",
+        "x_coordinate_eye2",
+        "y_coordinate_eye2",
+        "pupil_size_eye2",
     ]
     assert raw_in.ch_names == want_names
     _assert_roundtrip_raw(raw_in, raw)
     _assert_roundtrip_annotations
 
     assert len(raw.ch_names) == len(set(raw_in.ch_names))
-    assert "x_coordinate_left" in raw_in.ch_names
-    assert "y_coordinate_left" in raw_in.ch_names
-    assert "pupil_size_left" in raw_in.ch_names
+    assert "x_coordinate_eye1" in raw_in.ch_names
+    assert "y_coordinate_eye1" in raw_in.ch_names
+    assert "pupil_size_eye1" in raw_in.ch_names
 
     # Eyetracking only Data should not have a *_channels.tsv file
     with pytest.raises(RuntimeError, match="Did not find any"):

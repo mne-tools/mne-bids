@@ -594,6 +594,11 @@ def _read_one_eye_physio(raw_tsv_fpath):
     sidecar = json.loads(json_fpath.read_text())
 
     cols = sidecar["Columns"]
+    recording_entity = None
+    for entity in raw_tsv_fpath.name.split("_"):
+        if entity.startswith("recording-"):
+            recording_entity = entity.split("recording-", 1)[1]
+            break
     recorded_eye = sidecar["RecordedEye"]
     _check_option(
         parameter="RecordedEye",
@@ -611,7 +616,8 @@ def _read_one_eye_physio(raw_tsv_fpath):
         unit_str = sidecar[ch_name]["Units"]
         ch_type = _infer_et_type(ch_name)
 
-        ch_info[f"{ch_name}_{recorded_eye}"] = dict(
+        # Append recording entity suffix (eye1/eye2) to channel names.
+        ch_info[f"{ch_name}_{recording_entity}"] = dict(
             ch_type=ch_type,
             unit=UNITS_BIDS_TO_FIFF_MAP[unit_str],
             eye=recorded_eye,
@@ -625,10 +631,10 @@ def _read_one_eye_physio(raw_tsv_fpath):
         )
 
     data_dict = _from_compressed_tsv(raw_tsv_fpath)
-    # append eye to ch_name
+    # Append recording entity suffix to channel names.
     for col_name in list(data_dict.keys()):
         if col_name != "time":
-            data_dict[f"{col_name}_{recorded_eye}"] = data_dict.pop(col_name)
+            data_dict[f"{col_name}_{recording_entity}"] = data_dict.pop(col_name)
     return data_dict, ch_info
 
 
