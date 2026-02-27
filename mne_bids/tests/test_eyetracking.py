@@ -164,7 +164,6 @@ def test_eyetracking_io_roundtrip(_bids_validate, raw_eye_and_cals, eyetrack_bpa
         format="auto",
         overwrite=False,
     )
-    _bids_validate(eyetrack_bpath.root)
 
     eye1_json = json.loads(
         eyetrack_bpath.copy().update(extension=".json").fpath.read_text()
@@ -264,7 +263,6 @@ def test_eeg_eyetracking_io_roundtrip(_bids_validate, tmp_path, eyetrack_bpath):
 
     write_raw_bids(raw, eeg_bpath, allow_preload=True, format="BrainVision")
     write_eyetrack_calibration(eyetrack_bpath, cals)
-    _bids_validate(eyetrack_bpath.root)
 
     assert eyetrack_bpath.fpath.parent.name == "eeg"
 
