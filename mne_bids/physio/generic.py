@@ -1,3 +1,5 @@
+"""Utilities for reading 'generic' physiological BIDS data."""
+
 import json
 from pathlib import Path
 from warnings import warn

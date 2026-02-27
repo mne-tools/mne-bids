@@ -11,7 +11,7 @@ from mne.utils import _check_option, _validate_type, logger
 
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP, UNITS_FIFF_TO_BIDS_MAP
 from mne_bids.path import BIDSPath
-from mne_bids.physio._utils import _get_physio_type
+from mne_bids.physio.generic import _get_physio_type
 from mne_bids.tsv_handler import _from_compressed_tsv
 from mne_bids.utils import _write_json, _write_tsv
 
@@ -633,7 +633,7 @@ def _read_one_eye_physio(raw_tsv_fpath):
 
 
 def _read_eyetrack_physioevents(bids_path, raw=None):
-    from mne_bids.physio._utils import _read_json, _read_physioevents
+    from mne_bids.physio.generic import _read_json, _read_physioevents
 
     KEYS = ("onset", "duration", "description", "ch_names")
 
