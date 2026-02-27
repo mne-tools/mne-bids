@@ -7,7 +7,7 @@ import mne
 import numpy as np
 from mne._fiff.constants import FIFF
 from mne.preprocessing.eyetracking import Calibration, set_channel_types_eyetrack
-from mne.utils import _check_option, _validate_type, logger
+from mne.utils import _check_option, _validate_type, logger, warn
 
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP, UNITS_FIFF_TO_BIDS_MAP
 from mne_bids.path import BIDSPath
@@ -276,7 +276,8 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
     raw.set_annotations(annotations)
     eye_annot_indices = _get_eyetrack_annotation_inds(raw)
     if len(eye_annot_indices) == 0:
-        raise ValueError("No eyetracking annotations found.")
+        warn(f"No eyetracking annotations found. {fname_tsv} will NOT be written.")
+        return
     # Get the descriptions of the eyetracking annotations
     eye_annotations = annotations[eye_annot_indices]
     descriptions = eye_annotations.description
