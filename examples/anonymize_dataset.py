@@ -188,7 +188,7 @@ print_dir_tree(bids_root_anon)
 # Reproducibility
 # ---------------
 # Every time you run this function, the automatically-generated subject IDs and
-# the timeshift may differ (unless you excplicitly specify them as described
+# the timeshift may differ (unless you explicitly specify them as described
 # above), as they are determined randomly.
 #
 # To ensure results are reproducible across runs, you can pass the
