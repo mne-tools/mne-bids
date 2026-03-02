@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev21+g43aa5bb0c documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev22+g15ee0e481 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=9812ef28"></script>
+    <script src="../../_static/documentation_options.js?v=434c133d"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev21+g43aa5bb0c" />
+  <meta name="docsearch:version" content="0.19.0.dev22+g15ee0e481" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev21+g43aa5bb0c documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev22+g15ee0e481 documentation</p>
   
 </a></div>
     
@@ -498,6 +498,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ANNOTATIONS_TO_KEEP</span><span class="p">,</span>
+    <span class="n">EPHY_ALLOWED_DATATYPES</span><span class="p">,</span>
     <span class="n">UNITS_BIDS_TO_FIFF_MAP</span><span class="p">,</span>
     <span class="n">_map_options</span><span class="p">,</span>
     <span class="n">reader</span><span class="p">,</span>
@@ -1662,7 +1663,7 @@
 
     <span class="c1"># Try to find an associated electrodes.tsv and coordsystem.json</span>
     <span class="c1"># to get information about the status and type of present channels</span>
-    <span class="n">on_error</span> <span class="o">=</span> <span class="s2">&quot;warn&quot;</span> <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span> <span class="k">else</span> <span class="s2">&quot;ignore&quot;</span>
+    <span class="n">on_error</span> <span class="o">=</span> <span class="s2">&quot;warn&quot;</span> <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span> <span class="k">else</span> <span class="s2">&quot;ignore&quot;</span>
     <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
         <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;electrodes&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
     <span class="p">)</span>
@@ -1670,17 +1671,26 @@
         <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;coordsystem&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">electrodes_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;should exist if electrodes.tsv does. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Please create coordsystem.json for &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]:</span>
-            <span class="n">_read_dig_bids</span><span class="p">(</span>
-                <span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span>
-            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">EPHY_ALLOWED_DATATYPES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Per the BIDS specification, coordsystem.json is REQUIRED &quot;</span>
+                    <span class="s2">&quot;whenever electrodes.tsv is present. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Could not find coordsystem.json for electrodes file: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">electrodes_fname</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Please add coordsystem.json for </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2"> and &quot;</span>
+                    <span class="s2">&quot;re-run the BIDS validator.&quot;</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="n">warn</span><span class="p">(</span><span class="n">msg</span> <span class="o">+</span> <span class="s2">&quot; Skipping reading electrode locations.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">):</span>
+                <span class="n">_read_dig_bids</span><span class="p">(</span>
+                    <span class="n">electrodes_fname</span><span class="p">,</span>
+                    <span class="n">coordsystem_fname</span><span class="p">,</span>
+                    <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+                    <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+                <span class="p">)</span>
 
     <span class="c1"># Try to find an associated sidecar .json to get information about the</span>
     <span class="c1"># recording snapshot</span>

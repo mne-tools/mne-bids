@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev21+g43aa5bb0c documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev22+g15ee0e481 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=9812ef28"></script>
+    <script src="_static/documentation_options.js?v=434c133d"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev21+g43aa5bb0c" />
+  <meta name="docsearch:version" content="0.19.0.dev22+g15ee0e481" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev21+g43aa5bb0c documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev22+g15ee0e481 documentation</p>
   
 </a></div>
     
@@ -531,6 +531,7 @@
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_matching_sidecar" title="mne_bids.BIDSPath.find_matching_sidecar"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.find_matching_sidecar()</span></code></a> to search for sidecar files at the dataset root level per the BIDS inheritance principle, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1508">#1508</a>)</p></li>
 <li><p>Reinstate the requirement for <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code> whenever <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> is present (including EMG), by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1508">#1508</a>)</p></li>
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a> ignoring <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> when <code class="docutils literal notranslate"><span class="pre">EEGCoordinateUnits</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;n/a&quot;</span></code> by inferring the unit from coordinate magnitudes, and synthesize approximate fiducials for <code class="docutils literal notranslate"><span class="pre">ctf_head</span></code> montages to enable the coordinate transform to <code class="docutils literal notranslate"><span class="pre">head</span></code> frame, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1506">#1506</a>)</p></li>
+<li><p>Improve <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> handling when <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> exists without <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code>: keep strict failure for iEEG, and for EEG/MEG emit a warning and continue without applying a montage, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a></p></li>
 </ul>
 </section>
 <section id="code-health">
