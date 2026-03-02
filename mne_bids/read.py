@@ -977,10 +977,11 @@ def read_raw_bids(
     ----------
     bids_path : BIDSPath
         The file to read. The :class:`mne_bids.BIDSPath` instance passed here
-        **must** have the ``.root`` attribute set. The ``.datatype`` attribute
-        **may** be set. If ``.datatype`` is not set and only one data type
-        (e.g., only EEG or MEG data) is present in the dataset, it will be
-        selected automatically.
+        **must** have the ``.root`` and ``.subject`` attributes set. The
+        ``.task`` attribute is optional (e.g. for datasets without a task
+        entity). The ``.datatype`` attribute **may** be set. If ``.datatype``
+        is not set and only one data type (e.g., only EEG or MEG data) is
+        present in the dataset, it will be selected automatically.
 
         .. note::
            If ``bids_path`` points to a symbolic link of a ``.fif`` file
@@ -1043,10 +1044,10 @@ def read_raw_bids(
             '"bids_path" must be a BIDSPath object. Please '
             "instantiate using mne_bids.BIDSPath()."
         )
-    for required in ["root", "subject", "task"]:
+    for required in ["root", "subject"]:
         if not getattr(bids_path, required):
             raise RuntimeError(
-                '"bids_path" must contain `root`, `subject`, and `task` '
+                '"bids_path" must contain `root` and `subject` '
                 f"attributes but it's missing `{required}`."
             )
 
@@ -1156,9 +1157,9 @@ def read_raw_bids(
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    if (
-        bids_path.subject == "emptyroom" and bids_path.task == "noise"
-    ) or bids_path.task.startswith("rest"):
+    if (bids_path.subject == "emptyroom" and bids_path.task == "noise") or (
+        bids_path.task is not None and bids_path.task.startswith("rest")
+    ):
         on_error = "ignore"
     else:
         on_error = "warn"
