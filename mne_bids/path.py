@@ -1640,20 +1640,27 @@ def print_dir_tree(folder, max_depth=None, return_str=False):
 
 def _parse_ext(raw_fname):
     """Split a filename into its name and extension."""
-    raw_fname = str(raw_fname)
-    fname, ext = os.path.splitext(raw_fname)
+    # Some callsites in our codebase pass _parse_ext(None) ...
+    if not raw_fname:
+        return "", ""
+    raw_fname = Path(raw_fname)
+    fname, exts = raw_fname.with_suffix(""), raw_fname.suffixes
+    while fname.suffix:
+        fname = fname.with_suffix("")
     # BTi data is the only file format that does not have a file extension
-    if ext == "" or "c,rf" in fname:
+    if not exts or "c,rf" in str(fname):
         logger.info(
             'Found no extension for raw file, assuming "BTi" format '
             "and appending extension .pdf"
         )
         ext = ".pdf"
-    # If ending on .gz, check whether it is an .nii.gz file
-    elif ext == ".gz" and raw_fname.endswith(".nii.gz"):
-        ext = ".nii.gz"
-        fname = fname[:-4]  # cut off the .nii
-    return fname, ext
+    elif len(exts) == 1:
+        ext = exts[0]
+    else:  # >1 extension e.g. .nii.gz, .tsv.gzc
+        ext = "".join(raw_fname.suffixes)
+        fname = raw_fname.name[: -len(ext)]  # cut off the .nii.gz, tsv.gz etc.
+    # TODO: Should we return Path obj, and refactor call sites if needed?
+    return str(fname), ext
 
 
 def _infer_datatype_from_path(fname: Path):
@@ -1981,7 +1988,9 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     else:
         search_dir = search_dir / "**" / bids_path.datatype
 
-    search_str_complete = str(search_dir / f"{search_str_filename}*{search_suffix}")
+    # With the addition of 'physioevents' files, we need to explicitly prepend an
+    # underscore to the search suffix to avoid finding multiple candidates.
+    search_str_complete = str(search_dir / f"{search_str_filename}*_{search_suffix}")
 
     candidate_list = glob.glob(search_str_complete, recursive=True)
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)

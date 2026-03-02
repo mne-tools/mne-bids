@@ -84,3 +84,22 @@ mne_bids.copyfiles
    copyfile_ctf
    copyfile_bti
    copyfile_kit
+
+
+mne_bids.physio
+---------------
+
+:py:mod:`mne_bids.physio`:
+
+.. automodule:: mne_bids.physio
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: mne_bids.physio
+
+.. autosummary::
+   :toctree: generated/
+
+   read_raw_bids_eyetrack
+   read_eyetrack_calibration
+   write_eyetrack_calibration
