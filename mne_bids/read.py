@@ -21,6 +21,7 @@ from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
+    EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
     _map_options,
     reader,
@@ -1180,7 +1181,7 @@ def read_raw_bids(
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
-    on_error = "warn" if suffix == "ieeg" else "ignore"
+    on_error = "warn" if datatype == "ieeg" else "ignore"
     electrodes_fname = _find_matching_sidecar(
         bids_path, suffix="electrodes", extension=".tsv", on_error=on_error
     )
@@ -1188,17 +1189,26 @@ def read_raw_bids(
         bids_path, suffix="coordsystem", extension=".json", on_error=on_error
     )
     if electrodes_fname is not None:
-        if coordsystem_fname is None:
-            raise RuntimeError(
-                f"BIDS mandates that the coordsystem.json "
-                f"should exist if electrodes.tsv does. "
-                f"Please create coordsystem.json for "
-                f"{bids_path.basename}"
-            )
-        if datatype in ["meg", "eeg", "ieeg"]:
-            _read_dig_bids(
-                electrodes_fname, coordsystem_fname, raw=raw, datatype=datatype
-            )
+        if datatype in EPHY_ALLOWED_DATATYPES:
+            if coordsystem_fname is None:
+                msg = (
+                    "Per the BIDS specification, coordsystem.json is REQUIRED "
+                    "whenever electrodes.tsv is present. "
+                    f"Could not find coordsystem.json for electrodes file: "
+                    f"{electrodes_fname}. "
+                    f"Please add coordsystem.json for {bids_path.basename} and "
+                    "re-run the BIDS validator."
+                )
+                if datatype == "ieeg":
+                    raise RuntimeError(msg)
+                warn(msg + " Skipping reading electrode locations.")
+            elif datatype in ("meg", "eeg", "ieeg"):
+                _read_dig_bids(
+                    electrodes_fname,
+                    coordsystem_fname,
+                    raw=raw,
+                    datatype=datatype,
+                )
 
     # Try to find an associated sidecar .json to get information about the
     # recording snapshot

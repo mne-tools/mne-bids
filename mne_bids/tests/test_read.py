@@ -1156,6 +1156,113 @@ def test_handle_eeg_coords_reading(tmp_path):
     assert raw_test.info["dig"] is None
 
 
+def test_read_eeg_missing_coordsystem_warns(tmp_path):
+    """EEG reads should warn, not fail, if electrodes.tsv lacks coordsystem."""
+    bids_root = tmp_path / "tiny_bids_missing_coordsystem"
+    sh.copytree(tiny_bids_root, bids_root)
+
+    subj_eeg_dir = bids_root / "sub-01" / "ses-eeg" / "eeg"
+    coordsystem_files = [
+        subj_eeg_dir / "sub-01_ses-eeg_coordsystem.json",
+        subj_eeg_dir / "sub-01_ses-eeg_space-CapTrak_coordsystem.json",
+    ]
+    for coordsystem_file in coordsystem_files:
+        coordsystem_file.unlink()
+    (subj_eeg_dir / "sub-01_ses-eeg_space-CapTrak_electrodes.tsv").unlink()
+
+    bids_path = BIDSPath(
+        subject="01",
+        session="eeg",
+        task="rest",
+        datatype="eeg",
+        root=bids_root,
+    )
+
+    with pytest.warns(
+        RuntimeWarning, match=r"Could not find coordsystem\.json for electrodes file:"
+    ) as warning_record:
+        raw = read_raw_bids(bids_path=bids_path)
+    assert "coordsystem.json is REQUIRED whenever electrodes.tsv is present" in str(
+        warning_record[0].message
+    )
+    assert "re-run the BIDS validator." in str(warning_record[0].message)
+    assert raw.info["dig"] is None
+
+
+def test_read_eeg_root_electrodes_no_coordsystem(tmp_path):
+    """Root-level electrodes.tsv without coordsystem.json should not hard-fail."""
+    bids_root = tmp_path / "tiny_bids_root_level_electrodes"
+    sh.copytree(tiny_bids_root, bids_root)
+
+    subj_eeg_dir = bids_root / "sub-01" / "ses-eeg" / "eeg"
+    coordsystem_files = [
+        subj_eeg_dir / "sub-01_ses-eeg_coordsystem.json",
+        subj_eeg_dir / "sub-01_ses-eeg_space-CapTrak_coordsystem.json",
+    ]
+    for coordsystem_file in coordsystem_files:
+        coordsystem_file.unlink()
+
+    electrodes_src = subj_eeg_dir / "sub-01_ses-eeg_electrodes.tsv"
+    electrodes_dst = bids_root / "electrodes.tsv"
+    electrodes_src.replace(electrodes_dst)
+    (subj_eeg_dir / "sub-01_ses-eeg_space-CapTrak_electrodes.tsv").unlink()
+
+    bids_path = BIDSPath(
+        subject="01",
+        session="eeg",
+        task="rest",
+        datatype="eeg",
+        root=bids_root,
+    )
+    electrodes_fname = _find_matching_sidecar(
+        bids_path, suffix="electrodes", extension=".tsv", on_error="raise"
+    )
+    assert electrodes_fname == electrodes_dst
+
+    with pytest.warns(
+        RuntimeWarning, match=r"Could not find coordsystem\.json for electrodes file:"
+    ) as warning_record:
+        raw = read_raw_bids(bids_path=bids_path)
+    assert "coordsystem.json is REQUIRED whenever electrodes.tsv is present" in str(
+        warning_record[0].message
+    )
+    assert "re-run the BIDS validator." in str(warning_record[0].message)
+    assert raw.info["dig"] is None
+
+
+@pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
+@testing.requires_testing_data
+def test_read_meg_missing_coordsystem_warns(tmp_path):
+    """MEG reads should warn, not fail, if electrodes.tsv lacks coordsystem."""
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg", suffix="meg")
+    raw = _read_raw_fif(raw_fname)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+
+    # Remove the coordsystem.json created by write_raw_bids
+    coordsystem_fname = _find_matching_sidecar(
+        bids_path, suffix="coordsystem", extension=".json", on_error="ignore"
+    )
+    if coordsystem_fname is not None:
+        os.remove(coordsystem_fname)
+
+    # The MEG sample data does not produce electrodes.tsv by default.
+    # Manually add one so we can test the warning when coordsystem.json
+    # is missing but electrodes.tsv exists.
+    electrodes_tsv = bids_path.copy().update(
+        suffix="electrodes", extension=".tsv", task=None, run=None
+    )
+    Path(electrodes_tsv.fpath).write_text("name\tx\ty\tz\nEEG001\t0.0\t0.0\t0.0\n")
+
+    with pytest.warns(
+        RuntimeWarning, match=r"Could not find coordsystem\.json for electrodes file:"
+    ) as warning_record:
+        read_raw_bids(bids_path=bids_path, verbose=False)
+    coord_warnings = [
+        w for w in warning_record if "coordsystem.json is REQUIRED" in str(w.message)
+    ]
+    assert len(coord_warnings) == 1
+
+
 @pytest.mark.parametrize("bids_path", [_bids_path, _bids_path_minimal])
 @pytest.mark.filterwarnings(warning_str["nasion_not_found"])
 @testing.requires_testing_data
@@ -1289,7 +1396,10 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
 
     # if we delete the coordsystem.json file, an error will be raised
     os.remove(coordsystem_fname)
-    with pytest.raises(RuntimeError, match="BIDS mandates that the coordsystem.json"):
+    with pytest.raises(
+        RuntimeError,
+        match="coordsystem.json is REQUIRED whenever electrodes.tsv is present",
+    ):
         raw = read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # test error message if electrodes is not a subset of Raw
