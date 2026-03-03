@@ -3,8 +3,8 @@
 .. _Alex Lopez Marquez: https://github.com/alm180
 .. _Alex Rockhill: https://github.com/alexrockhill
 .. _Alexandre Gramfort: http://alexandre.gramfort.net
-.. _Aman Jaiswal: https://github.com/AmanJaiswal1503
 .. _Amaia Benitez: https://github.com/AmaiaBA
+.. _Aman Jaiswal: https://github.com/AmanJaiswal1503
 .. _Anand Saini: https://github.com/anandsaini024
 .. _Ariel Rokem: https://github.com/arokem
 .. _Arne Gottwald: https://github.com/waldie11
