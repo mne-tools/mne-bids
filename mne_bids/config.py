@@ -745,3 +745,7 @@ ANONYMIZED_JSON_KEY_WHITELIST = [
     "ContinuousHeadLocalization",
     "HeadCoilFrequency",
 ]
+
+# charsets for read/write of text files (e.g. TSV)
+ENCODING_OUT = "utf-8"
+ENCODING_IN = "utf-8-sig"  # for backwards compat.

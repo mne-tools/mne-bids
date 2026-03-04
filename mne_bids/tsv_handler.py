@@ -9,6 +9,7 @@ from copy import deepcopy
 import numpy as np
 
 from mne_bids._fileio import _open_lock
+from mne_bids.config import ENCODING_IN, ENCODING_OUT
 
 
 def _combine_rows(data1, data2, drop_column=None):
@@ -148,7 +149,7 @@ def _from_tsv(fname, dtypes=None):
     from .utils import warn  # avoid circular import
 
     data = np.loadtxt(
-        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding="utf-8-sig"
+        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=ENCODING_IN
     )
     # Handle empty files - data may be empty or only have a header
     if data.size == 0:
@@ -196,7 +197,7 @@ def _to_tsv(data, fname):
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
 
-    with _open_lock(fname, "w", encoding="utf-8-sig") as f:
+    with _open_lock(fname, "w", encoding=ENCODING_OUT) as f:
         f.write(output)
         f.write("\n")
 

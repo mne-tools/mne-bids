@@ -3332,18 +3332,18 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     write_raw_bids(raw, bids_path=bids_path, verbose=False)
     _bids_validate(bids_root)
 
-    # TSV files should be written with a BOM
+    # TSV files should NOT be written with a BOM
     for tsv_file in bids_path.root.rglob("*.tsv"):
         with open(tsv_file, encoding="utf-8") as f:
             x = f.read()
-        assert x[0] == codecs.BOM_UTF8.decode("utf-8")
+        assert x[0] != codecs.BOM_UTF8.decode("utf-8")
 
-    # Readme should be written with a BOM
+    # Readme should NOT be written with a BOM
     with open(bids_path.root / "README", encoding="utf-8") as f:
         x = f.read()
-    assert x[0] == codecs.BOM_UTF8.decode("utf-8")
+    assert x[0] != codecs.BOM_UTF8.decode("utf-8")
 
-    # JSON files should be written without a BOM
+    # JSON files should NOT be written with a BOM
     for json_file in bids_path.root.rglob("*.json"):
         with open(json_file, encoding="utf-8") as f:
             x = f.read()
