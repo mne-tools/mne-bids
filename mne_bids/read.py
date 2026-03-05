@@ -1051,6 +1051,14 @@ def read_raw_bids(
                 f"attributes but it's missing `{required}`."
             )
 
+    if bids_path.task is None:
+        warn(
+            "bids_path has no task entity. The BIDS specification requires "
+            "the task entity for M/EEG data; this path may refer to a "
+            "legacy or non-compliant dataset.",
+            UserWarning,
+        )
+
     bids_path = bids_path.copy()
     sub = bids_path.subject
     ses = bids_path.session
