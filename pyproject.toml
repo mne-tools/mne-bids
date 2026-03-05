@@ -131,6 +131,8 @@ filterwarnings = [
   "ignore:Estimation of line frequency only supports.*:RuntimeWarning",
   # matplotlib
   "ignore:Figure.*is non-interactive.*cannot be shown:UserWarning",
+  # read_raw_bids with task=None (legacy / non-compliant BIDS)
+  "ignore:bids_path has no task entity.*:UserWarning",
   "ignore:MEG ref channel RMSP did not.*:RuntimeWarning",
   "ignore:No events found or provided.*:RuntimeWarning",
   "ignore:numpy.ufunc size changed.*:RuntimeWarning",
