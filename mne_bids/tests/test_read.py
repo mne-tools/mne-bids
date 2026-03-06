@@ -211,24 +211,60 @@ def test_read_correct_inputs():
         read_raw_bids(bids_path)
 
 
-@pytest.mark.filterwarnings("ignore::RuntimeWarning")
 def test_read_raw_bids_task_none_warns(tmp_path):
-    """Test that read_raw_bids emits UserWarning when bids_path has no task entity."""
-    bids_path = BIDSPath(
+    """Test that write rejects task=None and read warns when reading legacy paths."""
+    raw = _make_parallel_raw("01")
+    bids_path_invalid = BIDSPath(
         subject="01",
         run="01",
         datatype="meg",
         suffix="meg",
         extension=".fif",
         root=tmp_path,
+        task=None,
     )
-    bids_path.fpath.parent.mkdir(parents=True, exist_ok=True)
-    raw = _make_parallel_raw("01")
-    raw.save(bids_path.fpath)
+    with pytest.raises(ValueError, match="task"):
+        write_raw_bids(
+            raw, bids_path_invalid, allow_preload=True, format="FIF", verbose=False
+        )
 
+    bids_path_valid = BIDSPath(
+        subject="01",
+        task="rest",
+        run="01",
+        datatype="meg",
+        suffix="meg",
+        extension=".fif",
+        root=tmp_path,
+    )
+    write_raw_bids(
+        raw, bids_path_valid, allow_preload=True, format="FIF", verbose=False
+    )
+
+    meg_dir = tmp_path / "sub-01" / "meg"
+    for fpath in meg_dir.iterdir():
+        if "_task-rest" in fpath.name:
+            new_name = fpath.name.replace("_task-rest", "")
+            fpath.rename(meg_dir / new_name)
+
+    scans_path = tmp_path / "sub-01" / "sub-01_scans.tsv"
+    if scans_path.exists():
+        scans = _from_tsv(scans_path)
+        scans["filename"] = [fn.replace("_task-rest", "") for fn in scans["filename"]]
+        _to_tsv(scans, scans_path)
+
+    bids_path_no_task = BIDSPath(
+        subject="01",
+        run="01",
+        task=None,
+        datatype="meg",
+        suffix="meg",
+        extension=".fif",
+        root=tmp_path,
+    )
     with pytest.warns(UserWarning, match="bids_path has no task entity"):
-        raw = read_raw_bids(bids_path, verbose=False)
-    assert raw is not None
+        raw_read = read_raw_bids(bids_path_no_task, verbose=False)
+    assert raw_read is not None
 
 
 @pytest.mark.filterwarnings(

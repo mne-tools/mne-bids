@@ -977,11 +977,10 @@ def read_raw_bids(
     ----------
     bids_path : BIDSPath
         The file to read. The :class:`mne_bids.BIDSPath` instance passed here
-        **must** have the ``.root`` and ``.subject`` attributes set. The
-        ``.task`` attribute is optional (e.g. for datasets without a task
-        entity). The ``.datatype`` attribute **may** be set. If ``.datatype``
-        is not set and only one data type (e.g., only EEG or MEG data) is
-        present in the dataset, it will be selected automatically.
+        **must** have the ``.root`` attribute set. The ``.datatype`` attribute
+        **may** be set. If ``.datatype`` is not set and only one data type
+        (e.g., only EEG or MEG data) is present in the dataset, it will be
+        selected automatically.
 
         .. note::
            If ``bids_path`` points to a symbolic link of a ``.fif`` file

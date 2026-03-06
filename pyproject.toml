@@ -121,8 +121,6 @@ filterwarnings = [
   # numba with NumPy dev
   "ignore:`np.MachAr` is deprecated.*:DeprecationWarning",
   "ignore:`product` is deprecated as of NumPy.*:DeprecationWarning",
-  # read_raw_bids with task=None (legacy / non-compliant BIDS)
-  "ignore:bids_path has no task entity.*:UserWarning",
   "ignore:Converting data files to BrainVision format:RuntimeWarning",
   "ignore:Converting to BV for anonymization:RuntimeWarning",
   "ignore:Converting to FIF for anonymization:RuntimeWarning",
