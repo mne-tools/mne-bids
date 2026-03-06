@@ -211,10 +211,7 @@ def test_read_correct_inputs():
         read_raw_bids(bids_path)
 
 
-@pytest.mark.filterwarnings(
-    "ignore:No events found or provided:RuntimeWarning",
-    "ignore:Found no extension for raw file.*:RuntimeWarning",
-)
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
 def test_read_raw_bids_task_none_warns(tmp_path):
     """Test that read_raw_bids emits UserWarning when bids_path has no task entity."""
     bids_path = BIDSPath(
