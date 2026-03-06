@@ -215,6 +215,25 @@ def test_read_correct_inputs():
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",
 )
+def test_read_raw_bids_task_none_warns(tmp_path):
+    """Test that read_raw_bids emits UserWarning when bids_path has no task entity."""
+    _write_parallel_dataset(str(tmp_path), subject="01", run="01")
+    bids_path_with_task = BIDSPath(
+        subject="01", task="rest", run="01", datatype="meg", root=tmp_path
+    )
+    bids_path_no_task = BIDSPath(
+        subject="01", task=None, run="01", datatype="meg", root=tmp_path
+    )
+    sh.copy(bids_path_with_task.fpath, bids_path_no_task.fpath)
+    with pytest.warns(UserWarning, match="bids_path has no task entity"):
+        raw = read_raw_bids(bids_path_no_task, verbose=False)
+    assert raw is not None
+
+
+@pytest.mark.filterwarnings(
+    "ignore:No events found or provided:RuntimeWarning",
+    "ignore:Found no extension for raw file.*:RuntimeWarning",
+)
 def test_parallel_participants_multiprocess(tmp_path):
     """Ensure parallel reads keep all participants entries visible."""
     bids_root = tmp_path / "parallel_multiprocess"
