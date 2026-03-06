@@ -217,28 +217,20 @@ def test_read_correct_inputs():
 )
 def test_read_raw_bids_task_none_warns(tmp_path):
     """Test that read_raw_bids emits UserWarning when bids_path has no task entity."""
-    _write_parallel_dataset(str(tmp_path), subject="01", run="01")
-    bids_path_with_task = BIDSPath(
+    bids_path = BIDSPath(
         subject="01",
-        task="rest",
         run="01",
         datatype="meg",
         suffix="meg",
         extension=".fif",
         root=tmp_path,
     )
-    bids_path_no_task = BIDSPath(
-        subject="01",
-        task=None,
-        run="01",
-        datatype="meg",
-        suffix="meg",
-        extension=".fif",
-        root=tmp_path,
-    )
-    sh.copy(bids_path_with_task.fpath, bids_path_no_task.fpath)
+    bids_path.fpath.parent.mkdir(parents=True, exist_ok=True)
+    raw = _make_parallel_raw("01")
+    raw.save(bids_path.fpath)
+
     with pytest.warns(UserWarning, match="bids_path has no task entity"):
-        raw = read_raw_bids(bids_path_no_task, verbose=False)
+        raw = read_raw_bids(bids_path, verbose=False)
     assert raw is not None
 
 
