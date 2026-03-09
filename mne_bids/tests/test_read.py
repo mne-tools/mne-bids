@@ -881,6 +881,15 @@ def test_handle_scans_reading(tmp_path):
     if raw_pre_epoch.annotations.orig_time is not None:
         assert raw_pre_epoch.annotations.orig_time == expected_pre_epoch
 
+    # Regression: malformed timestamps should warn and leave meas_date unchanged,
+    # not crash (GH-XXXX)
+    for bad_time in ["not-a-date", "2020-01-01T25:61:61", "2020-13-01T00:00:00"]:
+        scans_tsv["acq_time"][0] = bad_time
+        _to_tsv(scans_tsv, scans_path)
+        with pytest.warns(RuntimeWarning, match="Could not parse acquisition time"):
+            raw_bad = read_raw_bids(bids_path)
+        assert raw_bad.info["meas_date"] is not None  # unchanged from file
+
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_handle_scans_reading_brainvision(tmp_path):

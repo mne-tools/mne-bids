@@ -440,7 +440,14 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         if acq_time_is_utc:
             date_format += "Z"
 
-        acq_time = datetime.strptime(acq_time, date_format)
+        try:
+            acq_time = datetime.strptime(acq_time, date_format)
+        except ValueError:
+            warn(
+                f"Could not parse acquisition time {acq_time!r} in "
+                f"{scans_fname}. Setting acquisition time to None."
+            )
+            return raw
 
         if acq_time_is_utc:
             # Enforce setting timezone to UTC without additonal conversion

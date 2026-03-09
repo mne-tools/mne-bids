@@ -56,6 +56,7 @@ Detailed list of changes
 - Reinstate the requirement for ``coordsystem.json`` whenever ``electrodes.tsv`` is present (including EMG), by `Bruno Aristimunha`_ (:gh:`1508`)
 - Fix :func:`read_raw_bids` ignoring ``electrodes.tsv`` when ``EEGCoordinateUnits`` is ``"n/a"`` by inferring the unit from coordinate magnitudes, and synthesize approximate fiducials for ``ctf_head`` montages to enable the coordinate transform to ``head`` frame, by `Bruno Aristimunha`_ (:gh:`1506`)
 - Improve :func:`mne_bids.read_raw_bids` handling when ``electrodes.tsv`` exists without ``coordsystem.json``: keep strict failure for iEEG, and for EEG/MEG emit a warning and continue without applying a montage, by `Bruno Aristimunha`_
+- :func:`mne_bids.read_raw_bids` no longer crashes on malformed ``acq_time`` values in ``scans.tsv``. Instead, a warning is emitted and the measurement date is left unchanged, by `Bruno Aristimunha`_ (:gh:`XXXX`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
