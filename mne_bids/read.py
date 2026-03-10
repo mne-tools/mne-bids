@@ -143,7 +143,7 @@ def _safe_iadd_annotations(annotations, new_annotations):
             duration=annotations.duration,
             description=annotations.description,
             orig_time=annotations.orig_time,
-            extras=extras if any(d for d in extras) else None,
+            extras=extras if any(extras) else None,
         )
         annotations += new_annotations
     return annotations
@@ -841,8 +841,6 @@ def _read_hed_version(bids_root):
     if bids_root is None:
         return None
     desc_path = Path(bids_root) / "dataset_description.json"
-    if not desc_path.exists():
-        return None
     try:
         with open(desc_path, encoding="utf-8-sig") as f:
             return json.load(f).get("HEDVersion")
@@ -875,7 +873,7 @@ def _handle_events_reading(
             if hed_strings is not None:
                 # BIDS spec: concatenate column HED with sidecar HED
                 hed_strings = [
-                    ", ".join(s for s in (col, sb) if s)
+                    ", ".join(s for s in (col, sb) if s and s != "n/a")
                     for col, sb in zip(hed_strings, sidecar_hed)
                 ]
             else:
@@ -895,7 +893,13 @@ def _handle_events_reading(
                     hed_version=hed_version,
                     extras=annotations_info["extras"],
                 )
-            except (ValueError, TypeError, ImportError, RuntimeError) as exc:
+            except (
+                ValueError,
+                TypeError,
+                ImportError,
+                RuntimeError,
+                AttributeError,
+            ) as exc:
                 warn(
                     f"Could not create HEDAnnotations: {exc}. "
                     "Falling back to regular Annotations."

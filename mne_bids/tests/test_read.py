@@ -2193,48 +2193,76 @@ def test_assemble_hed_from_sidecar(tmp_path):
 
     assert "Sensory-event" in result[0] and "Item-interval/0" in result[0]
     assert result[1] == "Agent-action"
-    assert _assemble_hed_from_sidecar(events_dict, None) is None
 
-    # Bad JSON → None
-    bad_json = tmp_path / "bad.json"
-    bad_json.write_text("{invalid json")
-    assert _assemble_hed_from_sidecar(events_dict, bad_json) is None
 
-    # No HED keys in sidecar → None
-    no_hed_json = tmp_path / "no_hed.json"
-    no_hed_json.write_text(json.dumps({"trial_type": {"Description": "type"}}))
-    assert _assemble_hed_from_sidecar(events_dict, no_hed_json) is None
+@pytest.mark.parametrize(
+    "json_content",
+    [
+        pytest.param(None, id="none_fname"),
+        pytest.param("{invalid json", id="bad_json"),
+        pytest.param(
+            json.dumps({"trial_type": {"Description": "type"}}),
+            id="no_hed_keys",
+        ),
+        pytest.param(
+            json.dumps({"nonexistent_col": {"HED": {"a": "Tag-a"}}}),
+            id="missing_column",
+        ),
+    ],
+)
+def test_assemble_hed_from_sidecar_returns_none(tmp_path, json_content):
+    """Test _assemble_hed_from_sidecar returns None for invalid inputs."""
+    from mne_bids.read import _assemble_hed_from_sidecar
+    from mne_bids.tsv_handler import _from_tsv
 
-    # Sidecar references a column not in events_dict → None (no matches)
-    missing_col_json = tmp_path / "missing_col.json"
-    missing_col_json.write_text(
-        json.dumps({"nonexistent_col": {"HED": {"a": "Tag-a"}}})
+    tsv_file = tmp_path / "events.tsv"
+    pd.DataFrame({"onset": [0.0], "duration": [0.0], "trial_type": ["ev1"]}).to_csv(
+        tsv_file, sep="\t", index=False
     )
-    assert _assemble_hed_from_sidecar(events_dict, missing_col_json) is None
+    events_dict = _from_tsv(tsv_file)
+
+    if json_content is None:
+        json_fname = None
+    else:
+        json_fname = tmp_path / "events.json"
+        json_fname.write_text(json_content)
+
+    assert _assemble_hed_from_sidecar(events_dict, json_fname) is None
 
 
-def test_read_hed_version(tmp_path):
-    """Test _read_hed_version with various edge cases."""
+@pytest.mark.parametrize(
+    "desc_content, expected",
+    [
+        pytest.param(
+            json.dumps({"Name": "test", "HEDVersion": "8.3.0"}),
+            "8.3.0",
+            id="has_version",
+        ),
+        pytest.param(json.dumps({"Name": "test"}), None, id="no_version_key"),
+        pytest.param("{invalid", None, id="bad_json"),
+    ],
+)
+def test_read_hed_version(tmp_path, desc_content, expected):
+    """Test _read_hed_version reads HEDVersion from dataset_description."""
     from mne_bids.read import _read_hed_version
 
-    # bids_root is None → None
-    assert _read_hed_version(None) is None
-
-    # dataset_description.json does not exist → None
-    assert _read_hed_version(tmp_path) is None
-
-    # Valid file with HEDVersion
     desc_path = tmp_path / "dataset_description.json"
-    desc_path.write_text(json.dumps({"Name": "test", "HEDVersion": "8.3.0"}))
-    assert _read_hed_version(tmp_path) == "8.3.0"
+    desc_path.write_text(desc_content)
+    assert _read_hed_version(tmp_path) == expected
 
-    # Valid file without HEDVersion → None
-    desc_path.write_text(json.dumps({"Name": "test"}))
-    assert _read_hed_version(tmp_path) is None
 
-    # Bad JSON → None
-    desc_path.write_text("{invalid")
-    assert _read_hed_version(tmp_path) is None
+@pytest.mark.parametrize(
+    "bids_root",
+    [
+        pytest.param(None, id="none_root"),
+        pytest.param("/nonexistent/path", id="missing_file"),
+    ],
+)
+def test_read_hed_version_returns_none(bids_root):
+    """Test _read_hed_version returns None when root or file is missing."""
+    from mne_bids.read import _read_hed_version
+
+    assert _read_hed_version(bids_root) is None
 
 
 def test_safe_iadd_preserves_hed():
@@ -2260,8 +2288,8 @@ def test_safe_iadd_preserves_hed():
     assert len(result) == 3
 
     # HED strings are preserved in extras
-    for i, desc in enumerate(result.description):
-        if desc == "ev1":
-            assert result.extras[i]["HED"] == "Sensory-event"
-        elif desc == "ev2":
-            assert result.extras[i]["HED"] == "Agent-action"
+    extras_by_desc = {
+        desc: result.extras[i] for i, desc in enumerate(result.description)
+    }
+    assert extras_by_desc["ev1"]["HED"] == "Sensory-event"
+    assert extras_by_desc["ev2"]["HED"] == "Agent-action"
