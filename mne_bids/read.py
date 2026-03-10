@@ -895,7 +895,7 @@ def _handle_events_reading(
                     hed_version=hed_version,
                     extras=annotations_info["extras"],
                 )
-            except (ValueError, TypeError) as exc:
+            except (ValueError, TypeError, ImportError) as exc:
                 warn(
                     f"Could not create HEDAnnotations: {exc}. "
                     "Falling back to regular Annotations."
