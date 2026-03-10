@@ -903,7 +903,7 @@ def _handle_events_reading(
         else:
             warn("HED column contains 'n/a' values. Using regular Annotations.")
     elif hed_strings is not None:
-        warn("MNE-Python does not support HEDAnnotations. HED data ignored.")
+        logger.info("MNE-Python does not support HEDAnnotations. HED data ignored.")
 
     # Fall back to regular Annotations if HEDAnnotations was not created
     if annot_from_events is None:

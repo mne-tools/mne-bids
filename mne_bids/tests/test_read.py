@@ -86,9 +86,6 @@ warning_str = dict(
     nasion_not_found="ignore:.*nasion not found:RuntimeWarning:mne",
     maxshield="ignore:.*Internal Active Shielding:RuntimeWarning:mne",
     synthetic_fiducials="ignore:No fiducial points found:RuntimeWarning:mne_bids",
-    hed_not_supported=(
-        "ignore:MNE-Python does not support HEDAnnotations:RuntimeWarning:mne_bids"
-    ),
 )
 
 
@@ -943,7 +940,6 @@ def test_handle_scans_reading(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
-@pytest.mark.filterwarnings(warning_str["hed_not_supported"])
 def test_handle_scans_reading_brainvision(tmp_path):
     """Test stability of BrainVision's different file extensions."""
     test_scan_eeg = OrderedDict(
@@ -1217,7 +1213,6 @@ def test_handle_eeg_coords_reading(tmp_path):
     assert raw_test.info["dig"] is None
 
 
-@pytest.mark.filterwarnings(warning_str["hed_not_supported"])
 def test_read_eeg_missing_coordsystem_warns(tmp_path):
     """EEG reads should warn, not fail, if electrodes.tsv lacks coordsystem."""
     bids_root = tmp_path / "tiny_bids_missing_coordsystem"
@@ -1251,7 +1246,6 @@ def test_read_eeg_missing_coordsystem_warns(tmp_path):
     assert raw.info["dig"] is None
 
 
-@pytest.mark.filterwarnings(warning_str["hed_not_supported"])
 def test_read_eeg_root_electrodes_no_coordsystem(tmp_path):
     """Root-level electrodes.tsv without coordsystem.json should not hard-fail."""
     bids_root = tmp_path / "tiny_bids_root_level_electrodes"
@@ -1870,7 +1864,6 @@ def test_file_not_found(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
-@pytest.mark.filterwarnings(warning_str["hed_not_supported"])
 def test_gsr_and_temp_reading():
     """Test GSR and temperature channels are handled correctly."""
     bids_path = BIDSPath(
