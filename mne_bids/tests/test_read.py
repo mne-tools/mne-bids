@@ -2057,6 +2057,7 @@ def test_handle_events_reading_hed(tmp_path):
     """Test HEDAnnotations from column HED, sidecar HED, and fallbacks."""
     if not hasattr(mne, "HEDAnnotations"):
         pytest.skip("HEDAnnotations requires MNE-Python 1.12 or newer")
+    pytest.importorskip("hed")
 
     bids_root = tmp_path / "tiny_bids"
     sh.copytree(tiny_bids_root, bids_root)
@@ -2143,6 +2144,7 @@ def test_safe_iadd_preserves_hed():
     """Test _safe_iadd_annotations preserves HED info in extras."""
     if not hasattr(mne, "HEDAnnotations"):
         pytest.skip("HEDAnnotations requires MNE-Python 1.12 or newer")
+    pytest.importorskip("hed")
 
     hed_annot = mne.HEDAnnotations(
         onset=[0.0, 0.2],
