@@ -38,6 +38,7 @@ from mne_bids.read import (
     _handle_events_reading,
     _handle_scans_reading,
     _read_raw,
+    _safe_iadd_annotations,
     events_file_to_annotation_kwargs,
     get_head_mri_trans,
     read_raw_bids,
@@ -85,6 +86,9 @@ warning_str = dict(
     nasion_not_found="ignore:.*nasion not found:RuntimeWarning:mne",
     maxshield="ignore:.*Internal Active Shielding:RuntimeWarning:mne",
     synthetic_fiducials="ignore:No fiducial points found:RuntimeWarning:mne_bids",
+    hed_not_supported=(
+        "ignore:MNE-Python does not support HEDAnnotations:RuntimeWarning:mne_bids"
+    ),
 )
 
 
@@ -939,6 +943,7 @@ def test_handle_scans_reading(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
+@pytest.mark.filterwarnings(warning_str["hed_not_supported"])
 def test_handle_scans_reading_brainvision(tmp_path):
     """Test stability of BrainVision's different file extensions."""
     test_scan_eeg = OrderedDict(
@@ -1212,6 +1217,7 @@ def test_handle_eeg_coords_reading(tmp_path):
     assert raw_test.info["dig"] is None
 
 
+@pytest.mark.filterwarnings(warning_str["hed_not_supported"])
 def test_read_eeg_missing_coordsystem_warns(tmp_path):
     """EEG reads should warn, not fail, if electrodes.tsv lacks coordsystem."""
     bids_root = tmp_path / "tiny_bids_missing_coordsystem"
@@ -1245,6 +1251,7 @@ def test_read_eeg_missing_coordsystem_warns(tmp_path):
     assert raw.info["dig"] is None
 
 
+@pytest.mark.filterwarnings(warning_str["hed_not_supported"])
 def test_read_eeg_root_electrodes_no_coordsystem(tmp_path):
     """Root-level electrodes.tsv without coordsystem.json should not hard-fail."""
     bids_root = tmp_path / "tiny_bids_root_level_electrodes"
@@ -1863,6 +1870,7 @@ def test_file_not_found(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
+@pytest.mark.filterwarnings(warning_str["hed_not_supported"])
 def test_gsr_and_temp_reading():
     """Test GSR and temperature channels are handled correctly."""
     bids_path = BIDSPath(
@@ -2111,7 +2119,7 @@ def test_events_file_to_annotation_kwargs(tmp_path):
 def test_handle_events_reading_hed(tmp_path):
     """Test HEDAnnotations from column HED, sidecar HED, and fallbacks."""
     if not hasattr(mne, "HEDAnnotations"):
-        pytest.skip("HEDAnnotations requires a recent MNE-Python version")
+        pytest.skip("HEDAnnotations requires MNE-Python 1.12 or newer")
 
     bids_root = tmp_path / "tiny_bids"
     sh.copytree(tiny_bids_root, bids_root)
@@ -2192,3 +2200,32 @@ def test_assemble_hed_from_sidecar(tmp_path):
     assert "Sensory-event" in result[0] and "Item-interval/0" in result[0]
     assert result[1] == "Agent-action"
     assert _assemble_hed_from_sidecar(events_dict, None) is None
+
+
+def test_safe_iadd_preserves_hed():
+    """Test _safe_iadd_annotations preserves HED info in extras."""
+    if not hasattr(mne, "HEDAnnotations"):
+        pytest.skip("HEDAnnotations requires MNE-Python 1.12 or newer")
+
+    hed_annot = mne.HEDAnnotations(
+        onset=[0.0, 0.2],
+        duration=[0.0, 0.0],
+        description=["ev1", "ev2"],
+        hed_string=["Sensory-event", "Agent-action"],
+        hed_version="8.3.0",
+    )
+    regular_annot = mne.Annotations(
+        onset=[0.5], duration=[0.1], description=["BAD_ACQ_SKIP"]
+    )
+
+    result = _safe_iadd_annotations(hed_annot, regular_annot)
+    assert isinstance(result, mne.Annotations)
+    assert not isinstance(result, mne.HEDAnnotations)
+    assert len(result) == 3
+
+    # HED strings are preserved in extras
+    for i, desc in enumerate(result.description):
+        if desc == "ev1":
+            assert result.extras[i]["HED"] == "Sensory-event"
+        elif desc == "ev2":
+            assert result.extras[i]["HED"] == "Agent-action"
