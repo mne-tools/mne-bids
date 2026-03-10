@@ -2139,6 +2139,47 @@ def test_assemble_hed_from_sidecar(tmp_path):
     assert result[1] == "Agent-action"
     assert _assemble_hed_from_sidecar(events_dict, None) is None
 
+    # Bad JSON → None
+    bad_json = tmp_path / "bad.json"
+    bad_json.write_text("{invalid json")
+    assert _assemble_hed_from_sidecar(events_dict, bad_json) is None
+
+    # No HED keys in sidecar → None
+    no_hed_json = tmp_path / "no_hed.json"
+    no_hed_json.write_text(json.dumps({"trial_type": {"Description": "type"}}))
+    assert _assemble_hed_from_sidecar(events_dict, no_hed_json) is None
+
+    # Sidecar references a column not in events_dict → None (no matches)
+    missing_col_json = tmp_path / "missing_col.json"
+    missing_col_json.write_text(
+        json.dumps({"nonexistent_col": {"HED": {"a": "Tag-a"}}})
+    )
+    assert _assemble_hed_from_sidecar(events_dict, missing_col_json) is None
+
+
+def test_read_hed_version(tmp_path):
+    """Test _read_hed_version with various edge cases."""
+    from mne_bids.read import _read_hed_version
+
+    # bids_root is None → None
+    assert _read_hed_version(None) is None
+
+    # dataset_description.json does not exist → None
+    assert _read_hed_version(tmp_path) is None
+
+    # Valid file with HEDVersion
+    desc_path = tmp_path / "dataset_description.json"
+    desc_path.write_text(json.dumps({"Name": "test", "HEDVersion": "8.3.0"}))
+    assert _read_hed_version(tmp_path) == "8.3.0"
+
+    # Valid file without HEDVersion → None
+    desc_path.write_text(json.dumps({"Name": "test"}))
+    assert _read_hed_version(tmp_path) is None
+
+    # Bad JSON → None
+    desc_path.write_text("{invalid")
+    assert _read_hed_version(tmp_path) is None
+
 
 def test_safe_iadd_preserves_hed():
     """Test _safe_iadd_annotations preserves HED info in extras."""
