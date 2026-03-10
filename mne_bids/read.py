@@ -670,7 +670,28 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
     """  # noqa E501
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
+    result, _ = _make_annotation_kwargs(events_dict, events_fname)
+    return result
 
+
+def _make_annotation_kwargs(events_dict, events_fname=None):
+    """Process an events dict into annotation kwargs.
+
+    Parameters
+    ----------
+    events_dict : dict
+        Raw events dict as returned by ``_from_tsv``.
+    events_fname : str | Path | None
+        Path used only for warning messages.
+
+    Returns
+    -------
+    kwargs : dict
+        Annotation keyword arguments (onset, duration, description, etc.).
+    events_dict : dict
+        The filtered events dict (n/a rows dropped), suitable for reuse
+        by ``_assemble_hed_from_sidecar``.
+    """
     # drop events where onset is n/a; we can't annotate them and thus don't need entries
     # for them in event_id either
     events_dict = _drop(events_dict, "n/a", "onset")
@@ -784,7 +805,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
         "event_id": event_id,
         "extras": extras,
         "hed_strings": hed_strings,
-    }
+    }, events_dict
 
 
 def _assemble_hed_from_sidecar(events_dict, events_json_fname):
@@ -852,7 +873,10 @@ def _handle_events_reading(
     events_fname, raw, *, bids_root=None, events_json_fname=None
 ):
     """Read associated events.tsv and convert valid events to annotations on Raw."""
-    annotations_info = events_file_to_annotation_kwargs(events_fname)
+    events_dict = _from_tsv(events_fname)
+    annotations_info, filtered_events_dict = _make_annotation_kwargs(
+        events_dict, events_fname
+    )
     event_id = annotations_info["event_id"]
 
     # Add events as Annotations, but keep essential Annotations present in raw file
@@ -861,14 +885,9 @@ def _handle_events_reading(
     # Assemble HED: combine column HED (from events.tsv) with sidecar HED
     hed_strings = annotations_info.get("hed_strings")
     if events_json_fname is not None:
-        # Re-read the filtered events dict to look up sidecar HED
-        events_dict = _from_tsv(events_fname)
-        events_dict = _drop(events_dict, "n/a", "onset")
-        for col_name in ("trial_type", "stim_type", "value"):
-            if col_name in events_dict:
-                events_dict = _drop(events_dict, "n/a", col_name)
-                break
-        sidecar_hed = _assemble_hed_from_sidecar(events_dict, events_json_fname)
+        sidecar_hed = _assemble_hed_from_sidecar(
+            filtered_events_dict, events_json_fname
+        )
         if sidecar_hed is not None:
             if hed_strings is not None:
                 # BIDS spec: concatenate column HED with sidecar HED
@@ -883,7 +902,13 @@ def _handle_events_reading(
     # Try to create HEDAnnotations if HED data is present
     if hed_strings is not None and hasattr(mne, "HEDAnnotations"):
         if all(s and s != "n/a" for s in hed_strings):
-            hed_version = _read_hed_version(bids_root) or _DEFAULT_HED_VERSION
+            hed_version = _read_hed_version(bids_root)
+            if hed_version is None:
+                hed_version = _DEFAULT_HED_VERSION
+                logger.info(
+                    "HEDVersion not found in dataset_description.json, "
+                    f"defaulting to {_DEFAULT_HED_VERSION}."
+                )
             try:
                 annot_from_events = mne.HEDAnnotations(
                     onset=annotations_info["onset"],
