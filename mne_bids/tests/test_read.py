@@ -2092,3 +2092,103 @@ def test_events_file_to_annotation_kwargs(tmp_path):
         np.sort(np.unique(ev_kwargs_default["description"])),
         np.sort(dext_f["value"].unique()),
     )
+
+    # ---------------- HED column separated from extras ----------------------
+    df_hed = df.copy()
+    df_hed["HED"] = ["Experiment-structure", "Sensory-event, Visual-presentation"]
+    df_hed.to_csv(tmp_tsv_file, sep="\t", index=False)
+
+    ev_kwargs_hed = events_file_to_annotation_kwargs(events_fname=tmp_tsv_file)
+    assert ev_kwargs_hed["hed_strings"] == [
+        "Experiment-structure",
+        "Sensory-event, Visual-presentation",
+    ]
+    if ev_kwargs_hed["extras"] is not None:
+        for extra in ev_kwargs_hed["extras"]:
+            assert "HED" not in extra
+
+
+def test_handle_events_reading_hed(tmp_path):
+    """Test HEDAnnotations from column HED, sidecar HED, and fallbacks."""
+    if not hasattr(mne, "HEDAnnotations"):
+        pytest.skip("HEDAnnotations requires a recent MNE-Python version")
+
+    bids_root = tmp_path / "tiny_bids"
+    sh.copytree(tiny_bids_root, bids_root)
+    eeg_dir = bids_root / "sub-01" / "ses-eeg" / "eeg"
+    events_tsv = eeg_dir / "sub-01_ses-eeg_task-rest_events.tsv"
+    events_json = eeg_dir / "sub-01_ses-eeg_task-rest_events.json"
+    info = mne.create_info(ch_names=["EEG1"], sfreq=5000.0, ch_types=["eeg"])
+    raw = mne.io.RawArray(np.zeros((1, 10000)), info)
+    hed_tags = ["Experiment-structure", "Sensory-event, Visual-presentation"]
+
+    # Sidecar HED (fixture already has HED in events.json + HEDVersion)
+    raw_sb, _ = _handle_events_reading(
+        events_tsv, raw.copy(), bids_root=bids_root, events_json_fname=events_json
+    )
+    assert isinstance(raw_sb.annotations, mne.HEDAnnotations)
+    assert list(raw_sb.annotations.hed_string) == hed_tags
+    assert raw_sb.annotations._hed_version == "8.3.0"
+
+    # Column HED
+    df = pd.read_csv(events_tsv, sep="\t")
+    df["HED"] = hed_tags
+    df.to_csv(events_tsv, sep="\t", index=False)
+    raw_col, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
+    assert isinstance(raw_col.annotations, mne.HEDAnnotations)
+    assert list(raw_col.annotations.hed_string) == hed_tags
+
+    # Default version when HEDVersion missing
+    from mne_bids.read import _DEFAULT_HED_VERSION
+
+    desc_path = bids_root / "dataset_description.json"
+    desc = json.loads(desc_path.read_text())
+    desc.pop("HEDVersion")
+    desc_path.write_text(json.dumps(desc))
+    raw_def, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
+    assert raw_def.annotations._hed_version == _DEFAULT_HED_VERSION
+
+    # Fallback to regular Annotations when HED has n/a
+    df.loc[0, "HED"] = "n/a"
+    df.to_csv(events_tsv, sep="\t", index=False)
+    with pytest.warns(RuntimeWarning, match="n/a"):
+        raw_na, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
+    assert not isinstance(raw_na.annotations, mne.HEDAnnotations)
+
+
+def test_assemble_hed_from_sidecar(tmp_path):
+    """Test HED assembly from JSON sidecar (categorical + template)."""
+    from mne_bids.read import _assemble_hed_from_sidecar
+    from mne_bids.tsv_handler import _drop, _from_tsv
+
+    tsv_file = tmp_path / "events.tsv"
+    pd.DataFrame(
+        {
+            "onset": [0.0, 1.0],
+            "duration": [0.0, 0.0],
+            "trial_type": ["show_face", "left_press"],
+            "value": [1, 2],
+            "sample": [0, 100],
+            "rep_lag": [0, "n/a"],
+        }
+    ).to_csv(tsv_file, sep="\t", index=False)
+
+    json_file = tmp_path / "events.json"
+    json_file.write_text(
+        json.dumps(
+            {
+                "trial_type": {
+                    "HED": {"show_face": "Sensory-event", "left_press": "Agent-action"}
+                },
+                "rep_lag": {"HED": "Item-interval/#"},
+            }
+        )
+    )
+
+    events_dict = _from_tsv(tsv_file)
+    events_dict = _drop(events_dict, "n/a", "onset")
+    result = _assemble_hed_from_sidecar(events_dict, json_file)
+
+    assert "Sensory-event" in result[0] and "Item-interval/0" in result[0]
+    assert result[1] == "Agent-action"
+    assert _assemble_hed_from_sidecar(events_dict, None) is None
