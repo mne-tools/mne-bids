@@ -126,12 +126,24 @@ def _safe_iadd_annotations(annotations, new_annotations):
         annotations += new_annotations
     except TypeError:
         # HEDAnnotations can't merge with regular Annotations.
-        # Convert to regular Annotations to allow merge.
+        # Convert to regular Annotations, preserving HED strings in extras.
+        extras = getattr(annotations, "extras", None)
+        if extras is not None and len(extras) > 0:
+            extras = [dict(d) for d in extras]
+        else:
+            extras = [{} for _ in range(len(annotations))]
+
+        hed_string = getattr(annotations, "hed_string", None)
+        if hed_string is not None:
+            for i, hs in enumerate(hed_string):
+                extras[i]["HED"] = str(hs)
+
         annotations = mne.Annotations(
             onset=annotations.onset,
             duration=annotations.duration,
             description=annotations.description,
             orig_time=annotations.orig_time,
+            extras=extras if any(d for d in extras) else None,
         )
         annotations += new_annotations
     return annotations
@@ -653,7 +665,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
     >>> # Read the events file using the function
     >>> events_dict = events_file_to_annotation_kwargs(events_file, verbose=False)
     >>> events_dict
-    {'onset': array([0.1, 0.2, 0.3]), 'duration': array([0.1, 0.1, 0.1]), 'description': array(['event1', 'event2', 'event1'], dtype='<U6'), 'event_id': {'event1': 1, 'event2': 2}, 'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}]}
+    {'onset': array([0.1, 0.2, 0.3]), 'duration': array([0.1, 0.1, 0.1]), 'description': array(['event1', 'event2', 'event1'], dtype='<U6'), 'event_id': {'event1': 1, 'event2': 2}, 'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}], 'hed_strings': None}
 
     """  # noqa E501
     logger.info(f"Reading events from {events_fname}.")
