@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Read BIDS datasets &#8212; MNE-BIDS 0.19.0.dev24+g1ceb53f07 documentation</title>
+    <title>Read BIDS datasets &#8212; MNE-BIDS 0.19.0.dev25+g8e52e3ee4 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=372f0fca"></script>
+    <script src="../_static/documentation_options.js?v=bbc577e3"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev24+g1ceb53f07" />
+  <meta name="docsearch:version" content="0.19.0.dev25+g8e52e3ee4" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev24+g1ceb53f07 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev25+g8e52e3ee4 documentation</p>
   
 </a></div>
     
@@ -572,9 +572,7 @@ run the example.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for sample...
-Attempting to create new mne-python configuration file:
-/home/circleci/.mne/mne-python.json
-Could not read the /home/circleci/.mne/mne-python.json json file during the writing. Assuming it is empty. Got: Expecting value: line 1 column 1 (char 0)
+Creating /home/circleci/mne_data
 
 👋 Hello! This is openneuro-py 2026.3.0. Great to see you! 🤗
 
@@ -584,101 +582,91 @@ Could not read the /home/circleci/.mne/mne-python.json json file during the writ
 🌍 Preparing to download ds002778 …
 
 📁 Traversing directories for ds002778 : 0 entities [00:00, ? entities/s]
-📁 Traversing directories for ds002778 : 7 entities [00:00, 20.25 entities/s]
-📁 Traversing directories for ds002778 : 10 entities [00:00, 11.68 entities/s]
-📁 Traversing directories for ds002778 : 14 entities [00:01, 13.71 entities/s]
-📁 Traversing directories for ds002778 : 16 entities [00:01, 12.15 entities/s]
-📁 Traversing directories for ds002778 : 18 entities [00:01, 11.21 entities/s]
-📁 Traversing directories for ds002778 : 20 entities [00:01, 13.80 entities/s]
+📁 Traversing directories for ds002778 : 7 entities [00:00, 20.47 entities/s]
+📁 Traversing directories for ds002778 : 10 entities [00:00, 12.21 entities/s]
+📁 Traversing directories for ds002778 : 14 entities [00:00, 14.72 entities/s]
+📁 Traversing directories for ds002778 : 16 entities [00:01, 13.31 entities/s]
+📁 Traversing directories for ds002778 : 18 entities [00:01, 12.49 entities/s]
+📁 Traversing directories for ds002778 : 20 entities [00:01, 15.00 entities/s]
 📥 Retrieving up to 19 files (5 concurrent downloads).
 
-dataset_description.json:   0%|          | 0.00/354 [00:00&lt;?, ?B/s]
+participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s]
+
 
 README:   0%|          | 0.00/4.55k [00:00&lt;?, ?B/s]
 
-
 CHANGES:   0%|          | 0.00/379 [00:00&lt;?, ?B/s]
+
 
 
 
 participants.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
 
 
-participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s]
-
-
-sub-pd6_ses-off_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
-
-
-sub-pd6_ses-off_task-rest_eeg.bdf:   0%|          | 0.00/11.5M [00:00&lt;?, ?B/s]
-
 sub-pd6_ses-off_scans.tsv:   0%|          | 0.00/75.0 [00:00&lt;?, ?B/s]
-
 
 
 sub-pd6_ses-off_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
 
 
-sub-pd6_ses-off_task-rest_eeg.bdf:   1%|          | 83.6k/11.5M [00:00&lt;00:18, 647kB/s]
-
-sub-pd6_ses-off_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
+dataset_description.json:   0%|          | 0.00/354 [00:00&lt;?, ?B/s]
 
 
+sub-pd6_ses-off_task-rest_eeg.bdf:   0%|          | 0.00/11.5M [00:00&lt;?, ?B/s]
+
+sub-pd6_ses-off_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
+
+
+sub-pd6_ses-off_task-rest_eeg.bdf:   2%|▏         | 190k/11.5M [00:00&lt;00:06, 1.93MB/s]
 
 sub-pd6_ses-off_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
 
 
-sub-pd6_ses-on_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
-
-
+sub-pd6_ses-off_task-rest_eeg.bdf:  26%|██▌       | 2.97M/11.5M [00:00&lt;00:00, 17.1MB/s]
 
 sub-pd6_ses-on_scans.tsv:   0%|          | 0.00/74.0 [00:00&lt;?, ?B/s]
 
 
+sub-pd6_ses-off_task-rest_eeg.bdf:  44%|████▍     | 5.10M/11.5M [00:00&lt;00:00, 19.4MB/s]
 
-
-
-sub-pd6_ses-off_task-rest_eeg.bdf:  13%|█▎        | 1.44M/11.5M [00:00&lt;00:01, 6.56MB/s]
-sub-pd6_ses-off_task-rest_eeg.bdf:  18%|█▊        | 2.06M/11.5M [00:00&lt;00:01, 6.43MB/s]
-
-sub-pd6_ses-on_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
+sub-pd6_ses-on_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
 
 
 
 sub-pd6_ses-off_task-rest_events.tsv:   0%|          | 0.00/66.0 [00:00&lt;?, ?B/s]
 
 
-sub-pd6_ses-off_task-rest_eeg.bdf:  56%|█████▌    | 6.41M/11.5M [00:00&lt;00:00, 19.7MB/s]
+
+sub-pd6_ses-off_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
+
+
 
 sub-pd6_ses-on_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
 
 
-sub-pd6_ses-on_task-rest_eeg.bdf:   0%|          | 0.00/17.4M [00:00&lt;?, ?B/s]
+
+sub-pd6_ses-on_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
 
 
-sub-pd6_ses-off_task-rest_eeg.bdf:  73%|███████▎  | 8.38M/11.5M [00:00&lt;00:00, 19.6MB/s]
+sub-pd6_ses-off_task-rest_eeg.bdf:  60%|██████    | 6.94M/11.5M [00:00&lt;00:00, 12.7MB/s]
 
 sub-pd6_ses-on_task-rest_events.tsv:   0%|          | 0.00/51.0 [00:00&lt;?, ?B/s]
 
+
+
+sub-pd6_ses-on_task-rest_eeg.bdf:   0%|          | 0.00/17.4M [00:00&lt;?, ?B/s]
 
 
 sub-pd6_ses-on_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
 
 
 
-
-sub-pd6_ses-on_task-rest_eeg.bdf:  10%|▉         | 1.69M/17.4M [00:00&lt;00:00, 17.7MB/s]
-
+sub-pd6_ses-off_task-rest_eeg.bdf:  93%|█████████▎| 10.7M/11.5M [00:00&lt;00:00, 19.7MB/s]
 
 
-sub-pd6_ses-on_task-rest_eeg.bdf:  27%|██▋       | 4.73M/17.4M [00:00&lt;00:00, 26.0MB/s]
+sub-pd6_ses-on_task-rest_eeg.bdf:  23%|██▎       | 3.98M/17.4M [00:00&lt;00:00, 41.7MB/s]
 
-
-sub-pd6_ses-on_task-rest_eeg.bdf:  52%|█████▏    | 9.01M/17.4M [00:00&lt;00:00, 34.6MB/s]
-
-
-sub-pd6_ses-on_task-rest_eeg.bdf:  76%|███████▋  | 13.3M/17.4M [00:00&lt;00:00, 38.6MB/s]
-
+sub-pd6_ses-on_task-rest_eeg.bdf:  65%|██████▍   | 11.2M/17.4M [00:00&lt;00:00, 61.8MB/s]
 
                                                                                       ✅ Finished downloading ds002778.
 
@@ -729,8 +717,8 @@ on the dataset contents.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Summarizing participants.tsv /home/circleci/mne_data/ds002778/participants.tsv...
-Summarizing scans.tsv files [PosixPath(&#39;/home/circleci/mne_data/ds002778/sub-pd6/ses-off/sub-pd6_ses-off_scans.tsv&#39;), PosixPath(&#39;/home/circleci/mne_data/ds002778/sub-pd6/ses-on/sub-pd6_ses-on_scans.tsv&#39;)]...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Summarizing participants.tsv ds002778/participants.tsv...
+Summarizing scans.tsv files [PosixPath(&#39;ds002778/sub-pd6/ses-off/sub-pd6_ses-off_scans.tsv&#39;), PosixPath(&#39;ds002778/sub-pd6/ses-on/sub-pd6_ses-on_scans.tsv&#39;)]...
 The participant template found: comprised of 14 male and 17 female participants;
 comprised of 31 right hand, 0 left hand and 0 ambidextrous;
 ages ranged from 47.0 to 82.0 (mean = 63.39, std = 8.69)
@@ -770,13 +758,13 @@ not interested in the on-medication session.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[BIDSPath(
-root: /home/circleci/mne_data/ds002778
+root: ds002778
 datatype: eeg
 basename: sub-pd6_ses-off_task-rest_channels.tsv), BIDSPath(
-root: /home/circleci/mne_data/ds002778
+root: ds002778
 datatype: eeg
 basename: sub-pd6_ses-off_task-rest_eeg.bdf), BIDSPath(
-root: /home/circleci/mne_data/ds002778
+root: ds002778
 datatype: eeg
 basename: sub-pd6_ses-off_task-rest_events.tsv)]
 </pre></div>
@@ -788,13 +776,13 @@ basename: sub-pd6_ses-off_task-rest_events.tsv)]
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[BIDSPath(
-root: /home/circleci/mne_data/ds002778
+root: ds002778
 datatype: eeg
 basename: sub-pd6_ses-off_task-rest_channels.tsv), BIDSPath(
-root: /home/circleci/mne_data/ds002778
+root: ds002778
 datatype: eeg
 basename: sub-pd6_ses-off_task-rest_eeg.bdf), BIDSPath(
-root: /home/circleci/mne_data/ds002778
+root: ds002778
 datatype: eeg
 basename: sub-pd6_ses-off_task-rest_events.tsv)]
 </pre></div>
@@ -826,7 +814,7 @@ suffix is identical to the data type, so don’t get confused here!</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/mne_data/ds002778/sub-pd6/ses-off/eeg/sub-pd6_ses-off_task-rest_eeg.bdf
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>ds002778/sub-pd6/ses-off/eeg/sub-pd6_ses-off_task-rest_eeg.bdf
 </pre></div>
 </div>
 <p>You probably noticed two things: Firstly, this looks like an ordinary string
@@ -842,7 +830,7 @@ output:</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BIDSPath(
-root: /home/circleci/mne_data/ds002778
+root: ds002778
 datatype: eeg
 basename: sub-pd6_ses-off_task-rest_eeg)
 </pre></div>
@@ -924,7 +912,7 @@ ignore this warning as it does not affect the data reading process at all.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.193 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.929 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/07841a9269d1816a3add41f32d8a5ed2/read_bids_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">read_bids_datasets.ipynb</span></code></a></p>
@@ -1020,7 +1008,7 @@ ignore this warning as it does not affect the data reading process at all.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-03-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-03-11.
       <br/>
     
   </p>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev24+g1ceb53f07 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev25+g8e52e3ee4 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=372f0fca"></script>
+    <script src="_static/documentation_options.js?v=bbc577e3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev24+g1ceb53f07" />
+  <meta name="docsearch:version" content="0.19.0.dev25+g8e52e3ee4" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev24+g1ceb53f07 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev25+g8e52e3ee4 documentation</p>
   
 </a></div>
     
@@ -532,6 +532,7 @@
 <li><p>Reinstate the requirement for <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code> whenever <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> is present (including EMG), by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1508">#1508</a>)</p></li>
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a> ignoring <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> when <code class="docutils literal notranslate"><span class="pre">EEGCoordinateUnits</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;n/a&quot;</span></code> by inferring the unit from coordinate magnitudes, and synthesize approximate fiducials for <code class="docutils literal notranslate"><span class="pre">ctf_head</span></code> montages to enable the coordinate transform to <code class="docutils literal notranslate"><span class="pre">head</span></code> frame, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1506">#1506</a>)</p></li>
 <li><p>Improve <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> handling when <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> exists without <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code>: keep strict failure for iEEG, and for EEG/MEG emit a warning and continue without applying a montage, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a></p></li>
+<li><p>Allow <code class="docutils literal notranslate"><span class="pre">task=None</span></code> in <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> for BIDS paths without a task entity (e.g. datasets that omit task in the path), by <a class="reference external" href="https://github.com/AmanJaiswal1503">Aman Jaiswal</a></p></li>
 </ul>
 </section>
 <section id="code-health">
@@ -632,7 +633,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-03-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-03-11.
       <br/>
     
   </p>
