@@ -1043,12 +1043,20 @@ def read_raw_bids(
             '"bids_path" must be a BIDSPath object. Please '
             "instantiate using mne_bids.BIDSPath()."
         )
-    for required in ["root", "subject", "task"]:
+    for required in ["root", "subject"]:
         if not getattr(bids_path, required):
             raise RuntimeError(
-                '"bids_path" must contain `root`, `subject`, and `task` '
+                '"bids_path" must contain `root` and `subject` '
                 f"attributes but it's missing `{required}`."
             )
+
+    if bids_path.task is None:
+        warn(
+            "bids_path has no task entity. The BIDS specification requires "
+            "the task entity for M/EEG data; this path may refer to a "
+            "legacy or non-compliant dataset.",
+            UserWarning,
+        )
 
     bids_path = bids_path.copy()
     sub = bids_path.subject
@@ -1156,12 +1164,10 @@ def read_raw_bids(
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    if (
-        bids_path.subject == "emptyroom" and bids_path.task == "noise"
-    ) or bids_path.task.startswith("rest"):
-        on_error = "ignore"
-    else:
-        on_error = "warn"
+    is_emptyroom = bids_path.subject == "emptyroom" and bids_path.task == "noise"
+    is_rest = bids_path.task is not None and bids_path.task.startswith("rest")
+
+    on_error = "ignore" if is_emptyroom or is_rest else "warn"
 
     events_fname = _find_matching_sidecar(
         bids_path, suffix="events", extension=".tsv", on_error=on_error
