@@ -17,7 +17,7 @@ from mne.utils import logger, verbose
 from mne.utils import warn as _warn
 
 from mne_bids._fileio import _open_lock
-from mne_bids.config import ENCODING_OUT
+from mne_bids.config import ENCODINGS
 from mne_bids.tsv_handler import _to_tsv
 
 # This regex matches key-val pairs. Any characters are allowed in the key and
@@ -237,9 +237,8 @@ def _write_json(fname, dictionary, overwrite=False):
             f'"{fname}" already exists. Please set overwrite to True.'
         )
 
-    json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
-    with _open_lock(fname, "w", encoding="utf-8") as fid:
-        fid.write(json_output)
+    with _open_lock(fname, "w", encoding=ENCODINGS.JSON) as fid:
+        json.dump(dictionary, fid, indent=4, ensure_ascii=False)
         fid.write("\n")
 
     logger.info(f"Writing '{fname}'...")
@@ -264,7 +263,7 @@ def _write_text(fname, text, overwrite=False):
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    with _open_lock(fname, "w", encoding=ENCODING_OUT) as fid:
+    with _open_lock(fname, "w", encoding=ENCODINGS.TSV_WRITE) as fid:
         fid.write(text)
         fid.write("\n")
 
@@ -541,8 +540,9 @@ def _example_sorter(filename):
     function is defined here (instead of in `conf.py`) because it must be *importable*
     in order for the sphinx gallery config dict in `conf.py` to remain serializable.
     """
+    root = Path(__file__).parents[1]
     with _open_lock(
-        Path(__file__).parents[1] / "doc" / "example_order.json", encoding="utf-8"
+        root / "doc" / "example_order.json", encoding=ENCODINGS.JSON
     ) as fid:
         EXAMPLE_ORDER = json.load(fid)
 
