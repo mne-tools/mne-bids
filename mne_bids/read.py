@@ -1164,12 +1164,10 @@ def read_raw_bids(
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    if (bids_path.subject == "emptyroom" and bids_path.task == "noise") or (
-        bids_path.task is not None and bids_path.task.startswith("rest")
-    ):
-        on_error = "ignore"
-    else:
-        on_error = "warn"
+    is_emptyroom = bids_path.subject == "emptyroom" and bids_path.task == "noise"
+    is_rest = bids_path.task is not None and bids_path.task.startswith("rest")
+
+    on_error = "ignore" if is_emptyroom or is_rest else "warn"
 
     events_fname = _find_matching_sidecar(
         bids_path, suffix="events", extension=".tsv", on_error=on_error
