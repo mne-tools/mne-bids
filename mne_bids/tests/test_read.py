@@ -38,6 +38,7 @@ from mne_bids.read import (
     _handle_events_reading,
     _handle_scans_reading,
     _read_raw,
+    _safe_iadd_annotations,
     events_file_to_annotation_kwargs,
     get_head_mri_trans,
     read_raw_bids,
@@ -2092,3 +2093,203 @@ def test_events_file_to_annotation_kwargs(tmp_path):
         np.sort(np.unique(ev_kwargs_default["description"])),
         np.sort(dext_f["value"].unique()),
     )
+
+    # ---------------- HED column separated from extras ----------------------
+    df_hed = df.copy()
+    df_hed["HED"] = ["Experiment-structure", "Sensory-event, Visual-presentation"]
+    df_hed.to_csv(tmp_tsv_file, sep="\t", index=False)
+
+    ev_kwargs_hed = events_file_to_annotation_kwargs(events_fname=tmp_tsv_file)
+    assert ev_kwargs_hed["hed_strings"] == [
+        "Experiment-structure",
+        "Sensory-event, Visual-presentation",
+    ]
+    if ev_kwargs_hed["extras"] is not None:
+        for extra in ev_kwargs_hed["extras"]:
+            assert "HED" not in extra
+
+
+def test_handle_events_reading_hed(tmp_path):
+    """Test HEDAnnotations from column HED, sidecar HED, and fallbacks."""
+    if not hasattr(mne, "HEDAnnotations"):
+        pytest.skip("HEDAnnotations requires MNE-Python 1.12 or newer")
+    pytest.importorskip("hed")
+
+    bids_root = tmp_path / "tiny_bids"
+    sh.copytree(tiny_bids_root, bids_root)
+    eeg_dir = bids_root / "sub-01" / "ses-eeg" / "eeg"
+    events_tsv = eeg_dir / "sub-01_ses-eeg_task-rest_events.tsv"
+    events_json = eeg_dir / "sub-01_ses-eeg_task-rest_events.json"
+    info = mne.create_info(ch_names=["EEG1"], sfreq=5000.0, ch_types=["eeg"])
+    raw = mne.io.RawArray(np.zeros((1, 10000)), info)
+    hed_tags = ["Experiment-structure", "Sensory-event, Visual-presentation"]
+
+    # Sidecar HED (fixture already has HED in events.json + HEDVersion)
+    raw_sb, _ = _handle_events_reading(
+        events_tsv, raw.copy(), bids_root=bids_root, events_json_fname=events_json
+    )
+    assert isinstance(raw_sb.annotations, mne.HEDAnnotations)
+    assert list(raw_sb.annotations.hed_string) == hed_tags
+    assert raw_sb.annotations._hed_version == "8.3.0"
+
+    # Column HED
+    df = pd.read_csv(events_tsv, sep="\t")
+    df["HED"] = hed_tags
+    df.to_csv(events_tsv, sep="\t", index=False)
+    raw_col, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
+    assert isinstance(raw_col.annotations, mne.HEDAnnotations)
+    assert list(raw_col.annotations.hed_string) == hed_tags
+
+    # Default version when HEDVersion missing
+    from mne_bids.read import _DEFAULT_HED_VERSION
+
+    desc_path = bids_root / "dataset_description.json"
+    desc = json.loads(desc_path.read_text())
+    desc.pop("HEDVersion")
+    desc_path.write_text(json.dumps(desc))
+    raw_def, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
+    assert raw_def.annotations._hed_version == _DEFAULT_HED_VERSION
+
+    # Fallback to regular Annotations when HED has n/a
+    df.loc[0, "HED"] = "n/a"
+    df.to_csv(events_tsv, sep="\t", index=False)
+    with pytest.warns(RuntimeWarning, match="n/a"):
+        raw_na, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
+    assert not isinstance(raw_na.annotations, mne.HEDAnnotations)
+
+
+def test_assemble_hed_from_sidecar(tmp_path):
+    """Test HED assembly from JSON sidecar (categorical + template)."""
+    from mne_bids.read import _assemble_hed_from_sidecar
+    from mne_bids.tsv_handler import _drop, _from_tsv
+
+    tsv_file = tmp_path / "events.tsv"
+    pd.DataFrame(
+        {
+            "onset": [0.0, 1.0],
+            "duration": [0.0, 0.0],
+            "trial_type": ["show_face", "left_press"],
+            "value": [1, 2],
+            "sample": [0, 100],
+            "rep_lag": [0, "n/a"],
+        }
+    ).to_csv(tsv_file, sep="\t", index=False)
+
+    json_file = tmp_path / "events.json"
+    json_file.write_text(
+        json.dumps(
+            {
+                "trial_type": {
+                    "HED": {"show_face": "Sensory-event", "left_press": "Agent-action"}
+                },
+                "rep_lag": {"HED": "Item-interval/#"},
+            }
+        )
+    )
+
+    events_dict = _from_tsv(tsv_file)
+    events_dict = _drop(events_dict, "n/a", "onset")
+    result = _assemble_hed_from_sidecar(events_dict, json_file)
+
+    assert "Sensory-event" in result[0] and "Item-interval/0" in result[0]
+    assert result[1] == "Agent-action"
+
+
+@pytest.mark.parametrize(
+    "json_content",
+    [
+        pytest.param(None, id="none_fname"),
+        pytest.param("{invalid json", id="bad_json"),
+        pytest.param(
+            json.dumps({"trial_type": {"Description": "type"}}),
+            id="no_hed_keys",
+        ),
+        pytest.param(
+            json.dumps({"nonexistent_col": {"HED": {"a": "Tag-a"}}}),
+            id="missing_column",
+        ),
+    ],
+)
+def test_assemble_hed_from_sidecar_returns_none(tmp_path, json_content):
+    """Test _assemble_hed_from_sidecar returns None for invalid inputs."""
+    from mne_bids.read import _assemble_hed_from_sidecar
+    from mne_bids.tsv_handler import _from_tsv
+
+    tsv_file = tmp_path / "events.tsv"
+    pd.DataFrame({"onset": [0.0], "duration": [0.0], "trial_type": ["ev1"]}).to_csv(
+        tsv_file, sep="\t", index=False
+    )
+    events_dict = _from_tsv(tsv_file)
+
+    if json_content is None:
+        json_fname = None
+    else:
+        json_fname = tmp_path / "events.json"
+        json_fname.write_text(json_content)
+
+    assert _assemble_hed_from_sidecar(events_dict, json_fname) is None
+
+
+@pytest.mark.parametrize(
+    "desc_content, expected",
+    [
+        pytest.param(
+            json.dumps({"Name": "test", "HEDVersion": "8.3.0"}),
+            "8.3.0",
+            id="has_version",
+        ),
+        pytest.param(json.dumps({"Name": "test"}), None, id="no_version_key"),
+        pytest.param("{invalid", None, id="bad_json"),
+    ],
+)
+def test_read_hed_version(tmp_path, desc_content, expected):
+    """Test _read_hed_version reads HEDVersion from dataset_description."""
+    from mne_bids.read import _read_hed_version
+
+    desc_path = tmp_path / "dataset_description.json"
+    desc_path.write_text(desc_content)
+    assert _read_hed_version(tmp_path) == expected
+
+
+@pytest.mark.parametrize(
+    "bids_root",
+    [
+        pytest.param(None, id="none_root"),
+        pytest.param("/nonexistent/path", id="missing_file"),
+    ],
+)
+def test_read_hed_version_returns_none(bids_root):
+    """Test _read_hed_version returns None when root or file is missing."""
+    from mne_bids.read import _read_hed_version
+
+    assert _read_hed_version(bids_root) is None
+
+
+def test_safe_iadd_preserves_hed():
+    """Test _safe_iadd_annotations preserves HED info in extras."""
+    if not hasattr(mne, "HEDAnnotations"):
+        pytest.skip("HEDAnnotations requires MNE-Python 1.12 or newer")
+    pytest.importorskip("hed")
+
+    hed_annot = mne.HEDAnnotations(
+        onset=[0.0, 0.2],
+        duration=[0.0, 0.0],
+        description=["ev1", "ev2"],
+        hed_string=["Sensory-event", "Agent-action"],
+        hed_version="8.3.0",
+    )
+    regular_annot = mne.Annotations(
+        onset=[0.5], duration=[0.1], description=["BAD_ACQ_SKIP"]
+    )
+
+    result = _safe_iadd_annotations(hed_annot, regular_annot)
+    assert isinstance(result, mne.Annotations)
+    assert not isinstance(result, mne.HEDAnnotations)
+    assert len(result) == 3
+
+    # HED strings are preserved in extras
+    extras_by_desc = {
+        desc: result.extras[i] for i, desc in enumerate(result.description)
+    }
+    assert extras_by_desc["ev1"]["HED"] == "Sensory-event"
+    assert extras_by_desc["ev2"]["HED"] == "Agent-action"

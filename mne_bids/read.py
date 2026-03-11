@@ -37,6 +37,8 @@ from mne_bids.path import (
 from mne_bids.tsv_handler import _drop, _from_tsv
 from mne_bids.utils import _get_ch_type_mapping, _import_nibabel, verbose, warn
 
+_DEFAULT_HED_VERSION = "8.3.0"
+
 
 @verbose
 def _read_raw(
@@ -116,6 +118,35 @@ def _read_raw(
             f"Got {ext}"
         )
     return raw
+
+
+def _safe_iadd_annotations(annotations, new_annotations):
+    """Merge annotations, converting HEDAnnotations to regular if needed."""
+    try:
+        annotations += new_annotations
+    except TypeError:
+        # HEDAnnotations can't merge with regular Annotations.
+        # Convert to regular Annotations, preserving HED strings in extras.
+        extras = getattr(annotations, "extras", None)
+        if extras is not None and len(extras) > 0:
+            extras = [dict(d) for d in extras]
+        else:
+            extras = [{} for _ in range(len(annotations))]
+
+        hed_string = getattr(annotations, "hed_string", None)
+        if hed_string is not None:
+            for i, hs in enumerate(hed_string):
+                extras[i]["HED"] = str(hs)
+
+        annotations = mne.Annotations(
+            onset=annotations.onset,
+            duration=annotations.duration,
+            description=annotations.description,
+            orig_time=annotations.orig_time,
+            extras=extras if any(extras) else None,
+        )
+        annotations += new_annotations
+    return annotations
 
 
 def _read_events(events, event_id, raw, bids_path=None):
@@ -226,7 +257,7 @@ def _read_events(events, event_id, raw, bids_path=None):
 
         # We use `+=` here because `Annotations.__iadd__()` does the right
         # thing and also performs a sanity check on `Annotations.orig_time`.
-        annotations += new_annotations
+        annotations = _safe_iadd_annotations(annotations, new_annotations)
         raw.set_annotations(annotations)
         del id_to_desc_map, annotations, new_annotations
 
@@ -242,7 +273,7 @@ def _read_events(events, event_id, raw, bids_path=None):
 
         # We use `+=` here because `Annotations.__iadd__()` does the right
         # thing and also performs a sanity check on `Annotations.orig_time`.
-        annotations += new_annotations
+        annotations = _safe_iadd_annotations(annotations, new_annotations)
         raw.set_annotations(annotations)
         del annotations, new_annotations
 
@@ -634,12 +665,33 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
     >>> # Read the events file using the function
     >>> events_dict = events_file_to_annotation_kwargs(events_file, verbose=False)
     >>> events_dict
-    {'onset': array([0.1, 0.2, 0.3]), 'duration': array([0.1, 0.1, 0.1]), 'description': array(['event1', 'event2', 'event1'], dtype='<U6'), 'event_id': {'event1': 1, 'event2': 2}, 'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}]}
+    {'onset': array([0.1, 0.2, 0.3]), 'duration': array([0.1, 0.1, 0.1]), 'description': array(['event1', 'event2', 'event1'], dtype='<U6'), 'event_id': {'event1': 1, 'event2': 2}, 'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}], 'hed_strings': None}
 
     """  # noqa E501
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
+    result, _ = _make_annotation_kwargs(events_dict, events_fname)
+    return result
 
+
+def _make_annotation_kwargs(events_dict, events_fname=None):
+    """Process an events dict into annotation kwargs.
+
+    Parameters
+    ----------
+    events_dict : dict
+        Raw events dict as returned by ``_from_tsv``.
+    events_fname : str | Path | None
+        Path used only for warning messages.
+
+    Returns
+    -------
+    kwargs : dict
+        Annotation keyword arguments (onset, duration, description, etc.).
+    events_dict : dict
+        The filtered events dict (n/a rows dropped), suitable for reuse
+        by ``_assemble_hed_from_sidecar``.
+    """
     # drop events where onset is n/a; we can't annotate them and thus don't need entries
     # for them in event_id either
     events_dict = _drop(events_dict, "n/a", "onset")
@@ -725,6 +777,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
             "trial_type",
             "stim_type",
             "sample",
+            "HED",
         }
     )
     if extra_columns:
@@ -743,45 +796,170 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
                 for values in zip(*[events_dict[col] for col in extra_columns])
             ]
 
+    hed_strings = events_dict.get("HED")
+
     return {
         "onset": ons,
         "duration": durs,
         "description": descrs,
         "event_id": event_id,
         "extras": extras,
-    }
+        "hed_strings": hed_strings,
+    }, events_dict
 
 
-def _handle_events_reading(events_fname, raw):
+def _assemble_hed_from_sidecar(events_dict, events_json_fname):
+    """Assemble per-row HED strings from column annotations in events.json."""
+    if events_json_fname is None:
+        return None
+
+    try:
+        with open(events_json_fname, encoding="utf-8-sig") as f:
+            sidecar = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return None
+
+    # Collect columns that have HED annotations in the sidecar
+    hed_columns = {}
+    for col, meta in sidecar.items():
+        if isinstance(meta, dict) and "HED" in meta:
+            hed_columns[col] = meta["HED"]
+
+    if not hed_columns:
+        return None
+
+    n_rows = len(events_dict["onset"])
+    per_row_tags = [[] for _ in range(n_rows)]
+
+    for col, hed_spec in hed_columns.items():
+        if col not in events_dict:
+            continue
+        col_values = events_dict[col]
+
+        for i, val in enumerate(col_values):
+            val_str = str(val)
+            if val_str == "n/a":
+                continue
+
+            if isinstance(hed_spec, dict):
+                # Categorical: {"famous_face": "Def/Famous-face-cond", ...}
+                tag = hed_spec.get(val_str)
+                if tag:
+                    per_row_tags[i].append(tag)
+            elif isinstance(hed_spec, str) and "#" in hed_spec:
+                # Value template: "Item-interval/#"
+                per_row_tags[i].append(hed_spec.replace("#", val_str))
+
+    # Build final strings; use "n/a" for rows with no HED match
+    result = [", ".join(tags) if tags else "n/a" for tags in per_row_tags]
+    if all(s == "n/a" for s in result):
+        return None
+    return result
+
+
+def _read_hed_version(bids_root):
+    """Read HEDVersion from dataset_description.json."""
+    if bids_root is None:
+        return None
+    desc_path = Path(bids_root) / "dataset_description.json"
+    try:
+        with open(desc_path, encoding="utf-8-sig") as f:
+            return json.load(f).get("HEDVersion")
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def _handle_events_reading(
+    events_fname, raw, *, bids_root=None, events_json_fname=None
+):
     """Read associated events.tsv and convert valid events to annotations on Raw."""
-    annotations_info = events_file_to_annotation_kwargs(events_fname)
+    events_dict = _from_tsv(events_fname)
+    annotations_info, filtered_events_dict = _make_annotation_kwargs(
+        events_dict, events_fname
+    )
     event_id = annotations_info["event_id"]
 
     # Add events as Annotations, but keep essential Annotations present in raw file
     annot_from_raw = raw.annotations.copy()
-    try:
-        annot_from_events = mne.Annotations(
-            onset=annotations_info["onset"],
-            duration=annotations_info["duration"],
-            description=annotations_info["description"],
-            extras=annotations_info["extras"],
+
+    # Assemble HED: combine column HED (from events.tsv) with sidecar HED
+    hed_strings = annotations_info.get("hed_strings")
+    if events_json_fname is not None:
+        sidecar_hed = _assemble_hed_from_sidecar(
+            filtered_events_dict, events_json_fname
         )
-    except TypeError:
-        if (
-            annotations_info["extras"] is not None
-            and len(annotations_info["extras"]) > 0
-        ):
-            warn(
-                "The version of MNE-Python you are using (<1.10) "
-                "does not support the extras argument in mne.Annotations. "
-                f"The extra column(s) {list(annotations_info['extras'][0].keys())} "
-                "will be ignored."
+        if sidecar_hed is not None:
+            if hed_strings is not None:
+                # BIDS spec: concatenate column HED with sidecar HED
+                hed_strings = [
+                    ", ".join(s for s in (col, sb) if s and s != "n/a")
+                    for col, sb in zip(hed_strings, sidecar_hed)
+                ]
+            else:
+                hed_strings = sidecar_hed
+    annot_from_events = None
+
+    # Try to create HEDAnnotations if HED data is present
+    if hed_strings is not None and hasattr(mne, "HEDAnnotations"):
+        if all(s and s != "n/a" for s in hed_strings):
+            hed_version = _read_hed_version(bids_root)
+            if hed_version is None:
+                hed_version = _DEFAULT_HED_VERSION
+                logger.info(
+                    "HEDVersion not found in dataset_description.json, "
+                    f"defaulting to {_DEFAULT_HED_VERSION}."
+                )
+            try:
+                annot_from_events = mne.HEDAnnotations(
+                    onset=annotations_info["onset"],
+                    duration=annotations_info["duration"],
+                    description=annotations_info["description"],
+                    hed_string=hed_strings,
+                    hed_version=hed_version,
+                    extras=annotations_info["extras"],
+                )
+            except (
+                ValueError,
+                TypeError,
+                ImportError,
+                RuntimeError,
+                AttributeError,
+            ) as exc:
+                warn(
+                    f"Could not create HEDAnnotations: {exc}. "
+                    "Falling back to regular Annotations."
+                )
+        else:
+            warn("HED column contains 'n/a' values. Using regular Annotations.")
+    elif hed_strings is not None:
+        logger.info("MNE-Python does not support HEDAnnotations. HED data ignored.")
+
+    # Fall back to regular Annotations if HEDAnnotations was not created
+    if annot_from_events is None:
+        try:
+            annot_from_events = mne.Annotations(
+                onset=annotations_info["onset"],
+                duration=annotations_info["duration"],
+                description=annotations_info["description"],
+                extras=annotations_info["extras"],
             )
-        annot_from_events = mne.Annotations(
-            onset=annotations_info["onset"],
-            duration=annotations_info["duration"],
-            description=annotations_info["description"],
-        )
+        except TypeError:
+            if (
+                annotations_info["extras"] is not None
+                and len(annotations_info["extras"]) > 0
+            ):
+                warn(
+                    "The version of MNE-Python you are using (<1.10) "
+                    "does not support the extras argument in mne.Annotations. "
+                    f"The extra column(s) "
+                    f"{list(annotations_info['extras'][0].keys())} "
+                    "will be ignored."
+                )
+            annot_from_events = mne.Annotations(
+                onset=annotations_info["onset"],
+                duration=annotations_info["duration"],
+                description=annotations_info["description"],
+            )
     raw.set_annotations(annot_from_events)
 
     annot_idx_to_keep = [
@@ -792,7 +970,8 @@ def _handle_events_reading(events_fname, raw):
     annot_to_keep = annot_from_raw[annot_idx_to_keep]
 
     if len(annot_to_keep):
-        raw.set_annotations(raw.annotations + annot_to_keep)
+        combined = _safe_iadd_annotations(raw.annotations, annot_to_keep)
+        raw.set_annotations(combined)
 
     return raw, event_id
 
@@ -1173,7 +1352,15 @@ def read_raw_bids(
         bids_path, suffix="events", extension=".tsv", on_error=on_error
     )
     if events_fname is not None:
-        raw, event_id = _handle_events_reading(events_fname, raw)
+        events_json_fname = _find_matching_sidecar(
+            bids_path, suffix="events", extension=".json", on_error="ignore"
+        )
+        raw, event_id = _handle_events_reading(
+            events_fname,
+            raw,
+            bids_root=bids_root,
+            events_json_fname=events_json_fname,
+        )
 
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
