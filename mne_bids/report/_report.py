@@ -12,7 +12,7 @@ import numpy as np
 from mne.utils import logger, verbose
 
 from mne_bids._fileio import _open_lock
-from mne_bids.config import ALLOWED_DATATYPES, DOI
+from mne_bids.config import ALLOWED_DATATYPES, DOI, ENCODINGS
 from mne_bids.path import (
     BIDSPath,
     _find_matching_sidecar,
@@ -156,7 +156,7 @@ def _summarize_dataset(root):
         return dict()
 
     # read file and 'REQUIRED' components of it
-    with _open_lock(dataset_descrip_fpath, encoding="utf-8-sig") as fin:
+    with _open_lock(dataset_descrip_fpath, encoding=ENCODINGS.JSON) as fin:
         dataset_description = json.load(fin)
 
     # create dictionary to pass into template string
@@ -330,7 +330,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
             sidecar_fname = _find_matching_sidecar(
                 bids_path=bids_path, suffix=datatype, extension=".json"
             )
-            with _open_lock(sidecar_fname, encoding="utf-8-sig") as fin:
+            with _open_lock(sidecar_fname, encoding=ENCODINGS.JSON) as fin:
                 sidecar_json = json.load(fin)
 
             # aggregate metadata from each scan

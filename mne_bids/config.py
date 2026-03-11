@@ -2,6 +2,7 @@
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
+from dataclasses import dataclass
 
 from mne import io
 from mne.io.constants import FIFF
@@ -745,3 +746,14 @@ ANONYMIZED_JSON_KEY_WHITELIST = [
     "ContinuousHeadLocalization",
     "HeadCoilFrequency",
 ]
+
+
+# charsets for read/write of text files (e.g. TSV)
+@dataclass(frozen=True)
+class _Encoding:
+    TSV_READ = "utf-8-sig"  # for backwards compat
+    TSV_WRITE = "utf-8"
+    JSON = "utf-8"
+
+
+ENCODINGS = _Encoding()
