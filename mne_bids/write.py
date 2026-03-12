@@ -480,8 +480,14 @@ def _events_tsv(
     _write_tsv(fname, data, overwrite)
 
 
-def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False):
-    """Create participants.json for non-default columns in accompanying TSV.
+def _events_json(
+    fname,
+    extra_columns=None,
+    has_trial_type=True,
+    hed_by_trial_type=None,
+    overwrite=False,
+):
+    """Create events.json for non-default columns in accompanying TSV.
 
     Parameters
     ----------
@@ -491,6 +497,9 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
         Dictionary with additional columns to be added to the events.json file.
     has_trial_type : bool
         Whether the events.tsv file should contain a 'trial_type' column.
+    hed_by_trial_type : dict | None
+        Mapping of trial_type values to HED strings. When provided, a ``HED``
+        entry is added under the ``trial_type`` key in the JSON sidecar.
     overwrite : bool
         Whether to overwrite the output file if it exists.
     """
@@ -528,9 +537,10 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
     }
 
     if has_trial_type:
-        new_data["trial_type"] = {
-            "Description": "The type, category, or name of the event."
-        }
+        trial_type_entry = {"Description": "The type, category, or name of the event."}
+        if hed_by_trial_type is not None:
+            trial_type_entry["HED"] = hed_by_trial_type
+        new_data["trial_type"] = trial_type_entry
 
     for key, value in extra_columns.items():
         new_data[key] = {"Description": value}
@@ -1675,8 +1685,10 @@ def make_dataset_description(
                 )
                 overwrite = False
             for key in description:
-                if description[key] is None or not overwrite:
+                if description[key] is None:
                     description[key] = orig_cols.get(key, None)
+                elif not overwrite:
+                    description[key] = orig_cols.get(key, description[key])
 
         # default author to make dataset description BIDS compliant
         # if the user passed an author don't overwrite,
@@ -2362,6 +2374,9 @@ def write_raw_bids(
         )
 
     # Write events.
+    hed_strings = None
+    hed_version = None
+    hed_sidecar_map = None
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map, event_extras = _read_events(
             events,
@@ -2370,6 +2385,42 @@ def write_raw_bids(
             bids_path=bids_path,
         )
 
+        # Extract HED info from annotations (raw is unmodified when
+        # events=None)
+        if hasattr(mne, "HEDAnnotations") and isinstance(
+            raw.annotations, mne.HEDAnnotations
+        ):
+            _hed_strings = [str(s) for s in raw.annotations.hed_string]
+            if len(_hed_strings) == len(events_array):
+                hed_strings = _hed_strings
+                hed_version = raw.annotations._hed_version
+
+                # Try to build a trial_type → HED sidecar mapping.
+                # If all events of the same trial_type share the same HED
+                # string, write to the JSON sidecar (standard BIDS pattern).
+                # Otherwise fall back to a HED column in events.tsv.
+                # This mapping is by value (not positional), so it is safe
+                # even if _read_events() reordered annotations.
+                descriptions = list(raw.annotations.description)
+                _hed_by_tt = {}
+                use_sidecar = True
+                for desc, hed_str in zip(descriptions, hed_strings):
+                    if desc in _hed_by_tt:
+                        if _hed_by_tt[desc] != hed_str:
+                            use_sidecar = False
+                            break
+                    else:
+                        _hed_by_tt[desc] = hed_str
+
+                if use_sidecar:
+                    hed_sidecar_map = _hed_by_tt
+            else:
+                warn(
+                    f"Number of HED strings ({len(_hed_strings)}) does not "
+                    f"match number of events ({len(events_array)}). "
+                    f"HED data will not be written."
+                )
+
         if event_metadata is not None:
             event_desc_id_map = None
 
@@ -2377,6 +2428,11 @@ def write_raw_bids(
             extras_columns = _extras_dicts_to_columns(
                 event_extras, n_events=len(events_array)
             )
+
+            # Write HED as column only when sidecar grouping isn't possible
+            if hed_strings is not None and hed_sidecar_map is None:
+                extras_columns["HED"] = hed_strings
+
             _events_tsv(
                 events=events_array,
                 durations=event_dur,
@@ -2394,6 +2450,13 @@ def write_raw_bids(
                 if extra_columns_descriptions is None
                 else dict(extra_columns_descriptions)
             )
+
+            # Write HED column description only when using column-based HED
+            if hed_strings is not None and hed_sidecar_map is None:
+                events_extra_columns["HED"] = (
+                    "Hierarchical Event Descriptor (HED) tags for this event."
+                )
+
             for column in extras_columns:
                 events_extra_columns.setdefault(
                     column,
@@ -2404,6 +2467,7 @@ def write_raw_bids(
                 fname=events_json_path.fpath,
                 extra_columns=events_extra_columns,
                 has_trial_type=has_trial_type,
+                hed_by_trial_type=hed_sidecar_map,
                 overwrite=overwrite,
             )
         # Kepp events_array around for BrainVision writing below.
@@ -2413,7 +2477,13 @@ def write_raw_bids(
     # already exist. Always set overwrite to False here. If users
     # want to edit their dataset_description, they can directly call
     # this function.
-    make_dataset_description(path=bids_path.root, name="[Unspecified]", overwrite=False)
+    # hed_version is set above; None when no HED data present
+    make_dataset_description(
+        path=bids_path.root,
+        name="[Unspecified]",
+        hed_version=hed_version,
+        overwrite=False,
+    )
 
     _sidecar_json(
         raw,

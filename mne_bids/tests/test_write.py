@@ -4472,3 +4472,56 @@ def test_parallel_write_many_subjects(tmp_path):
     time.sleep(1)
     # No stale lock files should remain after the parallel writes complete.
     assert not any(bids_root.rglob("*.lock"))
+
+
+@testing.requires_testing_data
+def test_write_hed_annotations(tmp_path):
+    """Ensure HEDAnnotations write to BIDS and roundtrip correctly."""
+    if not hasattr(mne, "HEDAnnotations"):
+        pytest.skip("HEDAnnotations requires a recent MNE-Python version")
+
+    bids_root = tmp_path / "bids"
+    raw = _read_raw_fif(data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif")
+
+    hed_tags = [
+        "Sensory-event, Visual-presentation",
+        "Sensory-event, Auditory-presentation",
+    ]
+    raw.set_annotations(
+        mne.HEDAnnotations(
+            onset=[0.0, 1.0],
+            duration=[0.1, 0.2],
+            description=["visual", "auditory"],
+            hed_string=hed_tags,
+            hed_version="8.3.0",
+        )
+    )
+
+    bids_path = _bids_path_minimal.copy().update(root=bids_root, datatype="meg")
+    write_raw_bids(
+        raw, bids_path=bids_path, overwrite=True, allow_preload=True, format="FIF"
+    )
+
+    # events.tsv should NOT have a HED column (sidecar-based)
+    events_tsv = _from_tsv(bids_path.copy().update(suffix="events", extension=".tsv"))
+    assert "HED" not in events_tsv
+
+    # events.json has HED under trial_type (sidecar pattern)
+    events_json = json.loads(
+        bids_path.copy().update(suffix="events", extension=".json").fpath.read_text()
+    )
+    assert "HED" in events_json["trial_type"]
+    assert events_json["trial_type"]["HED"] == {
+        "visual": "Sensory-event, Visual-presentation",
+        "auditory": "Sensory-event, Auditory-presentation",
+    }
+
+    # dataset_description.json has HEDVersion
+    desc = json.loads((bids_root / "dataset_description.json").read_text())
+    assert desc["HEDVersion"] == "8.3.0"
+
+    # Roundtrip
+    raw_rt = read_raw_bids(bids_path=bids_path, verbose=False)
+    assert isinstance(raw_rt.annotations, mne.HEDAnnotations)
+    assert list(raw_rt.annotations.hed_string) == hed_tags
+    assert raw_rt.annotations._hed_version == "8.3.0"
