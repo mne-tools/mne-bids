@@ -819,13 +819,18 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     expected_file = op.join("sub-01", "ses-01", "meg", "sub-01_ses-01_coordsystem.json")
     assert str(sidecar_fname).endswith(expected_file)
 
-    # create a duplicate sidecar, which will be tied in match score, triggering an error
-    dupe = Path(str(sidecar_fname).replace("coordsystem.json", "2coordsystem.json"))
-    dupe.touch()
+    # Both MEG and EEG modalities can have a coordsystem.json. If the BIDSPath doesn't
+    # specify a datatype, but points to a directory with both MEG and EEG modalities,
+    # then 2 coordystems can be discovered..
+    meg_dir = bids_path.directory / "meg"
+    eeg_dir = bids_path.directory / "eeg"
+    eeg_dir.mkdir(parents=False)
+    file_to_copy = "sub-01_ses-01_coordsystem.json"
+    shutil.copy(meg_dir / file_to_copy, eeg_dir / file_to_copy)
     with pytest.raises(RuntimeError, match="Expected to find a single"):
         print_dir_tree(bids_root)
         bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
-    dupe.unlink()  # clean up extra file
+    shutil.rmtree(eeg_dir)  # clean up extra file
 
     # Find nothing and raise.
     with pytest.raises(RuntimeError, match="Did not find any"):

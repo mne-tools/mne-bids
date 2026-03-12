@@ -12,6 +12,7 @@ from mne_bids.tsv_handler import (
     _combine_rows,
     _contains_row,
     _drop,
+    _from_compressed_tsv,
     _from_tsv,
     _to_tsv,
     _tsv_to_str,
@@ -91,6 +92,40 @@ def test_to_tsv_without_filelock(monkeypatch, tmp_path):
     assert tsv_path.read_text().strip()
     assert not lock_path.exists()
     assert not refcount_path.exists()
+
+
+def test_write_compressed_tsv(tmp_path):
+    """Ensure compressed TSV files are headerless."""
+    data = dict(onset=[0.1, 0.2], duration=[1, 2], trial_type=["a", "b"])
+    tsv_path = tmp_path / "physioevents.tsv.gz"
+
+    _to_tsv(data, tsv_path, compress=True)
+
+    assert tsv_path.exists()
+    parsed = _from_tsv(tsv_path)
+    assert list(parsed.keys()) == ["column_0", "column_1", "column_2"]
+    assert parsed["column_0"] == ["0.1", "0.2"]
+    assert parsed["column_1"] == ["1", "2"]
+    assert parsed["column_2"] == ["a", "b"]
+
+
+def test_read_compressed_tsv(tmp_path):
+    """Compressed TSV reader should get column names from sidecar JSON."""
+    data = dict(onset=[0.1, 0.2], duration=[1, 2], trial_type=["a", "b"])
+    tsv_path = tmp_path / "physioevents.tsv.gz"
+    json_path = tmp_path / "physioevents.json"
+
+    _to_tsv(data, tsv_path, compress=True)
+    # Dummy file
+    json_path.write_text(
+        '{"Columns": ["onset", "duration", "trial_type"]}', encoding="utf-8-sig"
+    )
+
+    parsed = _from_compressed_tsv(tsv_path)
+    assert list(parsed.keys()) == ["onset", "duration", "trial_type"]
+    assert parsed["onset"] == ["0.1", "0.2"]
+    assert parsed["duration"] == ["1", "2"]
+    assert parsed["trial_type"] == ["a", "b"]
 
 
 def test_contains_row_different_types():
