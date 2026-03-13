@@ -111,17 +111,17 @@ def _write_single_eye_physio(
 
     data, times = raw.get_data(picks=eye_chs, return_times=True)
     ch_types = raw.get_channel_types(picks=eye_chs)
-    data_dict = {"time": times}
+    data_dict = {"timestamp": times}
 
     # Build sidecar JSON template
     json_dict = {
         "SamplingFrequency": raw.info["sfreq"],
         "StartTime": times[0],
-        "Columns": ["time"],
+        "Columns": ["timestamp"],
         "PhysioType": "eyetrack",
         "RecordedEye": recorded_eye,
         "SampleCoordinateSystem": "gaze-on-screen",
-        "time": {
+        "timestamp": {
             "Description": "The timestamp of the data, in seconds.",
             "Units": "s",
         },
@@ -299,9 +299,11 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
         overwrite=overwrite,
     )
     # Write the JSON file
-    columns = list(ev_dict.keys())
+    metadata = {"Columns": list(ev_dict.keys()), "OnsetSource": "timestamp"}
     fname_json = fname_tsv.with_suffix("").with_suffix(".json")
-    _events_json(fname_json, columns=columns, has_trial_type=True, overwrite=overwrite)
+    _events_json(
+        fname_json, metadata=metadata, has_trial_type=True, overwrite=overwrite
+    )
 
 
 def _json_safe(value):
@@ -612,7 +614,7 @@ def _read_one_eye_physio(raw_tsv_fpath):
     )
 
     ch_info = {}
-    # The first column is 'time' so skip it
+    # The first column is 'timestamp' so skip it
     for col_idx, ch_name in enumerate(cols[1:], start=1):
         unit_str = sidecar[ch_name]["Units"]
         ch_type = _infer_et_type(ch_name)
@@ -634,7 +636,7 @@ def _read_one_eye_physio(raw_tsv_fpath):
     data_dict = _from_compressed_tsv(raw_tsv_fpath)
     # Append recording entity suffix to channel names.
     for col_name in list(data_dict.keys()):
-        if col_name != "time":
+        if col_name != "timestamp":
             data_dict[f"{col_name}_{recording_entity}"] = data_dict.pop(col_name)
     return data_dict, ch_info
 
