@@ -2462,7 +2462,7 @@ def write_raw_bids(
         elif format == "EDF" and bids_path.datatype in ["ieeg", "eeg", "emg"]:
             convert = True
             bids_path.update(extension=".edf")
-        elif format == "BDF" and bids_path.datatype in ["emg"]:
+        elif format == "BDF" and bids_path.datatype in ["eeg", "emg"]:
             convert = True
             bids_path.update(extension=".bdf")
         elif format == "EEGLAB" and bids_path.datatype in ["ieeg", "eeg"]:
@@ -2533,7 +2533,7 @@ def write_raw_bids(
                     else bids_path.fpath
                 ),
             )
-        elif bids_path.datatype in ["emg"] and format == "BDF":
+        elif bids_path.datatype in ["eeg", "emg"] and format == "BDF":
             bids_path.update(extension=".bdf")
             _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
         elif bids_path.datatype in ["eeg", "emg", "ieeg"] and format == "EDF":

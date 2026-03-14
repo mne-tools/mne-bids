@@ -3869,7 +3869,8 @@ def test_preload_errors(tmp_path):
     warning_str["emg_coords_missing"],
 )
 @pytest.mark.parametrize(
-    "format,ch_type", (("BrainVision", "eeg"), ("BDF", "emg"), ("EDF", "seeg"))
+    "format,ch_type",
+    (("BrainVision", "eeg"), ("BDF", "emg"), ("EDF", "seeg"), ("BDF", "eeg")),
 )
 def test_preload(_bids_validate, tmp_path, format, ch_type):
     """Test writing custom preloaded raw objects."""

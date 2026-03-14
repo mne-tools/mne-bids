@@ -19,9 +19,9 @@ EPHY_ALLOWED_DATATYPES = ["eeg", "emg", "ieeg", "meg", "nirs"]
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh", "motion"]
 
 MEG_CONVERT_FORMATS = ["FIF", "auto"]
-EEG_CONVERT_FORMATS = ["BrainVision", "auto"]
+EEG_CONVERT_FORMATS = ["BrainVision", "EDF", "BDF", "EEGLAB", "auto"]
 EMG_CONVERT_FORMATS = ["EDF", "BDF", "auto"]
-IEEG_CONVERT_FORMATS = ["BrainVision", "auto"]
+IEEG_CONVERT_FORMATS = ["BrainVision", "EEGLAB", "auto"]
 NIRS_CONVERT_FORMATS = ["auto"]
 MOTION_CONVERT_FORMATS = ["tsv", "auto"]
 CONVERT_FORMATS = {
