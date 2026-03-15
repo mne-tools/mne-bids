@@ -73,7 +73,7 @@ full = [
   "pymatreader",
 ]
 # Dependencies for running the test infrastructure
-test = ["curryreader", "mne_bids[full]", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "ruff"]
+test = ["curryreader", "mne_bids[full]", "packaging", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "ruff"]
 
 [project.urls]
 "Bug Tracker" = "https://github.com/mne-tools/mne-bids/issues/"
