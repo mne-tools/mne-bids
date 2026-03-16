@@ -51,6 +51,9 @@ UNITS_MNE_TO_BIDS_MAP = {
 # Mapping from FIFF unit constants to BIDS unit strings for writing
 # This supplements MNE's _unit2human which doesn't include all FIFF units
 UNITS_FIFF_TO_BIDS_MAP = {
+    FIFF.FIFF_UNIT_M: "m",
+    FIFF.FIFF_UNIT_NONE: "arbitrary",
+    FIFF.FIFF_UNIT_PX: "pixel",
     FIFF.FIFF_UNIT_RAD: "rad",
 }
 
@@ -66,6 +69,8 @@ UNITS_BIDS_TO_FIFF_MAP = {
     "oC": FIFF.FIFF_UNIT_CEL,
     "M": FIFF.FIFF_UNIT_MOL,
     "px": FIFF.FIFF_UNIT_PX,
+    "pixel": FIFF.FIFF_UNIT_PX,
+    "arbitrary": FIFF.FIFF_UNIT_NONE,
 }
 
 meg_manufacturers = {
@@ -608,6 +613,12 @@ REFERENCES = {
     "Pollonini, L. (2023). fNIRS-BIDS, the Brain Imaging Data Structure "
     "Extended to Functional Near-Infrared Spectroscopy. PsyArXiv. "
     "https://doi.org/10.31219/osf.io/7nmcp",
+    # TODO: really this entry should be eyetrack, but lets circle back on that.
+    "beh": "Szinte, M., Bach, DR., Draschkow, D., Esteban, O., Gagle, B., "
+    "Gau, R., Gregorova, K., Halchenko, Y.O., Huberty, S., Kling, S., Kulkarni, S., "
+    "Markiewicz, C., Mikkelsen, M., Oostenveld, R., Pfarr, JK. (2026). "
+    "Eye-Tracking-BIDS: the Brain Imaging Data Structure extended to gaze position "
+    "and pupil data. (In review).",
     "emg": "In preparation",
 }
 
