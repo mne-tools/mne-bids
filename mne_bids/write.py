@@ -15,10 +15,8 @@ from collections import OrderedDict, defaultdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-import mne
 import mne.preprocessing
 import numpy as np
-from mne import Epochs, channel_type
 from mne.channels.channels import _get_meg_system, _unit2human
 from mne.chpi import get_chpi_info
 from mne.io import BaseRaw, read_fiducials
@@ -36,6 +34,8 @@ from mne.utils import (
 )
 from scipy import linalg
 
+import mne
+from mne import Epochs, channel_type
 from mne_bids import (
     BIDSPath,
     __version__,
@@ -2509,11 +2509,11 @@ def write_raw_bids(
         # Resolve auto format to concrete default
         if format == "auto":
             if bids_path.datatype == "meg":
-                format = "FIF"
+                format = "FIF"  # noqa: A001
             elif bids_path.datatype == "emg":
-                format = "BDF"
+                format = "BDF"  # noqa: A001
             else:
-                format = "BrainVision"
+                format = "BrainVision"  # noqa: A001
             bids_path.update(extension=FORMAT_EXTENSIONS[format])
 
         if format == "FIF":
