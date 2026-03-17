@@ -15,8 +15,10 @@ from collections import OrderedDict, defaultdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
+import mne
 import mne.preprocessing
 import numpy as np
+from mne import Epochs, channel_type
 from mne.channels.channels import _get_meg_system, _unit2human
 from mne.chpi import get_chpi_info
 from mne.io import BaseRaw, read_fiducials
@@ -34,8 +36,6 @@ from mne.utils import (
 )
 from scipy import linalg
 
-import mne
-from mne import Epochs, channel_type
 from mne_bids import (
     BIDSPath,
     __version__,
