@@ -138,6 +138,7 @@ jobs:
     # ubuntu / 3.11 / mne-prev / full / validator-stable --> to test last supported mne
     # ubuntu / 3.13 / mne-stable / minimal / validator-stable --> to test a minimal installation
     # macos-15-intel / 3.13 / mne-stable / full / validator-stable --> to test macos x86_64
+    name: test (${{ matrix.os }}, ${{ matrix.python-version }}, ${{ matrix.mne-version }}, ${{ matrix.mne-bids-install }}, validator-${{ matrix.bids-validator-version }})
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     env:
