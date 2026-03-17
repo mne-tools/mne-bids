@@ -52,6 +52,7 @@ from mne_bids.config import (
     BIDS_VERSION,
     CONVERT_FORMATS,
     EXT_TO_UNIT_MAP,
+    FORMAT_EXTENSIONS,
     IGNORED_CHANNELS,
     MANUFACTURERS,
     ORIENTATION,
@@ -1833,8 +1834,9 @@ def write_raw_bids(
         without a change of the original file format. A conversion to a
         different file format will then only take place if the original file
         format lacks some necessary features.
-        Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
-        to BDF or EDF for EMG, and to FIF for MEG data.
+        Conversion may be forced to BrainVision, BDF, EDF, or EEGLAB for EEG,
+        to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,
+        and to FIF for MEG data.
     symlink : bool
         Instead of copying the source files, only create symbolic links to
         preserve storage space. This is only allowed when not anonymizing the
@@ -2073,20 +2075,12 @@ def write_raw_bids(
 
         raw_orig = reader[ext](**raw._init_kwargs)
     else:
-        if format == "BrainVision":
-            ext = ".vhdr"
-        elif format == "BDF":
-            ext = ".bdf"
-        elif format == "EDF":
-            ext = ".edf"
-        elif format == "EEGLAB":
-            ext = ".set"
-        elif format == "FIF":
-            ext = ".fif"
+        if format in FORMAT_EXTENSIONS:
+            ext = FORMAT_EXTENSIONS[format]
         else:
             msg = (
                 'For preloaded data, you must set the "format" parameter '
-                "to one of: BrainVision, BDF, EDF, EEGLAB, or FIF"
+                f"to one of: {', '.join(FORMAT_EXTENSIONS)}"
             )
             if format != "auto":  # the default was changed
                 msg += f', but got: "{format}"'
@@ -2456,22 +2450,7 @@ def write_raw_bids(
 
     # If users desire a certain format, will handle auto-conversion
     if format != "auto":
-        if format == "BrainVision" and bids_path.datatype in ["ieeg", "eeg"]:
-            convert = True
-            bids_path.update(extension=".vhdr")
-        elif format == "EDF" and bids_path.datatype in ["ieeg", "eeg", "emg"]:
-            convert = True
-            bids_path.update(extension=".edf")
-        elif format == "BDF" and bids_path.datatype in ["eeg", "emg"]:
-            convert = True
-            bids_path.update(extension=".bdf")
-        elif format == "EEGLAB" and bids_path.datatype in ["ieeg", "eeg"]:
-            convert = True
-            bids_path.update(extension=".set")
-        elif format == "FIF" and bids_path.datatype == "meg":
-            convert = True
-            bids_path.update(extension=".fif")
-        elif all(format not in values for values in CONVERT_FORMATS.values()):
+        if format not in FORMAT_EXTENSIONS:
             raise ValueError(
                 f'The input "format" {format} is not an '
                 f"accepted input format for `write_raw_bids`. "
@@ -2485,6 +2464,9 @@ def write_raw_bids(
                 f"Please use one of {CONVERT_FORMATS[datatype]} "
                 f"for {datatype} datatype."
             )
+        else:
+            convert = True
+            bids_path.update(extension=FORMAT_EXTENSIONS[format])
 
     # this can't happen until after value of `convert` has been determined
     _channels_tsv(
@@ -2524,7 +2506,17 @@ def write_raw_bids(
 
     # File saving branching logic
     if convert:
-        if bids_path.datatype == "meg":
+        # Resolve auto format to concrete default
+        if format == "auto":
+            if bids_path.datatype == "meg":
+                format = "FIF"
+            elif bids_path.datatype == "emg":
+                format = "BDF"
+            else:
+                format = "BrainVision"
+            bids_path.update(extension=FORMAT_EXTENSIONS[format])
+
+        if format == "FIF":
             _write_raw_fif(
                 raw,
                 (
@@ -2533,23 +2525,15 @@ def write_raw_bids(
                     else bids_path.fpath
                 ),
             )
-        elif bids_path.datatype in ["eeg", "emg"] and format == "BDF":
-            bids_path.update(extension=".bdf")
+        elif format in ("BDF", "EDF"):
+            warn(f"Converting data files to {format} format")
             _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ["eeg", "emg", "ieeg"] and format == "EDF":
-            warn("Converting data files to EDF format")
-            bids_path.update(extension=".edf")
-            _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ["eeg", "ieeg"] and format == "EEGLAB":
+        elif format == "EEGLAB":
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ["emg"]:
-            bids_path.update(extension=".bdf")
-            warn("Converting data files to BDF format")
-            _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
-        else:
+        else:  # BrainVision
             warn("Converting data files to BrainVision format")
-            bids_path.update(suffix=bids_path.datatype, extension=".vhdr")
+            bids_path.update(suffix=bids_path.datatype)
             # XXX Should we write durations here too?
             _write_raw_brainvision(
                 raw, bids_path.fpath, events=events_array, overwrite=overwrite
