@@ -233,8 +233,6 @@ jobs:
       run: |
         echo $TZ
         date
-        echo "(npm version)"; npm --version
-        echo "node"; node --version
         echo "(deno version)"; deno --version || echo ""
         echo "(Requested bids-validator version)"; echo "$BIDS_VALIDATOR_VERSION"
         echo "(python version)"; python --version
