@@ -19,7 +19,6 @@ from datetime import UTC, date, datetime, timedelta
 from glob import glob
 from pathlib import Path
 
-import mne
 import numpy as np
 import pandas as pd
 import pytest
@@ -30,6 +29,7 @@ from mne.io.kit.kit import get_kit_info
 from mne.utils import check_version
 from numpy.testing import assert_allclose, assert_array_almost_equal, assert_array_equal
 
+import mne
 from mne_bids import (
     BIDSPath,
     anonymize_dataset,
@@ -196,6 +196,7 @@ test_convertmeg_data = [
 # parametrization for testing converting file formats for EEG/iEEG
 test_converteeg_data = [
     ("EEGLAB", "EEGLAB", "test_raw.set", _read_raw_eeglab),
+    ("CNT", "auto", "scan41_short.cnt", _read_raw_cnt),
     (
         "Persyst",
         "BrainVision",
@@ -3439,7 +3440,7 @@ def test_convert_emg_formats(tmp_path, dir_name, fmt, fname, reader):
 @testing.requires_testing_data
 def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
-    if dir_name == "BrainVision" or fmt == "BrainVision":
+    if dir_name == "BrainVision" or fmt in ("BrainVision", "auto"):
         pytest.importorskip("pybv", PYBV_VERSION)
     elif dir_name == "EEGLAB" or fmt == "EEGLAB":
         pytest.importorskip("eeglabio", EEGLABIO_VERSION)
@@ -3503,7 +3504,7 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     channels_tsv = _from_tsv(channels_fname)
     assert channels_tsv["units"][0] == "µV"
 
-    if fmt == "BrainVision":
+    if fmt in ["BrainVision", "auto"]:
         assert Path(raw2.filenames[0]).suffix == ".eeg"
         assert bids_output_path.extension == ".vhdr"
     elif fmt == "EDF":

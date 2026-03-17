@@ -15,10 +15,8 @@ from collections import OrderedDict, defaultdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-import mne
 import mne.preprocessing
 import numpy as np
-from mne import Epochs, channel_type
 from mne.channels.channels import _get_meg_system, _unit2human
 from mne.chpi import get_chpi_info
 from mne.io import BaseRaw, read_fiducials
@@ -36,6 +34,8 @@ from mne.utils import (
 )
 from scipy import linalg
 
+import mne
+from mne import Epochs, channel_type
 from mne_bids import (
     BIDSPath,
     __version__,
@@ -2448,6 +2448,8 @@ def write_raw_bids(
     if not convert:
         logger.info(f"Copying data files to {bids_path.fpath.name}")
 
+    write_format = format
+
     # If users desire a certain format, will handle auto-conversion
     if format != "auto":
         if format not in FORMAT_EXTENSIONS:
@@ -2468,11 +2470,22 @@ def write_raw_bids(
             convert = True
             bids_path.update(extension=FORMAT_EXTENSIONS[format])
 
+    if convert and write_format == "auto":
+        # Resolve the actual export format before writing sidecars so metadata
+        # reflects the file format that will be written below.
+        if bids_path.datatype == "meg":
+            write_format = "FIF"
+        elif bids_path.datatype == "emg":
+            write_format = "BDF"
+        else:
+            write_format = "BrainVision"
+        bids_path.update(extension=FORMAT_EXTENSIONS[write_format])
+
     # this can't happen until after value of `convert` has been determined
     _channels_tsv(
         raw,
         channels_path.fpath,
-        convert_fmt=format if convert else None,
+        convert_fmt=write_format if convert else None,
         overwrite=overwrite,
     )
 
@@ -2506,17 +2519,7 @@ def write_raw_bids(
 
     # File saving branching logic
     if convert:
-        # Resolve auto format to concrete default
-        if format == "auto":
-            if bids_path.datatype == "meg":
-                format = "FIF"  # noqa: A001
-            elif bids_path.datatype == "emg":
-                format = "BDF"  # noqa: A001
-            else:
-                format = "BrainVision"  # noqa: A001
-            bids_path.update(extension=FORMAT_EXTENSIONS[format])
-
-        if format == "FIF":
+        if write_format == "FIF":
             _write_raw_fif(
                 raw,
                 (
@@ -2525,10 +2528,10 @@ def write_raw_bids(
                     else bids_path.fpath
                 ),
             )
-        elif format in ("BDF", "EDF"):
-            warn(f"Converting data files to {format} format")
+        elif write_format in ("BDF", "EDF"):
+            warn(f"Converting data files to {write_format} format")
             _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
-        elif format == "EEGLAB":
+        elif write_format == "EEGLAB":
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
         else:  # BrainVision
