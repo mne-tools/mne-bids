@@ -3191,7 +3191,15 @@ def test_coordsystem_json_compliance(
     warning_str["edf_date"],
 )
 @testing.requires_testing_data
-def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
+def test_anonymize(
+    subject,
+    dir_name,
+    fname,
+    reader,
+    tmp_path,
+    _bids_validate,
+    _using_legacy_validator,
+):
     """Test writing anonymized data."""
     raw_fname = op.join(data_path, dir_name, fname)
 
@@ -3259,7 +3267,8 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     )
     scans_tsv = _from_tsv(scans_fname)
     assert scans_tsv["source"] == [Path(f).name for f in raw.filenames]
-    if dir_name != "Brainvision":  # EMG not yet supported by validator
+    # The Legacy-Validator isn't aware of the EMG-BIDS spec
+    if not (bids_path.datatype == "emg" and _using_legacy_validator):
         _bids_validate(bids_path.root)
 
     # update the scans sidecar JSON with information
@@ -3872,7 +3881,7 @@ def test_preload_errors(tmp_path):
     "format,ch_type",
     (("BrainVision", "eeg"), ("BDF", "emg"), ("EDF", "seeg"), ("BDF", "eeg")),
 )
-def test_preload(_bids_validate, tmp_path, format, ch_type):
+def test_preload(_bids_validate, _using_legacy_validator, tmp_path, format, ch_type):
     """Test writing custom preloaded raw objects."""
     if ch_type == "emg":
         pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
@@ -3895,8 +3904,9 @@ def test_preload(_bids_validate, tmp_path, format, ch_type):
         overwrite=True,
         **kw,
     )
-    if ch_type != "emg":  # TODO validator support for EMG not available yet
-        _bids_validate(bids_root)
+    if ch_type == "emg" and _using_legacy_validator:
+        return
+    _bids_validate(bids_root)
 
 
 @pytest.mark.parametrize("dir_name", ("tsv_test", "json_test"))
