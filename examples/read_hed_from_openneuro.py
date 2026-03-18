@@ -20,8 +20,12 @@ import openneuro
 openneuro.download(
     dataset="ds004117",
     target_dir="/tmp/ds004117",
-    include=["dataset_description.json", "participants.*",
-             "task-*_events.json", "sub-002/**"],
+    include=[
+        "dataset_description.json",
+        "participants.*",
+        "task-*_events.json",
+        "sub-002/**",
+    ],
     verify_hash=False,
 )
 
@@ -32,8 +36,12 @@ openneuro.download(
 from mne_bids import read_raw_bids, BIDSPath
 
 bids_path = BIDSPath(
-    subject="002", session="01", task="WorkingMemory", run="1",
-    datatype="eeg", root="/tmp/ds004117",
+    subject="002",
+    session="01",
+    task="WorkingMemory",
+    run="1",
+    datatype="eeg",
+    root="/tmp/ds004117",
 )
 raw = read_raw_bids(bids_path, verbose="warning")
 
