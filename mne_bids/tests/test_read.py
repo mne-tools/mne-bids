@@ -38,7 +38,6 @@ from mne_bids.read import (
     _handle_events_reading,
     _handle_scans_reading,
     _read_raw,
-    _safe_iadd_annotations,
     events_file_to_annotation_kwargs,
     get_head_mri_trans,
     read_raw_bids,
@@ -2111,8 +2110,6 @@ def test_events_file_to_annotation_kwargs(tmp_path):
 
 def test_handle_events_reading_hed(tmp_path):
     """Test HEDAnnotations from column HED, sidecar HED, and fallbacks."""
-    if not hasattr(mne, "HEDAnnotations"):
-        pytest.skip("HEDAnnotations requires MNE-Python 1.12 or newer")
     pytest.importorskip("hed")
 
     bids_root = tmp_path / "tiny_bids"
@@ -2263,33 +2260,3 @@ def test_read_hed_version_returns_none(bids_root):
     from mne_bids.read import _read_hed_version
 
     assert _read_hed_version(bids_root) is None
-
-
-def test_safe_iadd_preserves_hed():
-    """Test _safe_iadd_annotations preserves HED info in extras."""
-    if not hasattr(mne, "HEDAnnotations"):
-        pytest.skip("HEDAnnotations requires MNE-Python 1.12 or newer")
-    pytest.importorskip("hed")
-
-    hed_annot = mne.HEDAnnotations(
-        onset=[0.0, 0.2],
-        duration=[0.0, 0.0],
-        description=["ev1", "ev2"],
-        hed_string=["Sensory-event", "Agent-action"],
-        hed_version="8.3.0",
-    )
-    regular_annot = mne.Annotations(
-        onset=[0.5], duration=[0.1], description=["BAD_ACQ_SKIP"]
-    )
-
-    result = _safe_iadd_annotations(hed_annot, regular_annot)
-    assert isinstance(result, mne.Annotations)
-    assert not isinstance(result, mne.HEDAnnotations)
-    assert len(result) == 3
-
-    # HED strings are preserved in extras
-    extras_by_desc = {
-        desc: result.extras[i] for i, desc in enumerate(result.description)
-    }
-    assert extras_by_desc["ev1"]["HED"] == "Sensory-event"
-    assert extras_by_desc["ev2"]["HED"] == "Agent-action"

@@ -120,35 +120,6 @@ def _read_raw(
     return raw
 
 
-def _safe_iadd_annotations(annotations, new_annotations):
-    """Merge annotations, converting HEDAnnotations to regular if needed."""
-    try:
-        annotations += new_annotations
-    except TypeError:
-        # HEDAnnotations can't merge with regular Annotations.
-        # Convert to regular Annotations, preserving HED strings in extras.
-        extras = getattr(annotations, "extras", None)
-        if extras is not None and len(extras) > 0:
-            extras = [dict(d) for d in extras]
-        else:
-            extras = [{} for _ in range(len(annotations))]
-
-        hed_string = getattr(annotations, "hed_string", None)
-        if hed_string is not None:
-            for i, hs in enumerate(hed_string):
-                extras[i]["HED"] = str(hs)
-
-        annotations = mne.Annotations(
-            onset=annotations.onset,
-            duration=annotations.duration,
-            description=annotations.description,
-            orig_time=annotations.orig_time,
-            extras=extras if any(extras) else None,
-        )
-        annotations += new_annotations
-    return annotations
-
-
 def _read_events(events, event_id, raw, bids_path=None):
     """Retrieve events (for use in *_events.tsv) from FIFF/array & Annotations.
 
@@ -257,7 +228,7 @@ def _read_events(events, event_id, raw, bids_path=None):
 
         # We use `+=` here because `Annotations.__iadd__()` does the right
         # thing and also performs a sanity check on `Annotations.orig_time`.
-        annotations = _safe_iadd_annotations(annotations, new_annotations)
+        annotations += new_annotations
         raw.set_annotations(annotations)
         del id_to_desc_map, annotations, new_annotations
 
@@ -273,7 +244,7 @@ def _read_events(events, event_id, raw, bids_path=None):
 
         # We use `+=` here because `Annotations.__iadd__()` does the right
         # thing and also performs a sanity check on `Annotations.orig_time`.
-        annotations = _safe_iadd_annotations(annotations, new_annotations)
+        annotations += new_annotations
         raw.set_annotations(annotations)
         del annotations, new_annotations
 
@@ -900,7 +871,7 @@ def _handle_events_reading(
     annot_from_events = None
 
     # Try to create HEDAnnotations if HED data is present
-    if hed_strings is not None and hasattr(mne, "HEDAnnotations"):
+    if hed_strings is not None:
         if all(s and s != "n/a" for s in hed_strings):
             hed_version = _read_hed_version(bids_root)
             if hed_version is None:
@@ -931,8 +902,6 @@ def _handle_events_reading(
                 )
         else:
             warn("HED column contains 'n/a' values. Using regular Annotations.")
-    elif hed_strings is not None:
-        logger.info("MNE-Python does not support HEDAnnotations. HED data ignored.")
 
     # Fall back to regular Annotations if HEDAnnotations was not created
     if annot_from_events is None:
@@ -970,7 +939,7 @@ def _handle_events_reading(
     annot_to_keep = annot_from_raw[annot_idx_to_keep]
 
     if len(annot_to_keep):
-        combined = _safe_iadd_annotations(raw.annotations, annot_to_keep)
+        combined = raw.annotations + annot_to_keep
         raw.set_annotations(combined)
 
     return raw, event_id
