@@ -173,7 +173,6 @@ jobs:
             mne-version: mne-stable
             mne-bids-install: minimal
             bids-validator-version: stable
-          # Test next gen BIDS schema validator
           # Test macos on x86_64 architecture
           - os: macos-15-intel
             python-version: "3.13"
@@ -189,7 +188,7 @@ jobs:
     - name: Set up deno
       uses: denoland/setup-deno@v2
       with:
-        deno-version: v1.x  # TODO: Bump deno to v2?
+        deno-version: lts
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6

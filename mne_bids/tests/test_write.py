@@ -3266,7 +3266,6 @@ def test_anonymize(
     )
     scans_tsv = _from_tsv(scans_fname)
     assert scans_tsv["source"] == [Path(f).name for f in raw.filenames]
-    # The Legacy-Validator isn't aware of the EMG-BIDS spec
     _bids_validate(bids_path.root)
 
     # update the scans sidecar JSON with information
