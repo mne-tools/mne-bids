@@ -9,12 +9,12 @@ For each supported coordinate frame, implement a test.
 import warnings
 from pathlib import Path
 
-import mne
 import numpy as np
 import pytest
 from mne.datasets import testing
 from numpy.testing import assert_almost_equal
 
+import mne
 import mne_bids
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
 from mne_bids.config import (

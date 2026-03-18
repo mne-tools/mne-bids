@@ -3,8 +3,9 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-from mne import io
 from mne.io.constants import FIFF
+
+from mne import io
 
 BIDS_VERSION = "1.9.0"
 

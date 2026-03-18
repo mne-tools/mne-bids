@@ -5,11 +5,11 @@
 
 from pathlib import Path
 
-import mne
 import pytest
 from mne.datasets import testing
 from mne.utils import ArgvSetter
 
+import mne
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
 from mne_bids.commands import (
     mne_bids_calibration_to_bids,

@@ -7,10 +7,10 @@ import datetime
 import os.path as op
 from pathlib import Path
 
-import mne
 import pytest
 from mne.datasets import testing
 
+import mne
 from mne_bids import BIDSPath
 from mne_bids.copyfiles import (
     _get_brainvision_encoding,

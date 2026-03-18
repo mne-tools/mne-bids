@@ -3,7 +3,6 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import mne
 import numpy as np
 import pytest
 from matplotlib.backend_bases import KeyEvent
@@ -11,6 +10,7 @@ from mne.datasets import testing
 from mne.viz.utils import _fake_click
 from test_read import warning_str
 
+import mne
 import mne_bids.inspect
 from mne_bids import (
     BIDSPath,
