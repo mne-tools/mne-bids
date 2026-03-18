@@ -868,67 +868,38 @@ def _handle_events_reading(
                 ]
             else:
                 hed_strings = sidecar_hed
-    annot_from_events = None
-
-    # Try to create HEDAnnotations if HED data is present
+    # Always preserve HED strings in extras (matches MNE's concat behaviour)
+    extras = annotations_info["extras"]
     if hed_strings is not None:
-        if all(s and s != "n/a" for s in hed_strings):
-            hed_version = _read_hed_version(bids_root)
-            if hed_version is None:
-                hed_version = _DEFAULT_HED_VERSION
-                logger.info(
-                    "HEDVersion not found in dataset_description.json, "
-                    f"defaulting to {_DEFAULT_HED_VERSION}."
-                )
-            try:
-                annot_from_events = mne.HEDAnnotations(
-                    onset=annotations_info["onset"],
-                    duration=annotations_info["duration"],
-                    description=annotations_info["description"],
-                    hed_string=hed_strings,
-                    hed_version=hed_version,
-                    extras=annotations_info["extras"],
-                )
-            except (
-                ValueError,
-                TypeError,
-                ImportError,
-                RuntimeError,
-                AttributeError,
-            ) as exc:
-                warn(
-                    f"Could not create HEDAnnotations: {exc}. "
-                    "Falling back to regular Annotations."
-                )
-        else:
-            warn("HED column contains 'n/a' values. Using regular Annotations.")
+        if extras is None:
+            extras = [{} for _ in range(len(annotations_info["onset"]))]
+        for i, hs in enumerate(hed_strings):
+            if hs and hs != "n/a":
+                extras[i]["HED"] = hs
 
-    # Fall back to regular Annotations if HEDAnnotations was not created
-    if annot_from_events is None:
+    # Try to create HEDAnnotations when all HED strings are valid
+    annot_from_events = None
+    if hed_strings is not None and all(s and s != "n/a" for s in hed_strings):
         try:
-            annot_from_events = mne.Annotations(
+            annot_from_events = mne.HEDAnnotations(
                 onset=annotations_info["onset"],
                 duration=annotations_info["duration"],
                 description=annotations_info["description"],
-                extras=annotations_info["extras"],
+                hed_string=hed_strings,
+                hed_version=_read_hed_version(bids_root) or _DEFAULT_HED_VERSION,
+                extras=extras,
             )
-        except TypeError:
-            if (
-                annotations_info["extras"] is not None
-                and len(annotations_info["extras"]) > 0
-            ):
-                warn(
-                    "The version of MNE-Python you are using (<1.10) "
-                    "does not support the extras argument in mne.Annotations. "
-                    f"The extra column(s) "
-                    f"{list(annotations_info['extras'][0].keys())} "
-                    "will be ignored."
-                )
-            annot_from_events = mne.Annotations(
-                onset=annotations_info["onset"],
-                duration=annotations_info["duration"],
-                description=annotations_info["description"],
-            )
+        except (ValueError, ImportError):
+            pass
+
+    # Fall back to regular Annotations (HED data is still in extras)
+    if annot_from_events is None:
+        annot_from_events = mne.Annotations(
+            onset=annotations_info["onset"],
+            duration=annotations_info["duration"],
+            description=annotations_info["description"],
+            extras=extras,
+        )
     raw.set_annotations(annot_from_events)
 
     annot_idx_to_keep = [

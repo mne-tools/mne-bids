@@ -2147,12 +2147,14 @@ def test_handle_events_reading_hed(tmp_path):
     raw_def, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
     assert raw_def.annotations._hed_version == _DEFAULT_HED_VERSION
 
-    # Fallback to regular Annotations when HED has n/a
+    # Fallback to regular Annotations when HED has n/a — HED preserved in extras
     df.loc[0, "HED"] = "n/a"
     df.to_csv(events_tsv, sep="\t", index=False)
-    with pytest.warns(RuntimeWarning, match="n/a"):
-        raw_na, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
+    raw_na, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
     assert not isinstance(raw_na.annotations, mne.HEDAnnotations)
+    extras = raw_na.annotations.extras
+    assert extras[1].get("HED") == hed_tags[1]
+    assert "HED" not in extras[0]  # n/a row has no HED in extras
 
 
 def test_assemble_hed_from_sidecar(tmp_path):
