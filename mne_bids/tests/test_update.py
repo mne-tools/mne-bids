@@ -7,12 +7,12 @@ import json
 import shutil
 from pathlib import Path
 
+import mne
 import numpy as np
 import pytest
 from mne.datasets import testing
 from mne.io.constants import FIFF
 
-import mne
 from mne_bids import (
     BIDSPath,
     get_anat_landmarks,

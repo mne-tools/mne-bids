@@ -6,10 +6,10 @@
 from datetime import datetime
 from pathlib import Path
 
+import mne
 import pytest
 from numpy.random import RandomState, random
 
-import mne
 from mne_bids import BIDSPath
 from mne_bids.path import _path_to_str
 from mne_bids.utils import (

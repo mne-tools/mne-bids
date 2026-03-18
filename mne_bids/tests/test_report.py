@@ -5,10 +5,10 @@
 
 import textwrap
 
+import mne
 import pytest
 from mne.datasets import testing
 
-import mne
 from mne_bids import BIDSPath, make_report
 from mne_bids.config import BIDS_VERSION
 from mne_bids.write import write_raw_bids

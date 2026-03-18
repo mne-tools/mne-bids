@@ -9,6 +9,7 @@ import warnings
 from collections import OrderedDict
 from pathlib import Path
 
+import mne
 import numpy as np
 from mne.io.constants import FIFF
 from mne.io.pick import _picks_to_idx
@@ -19,7 +20,6 @@ from mne.utils import (
     logger,
 )
 
-import mne
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_SPACES,

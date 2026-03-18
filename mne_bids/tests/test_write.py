@@ -19,6 +19,7 @@ from datetime import UTC, date, datetime, timedelta
 from glob import glob
 from pathlib import Path
 
+import mne
 import numpy as np
 import pandas as pd
 import pytest
@@ -29,7 +30,6 @@ from mne.io.kit.kit import get_kit_info
 from mne.utils import check_version
 from numpy.testing import assert_allclose, assert_array_almost_equal, assert_array_equal
 
-import mne
 from mne_bids import (
     BIDSPath,
     anonymize_dataset,

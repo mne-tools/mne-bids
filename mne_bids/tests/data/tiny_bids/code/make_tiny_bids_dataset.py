@@ -8,9 +8,9 @@ import json
 from datetime import date
 from pathlib import Path
 
+import mne
 import numpy as np
 
-import mne
 import mne_bids
 from mne_bids import BIDSPath, write_raw_bids
 

@@ -11,12 +11,12 @@ import timeit
 from datetime import UTC, datetime
 from pathlib import Path
 
+import mne
 import pytest
 from mne.datasets import testing
 from mne.io import anonymize_info
 from test_read import _read_raw_fif, warning_str
 
-import mne
 from mne_bids import (
     BIDSPath,
     get_datatypes,

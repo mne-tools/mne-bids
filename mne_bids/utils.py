@@ -10,12 +10,12 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
+from mne import pick_types
 from mne.channels import make_standard_montage
 from mne.io.kit.kit import get_kit_info
 from mne.utils import logger, verbose
 from mne.utils import warn as _warn
 
-from mne import pick_types
 from mne_bids._fileio import _open_lock
 from mne_bids.tsv_handler import _to_tsv
 

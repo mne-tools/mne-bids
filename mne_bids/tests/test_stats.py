@@ -5,11 +5,11 @@
 
 import itertools
 
+import mne
 import numpy as np
 import pytest
 from mne.datasets import testing
 
-import mne
 from mne_bids import BIDSPath, write_raw_bids
 from mne_bids.read import _from_tsv
 from mne_bids.stats import count_events

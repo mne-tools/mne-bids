@@ -3,9 +3,8 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import pytest
-
 import mne
+import pytest
 
 
 def pytest_configure(config):
