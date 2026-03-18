@@ -66,7 +66,7 @@ full = [
   "eeglabio >= 0.1.0",
   "filelock",
   "h5py!=3.15.0",  # temporary fix until h5py 3.15.1 is released
-  "hed",  # For HED (Hierarchical Event Descriptors) annotation support
+  "hedtools",  # For HED (Hierarchical Event Descriptors) annotation support
   "matplotlib >= 3.6",
   "nibabel >= 3.2.1",
   "pandas >= 1.3.2",

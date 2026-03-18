@@ -34,16 +34,19 @@ from mne_bids.config import (
 )
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.read import (
+    _DEFAULT_HED_VERSION,
+    _assemble_hed_from_sidecar,
     _handle_channels_reading,
     _handle_events_reading,
     _handle_scans_reading,
+    _read_hed_version,
     _read_raw,
     events_file_to_annotation_kwargs,
     get_head_mri_trans,
     read_raw_bids,
 )
 from mne_bids.sidecar_updates import _update_sidecar
-from mne_bids.tsv_handler import _from_tsv, _to_tsv
+from mne_bids.tsv_handler import _drop, _from_tsv, _to_tsv
 from mne_bids.utils import _write_json
 from mne_bids.write import get_anat_landmarks, write_anat, write_raw_bids
 
@@ -2138,8 +2141,6 @@ def test_handle_events_reading_hed(tmp_path):
     assert list(raw_col.annotations.hed_string) == hed_tags
 
     # Default version when HEDVersion missing
-    from mne_bids.read import _DEFAULT_HED_VERSION
-
     desc_path = bids_root / "dataset_description.json"
     desc = json.loads(desc_path.read_text())
     desc.pop("HEDVersion")
@@ -2159,9 +2160,6 @@ def test_handle_events_reading_hed(tmp_path):
 
 def test_assemble_hed_from_sidecar(tmp_path):
     """Test HED assembly from JSON sidecar (categorical + template)."""
-    from mne_bids.read import _assemble_hed_from_sidecar
-    from mne_bids.tsv_handler import _drop, _from_tsv
-
     tsv_file = tmp_path / "events.tsv"
     pd.DataFrame(
         {
@@ -2211,9 +2209,6 @@ def test_assemble_hed_from_sidecar(tmp_path):
 )
 def test_assemble_hed_from_sidecar_returns_none(tmp_path, json_content):
     """Test _assemble_hed_from_sidecar returns None for invalid inputs."""
-    from mne_bids.read import _assemble_hed_from_sidecar
-    from mne_bids.tsv_handler import _from_tsv
-
     tsv_file = tmp_path / "events.tsv"
     pd.DataFrame({"onset": [0.0], "duration": [0.0], "trial_type": ["ev1"]}).to_csv(
         tsv_file, sep="\t", index=False
@@ -2243,8 +2238,6 @@ def test_assemble_hed_from_sidecar_returns_none(tmp_path, json_content):
 )
 def test_read_hed_version(tmp_path, desc_content, expected):
     """Test _read_hed_version reads HEDVersion from dataset_description."""
-    from mne_bids.read import _read_hed_version
-
     desc_path = tmp_path / "dataset_description.json"
     desc_path.write_text(desc_content)
     assert _read_hed_version(tmp_path) == expected
@@ -2259,6 +2252,4 @@ def test_read_hed_version(tmp_path, desc_content, expected):
 )
 def test_read_hed_version_returns_none(bids_root):
     """Test _read_hed_version returns None when root or file is missing."""
-    from mne_bids.read import _read_hed_version
-
     assert _read_hed_version(bids_root) is None
