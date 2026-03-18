@@ -12,10 +12,19 @@ as per-column mappings (event_type, task_role, trial, letter, memory_cond).
 """
 
 # %%
-# Download one subject from OpenNeuro
-# ------------------------------------
+# Imports
+# -------
+
+import json
+from pathlib import Path
 
 import openneuro
+
+from mne_bids import BIDSPath, read_raw_bids
+
+# %%
+# Download one subject from OpenNeuro
+# ------------------------------------
 
 openneuro.download(
     dataset="ds004117",
@@ -32,8 +41,6 @@ openneuro.download(
 # %%
 # Read with MNE-BIDS
 # -------------------
-
-from mne_bids import read_raw_bids, BIDSPath
 
 bids_path = BIDSPath(
     subject="002",
@@ -84,9 +91,6 @@ else:
 # Read HED from the sidecar directly
 # ------------------------------------
 # Even without HEDAnnotations, you can always read the sidecar manually.
-
-import json
-from pathlib import Path
 
 sidecar = json.loads(
     (Path("/tmp/ds004117") / "task-WorkingMemory_events.json").read_text()
