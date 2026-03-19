@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev27+g36271f125 documentation</title>
+    <title>Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev28+g6dcc45d4c documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=71007edb"></script>
+    <script src="../_static/documentation_options.js?v=0d1731d1"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev27+g36271f125" />
+  <meta name="docsearch:version" content="0.19.0.dev28+g6dcc45d4c" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev27+g36271f125 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev28+g6dcc45d4c documentation</p>
   
 </a></div>
     
@@ -760,8 +760,9 @@ format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;BDF&#39; | &#39;EDF&#39; 
     without a change of the original file format. A conversion to a
     different file format will then only take place if the original file
     format lacks some necessary features.
-    Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
-    to BDF or EDF for EMG, and to FIF for MEG data.
+    Conversion may be forced to BrainVision, BDF, EDF, or EEGLAB for EEG,
+    to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,
+    and to FIF for MEG data.
 symlink : bool
     Instead of copying the source files, only create symbolic links to
     preserve storage space. This is only allowed when not anonymizing the
@@ -1037,16 +1038,16 @@ participants.tsv
     2    sub-1     n/a       n/a       n/a       n/a       n/a
 sub-1/ieeg/sub-1_task-motor_channels.tsv
     1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de
-    2    LENT 1    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    3    LENT 2    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    4    LENT 3    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    5    LENT 4    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    6    LENT 5    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    7    LENT 6    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    8    LENT 7    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    9    LAMY 1    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    10   LAMY 2    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    11   LAMY 3    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    2    LENT 1    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    3    LENT 2    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    4    LENT 3    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    5    LENT 4    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    6    LENT 5    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    7    LENT 6    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    8    LENT 7    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    9    LAMY 1    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    10   LAMY 2    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    11   LAMY 3    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
     ...
 sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv
     1    name      x         y         z         size
@@ -1447,7 +1448,7 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.195 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.199 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/cf640e6bfa39f55978e620ef4269fd4c/convert_ieeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_ieeg_to_bids.ipynb</span></code></a></p>
@@ -1544,7 +1545,7 @@ coordinate frame.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-03-16.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-03-19.
       <br/>
     
   </p>

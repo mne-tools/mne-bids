@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev27+g36271f125 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev28+g6dcc45d4c documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=71007edb"></script>
+    <script src="../../_static/documentation_options.js?v=0d1731d1"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev27+g36271f125" />
+  <meta name="docsearch:version" content="0.19.0.dev28+g6dcc45d4c" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev27+g36271f125 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev28+g6dcc45d4c documentation</p>
   
 </a></div>
     
@@ -529,6 +529,7 @@
     <span class="n">BIDS_VERSION</span><span class="p">,</span>
     <span class="n">CONVERT_FORMATS</span><span class="p">,</span>
     <span class="n">EXT_TO_UNIT_MAP</span><span class="p">,</span>
+    <span class="n">FORMAT_EXTENSIONS</span><span class="p">,</span>
     <span class="n">IGNORED_CHANNELS</span><span class="p">,</span>
     <span class="n">MANUFACTURERS</span><span class="p">,</span>
     <span class="n">ORIENTATION</span><span class="p">,</span>
@@ -2315,8 +2316,9 @@
 <span class="sd">        without a change of the original file format. A conversion to a</span>
 <span class="sd">        different file format will then only take place if the original file</span>
 <span class="sd">        format lacks some necessary features.</span>
-<span class="sd">        Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,</span>
-<span class="sd">        to BDF or EDF for EMG, and to FIF for MEG data.</span>
+<span class="sd">        Conversion may be forced to BrainVision, BDF, EDF, or EEGLAB for EEG,</span>
+<span class="sd">        to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,</span>
+<span class="sd">        and to FIF for MEG data.</span>
 <span class="sd">    symlink : bool</span>
 <span class="sd">        Instead of copying the source files, only create symbolic links to</span>
 <span class="sd">        preserve storage space. This is only allowed when not anonymizing the</span>
@@ -2555,20 +2557,12 @@
 
         <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="o">**</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;BrainVision&quot;</span><span class="p">:</span>
-            <span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;.vhdr&quot;</span>
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;BDF&quot;</span><span class="p">:</span>
-            <span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;.bdf&quot;</span>
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EDF&quot;</span><span class="p">:</span>
-            <span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;.edf&quot;</span>
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EEGLAB&quot;</span><span class="p">:</span>
-            <span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;.set&quot;</span>
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;FIF&quot;</span><span class="p">:</span>
-            <span class="n">ext</span> <span class="o">=</span> <span class="s2">&quot;.fif&quot;</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="ow">in</span> <span class="n">FORMAT_EXTENSIONS</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">FORMAT_EXTENSIONS</span><span class="p">[</span><span class="nb">format</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s1">&#39;For preloaded data, you must set the &quot;format&quot; parameter &#39;</span>
-                <span class="s2">&quot;to one of: BrainVision, BDF, EDF, EEGLAB, or FIF&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;to one of: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FORMAT_EXTENSIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>  <span class="c1"># the default was changed</span>
                 <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;, but got: &quot;</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
@@ -2936,24 +2930,11 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Copying data files to </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+    <span class="n">write_format</span> <span class="o">=</span> <span class="nb">format</span>
+
     <span class="c1"># If users desire a certain format, will handle auto-conversion</span>
     <span class="k">if</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;BrainVision&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">]:</span>
-            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.vhdr&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EDF&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;emg&quot;</span><span class="p">]:</span>
-            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.edf&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;BDF&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;emg&quot;</span><span class="p">]:</span>
-            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.bdf&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EEGLAB&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">]:</span>
-            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.set&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;FIF&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span><span class="p">:</span>
-            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.fif&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="nb">format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">CONVERT_FORMATS</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">FORMAT_EXTENSIONS</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;The input &quot;format&quot; </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s1"> is not an &#39;</span>
                 <span class="sa">f</span><span class="s2">&quot;accepted input format for `write_raw_bids`. &quot;</span>
@@ -2967,12 +2948,26 @@
                 <span class="sa">f</span><span class="s2">&quot;Please use one of </span><span class="si">{</span><span class="n">CONVERT_FORMATS</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;for </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> datatype.&quot;</span>
             <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="n">FORMAT_EXTENSIONS</span><span class="p">[</span><span class="nb">format</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">convert</span> <span class="ow">and</span> <span class="n">write_format</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+        <span class="c1"># Resolve the actual export format before writing sidecars so metadata</span>
+        <span class="c1"># reflects the file format that will be written below.</span>
+        <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span><span class="p">:</span>
+            <span class="n">write_format</span> <span class="o">=</span> <span class="s2">&quot;FIF&quot;</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;emg&quot;</span><span class="p">:</span>
+            <span class="n">write_format</span> <span class="o">=</span> <span class="s2">&quot;BDF&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">write_format</span> <span class="o">=</span> <span class="s2">&quot;BrainVision&quot;</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="n">FORMAT_EXTENSIONS</span><span class="p">[</span><span class="n">write_format</span><span class="p">])</span>
 
     <span class="c1"># this can&#39;t happen until after value of `convert` has been determined</span>
     <span class="n">_channels_tsv</span><span class="p">(</span>
         <span class="n">raw</span><span class="p">,</span>
         <span class="n">channels_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
-        <span class="n">convert_fmt</span><span class="o">=</span><span class="nb">format</span> <span class="k">if</span> <span class="n">convert</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">convert_fmt</span><span class="o">=</span><span class="n">write_format</span> <span class="k">if</span> <span class="n">convert</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -3006,7 +3001,7 @@
 
     <span class="c1"># File saving branching logic</span>
     <span class="k">if</span> <span class="n">convert</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">write_format</span> <span class="o">==</span> <span class="s2">&quot;FIF&quot;</span><span class="p">:</span>
             <span class="n">_write_raw_fif</span><span class="p">(</span>
                 <span class="n">raw</span><span class="p">,</span>
                 <span class="p">(</span>
@@ -3015,23 +3010,15 @@
                     <span class="k">else</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
                 <span class="p">),</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;emg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;BDF&quot;</span><span class="p">:</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.bdf&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">write_format</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;BDF&quot;</span><span class="p">,</span> <span class="s2">&quot;EDF&quot;</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converting data files to </span><span class="si">{</span><span class="n">write_format</span><span class="si">}</span><span class="s2"> format&quot;</span><span class="p">)</span>
             <span class="n">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;emg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EDF&quot;</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to EDF format&quot;</span><span class="p">)</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.edf&quot;</span><span class="p">)</span>
-            <span class="n">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;EEGLAB&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">write_format</span> <span class="o">==</span> <span class="s2">&quot;EEGLAB&quot;</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to EEGLAB format&quot;</span><span class="p">)</span>
             <span class="n">_write_raw_eeglab</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;emg&quot;</span><span class="p">]:</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.bdf&quot;</span><span class="p">)</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to BDF format&quot;</span><span class="p">)</span>
-            <span class="n">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># BrainVision</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to BrainVision format&quot;</span><span class="p">)</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.vhdr&quot;</span><span class="p">)</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
             <span class="c1"># XXX Should we write durations here too?</span>
             <span class="n">_write_raw_brainvision</span><span class="p">(</span>
                 <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span>
@@ -4165,7 +4152,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-03-16.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-03-19.
       <br/>
     
   </p>
