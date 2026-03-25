@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import platform
+import re
 import shutil
 from pathlib import Path
 import numpy as np
@@ -14,6 +15,7 @@ from mne.datasets import testing
 from mne.io import read_raw_fif
 from mne.transforms import apply_trans
 from mne.utils import run_subprocess
+from packaging.version import Version
 
 
 test_path = testing.data_path(download=False)
@@ -22,12 +24,7 @@ test_path = testing.data_path(download=False)
 @pytest.fixture(scope="session")
 def _bids_validate():
     """Fixture to run BIDS validator."""
-    # See: https://stackoverflow.com/q/28891053/5201771
-    # On Windows, shell must be True
-    if platform.system() == "Windows":
-        shell = True
-    else:
-        shell = False
+    shell = _use_shell()
 
     # If neither bids-validator nor npx are available, we cannot validate BIDS
     # datasets, so we raise an exception.
@@ -53,6 +50,40 @@ def _bids_validate():
             run_subprocess(cmd, shell=shell)
 
     return _validate
+
+
+@pytest.fixture(scope="session")
+def _validator_version():
+    """Return bids-validator version or None if unknown/uninstalled."""
+    shell = _use_shell()
+    validator_path = shutil.which("bids-validator")
+    npx_path = shutil.which("npx")
+
+    if validator_path is not None:
+        cmd = [validator_path, "--version"]
+    elif npx_path is not None:
+        cmd = [npx_path, "bids-validator@latest", "--version"]
+    else:
+        return None
+
+    out = run_subprocess(cmd, shell=shell)[0]
+    match = re.search(r"\d+\.\d+\.\d+", out)  # MAJOR.MINOR.PATCH
+    if match is None:
+        return None
+    return Version(match.group(0))
+
+
+@pytest.fixture(scope="session")
+def _using_legacy_validator(_validator_version):
+    """Is `bids-validator --version` < 2."""
+    return _validator_version is not None and _validator_version.major < 2
+
+
+def _use_shell():
+    """Whether to run subprocess with shell injection."""
+    # See: https://stackoverflow.com/q/28891053/5201771
+    # On Windows, shell must be True
+    return platform.system() == "Windows"
 
 
 # Deal with:
