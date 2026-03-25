@@ -4598,3 +4598,41 @@ def test_reader_for_raw_ambiguous_extension():
         cnt_params = inspect.signature(reader[".cnt"]).parameters
         assert "fname" in ant_params
         assert "fname" not in cnt_params
+
+
+@testing.requires_testing_data
+def test_deface_mri_errors(t1_image, mri_landmarks):
+    """Test error raising for mri defacing function."""
+    bad_inset_type = "foo"
+    bad_inset_val = -1
+    bad_theta_type = "foo"
+    bad_theta_val = -5
+
+    # image type error
+    with pytest.raises(TypeError, match="nibabel.spatialimages"):
+        df_1 = deface_mri("foo", mri_landmarks, None)
+
+    # landmark type error
+    with pytest.raises(TypeError, match="nibabel.spatialimages"):
+        df_1 = deface_mri(t1_image, "foo", None)
+
+    # inset errors
+    with pytest.raises(ValueError, match="inset must be numeric"):
+        df_1 = deface_mri(t1_image, mri_landmarks, (bad_inset_type, 15.0))
+
+    with pytest.raises(ValueError, match='inset should be positive'):
+        df_2 = deface_mri(t1_image, mri_landmarks, (bad_inset_val, 15.0))
+
+    # theta errors
+    with pytest.raises(ValueError, match="theta must be numeric"):
+        df_1 = deface_mri(t1_image, mri_landmarks, (5, bad_theta_type))
+
+    with pytest.raises(ValueError, match='theta should be between'):
+        df_2 = deface_mri(t1_image, mri_landmarks, (5, bad_theta_val))
+
+
+@testing.requires_testing_data
+def test_deface_mri(t1_image, mri_landmarks):
+    """Test that defacing completes successfully."""
+    defaced_mri = deface_mri(t1_image, mri_landmarks)
+    assert isinstance(defaced_mri, nib.spatialimages.SpatialImage)
