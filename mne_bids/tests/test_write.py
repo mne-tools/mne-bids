@@ -4506,14 +4506,14 @@ def test_deface_mri_errors(t1_image, mri_landmarks):
     with pytest.raises(ValueError, match="inset must be numeric"):
         df_1 = deface_mri(t1_image, mri_landmarks, (bad_inset_type, 15.0))
 
-    with pytest.raises(ValueError, match='inset should be positive'):
+    with pytest.raises(ValueError, match="inset should be positive"):
         df_2 = deface_mri(t1_image, mri_landmarks, (bad_inset_val, 15.0))
 
     # theta errors
     with pytest.raises(ValueError, match="theta must be numeric"):
         df_1 = deface_mri(t1_image, mri_landmarks, (5, bad_theta_type))
 
-    with pytest.raises(ValueError, match='theta should be between'):
+    with pytest.raises(ValueError, match="theta should be between"):
         df_2 = deface_mri(t1_image, mri_landmarks, (5, bad_theta_val))
 
 

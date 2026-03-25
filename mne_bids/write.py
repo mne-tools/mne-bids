@@ -1282,37 +1282,41 @@ def _sidecar_json(
 def deface_mri(image, landmarks, deface):
     """Remove identifying facial detail from an MRI.
 
-        This function blacks out MRI voxels anterior to a nearly vertical plane
-        set by the nasion location. Watershed surfaces made using a defaced
-        MRI will also have no identifying facial detail.
+    This function blacks out MRI voxels anterior to a nearly vertical plane
+    set by the nasion location. Watershed surfaces made using a defaced
+    MRI will also have no identifying facial detail.
 
-        Parameters
-        ----------
-        image : MRI object
-            Anatomical image as a nibabel object.
-        landmarks : array-like
-           X / y / z coordinates of left pre-auricular, nasion, and right
-           pre-auricular points in MRI (voxel) coordinate space (3x3 list of
-           lists or array with nasion coords in the middle).
-        deface : None | dict
-            Dict should have two keys with positive numeric values. "Inset"
-            controls how close the blackout plane sits to the nasion point in
-            mm (a value of 5 will set the blackout plane 5 mm behind the
-            nasion); "theta" controls the angle of the blackout plane with
-            respect to vertical. Inset and theta values default to 5 and 15,
-            respectively.
+    Parameters
+    ----------
+    image : MRI object
+        Anatomical image as a nibabel object.
+    landmarks : array-like
+       X / y / z coordinates of left pre-auricular, nasion, and right
+       pre-auricular points in MRI (voxel) coordinate space (3x3 list of
+       lists or array with nasion coords in the middle).
+    deface : None | dict
+        Dict should have two keys with positive numeric values. "Inset"
+        controls how close the blackout plane sits to the nasion point in
+        mm (a value of 5 will set the blackout plane 5 mm behind the
+        nasion); "theta" controls the angle of the blackout plane with
+        respect to vertical. Inset and theta values default to 5 and 15,
+        respectively.
 
-        """
+    """
     nib = _import_nibabel("deface MRIs")
 
     if not isinstance(image, nib.spatialimages.SpatialImage):
-        raise TypeError(f"image must be an instance of "
-                           f"nibabel.spatialimages.SpatialImage. "
-                           f"Got {type(image)}")
+        raise TypeError(
+            f"image must be an instance of "
+            f"nibabel.spatialimages.SpatialImage. "
+            f"Got {type(image)}"
+        )
 
     if not isinstance(landmarks, (list, np.ndarray)):
-        raise TypeError(f"landmarks must be a 3x3 set of coordinates as a "
-                           f"list of list or array. Got {type(landmarks)}.")
+        raise TypeError(
+            f"landmarks must be a 3x3 set of coordinates as a "
+            f"list of list or array. Got {type(landmarks)}."
+        )
 
     inset, theta = (5, 15.0)
     if isinstance(deface, dict):
