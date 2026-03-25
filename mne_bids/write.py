@@ -1278,8 +1278,40 @@ def _sidecar_json(
     return fname
 
 
-def _deface(image, landmarks, deface):
+def deface_mri(image, landmarks, deface):
+    """Remove identifying facial detail from an MRI.
+
+        This function blacks out MRI voxels anterior to a nearly vertical plane
+        set by the nasion location. Watershed surfaces made using a defaced
+        MRI will also have no identifying facial detail.
+
+        Parameters
+        ----------
+        image : MRI object
+            Anatomical image as a nibabel object.
+        landmarks : array-like
+           X / y / z coordinates of left pre-auricular, nasion, and right
+           pre-auricular points in MRI (voxel) coordinate space (3x3 list of
+           lists or array with nasion coords in the middle).
+        deface : None | dict
+            Dict should have two keys with positive numeric values. "Inset"
+            controls how close the blackout plane sits to the nasion point in
+            mm (a value of 5 will set the blackout plane 5 mm behind the
+            nasion); "theta" controls the angle of the blackout plane with
+            respect to vertical. Inset and theta values default to 5 and 15,
+            respectively.
+
+        """
     nib = _import_nibabel("deface MRIs")
+
+    if not isinstance(image, nib.spatialimages.SpatialImage):
+        raise TypeError(f"image must be an instance of "
+                           f"nibabel.spatialimages.SpatialImage. "
+                           f"Got {type(image)}")
+
+    if not isinstance(landmarks, (list, np.ndarray)):
+        raise TypeError(f"landmarks must be a 3x3 set of coordinates as a "
+                           f"list of list or array. Got {type(landmarks)}.")
 
     inset, theta = (5, 15.0)
     if isinstance(deface, dict):
@@ -1303,7 +1335,9 @@ def _deface(image, landmarks, deface):
     # get image data, make a copy
     image_data = image.get_fdata().copy()
 
-    # make indices to move around so that the image doesn't have to
+    # Voxel coordinate spaces depend on the acquisition device and are quite
+    # diverse, so we start by converting everything to an RAS coordinate system
+    # Construct an image index array in RAS space
     idxs = np.meshgrid(
         np.arange(image_data.shape[0]),
         np.arange(image_data.shape[1]),
@@ -1314,13 +1348,18 @@ def _deface(image, landmarks, deface):
     idxs = np.transpose(idxs, [1, 2, 3, 0])  # (*image_data.shape, 3)
     idxs = idxs.reshape(-1, 3)  # (n_voxels, 3)
 
+    # image.affine is the voxel to RAS transform given the original MRI
     # convert to RAS by applying affine
     idxs = nib.affines.apply_affine(image.affine, idxs)
 
+    # get nasion into RAS
+    x, y, z = nib.affines.apply_affine(image.affine, landmarks)[1]
+
     # now comes the actual defacing
+    # defacing is performed by blacking out voxels ahead of a plane
+    # defined by the nasion.
     # 1. move center of voxels to (nasion - inset)
     # 2. rotate the head by theta from vertical
-    x, y, z = nib.affines.apply_affine(image.affine, landmarks)[1]
     idxs = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs)
     idxs = apply_trans(rotation(x=-np.pi / 2 + np.deg2rad(theta)), idxs)
     idxs = idxs.reshape(image_data.shape + (3,))
@@ -2881,7 +2920,7 @@ def write_anat(
                 # Take first one if none is specified for defacing.
                 landmarks_deface = next(iter(landmarks.items()))[1]
             _, landmarks_deface = _get_landmarks(landmarks_deface, image_nii)
-            image_nii = _deface(image_nii, landmarks_deface, deface)
+            image_nii = deface_mri(image_nii, landmarks_deface, deface)
 
     # Save anatomical data
     if op.exists(bids_path):
