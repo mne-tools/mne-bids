@@ -123,8 +123,8 @@ def _get_head_fids():
 
 @pytest.fixture(scope="module")
 def mri_landmarks():
-    trans_name = 'sample_audvis_trunc-trans.fif'
-    trans_path = test_path / 'MEG' / 'sample' / trans_name
+    trans_name = "sample_audvis_trunc-trans.fif"
+    trans_path = test_path / "MEG" / "sample" / trans_name
     trans = read_trans(trans_path)
     head_fids = _get_head_fids()
     t1 = _load_t1()
