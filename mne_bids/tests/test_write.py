@@ -63,7 +63,7 @@ from mne_bids.utils import (
     _write_json,
     get_anonymization_daysback,
 )
-from mne_bids.write import _get_fid_coords
+from mne_bids.write import _get_fid_coords, deface_mri
 
 base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
@@ -4494,31 +4494,38 @@ def test_deface_mri_errors(t1_image, mri_landmarks):
     bad_theta_type = "foo"
     bad_theta_val = -5
 
+    deface = dict(inset=5.0, theta=15.0)
+
     # image type error
     with pytest.raises(TypeError, match="nibabel.spatialimages"):
-        df_1 = deface_mri("foo", mri_landmarks, None)
+        deface_mri("foo", mri_landmarks, None)
 
     # landmark type error
-    with pytest.raises(TypeError, match="nibabel.spatialimages"):
-        df_1 = deface_mri(t1_image, "foo", None)
+    with pytest.raises(TypeError, match="landmarks"):
+        deface_mri(t1_image, "foo", None)
 
     # inset errors
     with pytest.raises(ValueError, match="inset must be numeric"):
-        df_1 = deface_mri(t1_image, mri_landmarks, (bad_inset_type, 15.0))
+        deface_mri(t1_image, mri_landmarks,
+                   dict(deface, inset=bad_inset_type))
 
     with pytest.raises(ValueError, match="inset should be positive"):
-        df_2 = deface_mri(t1_image, mri_landmarks, (bad_inset_val, 15.0))
+        deface_mri(t1_image, mri_landmarks,
+                   dict(deface, inset=bad_inset_val))
 
     # theta errors
     with pytest.raises(ValueError, match="theta must be numeric"):
-        df_1 = deface_mri(t1_image, mri_landmarks, (5, bad_theta_type))
+        deface_mri(t1_image, mri_landmarks,
+                   dict(deface, theta=bad_theta_type))
 
-    with pytest.raises(ValueError, match="theta should be between"):
-        df_2 = deface_mri(t1_image, mri_landmarks, (5, bad_theta_val))
+    with pytest.raises(ValueError, match='theta should be between'):
+        deface_mri(t1_image, mri_landmarks,
+                   dict(deface, theta=bad_theta_val))
 
 
 @testing.requires_testing_data
 def test_deface_mri(t1_image, mri_landmarks):
     """Test that defacing completes successfully."""
-    defaced_mri = deface_mri(t1_image, mri_landmarks)
-    assert isinstance(defaced_mri, nib.spatialimages.SpatialImage)
+    from nibabel.spatialimages import SpatialImage
+    defaced_mri = deface_mri(t1_image, mri_landmarks, None)
+    assert isinstance(defaced_mri, SpatialImage)

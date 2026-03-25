@@ -121,13 +121,13 @@ def _get_head_fids():
     return head_fids
 
 
-@pytest.fixture(scope=session)
+@pytest.fixture(scope="module")
 def mri_landmarks():
-    trans_name = "sample_audvis_trunc-trans.fif"
-    trans_path = test_path / "MEG" / "sample" / "trans" / trans_name
+    trans_name = 'sample_audvis_trunc-trans.fif'
+    trans_path = test_path / 'MEG' / 'sample' / trans_name
     trans = read_trans(trans_path)
     head_fids = _get_head_fids()
-    t1 = load_t1()
+    t1 = _load_t1()
     head_to_mri_trans = _get_head_to_vox_trans(t1)
     mri_fids = np.zeros(shape=head_fids.shape)
     for hfi, hfid in enumerate(head_fids):
@@ -136,7 +136,7 @@ def mri_landmarks():
     return mri_fids
 
 
-@pytest.fixture(scope=session)
+@pytest.fixture(scope="module")
 def t1_image():
     t1_im = _load_t1()
     return t1_im
