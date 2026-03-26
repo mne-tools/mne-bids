@@ -10,13 +10,13 @@ from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
 from pathlib import Path
 
-import mne
 import numpy as np
-from mne import events_from_annotations, io, pick_channels_regexp, read_events
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 from mne.utils import get_subjects_dir, logger
 
+import mne
+from mne import events_from_annotations, io, pick_channels_regexp, read_events
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
@@ -889,7 +889,7 @@ def _handle_events_reading(
                 hed_version=_read_hed_version(bids_root) or _DEFAULT_HED_VERSION,
                 extras=extras,
             )
-        except (ValueError, ImportError):
+        except (AttributeError, ValueError, ImportError):
             pass
 
     # Fall back to regular Annotations (HED data is still in extras)
