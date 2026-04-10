@@ -1446,7 +1446,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     )
 
 
-def _write_raw_edf_bdf(raw, bids_fname, overwrite):
+def _write_raw_edf_bdf(raw, bids_fname, physical_range, overwrite):
     """Store data as EDF.
 
     Parameters
@@ -1455,6 +1455,8 @@ def _write_raw_edf_bdf(raw, bids_fname, overwrite):
         Raw data to save.
     bids_fname : str
         The output filename.
+    physical_range : str | tuple
+        How to get the physical minimal and maximal values from the data.
     overwrite : bool
         Whether to overwrite an existing file or not.
     """
@@ -1475,7 +1477,7 @@ def _write_raw_edf_bdf(raw, bids_fname, overwrite):
                 year=1985, month=1, day=1, hour=0, minute=0, second=0, microsecond=0
             )
         )
-    raw.export(bids_fname, overwrite=overwrite)
+    raw.export(bids_fname, physical_range=physical_range, overwrite=overwrite)
 
 
 def _write_raw_eeglab(raw, bids_fname, overwrite):
@@ -1703,6 +1705,7 @@ def write_raw_bids(
     *,
     anonymize=None,
     format="auto",
+    physical_range="auto",
     symlink=False,
     empty_room=None,
     allow_preload=False,
@@ -1837,6 +1840,12 @@ def write_raw_bids(
         Conversion may be forced to BrainVision, BDF, EDF, or EEGLAB for EEG,
         to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,
         and to FIF for MEG data.
+    physical_range : str | tuple
+        If 'auto' (default), the physical range is inferred from the data, 
+        taking the minimum and maximum values per channel type. 
+        If 'channelwise', the range will be defined per channel. 
+        If a tuple of minimum and maximum, this manual physical range will be used. 
+        Only used for exporting EDF files.
     symlink : bool
         Instead of copying the source files, only create symbolic links to
         preserve storage space. This is only allowed when not anonymizing the
@@ -2530,7 +2539,7 @@ def write_raw_bids(
             )
         elif write_format in ("BDF", "EDF"):
             warn(f"Converting data files to {write_format} format")
-            _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
+            _write_raw_edf_bdf(raw, bids_path.fpath, physical_range = physical_range, overwrite=overwrite)
         elif write_format == "EEGLAB":
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
