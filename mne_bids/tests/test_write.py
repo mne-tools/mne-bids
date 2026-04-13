@@ -149,6 +149,8 @@ def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
         if Path(fname).suffix == ".mff":
             kwargs["events_as_annotations"] = True
+        if Path(fname).suffix.lower() == ".cnt":
+            kwargs.setdefault("data_format", "int16")
         raw = read_raw(fname, *args, **kwargs)
         raw.info["line_freq"] = 60
         return raw
