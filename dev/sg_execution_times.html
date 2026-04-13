@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Computation times &#8212; MNE-BIDS 0.19.0.dev29+g30330ad36 documentation</title>
+    <title>Computation times &#8212; MNE-BIDS 0.19.0.dev30+g97dfb26a6 documentation</title>
   
   
   
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -39,12 +39,12 @@
     <link rel="stylesheet" type="text/css" href="_static/style.css?v=81d8d220" />
   
   <!-- So that users can add custom icons -->
-  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="_static/documentation_options.js?v=efeef214"></script>
+    <script src="_static/documentation_options.js?v=ea0d92e1"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -53,17 +53,24 @@
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'sg_execution_times';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/sg_execution_times.html" />
@@ -72,16 +79,20 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev29+g30330ad36" />
+  <meta name="docsearch:version" content="0.19.0.dev30+g97dfb26a6" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
 
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
@@ -113,7 +124,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -135,7 +146,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev29+g30330ad36 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev30+g97dfb26a6 documentation</p>
   
 </a></div>
     
@@ -474,7 +485,7 @@
                   
   <section id="computation-times">
 <span id="sphx-glr-sg-execution-times"></span><h1>Computation times<a class="headerlink" href="#computation-times" title="Link to this heading">#</a></h1>
-<p><strong>01:14.006</strong> total execution time for 15 files <strong>from all galleries</strong>:</p>
+<p><strong>01:13.696</strong> total execution time for 15 files <strong>from all galleries</strong>:</p>
 <div class="docutils container">
 <style scoped>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
@@ -496,59 +507,59 @@ $(document).ready( function () {
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/convert_mri_and_trans.py</span></code>)</p></td>
-<td><p>00:24.442</p></td>
+<td><p>00:23.985</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">Interactive data inspection and bad channel selection</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/mark_bad_channels.py</span></code>)</p></td>
-<td><p>00:13.908</p></td>
+<td><p>00:14.154</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/anonymize_dataset.html#sphx-glr-auto-examples-anonymize-dataset-py"><span class="std std-ref">Anonymizing a BIDS dataset</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/anonymize_dataset.py</span></code>)</p></td>
-<td><p>00:11.698</p></td>
+<td><p>00:12.101</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/convert_fieldtrip_emg.html#sphx-glr-auto-examples-convert-fieldtrip-emg-py"><span class="std std-ref">Convert EMG data to BIDS format</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/convert_fieldtrip_emg.py</span></code>)</p></td>
-<td><p>00:05.456</p></td>
+<td><p>00:05.713</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">Read BIDS datasets</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/read_bids_datasets.py</span></code>)</p></td>
-<td><p>00:05.256</p></td>
+<td><p>00:04.332</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">Convert iEEG data to BIDS format</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/convert_ieeg_to_bids.py</span></code>)</p></td>
-<td><p>00:04.166</p></td>
+<td><p>00:04.320</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">Convert MNE sample data to BIDS format</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/convert_mne_sample.py</span></code>)</p></td>
-<td><p>00:03.877</p></td>
+<td><p>00:03.681</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">BIDS conversion for group studies</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/convert_group_studies.py</span></code>)</p></td>
-<td><p>00:01.932</p></td>
+<td><p>00:01.982</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">Manually storing empty room data</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/convert_empty_room.py</span></code>)</p></td>
-<td><p>00:01.885</p></td>
+<td><p>00:01.953</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/convert_nirs_to_bids.html#sphx-glr-auto-examples-convert-nirs-to-bids-py"><span class="std std-ref">Convert NIRS data to BIDS format</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/convert_nirs_to_bids.py</span></code>)</p></td>
-<td><p>00:00.459</p></td>
+<td><p>00:00.473</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">Convert EEG data to BIDS format</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/convert_eeg_to_bids.py</span></code>)</p></td>
-<td><p>00:00.456</p></td>
+<td><p>00:00.466</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/update_bids_datasets.html#sphx-glr-auto-examples-update-bids-datasets-py"><span class="std std-ref">Updating BIDS datasets</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/update_bids_datasets.py</span></code>)</p></td>
-<td><p>00:00.390</p></td>
+<td><p>00:00.453</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/rename_brainvision_files.html#sphx-glr-auto-examples-rename-brainvision-files-py"><span class="std std-ref">Rename BrainVision EEG data files</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/rename_brainvision_files.py</span></code>)</p></td>
-<td><p>00:00.073</p></td>
+<td><p>00:00.075</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="auto_examples/bidspath.html#sphx-glr-auto-examples-bidspath-py"><span class="std std-ref">An introduction to BIDSPath</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/bidspath.py</span></code>)</p></td>
-<td><p>00:00.006</p></td>
+<td><p>00:00.005</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="auto_examples/create_bids_folder.html#sphx-glr-auto-examples-create-bids-folder-py"><span class="std std-ref">Creating BIDS-compatible folder names and filenames</span></a> (<code class="docutils literal notranslate"><span class="pre">../examples/create_bids_folder.py</span></code>)</p></td>
@@ -589,8 +600,8 @@ $(document).ready( function () {
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -601,7 +612,7 @@ $(document).ready( function () {
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-03-23.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-13.
       <br/>
     
   </p>
@@ -624,7 +635,7 @@ $(document).ready( function () {
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
 </p></div>
       
     </div>
