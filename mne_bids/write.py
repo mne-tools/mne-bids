@@ -1841,10 +1841,10 @@ def write_raw_bids(
         to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,
         and to FIF for MEG data.
     physical_range : str | tuple
-        If 'auto' (default), the physical range is inferred from the data, 
-        taking the minimum and maximum values per channel type. 
-        If 'channelwise', the range will be defined per channel. 
-        If a tuple of minimum and maximum, this manual physical range will be used. 
+        If 'auto' (default), the physical range is inferred from the data,
+        taking the minimum and maximum values per channel type.
+        If 'channelwise', the range will be defined per channel.
+        If a tuple of minimum and maximum, this manual physical range will be used.
         Only used for exporting EDF files.
     symlink : bool
         Instead of copying the source files, only create symbolic links to
@@ -2539,7 +2539,9 @@ def write_raw_bids(
             )
         elif write_format in ("BDF", "EDF"):
             warn(f"Converting data files to {write_format} format")
-            _write_raw_edf_bdf(raw, bids_path.fpath, physical_range = physical_range, overwrite=overwrite)
+            _write_raw_edf_bdf(
+                raw, bids_path.fpath, physical_range=physical_range, overwrite=overwrite
+            )
         elif write_format == "EEGLAB":
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
