@@ -247,19 +247,19 @@ def test_path_benchmark(tmp_path_factory, monkeypatch):
         count = 0
         return get_entity_vals(*args, **kwargs)
 
-    def _root_glob_iglob(root, pattern):
+    def _path_glob_iglob(root, pattern):
         # Reroute Path.glob through iglob to count accesses
         return [root / f for f in glob.iglob(pattern, root_dir=root, recursive=True)]
 
-    def _root_rglob_iglob(root, pattern):
+    def _path_rglob_iglob(root, pattern):
         # Reroute Path.rglob through iglob to count accesses
         return [
             root / f for f in glob.iglob(f"**/{pattern}", root_dir=root, recursive=True)
         ]
 
     monkeypatch.setattr(glob, "iglob", iglob_count)
-    monkeypatch.setattr(mne_bids.path, "_root_glob", _root_glob_iglob)
-    monkeypatch.setattr(mne_bids.path, "_root_rglob", _root_rglob_iglob)
+    monkeypatch.setattr(mne_bids.path, "_path_glob", _path_glob_iglob)
+    monkeypatch.setattr(mne_bids.path, "_path_rglob", _path_rglob_iglob)
     monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
     monkeypatch.setattr(mne_bids, "get_entity_vals", get_entity_vals_count)
     fnames = _return_root_paths_count(tmp_bids_root)

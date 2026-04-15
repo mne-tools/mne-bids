@@ -2064,11 +2064,11 @@ def get_datatypes(root, verbose=None):
 
 
 # Helpers for testing glob accesses
-def _root_glob(root, pattern):
+def _path_glob(root, pattern):
     return root.glob(pattern)
 
 
-def _root_rglob(root, pattern):
+def _path_rglob(root, pattern):
     return root.rglob(pattern)
 
 
@@ -2263,10 +2263,10 @@ def get_entity_vals(
     if include_match is not None:
         include_match = _ensure_tuple(include_match)
         filenames = [
-            f for im in include_match for f in _root_glob(root, im + search_str)
+            f for im in include_match for f in _path_glob(root, im + search_str)
         ]
     else:
-        filenames = _root_glob(root, search_str)
+        filenames = _path_glob(root, search_str)
 
     for filename in filenames:
         # Skip ignored directories
@@ -2718,8 +2718,6 @@ def _return_root_paths(
     paths : list of pathlib.Path
         All files + .ds paths in `root`, filtered according to the function parameters.
     """
-    # Everything in this should route through glob.iglob so our tests can detect
-    # regressions in performance!
     root = Path(root)  # if root is str
 
     # OPTIMIZATION: Use entity-aware path construction when entities available
@@ -2768,7 +2766,7 @@ def _return_root_paths(
         # FALLBACK: Original implementation when entities not available
         # or subject unknown
         if datatype is None and not ignore_nosub:
-            paths = _root_rglob(root, "*.*")
+            paths = _path_rglob(root, "*.*")
         else:
             if datatype is not None:
                 datatype = _ensure_tuple(datatype)
