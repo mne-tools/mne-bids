@@ -1115,21 +1115,20 @@ class BIDSPath:
                 "BIDS root directory path to `root` via "
                 "BIDSPath.update()."
             )
-
-        paths = _return_root_paths(
-            self.root,
-            datatype=self.datatype,
+        kwargs = {
+            f"{key}s": [val] if val is not None else val
+            for key, val in self.entities.items()
+        }
+        kwargs.update(
+            root=self.root,
+            check=check,
             ignore_json=ignore_json,
             ignore_nosub=ignore_nosub,
-            entities=self.entities,
+            datatypes=[self.datatype] if self.datatype is not None else None,
+            suffixes=[self.suffix] if self.suffix is not None else None,
+            extensions=[self.extension] if self.extension is not None else None,
         )
-
-        fnames = _filter_fnames(
-            paths, suffix=self.suffix, extension=self.extension, **self.entities
-        )
-
-        bids_paths = _fnames_to_bidspaths(fnames, self.root, check=check)
-        return bids_paths
+        return find_matching_paths(**kwargs)
 
     def _check(self):
         """Deep check or not of the instance."""
@@ -2064,6 +2063,15 @@ def get_datatypes(root, verbose=None):
     return datatypes
 
 
+# Helpers for testing glob accesses
+def _path_glob(root, pattern):
+    return root.glob(pattern)
+
+
+def _path_rglob(root, pattern):
+    return root.rglob(pattern)
+
+
 @verbose
 def get_entity_vals(
     root,
@@ -2254,9 +2262,11 @@ def get_entity_vals(
     search_str = f"**/*{entity_long_abbr_map[entity_key]}-*_*"
     if include_match is not None:
         include_match = _ensure_tuple(include_match)
-        filenames = [f for im in include_match for f in root.glob(im + search_str)]
+        filenames = [
+            f for im in include_match for f in _path_glob(root, im + search_str)
+        ]
     else:
-        filenames = root.glob(search_str)
+        filenames = _path_glob(root, search_str)
 
     for filename in filenames:
         # Skip ignored directories
@@ -2556,11 +2566,12 @@ def find_matching_paths(
     spaces=None,
     splits=None,
     descriptions=None,
+    *,
+    tracking_systems=None,
     suffixes=None,
     extensions=None,
     datatypes=None,
     check=False,
-    *,
     ignore_json=False,
     ignore_nosub=False,
 ):
@@ -2604,6 +2615,10 @@ def find_matching_paths(
         may be assigned ``description='cleaned'``.
 
         .. versionadded:: 0.11
+    tracking_systems : str | array-like of str | None
+        The tracking system used for digitization.
+
+        .. versionadded:: 0.19
     suffixes : str | array-like of str | None
         The filename suffix. This is the entity after the
         last ``_`` before the extension. E.g., ``'channels'``.
@@ -2634,8 +2649,23 @@ def find_matching_paths(
         The matching paths.
 
     """
+    entities_opt = dict()
+    if subjects is not None:
+        if isinstance(subjects, str):
+            entities_opt["subject"] = subjects
+        elif len(subjects) == 1:
+            entities_opt["subject"] = subjects[0]
+    if sessions is not None:
+        if isinstance(sessions, str):
+            entities_opt["session"] = sessions
+        elif len(sessions) == 1:
+            entities_opt["session"] = sessions[0]
     fpaths = _return_root_paths(
-        root, datatype=datatypes, ignore_json=ignore_json, ignore_nosub=ignore_nosub
+        root,
+        datatype=datatypes,
+        ignore_json=ignore_json,
+        ignore_nosub=ignore_nosub,
+        entities=entities_opt,
     )
 
     fpaths_filtered = _filter_fnames(
@@ -2650,6 +2680,7 @@ def find_matching_paths(
         space=spaces,
         split=splits,
         description=descriptions,
+        tracking_system=tracking_systems,
         suffix=suffixes,
         extension=extensions,
     )
@@ -2735,7 +2766,7 @@ def _return_root_paths(
         # FALLBACK: Original implementation when entities not available
         # or subject unknown
         if datatype is None and not ignore_nosub:
-            paths = root.rglob("*.*")
+            paths = _path_rglob(root, "*.*")
         else:
             if datatype is not None:
                 datatype = _ensure_tuple(datatype)
