@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev31+gbd0c1fa8b documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev32+g82c4441d4 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../../_static/documentation_options.js?v=558e1147"></script>
+    <script src="../../_static/documentation_options.js?v=60f8dc20"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev31+gbd0c1fa8b" />
+  <meta name="docsearch:version" content="0.19.0.dev32+g82c4441d4" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -145,7 +145,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev31+gbd0c1fa8b documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev32+g82c4441d4 documentation</p>
   
 </a></div>
     
@@ -1619,21 +1619,20 @@
                 <span class="s2">&quot;BIDS root directory path to `root` via &quot;</span>
                 <span class="s2">&quot;BIDSPath.update().&quot;</span>
             <span class="p">)</span>
-
-        <span class="n">paths</span> <span class="o">=</span> <span class="n">_return_root_paths</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
-            <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">val</span><span class="p">]</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">val</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+            <span class="n">check</span><span class="o">=</span><span class="n">check</span><span class="p">,</span>
             <span class="n">ignore_json</span><span class="o">=</span><span class="n">ignore_json</span><span class="p">,</span>
             <span class="n">ignore_nosub</span><span class="o">=</span><span class="n">ignore_nosub</span><span class="p">,</span>
-            <span class="n">entities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">,</span>
+            <span class="n">datatypes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">suffixes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span>
-            <span class="n">paths</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span>
-        <span class="p">)</span>
-
-        <span class="n">bids_paths</span> <span class="o">=</span> <span class="n">_fnames_to_bidspaths</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="n">check</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">bids_paths</span></div>
+        <span class="k">return</span> <span class="n">find_matching_paths</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2594,6 +2593,15 @@
 
 
 
+<span class="c1"># Helpers for testing glob accesses</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_path_glob</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_path_rglob</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="get_entity_vals">
 <a class="viewcode-back" href="../../generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals">[docs]</a>
 <span class="nd">@verbose</span>
@@ -2786,9 +2794,11 @@
     <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;**/*</span><span class="si">{</span><span class="n">entity_long_abbr_map</span><span class="p">[</span><span class="n">entity_key</span><span class="p">]</span><span class="si">}</span><span class="s2">-*_*&quot;</span>
     <span class="k">if</span> <span class="n">include_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">include_match</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">include_match</span><span class="p">)</span>
-        <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">include_match</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">im</span> <span class="o">+</span> <span class="n">search_str</span><span class="p">)]</span>
+        <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">f</span> <span class="k">for</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">include_match</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_path_glob</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">im</span> <span class="o">+</span> <span class="n">search_str</span><span class="p">)</span>
+        <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">filenames</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
+        <span class="n">filenames</span> <span class="o">=</span> <span class="n">_path_glob</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">search_str</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
         <span class="c1"># Skip ignored directories</span>
@@ -3091,11 +3101,12 @@
     <span class="n">spaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">splits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">tracking_systems</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">suffixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">extensions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">datatypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
     <span class="n">ignore_json</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">ignore_nosub</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
@@ -3139,6 +3150,10 @@
 <span class="sd">        may be assigned ``description=&#39;cleaned&#39;``.</span>
 
 <span class="sd">        .. versionadded:: 0.11</span>
+<span class="sd">    tracking_systems : str | array-like of str | None</span>
+<span class="sd">        The tracking system used for digitization.</span>
+
+<span class="sd">        .. versionadded:: 0.19</span>
 <span class="sd">    suffixes : str | array-like of str | None</span>
 <span class="sd">        The filename suffix. This is the entity after the</span>
 <span class="sd">        last ``_`` before the extension. E.g., ``&#39;channels&#39;``.</span>
@@ -3169,8 +3184,23 @@
 <span class="sd">        The matching paths.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">entities_opt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">subjects</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subjects</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">entities_opt</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subjects</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">subjects</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">entities_opt</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">sessions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sessions</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">entities_opt</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sessions</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">sessions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">entities_opt</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sessions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">fpaths</span> <span class="o">=</span> <span class="n">_return_root_paths</span><span class="p">(</span>
-        <span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatypes</span><span class="p">,</span> <span class="n">ignore_json</span><span class="o">=</span><span class="n">ignore_json</span><span class="p">,</span> <span class="n">ignore_nosub</span><span class="o">=</span><span class="n">ignore_nosub</span>
+        <span class="n">root</span><span class="p">,</span>
+        <span class="n">datatype</span><span class="o">=</span><span class="n">datatypes</span><span class="p">,</span>
+        <span class="n">ignore_json</span><span class="o">=</span><span class="n">ignore_json</span><span class="p">,</span>
+        <span class="n">ignore_nosub</span><span class="o">=</span><span class="n">ignore_nosub</span><span class="p">,</span>
+        <span class="n">entities</span><span class="o">=</span><span class="n">entities_opt</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">fpaths_filtered</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span>
@@ -3185,6 +3215,7 @@
         <span class="n">space</span><span class="o">=</span><span class="n">spaces</span><span class="p">,</span>
         <span class="n">split</span><span class="o">=</span><span class="n">splits</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span>
+        <span class="n">tracking_system</span><span class="o">=</span><span class="n">tracking_systems</span><span class="p">,</span>
         <span class="n">suffix</span><span class="o">=</span><span class="n">suffixes</span><span class="p">,</span>
         <span class="n">extension</span><span class="o">=</span><span class="n">extensions</span><span class="p">,</span>
     <span class="p">)</span>
@@ -3271,7 +3302,7 @@
         <span class="c1"># FALLBACK: Original implementation when entities not available</span>
         <span class="c1"># or subject unknown</span>
         <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore_nosub</span><span class="p">:</span>
-            <span class="n">paths</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.*&quot;</span><span class="p">)</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">_path_rglob</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;*.*&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">datatype</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span>
@@ -3412,7 +3443,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-13.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-15.
       <br/>
     
   </p>

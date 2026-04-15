@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert MNE sample data to BIDS format &#8212; MNE-BIDS 0.19.0.dev31+gbd0c1fa8b documentation</title>
+    <title>Convert MNE sample data to BIDS format &#8212; MNE-BIDS 0.19.0.dev32+g82c4441d4 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../_static/documentation_options.js?v=558e1147"></script>
+    <script src="../_static/documentation_options.js?v=60f8dc20"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,7 +81,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev31+gbd0c1fa8b" />
+  <meta name="docsearch:version" content="0.19.0.dev32+g82c4441d4" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev31+gbd0c1fa8b documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev32+g82c4441d4 documentation</p>
   
 </a></div>
     
@@ -572,6 +572,230 @@ from. <em class="xref py py-obj">output_path</em> determines where we will write
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">er_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">&quot;MEG&quot;</span> <span class="o">/</span> <span class="s2">&quot;sample&quot;</span> <span class="o">/</span> <span class="s2">&quot;ernoise_raw.fif&quot;</span>  <span class="c1"># empty room</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">&quot;MEG&quot;</span> <span class="o">/</span> <span class="s2">&quot;sample&quot;</span> <span class="o">/</span> <span class="s2">&quot;sample_audvis_raw-eve.fif&quot;</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.parent" title="pathlib.PurePath.parent" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-attribute"><span class="n">data_path</span><span class="o">.</span><span class="n">parent</span></a> <span class="o">/</span> <span class="s2">&quot;MNE-sample-data-bids&quot;</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for sample...
+Fetching 1 file for the sample dataset ...
+
+  0%|                                              | 0.00/1.65G [00:00&lt;?, ?B/s]
+  0%|                                     | 1.90M/1.65G [00:00&lt;01:27, 19.0MB/s]
+  1%|▏                                    | 9.78M/1.65G [00:00&lt;00:30, 54.2MB/s]
+  1%|▍                                    | 17.7M/1.65G [00:00&lt;00:24, 65.7MB/s]
+  2%|▌                                    | 25.7M/1.65G [00:00&lt;00:22, 71.1MB/s]
+  2%|▊                                    | 33.6M/1.65G [00:00&lt;00:21, 74.0MB/s]
+  3%|▉                                    | 41.5M/1.65G [00:00&lt;00:21, 75.9MB/s]
+  3%|█                                    | 49.4M/1.65G [00:00&lt;00:20, 76.7MB/s]
+  3%|█▎                                   | 57.2M/1.65G [00:00&lt;00:20, 77.1MB/s]
+  4%|█▍                                   | 64.9M/1.65G [00:00&lt;00:20, 77.3MB/s]
+  4%|█▋                                   | 72.8M/1.65G [00:01&lt;00:20, 77.6MB/s]
+  5%|█▊                                   | 80.6M/1.65G [00:01&lt;00:20, 77.7MB/s]
+  5%|█▉                                   | 88.4M/1.65G [00:01&lt;00:20, 77.8MB/s]
+  6%|██▏                                  | 96.2M/1.65G [00:01&lt;00:19, 77.9MB/s]
+  6%|██▍                                   | 104M/1.65G [00:01&lt;00:19, 77.9MB/s]
+  7%|██▌                                   | 112M/1.65G [00:01&lt;00:19, 78.0MB/s]
+  7%|██▋                                   | 120M/1.65G [00:01&lt;00:19, 78.0MB/s]
+  8%|██▉                                   | 127M/1.65G [00:01&lt;00:19, 77.9MB/s]
+  8%|███                                   | 135M/1.65G [00:01&lt;00:19, 77.9MB/s]
+  9%|███▎                                  | 143M/1.65G [00:01&lt;00:19, 77.8MB/s]
+  9%|███▍                                  | 151M/1.65G [00:02&lt;00:19, 77.8MB/s]
+ 10%|███▋                                  | 159M/1.65G [00:02&lt;00:19, 77.9MB/s]
+ 10%|███▊                                  | 166M/1.65G [00:02&lt;00:19, 78.0MB/s]
+ 11%|████                                  | 174M/1.65G [00:02&lt;00:18, 78.1MB/s]
+ 11%|████▏                                 | 182M/1.65G [00:02&lt;00:18, 78.0MB/s]
+ 11%|████▎                                 | 190M/1.65G [00:02&lt;00:18, 78.4MB/s]
+ 12%|████▌                                 | 198M/1.65G [00:02&lt;00:18, 78.7MB/s]
+ 12%|████▋                                 | 206M/1.65G [00:02&lt;00:18, 78.8MB/s]
+ 13%|████▉                                 | 214M/1.65G [00:02&lt;00:18, 78.7MB/s]
+ 13%|█████                                 | 222M/1.65G [00:02&lt;00:18, 78.5MB/s]
+ 14%|█████▎                                | 229M/1.65G [00:03&lt;00:18, 78.5MB/s]
+ 14%|█████▍                                | 237M/1.65G [00:03&lt;00:18, 78.5MB/s]
+ 15%|█████▋                                | 245M/1.65G [00:03&lt;00:17, 78.3MB/s]
+ 15%|█████▊                                | 253M/1.65G [00:03&lt;00:17, 78.2MB/s]
+ 16%|█████▉                                | 261M/1.65G [00:03&lt;00:17, 78.2MB/s]
+ 16%|██████▏                               | 269M/1.65G [00:03&lt;00:17, 78.1MB/s]
+ 17%|██████▎                               | 276M/1.65G [00:03&lt;00:17, 78.1MB/s]
+ 17%|██████▌                               | 284M/1.65G [00:03&lt;00:17, 78.1MB/s]
+ 18%|██████▋                               | 292M/1.65G [00:03&lt;00:17, 78.1MB/s]
+ 18%|██████▉                               | 300M/1.65G [00:03&lt;00:17, 78.0MB/s]
+ 19%|███████                               | 308M/1.65G [00:04&lt;00:17, 77.7MB/s]
+ 19%|███████▎                              | 316M/1.65G [00:04&lt;00:17, 77.9MB/s]
+ 20%|███████▍                              | 323M/1.65G [00:04&lt;00:17, 78.0MB/s]
+ 20%|███████▌                              | 331M/1.65G [00:04&lt;00:16, 77.9MB/s]
+ 21%|███████▊                              | 339M/1.65G [00:04&lt;00:16, 77.9MB/s]
+ 21%|███████▉                              | 347M/1.65G [00:04&lt;00:16, 78.0MB/s]
+ 21%|████████▏                             | 355M/1.65G [00:04&lt;00:16, 78.1MB/s]
+ 22%|████████▎                             | 362M/1.65G [00:04&lt;00:16, 78.0MB/s]
+ 22%|████████▌                             | 370M/1.65G [00:04&lt;00:16, 77.8MB/s]
+ 23%|████████▋                             | 378M/1.65G [00:04&lt;00:16, 77.7MB/s]
+ 23%|████████▊                             | 386M/1.65G [00:05&lt;00:16, 77.3MB/s]
+ 24%|█████████                             | 393M/1.65G [00:05&lt;00:17, 73.5MB/s]
+ 24%|█████████▏                            | 401M/1.65G [00:05&lt;00:16, 74.4MB/s]
+ 25%|█████████▍                            | 409M/1.65G [00:05&lt;00:16, 75.3MB/s]
+ 25%|█████████▌                            | 417M/1.65G [00:05&lt;00:16, 75.9MB/s]
+ 26%|█████████▊                            | 424M/1.65G [00:05&lt;00:16, 76.3MB/s]
+ 26%|█████████▉                            | 432M/1.65G [00:05&lt;00:15, 76.5MB/s]
+ 27%|██████████                            | 440M/1.65G [00:05&lt;00:15, 76.7MB/s]
+ 27%|██████████▎                           | 447M/1.65G [00:05&lt;00:15, 76.8MB/s]
+ 28%|██████████▍                           | 455M/1.65G [00:05&lt;00:15, 76.8MB/s]
+ 28%|██████████▋                           | 463M/1.65G [00:06&lt;00:15, 76.9MB/s]
+ 28%|██████████▊                           | 471M/1.65G [00:06&lt;00:15, 77.0MB/s]
+ 29%|██████████▉                           | 478M/1.65G [00:06&lt;00:15, 77.1MB/s]
+ 29%|███████████▏                          | 486M/1.65G [00:06&lt;00:15, 77.1MB/s]
+ 30%|███████████▎                          | 494M/1.65G [00:06&lt;00:14, 77.4MB/s]
+ 30%|███████████▌                          | 502M/1.65G [00:06&lt;00:14, 77.8MB/s]
+ 31%|███████████▋                          | 510M/1.65G [00:06&lt;00:14, 78.0MB/s]
+ 31%|███████████▉                          | 517M/1.65G [00:06&lt;00:14, 78.3MB/s]
+ 32%|████████████                          | 525M/1.65G [00:06&lt;00:14, 78.6MB/s]
+ 32%|████████████▎                         | 533M/1.65G [00:06&lt;00:14, 78.1MB/s]
+ 33%|████████████▍                         | 541M/1.65G [00:07&lt;00:14, 78.5MB/s]
+ 33%|████████████▋                         | 549M/1.65G [00:07&lt;00:14, 78.8MB/s]
+ 34%|████████████▊                         | 557M/1.65G [00:07&lt;00:13, 79.1MB/s]
+ 34%|████████████▉                         | 565M/1.65G [00:07&lt;00:13, 79.2MB/s]
+ 35%|█████████████▏                        | 573M/1.65G [00:07&lt;00:13, 79.3MB/s]
+ 35%|█████████████▎                        | 581M/1.65G [00:07&lt;00:13, 79.4MB/s]
+ 36%|█████████████▌                        | 589M/1.65G [00:07&lt;00:13, 79.5MB/s]
+ 36%|█████████████▋                        | 597M/1.65G [00:07&lt;00:13, 79.6MB/s]
+ 37%|█████████████▉                        | 605M/1.65G [00:07&lt;00:13, 79.7MB/s]
+ 37%|██████████████                        | 613M/1.65G [00:07&lt;00:13, 79.6MB/s]
+ 38%|██████████████▎                       | 621M/1.65G [00:08&lt;00:12, 79.7MB/s]
+ 38%|██████████████▍                       | 629M/1.65G [00:08&lt;00:12, 79.7MB/s]
+ 39%|██████████████▋                       | 637M/1.65G [00:08&lt;00:12, 79.7MB/s]
+ 39%|██████████████▊                       | 645M/1.65G [00:08&lt;00:12, 79.7MB/s]
+ 39%|███████████████                       | 653M/1.65G [00:08&lt;00:12, 79.5MB/s]
+ 40%|███████████████▏                      | 661M/1.65G [00:08&lt;00:12, 79.5MB/s]
+ 40%|███████████████▎                      | 669M/1.65G [00:08&lt;00:12, 79.4MB/s]
+ 41%|███████████████▌                      | 677M/1.65G [00:08&lt;00:12, 79.4MB/s]
+ 41%|███████████████▋                      | 685M/1.65G [00:08&lt;00:12, 79.5MB/s]
+ 42%|███████████████▉                      | 693M/1.65G [00:08&lt;00:12, 79.1MB/s]
+ 42%|████████████████                      | 700M/1.65G [00:09&lt;00:12, 75.8MB/s]
+ 43%|████████████████▎                     | 708M/1.65G [00:09&lt;00:12, 76.9MB/s]
+ 43%|████████████████▍                     | 716M/1.65G [00:09&lt;00:12, 77.7MB/s]
+ 44%|████████████████▋                     | 724M/1.65G [00:09&lt;00:11, 78.2MB/s]
+ 44%|████████████████▊                     | 732M/1.65G [00:09&lt;00:11, 78.6MB/s]
+ 45%|█████████████████                     | 740M/1.65G [00:09&lt;00:11, 78.8MB/s]
+ 45%|█████████████████▏                    | 748M/1.65G [00:09&lt;00:11, 79.0MB/s]
+ 46%|█████████████████▍                    | 756M/1.65G [00:09&lt;00:11, 78.0MB/s]
+ 46%|█████████████████▌                    | 764M/1.65G [00:09&lt;00:12, 74.0MB/s]
+ 47%|█████████████████▋                    | 771M/1.65G [00:09&lt;00:12, 71.4MB/s]
+ 47%|█████████████████▉                    | 778M/1.65G [00:10&lt;00:12, 70.1MB/s]
+ 48%|██████████████████                    | 786M/1.65G [00:10&lt;00:12, 69.1MB/s]
+ 48%|██████████████████▏                   | 792M/1.65G [00:10&lt;00:12, 68.5MB/s]
+ 48%|██████████████████▍                   | 799M/1.65G [00:10&lt;00:12, 68.4MB/s]
+ 49%|██████████████████▌                   | 807M/1.65G [00:10&lt;00:11, 71.2MB/s]
+ 49%|██████████████████▋                   | 815M/1.65G [00:10&lt;00:11, 73.6MB/s]
+ 50%|██████████████████▉                   | 823M/1.65G [00:10&lt;00:11, 75.3MB/s]
+ 50%|███████████████████                   | 831M/1.65G [00:10&lt;00:10, 76.6MB/s]
+ 51%|███████████████████▎                  | 839M/1.65G [00:10&lt;00:10, 77.4MB/s]
+ 51%|███████████████████▍                  | 847M/1.65G [00:11&lt;00:10, 78.0MB/s]
+ 52%|███████████████████▋                  | 855M/1.65G [00:11&lt;00:10, 78.6MB/s]
+ 52%|███████████████████▊                  | 863M/1.65G [00:11&lt;00:10, 78.9MB/s]
+ 53%|████████████████████                  | 871M/1.65G [00:11&lt;00:09, 79.1MB/s]
+ 53%|████████████████████▏                 | 879M/1.65G [00:11&lt;00:09, 79.2MB/s]
+ 54%|████████████████████▍                 | 887M/1.65G [00:11&lt;00:09, 79.3MB/s]
+ 54%|████████████████████▌                 | 895M/1.65G [00:11&lt;00:09, 79.0MB/s]
+ 55%|████████████████████▊                 | 903M/1.65G [00:11&lt;00:09, 79.1MB/s]
+ 55%|████████████████████▉                 | 911M/1.65G [00:11&lt;00:09, 79.3MB/s]
+ 56%|█████████████████████                 | 918M/1.65G [00:11&lt;00:09, 79.4MB/s]
+ 56%|█████████████████████▎                | 926M/1.65G [00:12&lt;00:09, 79.5MB/s]
+ 57%|█████████████████████▍                | 934M/1.65G [00:12&lt;00:09, 79.6MB/s]
+ 57%|█████████████████████▋                | 942M/1.65G [00:12&lt;00:08, 79.7MB/s]
+ 58%|█████████████████████▊                | 950M/1.65G [00:12&lt;00:08, 79.7MB/s]
+ 58%|██████████████████████                | 958M/1.65G [00:12&lt;00:08, 79.8MB/s]
+ 58%|██████████████████████▏               | 966M/1.65G [00:12&lt;00:08, 79.8MB/s]
+ 59%|██████████████████████▍               | 974M/1.65G [00:12&lt;00:08, 79.8MB/s]
+ 59%|██████████████████████▌               | 982M/1.65G [00:12&lt;00:08, 79.7MB/s]
+ 60%|██████████████████████▊               | 990M/1.65G [00:12&lt;00:08, 79.7MB/s]
+ 60%|██████████████████████▉               | 998M/1.65G [00:12&lt;00:08, 79.8MB/s]
+ 61%|██████████████████████▌              | 1.01G/1.65G [00:13&lt;00:08, 79.8MB/s]
+ 61%|██████████████████████▋              | 1.01G/1.65G [00:13&lt;00:07, 79.8MB/s]
+ 62%|██████████████████████▉              | 1.02G/1.65G [00:13&lt;00:07, 79.8MB/s]
+ 62%|███████████████████████              | 1.03G/1.65G [00:13&lt;00:07, 79.7MB/s]
+ 63%|███████████████████████▏             | 1.04G/1.65G [00:13&lt;00:08, 75.5MB/s]
+ 63%|███████████████████████▍             | 1.05G/1.65G [00:13&lt;00:08, 71.2MB/s]
+ 64%|███████████████████████▌             | 1.05G/1.65G [00:13&lt;00:08, 73.1MB/s]
+ 64%|███████████████████████▊             | 1.06G/1.65G [00:13&lt;00:07, 74.5MB/s]
+ 65%|███████████████████████▉             | 1.07G/1.65G [00:13&lt;00:07, 75.6MB/s]
+ 65%|████████████████████████             | 1.08G/1.65G [00:13&lt;00:07, 76.2MB/s]
+ 66%|████████████████████████▎            | 1.08G/1.65G [00:14&lt;00:07, 76.5MB/s]
+ 66%|████████████████████████▍            | 1.09G/1.65G [00:14&lt;00:07, 76.6MB/s]
+ 67%|████████████████████████▋            | 1.10G/1.65G [00:14&lt;00:07, 76.6MB/s]
+ 67%|████████████████████████▊            | 1.11G/1.65G [00:14&lt;00:07, 76.7MB/s]
+ 67%|████████████████████████▉            | 1.12G/1.65G [00:14&lt;00:06, 76.9MB/s]
+ 68%|█████████████████████████▏           | 1.12G/1.65G [00:14&lt;00:06, 77.1MB/s]
+ 68%|█████████████████████████▎           | 1.13G/1.65G [00:14&lt;00:06, 77.1MB/s]
+ 69%|█████████████████████████▍           | 1.14G/1.65G [00:14&lt;00:06, 77.3MB/s]
+ 69%|█████████████████████████▋           | 1.15G/1.65G [00:14&lt;00:06, 77.2MB/s]
+ 70%|█████████████████████████▊           | 1.15G/1.65G [00:14&lt;00:06, 77.3MB/s]
+ 70%|██████████████████████████           | 1.16G/1.65G [00:15&lt;00:06, 77.4MB/s]
+ 71%|██████████████████████████▏          | 1.17G/1.65G [00:15&lt;00:06, 77.5MB/s]
+ 71%|██████████████████████████▎          | 1.18G/1.65G [00:15&lt;00:06, 77.5MB/s]
+ 72%|██████████████████████████▌          | 1.19G/1.65G [00:15&lt;00:06, 77.2MB/s]
+ 72%|██████████████████████████▋          | 1.19G/1.65G [00:15&lt;00:06, 76.6MB/s]
+ 73%|██████████████████████████▉          | 1.20G/1.65G [00:15&lt;00:05, 76.7MB/s]
+ 73%|███████████████████████████          | 1.21G/1.65G [00:15&lt;00:05, 76.7MB/s]
+ 74%|███████████████████████████▏         | 1.22G/1.65G [00:15&lt;00:05, 76.7MB/s]
+ 74%|███████████████████████████▍         | 1.22G/1.65G [00:15&lt;00:05, 76.6MB/s]
+ 75%|███████████████████████████▌         | 1.23G/1.65G [00:15&lt;00:05, 76.7MB/s]
+ 75%|███████████████████████████▋         | 1.24G/1.65G [00:16&lt;00:05, 76.7MB/s]
+ 75%|███████████████████████████▉         | 1.25G/1.65G [00:16&lt;00:05, 76.6MB/s]
+ 76%|████████████████████████████         | 1.25G/1.65G [00:16&lt;00:05, 76.6MB/s]
+ 76%|████████████████████████████▎        | 1.26G/1.65G [00:16&lt;00:05, 76.4MB/s]
+ 77%|████████████████████████████▍        | 1.27G/1.65G [00:16&lt;00:05, 76.4MB/s]
+ 77%|████████████████████████████▌        | 1.28G/1.65G [00:16&lt;00:04, 76.5MB/s]
+ 78%|████████████████████████████▊        | 1.28G/1.65G [00:16&lt;00:04, 76.5MB/s]
+ 78%|████████████████████████████▉        | 1.29G/1.65G [00:16&lt;00:04, 76.5MB/s]
+ 79%|█████████████████████████████        | 1.30G/1.65G [00:16&lt;00:04, 76.5MB/s]
+ 79%|█████████████████████████████▎       | 1.31G/1.65G [00:16&lt;00:04, 76.5MB/s]
+ 80%|█████████████████████████████▍       | 1.32G/1.65G [00:17&lt;00:04, 76.5MB/s]
+ 80%|█████████████████████████████▌       | 1.32G/1.65G [00:17&lt;00:04, 76.6MB/s]
+ 81%|█████████████████████████████▊       | 1.33G/1.65G [00:17&lt;00:04, 76.6MB/s]
+ 81%|█████████████████████████████▉       | 1.34G/1.65G [00:17&lt;00:04, 76.6MB/s]
+ 81%|██████████████████████████████▏      | 1.35G/1.65G [00:17&lt;00:03, 76.7MB/s]
+ 82%|██████████████████████████████▎      | 1.35G/1.65G [00:17&lt;00:03, 76.7MB/s]
+ 82%|██████████████████████████████▍      | 1.36G/1.65G [00:17&lt;00:03, 76.7MB/s]
+ 83%|██████████████████████████████▋      | 1.37G/1.65G [00:17&lt;00:03, 75.3MB/s]
+ 83%|██████████████████████████████▊      | 1.38G/1.65G [00:17&lt;00:03, 75.9MB/s]
+ 84%|███████████████████████████████      | 1.38G/1.65G [00:17&lt;00:03, 76.4MB/s]
+ 84%|███████████████████████████████▏     | 1.39G/1.65G [00:18&lt;00:03, 76.8MB/s]
+ 85%|███████████████████████████████▎     | 1.40G/1.65G [00:18&lt;00:03, 77.2MB/s]
+ 85%|███████████████████████████████▌     | 1.41G/1.65G [00:18&lt;00:03, 77.3MB/s]
+ 86%|███████████████████████████████▋     | 1.42G/1.65G [00:18&lt;00:03, 77.1MB/s]
+ 86%|███████████████████████████████▊     | 1.42G/1.65G [00:18&lt;00:02, 77.3MB/s]
+ 87%|████████████████████████████████     | 1.43G/1.65G [00:18&lt;00:02, 77.5MB/s]
+ 87%|████████████████████████████████▏    | 1.44G/1.65G [00:18&lt;00:02, 77.4MB/s]
+ 88%|████████████████████████████████▍    | 1.45G/1.65G [00:18&lt;00:02, 77.5MB/s]
+ 88%|████████████████████████████████▌    | 1.45G/1.65G [00:18&lt;00:02, 77.4MB/s]
+ 88%|████████████████████████████████▋    | 1.46G/1.65G [00:18&lt;00:02, 77.4MB/s]
+ 89%|████████████████████████████████▉    | 1.47G/1.65G [00:19&lt;00:02, 77.0MB/s]
+ 89%|█████████████████████████████████    | 1.48G/1.65G [00:19&lt;00:02, 77.0MB/s]
+ 90%|█████████████████████████████████▎   | 1.49G/1.65G [00:19&lt;00:02, 77.1MB/s]
+ 90%|█████████████████████████████████▍   | 1.49G/1.65G [00:19&lt;00:02, 77.1MB/s]
+ 91%|█████████████████████████████████▌   | 1.50G/1.65G [00:19&lt;00:01, 77.3MB/s]
+ 91%|█████████████████████████████████▊   | 1.51G/1.65G [00:19&lt;00:01, 77.3MB/s]
+ 92%|█████████████████████████████████▉   | 1.52G/1.65G [00:19&lt;00:01, 77.3MB/s]
+ 92%|██████████████████████████████████   | 1.52G/1.65G [00:19&lt;00:01, 77.4MB/s]
+ 93%|██████████████████████████████████▎  | 1.53G/1.65G [00:19&lt;00:01, 76.4MB/s]
+ 93%|██████████████████████████████████▍  | 1.54G/1.65G [00:19&lt;00:01, 76.6MB/s]
+ 94%|██████████████████████████████████▋  | 1.55G/1.65G [00:20&lt;00:01, 77.2MB/s]
+ 94%|██████████████████████████████████▊  | 1.56G/1.65G [00:20&lt;00:01, 77.7MB/s]
+ 95%|██████████████████████████████████▉  | 1.56G/1.65G [00:20&lt;00:01, 78.0MB/s]
+ 95%|███████████████████████████████████▏ | 1.57G/1.65G [00:20&lt;00:01, 78.1MB/s]
+ 96%|███████████████████████████████████▎ | 1.58G/1.65G [00:20&lt;00:00, 78.4MB/s]
+ 96%|███████████████████████████████████▌ | 1.59G/1.65G [00:20&lt;00:00, 76.8MB/s]
+ 96%|███████████████████████████████████▋ | 1.59G/1.65G [00:20&lt;00:00, 77.4MB/s]
+ 97%|███████████████████████████████████▉ | 1.60G/1.65G [00:20&lt;00:00, 77.8MB/s]
+ 97%|████████████████████████████████████ | 1.61G/1.65G [00:20&lt;00:00, 72.9MB/s]
+ 98%|████████████████████████████████████▏| 1.62G/1.65G [00:21&lt;00:00, 69.3MB/s]
+ 98%|████████████████████████████████████▍| 1.63G/1.65G [00:21&lt;00:00, 71.8MB/s]
+ 99%|████████████████████████████████████▌| 1.63G/1.65G [00:21&lt;00:00, 72.4MB/s]
+ 99%|████████████████████████████████████▋| 1.64G/1.65G [00:21&lt;00:00, 71.3MB/s]
+100%|████████████████████████████████████▉| 1.65G/1.65G [00:21&lt;00:00, 70.0MB/s]
+  0%|                                              | 0.00/1.65G [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 1.65G/1.65G [00:00&lt;00:00, 5.84TB/s]
+Attempting to create new mne-python configuration file:
+/home/circleci/.mne/mne-python.json
+Could not read the /home/circleci/.mne/mne-python.json json file during the writing. Assuming it is empty. Got: Expecting value: line 1 column 1 (char 0)
+Download complete in 51s (1576.2 MB)
 </pre></div>
 </div>
 <p>To ensure the output path doesn’t contain any leftover files from previous
@@ -1040,9 +1264,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-8ce259ee-88b4-49dc-9517-253214ae226f"
+<tr class="mne-repr-section-header general-797a3ea1-4ac0-4626-a989-3604783d3e8b"
      title="Hide section"
-    onclick="toggleVisibility('general-8ce259ee-88b4-49dc-9517-253214ae226f')">
+    onclick="toggleVisibility('general-797a3ea1-4ac0-4626-a989-3604783d3e8b')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1054,7 +1278,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-8ce259ee-88b4-49dc-9517-253214ae226f ">
+<tr class="repr-element general-797a3ea1-4ac0-4626-a989-3604783d3e8b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -1065,19 +1289,19 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-8ce259ee-88b4-49dc-9517-253214ae226f ">
+<tr class="repr-element general-797a3ea1-4ac0-4626-a989-3604783d3e8b ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>Raw</td>
 </tr>
-<tr class="repr-element general-8ce259ee-88b4-49dc-9517-253214ae226f ">
+<tr class="repr-element general-797a3ea1-4ac0-4626-a989-3604783d3e8b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>2002-12-06 at 15:16:18 UTC</td>
 
 </tr>
-<tr class="repr-element general-8ce259ee-88b4-49dc-9517-253214ae226f ">
+<tr class="repr-element general-797a3ea1-4ac0-4626-a989-3604783d3e8b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
@@ -1086,7 +1310,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 </tr>
-<tr class="repr-element general-8ce259ee-88b4-49dc-9517-253214ae226f ">
+<tr class="repr-element general-797a3ea1-4ac0-4626-a989-3604783d3e8b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -1101,9 +1325,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-94d4a5fc-34f0-41a4-8d69-3ef7e78c062d"
+<tr class="mne-repr-section-header acquisition-5c0d62c0-b50d-4d0c-a20f-f37ed9696c6e"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-94d4a5fc-34f0-41a4-8d69-3ef7e78c062d')">
+    onclick="toggleVisibility('acquisition-5c0d62c0-b50d-4d0c-a20f-f37ed9696c6e')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1115,7 +1339,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-94d4a5fc-34f0-41a4-8d69-3ef7e78c062d ">
+<tr class="repr-element acquisition-5c0d62c0-b50d-4d0c-a20f-f37ed9696c6e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Duration</td>
     <td>00:01:51 (HH:MM:SS)</td>
@@ -1128,14 +1352,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-94d4a5fc-34f0-41a4-8d69-3ef7e78c062d ">
+<tr class="repr-element acquisition-5c0d62c0-b50d-4d0c-a20f-f37ed9696c6e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>600.61 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-94d4a5fc-34f0-41a4-8d69-3ef7e78c062d ">
+<tr class="repr-element acquisition-5c0d62c0-b50d-4d0c-a20f-f37ed9696c6e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>66,068</td>
@@ -1150,9 +1374,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-d72cca01-7c11-4f9b-8338-1e5885581c6d"
+<tr class="mne-repr-section-header channels-ffd25740-3ad5-485a-ab5a-23664c78e441"
      title="Hide section"
-    onclick="toggleVisibility('channels-d72cca01-7c11-4f9b-8338-1e5885581c6d')">
+    onclick="toggleVisibility('channels-ffd25740-3ad5-485a-ab5a-23664c78e441')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1165,7 +1389,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-d72cca01-7c11-4f9b-8338-1e5885581c6d ">
+<tr class="repr-element channels-ffd25740-3ad5-485a-ab5a-23664c78e441 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Magnetometers</td>
     <td>
@@ -1178,7 +1402,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-d72cca01-7c11-4f9b-8338-1e5885581c6d ">
+<tr class="repr-element channels-ffd25740-3ad5-485a-ab5a-23664c78e441 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Gradiometers</td>
     <td>
@@ -1196,7 +1420,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-d72cca01-7c11-4f9b-8338-1e5885581c6d ">
+<tr class="repr-element channels-ffd25740-3ad5-485a-ab5a-23664c78e441 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Stimulus</td>
     <td>
@@ -1209,7 +1433,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-d72cca01-7c11-4f9b-8338-1e5885581c6d ">
+<tr class="repr-element channels-ffd25740-3ad5-485a-ab5a-23664c78e441 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1224,9 +1448,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-9f2a3715-b048-4f4b-ae57-cd39bc58b88f"
+<tr class="mne-repr-section-header filters-74fd77fe-b248-40a1-9a4a-bc0d3259c9db"
      title="Hide section"
-    onclick="toggleVisibility('filters-9f2a3715-b048-4f4b-ae57-cd39bc58b88f')">
+    onclick="toggleVisibility('filters-74fd77fe-b248-40a1-9a4a-bc0d3259c9db')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1238,21 +1462,21 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-9f2a3715-b048-4f4b-ae57-cd39bc58b88f ">
+<tr class="repr-element filters-74fd77fe-b248-40a1-9a4a-bc0d3259c9db ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-9f2a3715-b048-4f4b-ae57-cd39bc58b88f ">
+<tr class="repr-element filters-74fd77fe-b248-40a1-9a4a-bc0d3259c9db ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>172.18 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-9f2a3715-b048-4f4b-ae57-cd39bc58b88f ">
+<tr class="repr-element filters-74fd77fe-b248-40a1-9a4a-bc0d3259c9db ">
     <td class="mne-repr-section-toggle"></td>
     <td>Projections</td>
     <td>
@@ -1369,7 +1593,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
              &#39;ANR-14-NEUC-0002-01&#39;],
  &#39;GeneratedBy&#39;: [{&#39;CodeURL&#39;: &#39;https://mne.tools/mne-bids/&#39;,
                   &#39;Name&#39;: &#39;MNE-BIDS&#39;,
-                  &#39;Version&#39;: &#39;0.19.0.dev31+gbd0c1fa8b&#39;}],
+                  &#39;Version&#39;: &#39;0.19.0.dev32+g82c4441d4&#39;}],
  &#39;HowToAcknowledge&#39;: &#39;If you reference this dataset in a publication, please &#39;
                      &#39;acknowledge its authors and cite MNE papers: A. &#39;
                      &#39;Gramfort, M. Luessi, E. Larson, D. Engemann, D. &#39;
@@ -1389,7 +1613,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
 </pre></div>
 </div>
 <p>This should be very similar to the <a class="reference external" href="https://github.com/sappelhoff/bids-examples/blob/master/ds000248/dataset_description.json">ds000248 dataset_description.json</a>!</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.669 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 54.768 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mne-sample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/529f3230e5683b7676557bd33b2ea01b/convert_mne_sample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_mne_sample.ipynb</span></code></a></p>
@@ -1462,7 +1686,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-13.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-15.
       <br/>
     
   </p>
