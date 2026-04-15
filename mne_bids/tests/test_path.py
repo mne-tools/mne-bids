@@ -3,6 +3,7 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import glob
 import os
 import os.path as op
 import shutil
@@ -17,6 +18,8 @@ from mne.datasets import testing
 from mne.io import anonymize_info
 from test_read import _read_raw_fif, warning_str
 
+import mne_bids
+import mne_bids.path
 from mne_bids import (
     BIDSPath,
     get_datatypes,
@@ -173,12 +176,12 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     shutil.rmtree(deriv_path)
 
 
-def test_path_benchmark(tmp_path_factory):
+def test_path_benchmark(tmp_path_factory, monkeypatch):
     """Benchmark exploring bids tree."""
     # This benchmark is to verify the speed-up in function call get_entity_vals with
     # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
-    n_subjects = 10
-    n_sessions = 5
+    n_subjects = 9
+    n_sessions = 4
     n_derivatives = 17
     tmp_bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
 
@@ -189,8 +192,8 @@ def test_path_benchmark(tmp_path_factory):
     bids_subdirectories = ["", "sourcedata", *derivatives]
 
     # Create a BIDS compliant directory tree with high number of branches
-    for i in range(1, n_subjects):
-        for j in range(1, n_sessions):
+    for i in range(1, n_subjects + 1):
+        for j in range(1, n_sessions + 1):
             for subdir in bids_subdirectories:
                 for datatype in ["eeg", "meg"]:
                     bids_subdir = BIDSPath(
@@ -224,17 +227,58 @@ def test_path_benchmark(tmp_path_factory):
                         Path(ctf_path / "hz.ds" / "hz.meg4").touch()
                         Path(ctf_path / "hz.ds" / "hz.hc").touch()
 
+    # count number of accesses
+    count = 0
+    orig_iglob = glob.iglob
+
+    def iglob_count(*args, **kwargs):
+        for fn in orig_iglob(*args, **kwargs):
+            nonlocal count
+            count += 1
+            yield fn
+
+    def _return_root_paths_count(*args, **kwargs):
+        nonlocal count
+        count = 0
+        return _return_root_paths(*args, **kwargs)
+
+    def get_entity_vals_count(*args, **kwargs):
+        nonlocal count
+        count = 0
+        return get_entity_vals(*args, **kwargs)
+
+    def _root_glob_iglob(root, pattern):
+        # Reroute Path.glob through iglob to count accesses
+        return [root / f for f in glob.iglob(pattern, root_dir=root, recursive=True)]
+
+    def _root_rglob_iglob(root, pattern):
+        # Reroute Path.rglob through iglob to count accesses
+        return [
+            root / f for f in glob.iglob(f"**/{pattern}", root_dir=root, recursive=True)
+        ]
+
+    monkeypatch.setattr(glob, "iglob", iglob_count)
+    monkeypatch.setattr(mne_bids.path, "_root_glob", _root_glob_iglob)
+    monkeypatch.setattr(mne_bids.path, "_root_rglob", _root_rglob_iglob)
+    monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
+    monkeypatch.setattr(mne_bids, "get_entity_vals", get_entity_vals_count)
+    fnames = _return_root_paths_count(tmp_bids_root)
+    assert len(fnames) == 6878
+    assert count == 6878
+
     # apply nosub on find_matching_matchs with root level bids directory should
     # yield a performance boost of order of length from bids_subdirectories.
     setup = "import mne_bids\ntmp_bids_root=r'" + str(tmp_bids_root) + "'"
     timed_all = timeit.timeit(
         "mne_bids.find_matching_paths(tmp_bids_root)", setup=setup, number=1
     )
+    assert count == 6878
     timed_ignored_nosub = timeit.timeit(
         "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
         setup=setup,
         number=1,
     )
+    assert count == 360
 
     # while this should be of same order, lets give it some space by a factor of 3
     target = 3 * timed_all / len(bids_subdirectories)
@@ -247,24 +291,54 @@ def test_path_benchmark(tmp_path_factory):
         setup=setup,
         number=1,
     )
+    assert count == 4788
     timed_entity_match = timeit.timeit(
         "mne_bids.get_entity_vals(tmp_bids_root, 'session', include_match='sub-*/')",  # noqa: E501
         setup=setup,
         number=1,
     )
+    assert count == 252
 
     # while this should be of same order, lets give it some space by a factor of 3
     target = 3 * timed_entity / len(bids_subdirectories)
     assert timed_entity_match < target
 
     # and these should be equivalent
-    out_1 = get_entity_vals(tmp_bids_root, "session")
-    out_2 = get_entity_vals(tmp_bids_root, "session", include_match="**/")
+    out_1 = mne_bids.get_entity_vals(tmp_bids_root, "session")
+    assert count == 4788
+    out_2 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="**/")
+    assert count == 29340
     assert out_1 == out_2
-    out_3 = get_entity_vals(tmp_bids_root, "session", include_match="sub-*/")
+    out_3 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="sub-*/")
+    assert count == 252
     assert out_2 == out_3  # all are sub-* vals
-    out_4 = get_entity_vals(tmp_bids_root, "session", include_match="none/")
+    out_4 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="none/")
+    assert count == 0
     assert out_4 == []
+
+    # BIDSPath.match optimizations as well
+    path = BIDSPath(
+        datatype="meg",
+        extension=".ds",
+        root=tmp_bids_root,
+    )
+    paths = path.match()
+    # TODO: We *should* have n_subjects * n_sessions of these, but we get way more:
+    assert len(paths) == 684
+    # This is because we have duplicate files here with BIDS entities, like:
+    # bids_root/derivatives/derivatives0/sub-1/ses-1/meg/sub-1_ses-1_task-audvis_meg.ds
+    # bids_root/derivatives/derivatives1/sub-1/ses-1/meg/sub-1_ses-1_task-audvis_meg.ds
+    # And _fnames_to_bidspaths converts these to the same names!
+    assert paths[0] == paths[n_subjects * n_sessions]
+    assert count == 2052
+    path.subject = "1"  # add subject
+    paths = path.match()
+    assert len(paths) == n_sessions
+    assert count == 12
+    path.session = "2"  # add session
+    paths = path.match()
+    assert len(paths) == 1, paths
+    assert count == 3
 
 
 def _scan_targeted_meg(root, entities=None):
