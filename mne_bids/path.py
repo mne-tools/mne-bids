@@ -1115,21 +1115,6 @@ class BIDSPath:
                 "BIDS root directory path to `root` via "
                 "BIDSPath.update()."
             )
-
-        paths = _return_root_paths(
-            self.root,
-            datatype=self.datatype,
-            ignore_json=ignore_json,
-            ignore_nosub=ignore_nosub,
-            entities=self.entities,
-        )
-
-        fnames = _filter_fnames(
-            paths, suffix=self.suffix, extension=self.extension, **self.entities
-        )
-
-        bids_paths = _fnames_to_bidspaths(fnames, self.root, check=check)
-
         kwargs = {
             f"{key}s": [val] if val is not None else val
             for key, val in self.entities.items()
@@ -1143,9 +1128,7 @@ class BIDSPath:
             suffixes=[self.suffix] if self.suffix is not None else None,
             extensions=[self.extension] if self.extension is not None else None,
         )
-        x = find_matching_paths(**kwargs)
-        assert bids_paths == x
-        return bids_paths
+        return find_matching_paths(**kwargs)
 
     def _check(self):
         """Deep check or not of the instance."""
