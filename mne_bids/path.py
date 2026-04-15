@@ -1129,6 +1129,22 @@ class BIDSPath:
         )
 
         bids_paths = _fnames_to_bidspaths(fnames, self.root, check=check)
+
+        kwargs = {
+            f"{key}s": [val] if val is not None else val
+            for key, val in self.entities.items()
+        }
+        kwargs.update(
+            root=self.root,
+            check=check,
+            ignore_json=ignore_json,
+            ignore_nosub=ignore_nosub,
+            datatypes=[self.datatype] if self.datatype is not None else None,
+            suffixes=[self.suffix] if self.suffix is not None else None,
+            extensions=[self.extension] if self.extension is not None else None,
+        )
+        x = find_matching_paths(**kwargs)
+        assert bids_paths == x
         return bids_paths
 
     def _check(self):
@@ -2556,11 +2572,12 @@ def find_matching_paths(
     spaces=None,
     splits=None,
     descriptions=None,
+    *,
+    tracking_systems=None,
     suffixes=None,
     extensions=None,
     datatypes=None,
     check=False,
-    *,
     ignore_json=False,
     ignore_nosub=False,
 ):
@@ -2604,6 +2621,10 @@ def find_matching_paths(
         may be assigned ``description='cleaned'``.
 
         .. versionadded:: 0.11
+    tracking_systems : str | array-like of str | None
+        The tracking system used for digitization.
+
+        .. versionadded:: 0.19
     suffixes : str | array-like of str | None
         The filename suffix. This is the entity after the
         last ``_`` before the extension. E.g., ``'channels'``.
@@ -2650,6 +2671,7 @@ def find_matching_paths(
         space=spaces,
         split=splits,
         description=descriptions,
+        tracking_system=tracking_systems,
         suffix=suffixes,
         extension=extensions,
     )
