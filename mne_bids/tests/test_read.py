@@ -2198,21 +2198,23 @@ def test_assemble_hed_from_sidecar(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "json_content",
+    "json_content, expect_warn",
     [
-        pytest.param(None, id="none_fname"),
-        pytest.param("{invalid json", id="bad_json"),
+        pytest.param(None, False, id="none_fname"),
+        pytest.param("{invalid json", True, id="bad_json"),
         pytest.param(
             json.dumps({"trial_type": {"Description": "type"}}),
+            False,
             id="no_hed_keys",
         ),
         pytest.param(
             json.dumps({"nonexistent_col": {"HED": {"a": "Tag-a"}}}),
+            False,
             id="missing_column",
         ),
     ],
 )
-def test_assemble_hed_from_sidecar_returns_none(tmp_path, json_content):
+def test_assemble_hed_from_sidecar_returns_none(tmp_path, json_content, expect_warn):
     """Test _assemble_hed_from_sidecar returns None for invalid inputs."""
     tsv_file = tmp_path / "events.tsv"
     pd.DataFrame({"onset": [0.0], "duration": [0.0], "trial_type": ["ev1"]}).to_csv(
@@ -2226,7 +2228,12 @@ def test_assemble_hed_from_sidecar_returns_none(tmp_path, json_content):
         json_fname = tmp_path / "events.json"
         json_fname.write_text(json_content)
 
-    assert _assemble_hed_from_sidecar(events_dict, json_fname) is None
+    if expect_warn:
+        with pytest.warns(RuntimeWarning, match="Could not read HED annotations"):
+            result = _assemble_hed_from_sidecar(events_dict, json_fname)
+    else:
+        result = _assemble_hed_from_sidecar(events_dict, json_fname)
+    assert result is None
 
 
 @pytest.mark.parametrize(

@@ -788,7 +788,13 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
     try:
         with open(events_json_fname, encoding="utf-8-sig") as f:
             sidecar = json.load(f)
-    except (json.JSONDecodeError, OSError):
+    except FileNotFoundError:
+        return None
+    except (json.JSONDecodeError, OSError) as exc:
+        warn(
+            f"Could not read HED annotations from {events_json_fname}: {exc}. "
+            "Skipping sidecar HED assembly."
+        )
         return None
 
     # Collect columns that have HED annotations in the sidecar
@@ -890,8 +896,12 @@ def _handle_events_reading(
                 hed_version=_read_hed_version(bids_root) or _DEFAULT_HED_VERSION,
                 extras=extras,
             )
-        except (AttributeError, ValueError, ImportError):
-            pass
+        except (AttributeError, ValueError, ImportError) as exc:
+            warn(
+                f"HED annotations were detected but could not be parsed: {exc}. "
+                "Falling back to regular Annotations (HED strings preserved in "
+                "extras)."
+            )
 
     # Fall back to regular Annotations (HED data is still in extras)
     if annot_from_events is None:
