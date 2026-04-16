@@ -58,7 +58,6 @@ Detailed list of changes
 - Fix :func:`read_raw_bids` ignoring ``electrodes.tsv`` when ``EEGCoordinateUnits`` is ``"n/a"`` by inferring the unit from coordinate magnitudes, and synthesize approximate fiducials for ``ctf_head`` montages to enable the coordinate transform to ``head`` frame, by `Bruno Aristimunha`_ (:gh:`1506`)
 - Improve :func:`mne_bids.read_raw_bids` handling when ``electrodes.tsv`` exists without ``coordsystem.json``: keep strict failure for iEEG, and for EEG/MEG emit a warning and continue without applying a montage, by `Bruno Aristimunha`_
 - Allow ``task=None`` in :func:`mne_bids.read_raw_bids` for BIDS paths without a task entity (e.g. datasets that omit task in the path), by `Aman Jaiswal`_
-- Fix bug with equality check for BIDSPath objects, by `Eric Larson`_ (:gh:`1563`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

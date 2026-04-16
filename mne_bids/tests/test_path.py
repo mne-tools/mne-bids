@@ -1311,7 +1311,7 @@ def test_make_filenames():
     )
     assert BIDSPath(**prefix_data).basename == expected_str
     assert (
-        BIDSPath(**prefix_data).fpath.as_posix()
+        BIDSPath(**prefix_data)
         == (Path("sub-one") / "ses-two" / "ieeg" / expected_str).as_posix()
     )
 
@@ -2102,7 +2102,10 @@ def test_hash():
     assert hash(bp1) == hash(bp3)
     # equality and pickling
     assert bp1.__dict__ != bp_other.__dict__  # different content
-    assert bp1 != bp_other  # equality should be false for different content
+    assert bp1.fpath == bp_other.fpath  # okay, I guess
+    assert bp1 == bp_other
+    bp_other.datatype = "meg"
+    assert bp1 != bp_other
     assert bp1 != "foo"  # other type
     # make sure everything in our entities plus properties is in __getstate__
     slim_dict = {k: v for k, v in bp1.__dict__.items() if not k.startswith("_")}
@@ -2112,3 +2115,9 @@ def test_hash():
     )
     assert bp1.__getstate__() == slim_dict
     functools.lru_cache(lambda x, y: x)(bp1, "whatever")  # test cachable
+    # TODO: One more oddity about our equality that we maybe want to fix someday
+    bp3 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"), extension=".fif")
+    bp4 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"), extension=".bdf")
+    # equality is true even though extension differs because .fpath omits it here
+    assert bp3 == bp4
+    assert "." not in str(bp3.fpath)

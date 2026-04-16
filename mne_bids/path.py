@@ -681,11 +681,11 @@ class BIDSPath:
         """Return the string representation for any fs functions."""
         return str(self.fpath)
 
+    # TODO: This allows some of the attributes to differ between objects (like one can
+    # have .extension None and the other .fif for example) but maybe okay
     def __eq__(self, other):
-        """Compute object equality."""
-        if not isinstance(other, BIDSPath):
-            return NotImplemented
-        return self.__getstate__() == other.__getstate__()
+        """Compare str representations."""
+        return str(self) == str(other)
 
     def copy(self):
         """Copy the instance.
