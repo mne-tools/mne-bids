@@ -1311,7 +1311,7 @@ def test_make_filenames():
     )
     assert BIDSPath(**prefix_data).basename == expected_str
     assert (
-        BIDSPath(**prefix_data)
+        BIDSPath(**prefix_data).fpath.as_posix()
         == (Path("sub-one") / "ses-two" / "ieeg" / expected_str).as_posix()
     )
 
