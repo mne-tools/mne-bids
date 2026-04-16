@@ -2055,10 +2055,10 @@ def get_datatypes(root, verbose=None):
 
     """
     datatypes = list()
-    for root, dirs, files in os.walk(root):
-        for _dir in dirs:
-            if _dir in _DATATYPE_LIST and _dir not in datatypes:
-                datatypes.append(_dir)
+    for subdir in glob.iglob(os.path.join(root, "**/"), recursive=True):
+        _dir = Path(subdir).parts[-1]
+        if _dir in _DATATYPE_LIST and _dir not in datatypes:
+            datatypes.append(_dir)
 
     return datatypes
 
