@@ -884,9 +884,16 @@ def _handle_events_reading(
             if hs and hs != "n/a":
                 extras[i]["HED"] = hs
 
-    # Try to create HEDAnnotations when all HED strings are valid
+    # Try to create HEDAnnotations when all HED strings are valid.
+    # Skip silently when MNE is too old to expose HEDAnnotations — that is a
+    # feature-availability fallback, not a parse failure (HED is still kept in
+    # extras). Only warn when construction is actually attempted and fails.
     annot_from_events = None
-    if hed_strings is not None and all(s and s != "n/a" for s in hed_strings):
+    if (
+        hed_strings is not None
+        and all(s and s != "n/a" for s in hed_strings)
+        and hasattr(mne, "HEDAnnotations")
+    ):
         try:
             annot_from_events = mne.HEDAnnotations(
                 onset=annotations_info["onset"],
