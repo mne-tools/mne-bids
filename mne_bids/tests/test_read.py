@@ -2158,7 +2158,12 @@ def test_handle_events_reading_hed(_hed_tiny_bids):
     assert isinstance(raw_col.annotations, HEDAnnotations)
     assert list(raw_col.annotations.hed_string) == hed_tags
 
-    # Column HED + sidecar HED: BIDS spec says concatenate the two sources
+    # Column HED + sidecar HED: BIDS spec says concatenate the two sources.
+    # Use column tags distinct from the sidecar to avoid TAG_EXPRESSION_REPEATED
+    # validation errors on recent HED schemas.
+    col_tags_distinct = ["Label/col-0", "Label/col-1"]
+    df["HED"] = col_tags_distinct
+    df.to_csv(events_tsv, sep="\t", index=False)
     raw_both, _ = _handle_events_reading(
         events_tsv,
         raw.copy(),
@@ -2166,8 +2171,11 @@ def test_handle_events_reading_hed(_hed_tiny_bids):
         events_json_fname=events_json,
     )
     assert isinstance(raw_both.annotations, HEDAnnotations)
-    for combined, col_tag in zip(raw_both.annotations.hed_string, hed_tags):
+    for combined, col_tag, sidecar_tag in zip(
+        raw_both.annotations.hed_string, col_tags_distinct, hed_tags
+    ):
         assert col_tag in combined
+        assert sidecar_tag in combined
 
     # Default version when HEDVersion missing
     desc_path = bids_root / "dataset_description.json"
@@ -2177,13 +2185,14 @@ def test_handle_events_reading_hed(_hed_tiny_bids):
     raw_def, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
     assert raw_def.annotations._hed_version == _DEFAULT_HED_VERSION
 
-    # Fallback to regular Annotations when HED has n/a — HED preserved in extras
+    # Fallback to regular Annotations when HED has n/a — HED preserved in extras.
+    # df currently holds col_tags_distinct in the HED column.
     df.loc[0, "HED"] = "n/a"
     df.to_csv(events_tsv, sep="\t", index=False)
     raw_na, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
     assert not isinstance(raw_na.annotations, HEDAnnotations)
     extras = raw_na.annotations.extras
-    assert extras[1].get("HED") == hed_tags[1]
+    assert extras[1].get("HED") == col_tags_distinct[1]
     assert "HED" not in extras[0]  # n/a row has no HED in extras
 
 
