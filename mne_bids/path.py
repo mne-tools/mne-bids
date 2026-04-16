@@ -1944,26 +1944,27 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     bids_root = bids_path.root
 
     # search suffix is BIDS-suffix and extension
-    search_suffix = ""
-    if suffix is None and bids_path.suffix is not None:
-        search_suffix = bids_path.suffix
-    elif suffix is not None:
+    if suffix is not None:
         search_suffix = suffix
 
         # do not search for suffix if suffix is explicitly passed
         bids_path = bids_path.copy()
         bids_path.check = False
         bids_path.update(suffix=None)
+    elif bids_path.suffix is not None:
+        search_suffix = bids_path.suffix
+    else:
+        search_suffix = ""
 
-    if extension is None and bids_path.extension is not None:
-        search_suffix = search_suffix + bids_path.extension
-    elif extension is not None:
-        search_suffix = search_suffix + extension
+    if extension is not None:
+        search_suffix += extension
 
         # do not search for extension if extension is explicitly passed
         bids_path = bids_path.copy()
         bids_path.check = False
         bids_path = bids_path.update(extension=None)
+    elif bids_path.extension is not None:
+        search_suffix += bids_path.extension
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
@@ -1971,18 +1972,30 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     if bids_path.session is not None:
         search_str_filename += f"_ses-{bids_path.session}"
 
-    # Find all potential sidecar files, doing a recursive glob
-    # from bids_root/sub-*, potentially taking into account the data type
+    # Find all potential sidecar files from bids_root/sub-* and immediate subdirs,
+    # potentially taking into account the data type
     search_dir = Path(bids_root) / f"sub-{bids_path.subject}"
-    # ** -> don't forget about potentially present session directories
+    candidate_list = []
     if bids_path.datatype is None:
-        search_dir = search_dir / "**"
+        search_dirs = [
+            search_dir,
+            search_dir / "*",
+        ]
+        if bids_path.session is not None:
+            search_dirs.append(search_dir / "ses-*" / "*")
     else:
-        search_dir = search_dir / "**" / bids_path.datatype
-
-    search_str_complete = str(search_dir / f"{search_str_filename}*{search_suffix}")
-
-    candidate_list = glob.glob(search_str_complete, recursive=True)
+        search_dirs = [
+            search_dir,
+            search_dir / bids_path.datatype,
+        ]
+        if bids_path.session is not None:
+            search_dirs.append(search_dir / "ses-*" / bids_path.datatype)
+    search_strs_complete = []
+    for search_dir in search_dirs:
+        search_strs_complete.append(
+            str(search_dir / f"{search_str_filename}*{search_suffix}")
+        )
+        candidate_list.extend(glob.glob(search_strs_complete[-1]))
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)
 
     # If no candidates found within subject directory, search at dataset root
@@ -2014,7 +2027,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
             f"associated with {bids_path.basename}, "
             f"but found {len(all_candidates)}:\n\n" + "\n".join(all_candidates)
         )
-    msg += f'\n\nThe search_str was "{search_str_complete}"'
+    msg += "\n\nThe search strings were:\n" + "\n".join(search_strs_complete)
     if on_error == "raise":
         raise RuntimeError(msg)
     elif on_error == "warn":
