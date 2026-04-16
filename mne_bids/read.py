@@ -850,7 +850,13 @@ def _read_hed_version(bids_root):
     try:
         with open(desc_path, encoding="utf-8-sig") as f:
             return json.load(f).get("HEDVersion")
-    except (json.JSONDecodeError, OSError):
+    except FileNotFoundError:
+        return None
+    except (json.JSONDecodeError, OSError) as exc:
+        warn(
+            f"Could not read HEDVersion from {desc_path}: {exc}. "
+            f"Falling back to default HED schema {_DEFAULT_HED_VERSION}."
+        )
         return None
 
 
@@ -917,14 +923,30 @@ def _handle_events_reading(
                 "extras)."
             )
 
-    # Fall back to regular Annotations (HED data is still in extras)
+    # Fall back to regular Annotations (HED data is still in extras).
+    # The ``extras`` kwarg was added in MNE 1.10; older versions raise
+    # TypeError, so degrade gracefully with a warning.
     if annot_from_events is None:
-        annot_from_events = mne.Annotations(
-            onset=annotations_info["onset"],
-            duration=annotations_info["duration"],
-            description=annotations_info["description"],
-            extras=extras,
-        )
+        try:
+            annot_from_events = mne.Annotations(
+                onset=annotations_info["onset"],
+                duration=annotations_info["duration"],
+                description=annotations_info["description"],
+                extras=extras,
+            )
+        except TypeError:
+            if extras:
+                warn(
+                    "The version of MNE-Python you are using (<1.10) does "
+                    "not support the extras argument in mne.Annotations. "
+                    f"The extra column(s) {list(extras[0].keys())} will be "
+                    "ignored."
+                )
+            annot_from_events = mne.Annotations(
+                onset=annotations_info["onset"],
+                duration=annotations_info["duration"],
+                description=annotations_info["description"],
+            )
     raw.set_annotations(annot_from_events)
 
     annot_idx_to_keep = [

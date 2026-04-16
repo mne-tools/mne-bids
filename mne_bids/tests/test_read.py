@@ -29,6 +29,7 @@ from numpy.testing import assert_almost_equal
 import mne_bids.utils
 import mne_bids.write
 from mne_bids import BIDSPath
+from mne_bids import read as _read_module
 from mne_bids.config import (
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
@@ -2117,14 +2118,9 @@ def test_events_file_to_annotation_kwargs(tmp_path):
         assert "HED" not in extra
 
 
-def test_handle_events_reading_hed(tmp_path):
-    """Test HEDAnnotations from column HED, sidecar HED, and fallbacks."""
-    pytest.importorskip("hed")
-    try:
-        from mne.annotations import HEDAnnotations
-    except ImportError:
-        pytest.skip("HEDAnnotations not available in this MNE version")
-
+@pytest.fixture
+def _hed_tiny_bids(tmp_path):
+    """Copy the tiny_bids fixture and return paths + a fresh Raw for HED tests."""
     bids_root = tmp_path / "tiny_bids"
     sh.copytree(tiny_bids_root, bids_root)
     eeg_dir = bids_root / "sub-01" / "ses-eeg" / "eeg"
@@ -2132,6 +2128,18 @@ def test_handle_events_reading_hed(tmp_path):
     events_json = eeg_dir / "sub-01_ses-eeg_task-rest_events.json"
     info = mne.create_info(ch_names=["EEG1"], sfreq=5000.0, ch_types=["eeg"])
     raw = mne.io.RawArray(np.zeros((1, 10000)), info)
+    return bids_root, events_tsv, events_json, raw
+
+
+def test_handle_events_reading_hed(_hed_tiny_bids):
+    """Test HEDAnnotations from column HED, sidecar HED, and fallbacks."""
+    pytest.importorskip("hed")
+    try:
+        from mne.annotations import HEDAnnotations
+    except ImportError:
+        pytest.skip("HEDAnnotations not available in this MNE version")
+
+    bids_root, events_tsv, events_json, raw = _hed_tiny_bids
     hed_tags = ["Experiment-structure", "Sensory-event, Visual-presentation"]
 
     # Sidecar HED (fixture already has HED in events.json + HEDVersion)
@@ -2179,22 +2187,14 @@ def test_handle_events_reading_hed(tmp_path):
     assert "HED" not in extras[0]  # n/a row has no HED in extras
 
 
-def test_handle_events_reading_hed_parse_failure_warns(tmp_path, monkeypatch):
+def test_handle_events_reading_hed_parse_failure_warns(_hed_tiny_bids, monkeypatch):
     """Warn (and fall back) when HEDAnnotations construction raises."""
-    import mne_bids.read as read_mod
-
-    bids_root = tmp_path / "tiny_bids"
-    sh.copytree(tiny_bids_root, bids_root)
-    eeg_dir = bids_root / "sub-01" / "ses-eeg" / "eeg"
-    events_tsv = eeg_dir / "sub-01_ses-eeg_task-rest_events.tsv"
-    events_json = eeg_dir / "sub-01_ses-eeg_task-rest_events.json"
-    info = mne.create_info(ch_names=["EEG1"], sfreq=5000.0, ch_types=["eeg"])
-    raw = mne.io.RawArray(np.zeros((1, 10000)), info)
+    bids_root, events_tsv, events_json, raw = _hed_tiny_bids
 
     def _boom(*args, **kwargs):
         raise ValueError("bad HED string")
 
-    monkeypatch.setattr(read_mod, "_HEDAnnotations", _boom)
+    monkeypatch.setattr(_read_module, "_HEDAnnotations", _boom)
     with pytest.warns(
         RuntimeWarning, match="HED annotations were detected but could not be parsed"
     ):
@@ -2288,31 +2288,35 @@ def test_assemble_hed_from_sidecar_returns_none(tmp_path, json_content, expect_w
 
 
 @pytest.mark.parametrize(
-    "desc_content, expected",
+    "desc_content, expected, expect_warn",
     [
         pytest.param(
             json.dumps({"Name": "test", "HEDVersion": "8.3.0"}),
             "8.3.0",
+            False,
             id="has_version",
         ),
-        pytest.param(json.dumps({"Name": "test"}), None, id="no_version_key"),
-        pytest.param("{invalid", None, id="bad_json"),
+        pytest.param(json.dumps({"Name": "test"}), None, False, id="no_version_key"),
+        pytest.param("{invalid", None, True, id="bad_json"),
     ],
 )
-def test_read_hed_version(tmp_path, desc_content, expected):
+def test_read_hed_version(tmp_path, desc_content, expected, expect_warn):
     """Test _read_hed_version reads HEDVersion from dataset_description."""
     desc_path = tmp_path / "dataset_description.json"
     desc_path.write_text(desc_content)
-    assert _read_hed_version(tmp_path) == expected
+    if expect_warn:
+        with pytest.warns(RuntimeWarning, match="Could not read HEDVersion"):
+            result = _read_hed_version(tmp_path)
+    else:
+        result = _read_hed_version(tmp_path)
+    assert result == expected
 
 
-@pytest.mark.parametrize(
-    "bids_root",
-    [
-        pytest.param(None, id="none_root"),
-        pytest.param("/nonexistent/path", id="missing_file"),
-    ],
-)
-def test_read_hed_version_returns_none(bids_root):
-    """Test _read_hed_version returns None when root or file is missing."""
-    assert _read_hed_version(bids_root) is None
+def test_read_hed_version_returns_none_for_none_root():
+    """Test _read_hed_version returns None when bids_root is None."""
+    assert _read_hed_version(None) is None
+
+
+def test_read_hed_version_returns_none_for_missing_file(tmp_path):
+    """Test _read_hed_version returns None when dataset_description is missing."""
+    assert _read_hed_version(tmp_path / "missing") is None
