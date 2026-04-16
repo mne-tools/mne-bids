@@ -1976,20 +1976,13 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     # potentially taking into account the data type
     search_dir = Path(bids_root) / f"sub-{bids_path.subject}"
     candidate_list = []
-    if bids_path.datatype is None:
-        search_dirs = [
-            search_dir,
-            search_dir / "*",
-        ]
-        if bids_path.session is not None:
-            search_dirs.append(search_dir / "ses-*" / "*")
-    else:
-        search_dirs = [
-            search_dir,
-            search_dir / bids_path.datatype,
-        ]
-        if bids_path.session is not None:
-            search_dirs.append(search_dir / "ses-*" / bids_path.datatype)
+    leaf_node = bids_path.datatype or "*"
+    search_dirs = [
+        search_dir,
+        search_dir / leaf_node,
+    ]
+    if bids_path.session is not None:
+        search_dirs.append(search_dir / "ses-*" / leaf_node)
     search_strs_complete = []
     for search_dir in search_dirs:
         search_strs_complete.append(
