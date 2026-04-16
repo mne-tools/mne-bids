@@ -2088,7 +2088,6 @@ def test_hash():
     """Test that BIDSPath is hashable."""
     bp1 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"))
     bp2 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"))
-    assert hash(bp1) == hash(bp2)
     # test standard hash properties:
     assert hash(bp1) == hash(bp1)  # same object
     assert hash(bp1) == hash(bp2)  # different objects, same content
