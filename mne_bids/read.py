@@ -18,8 +18,8 @@ from mne.transforms import apply_trans
 from mne.utils import get_subjects_dir, logger
 
 try:
-    # MNE 1.12 ships HEDAnnotations in mne.annotations but does not re-export
-    # it at the top level; MNE >=1.13 exposes mne.HEDAnnotations directly.
+    # HEDAnnotations was added in MNE 1.12; importing from mne.annotations
+    # works regardless of whether the top-level lazy-loader stub re-exports it.
     from mne.annotations import HEDAnnotations as _HEDAnnotations
 except ImportError:
     _HEDAnnotations = None
