@@ -460,6 +460,21 @@ class BIDSPath:
             "tracking_system": self.tracking_system,
         }
 
+    def __getstate__(self):
+        """Get the object state."""
+        state = self.entities
+        for key in ("root", "suffix", "extension", "datatype", "check"):
+            state[key] = getattr(self, key)
+        return state
+
+    def __setstate__(self, state):
+        """Set the object state."""
+        self.update(**state)
+
+    def __hash__(self):
+        """Compute the object hash."""
+        return hash(self.__getstate__().items())
+
     @property
     def basename(self):
         """Path basename."""
