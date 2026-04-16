@@ -473,7 +473,7 @@ class BIDSPath:
 
     def __hash__(self):
         """Compute the object hash."""
-        return hash(self.__getstate__().items())
+        return hash(frozenset(self.__getstate__().items()))
 
     @property
     def basename(self):
@@ -680,12 +680,10 @@ class BIDSPath:
         return str(self.fpath)
 
     def __eq__(self, other):
-        """Compare str representations."""
-        return str(self) == str(other)
-
-    def __ne__(self, other):
-        """Compare str representations."""
-        return str(self) != str(other)
+        """Compute object equality."""
+        if not isinstance(other, BIDSPath):
+            return NotImplemented
+        return self.__getstate__() == other.__getstate__()
 
     def copy(self):
         """Copy the instance.

@@ -38,6 +38,7 @@ Detailed list of changes
 - Save ``Annotations.extras`` fields in events.tsv files when writing events, by `Pierre Guetschel`_ (:gh:`1502`)
 - Added support for ``EEGLAB`` and ``EEGLAB-HJ`` coordinate systems as defined in the BIDS specification. Both use ALS orientation (identical to CTF) and map to MNE's ``ctf_head`` coordinate frame, by `Bruno Aristimunha`_ (:gh:`1514`)
 - :func:`mne_bids.read_raw_bids` now reads channel units from ``channels.tsv`` and sets them on the raw object. This includes support for units like ``rad`` (radians), ``V``, ``µV``, ``mV``, ``T``, ``T/m``, ``S``, ``oC``, ``M``, and ``px``. The write path was also updated to correctly write ``rad`` units to ``channels.tsv``, by `Alexandre Gramfort`_ (:gh:`1509`)
+- Added support for hashing ``BIDSPath`` objects so they can be used in caching and other contexts that require hashable objects, by `Eric Larson`_ (:gh:`1563`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -57,6 +58,7 @@ Detailed list of changes
 - Fix :func:`read_raw_bids` ignoring ``electrodes.tsv`` when ``EEGCoordinateUnits`` is ``"n/a"`` by inferring the unit from coordinate magnitudes, and synthesize approximate fiducials for ``ctf_head`` montages to enable the coordinate transform to ``head`` frame, by `Bruno Aristimunha`_ (:gh:`1506`)
 - Improve :func:`mne_bids.read_raw_bids` handling when ``electrodes.tsv`` exists without ``coordsystem.json``: keep strict failure for iEEG, and for EEG/MEG emit a warning and continue without applying a montage, by `Bruno Aristimunha`_
 - Allow ``task=None`` in :func:`mne_bids.read_raw_bids` for BIDS paths without a task entity (e.g. datasets that omit task in the path), by `Aman Jaiswal`_
+- Fix bug with equality check for BIDSPath objects, by `Eric Larson`_ (:gh:`1563`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
