@@ -2060,7 +2060,7 @@ def get_datatypes(root, verbose=None):
         if _dir in _DATATYPE_LIST and _dir not in datatypes:
             datatypes.append(_dir)
         # Check session subdirs
-        if not _dir.startswith("ses-"):
+        elif not _dir.startswith("ses-"):
             continue
         for next_dir in glob.iglob(os.path.join(sub_dir, "*/")):
             _dir = Path(next_dir).parts[-1]
