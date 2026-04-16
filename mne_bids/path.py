@@ -2055,12 +2055,19 @@ def get_datatypes(root, verbose=None):
 
     """
     datatypes = list()
-    for subdir in glob.iglob(os.path.join(root, "**/"), recursive=True):
-        _dir = Path(subdir).parts[-1]
+    for sub_dir in glob.iglob(os.path.join(root, "sub-*/*/"), recursive=True):
+        _dir = Path(sub_dir).parts[-1]
         if _dir in _DATATYPE_LIST and _dir not in datatypes:
             datatypes.append(_dir)
+        # Check session subdirs
+        if not _dir.startswith("ses-"):
+            continue
+        for next_dir in glob.iglob(os.path.join(sub_dir, "*/")):
+            _dir = Path(next_dir).parts[-1]
+            if _dir in _DATATYPE_LIST and _dir not in datatypes:
+                datatypes.append(_dir)
 
-    return datatypes
+    return sorted(datatypes)
 
 
 # Helpers for testing glob accesses

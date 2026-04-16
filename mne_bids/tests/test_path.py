@@ -103,10 +103,10 @@ def test_get_datatypes(bids_test_dir_dense, bids_test_dir, path_counter):
     """Test getting the datatypes (=modalities) of a dir."""
     modalities = mne_bids.get_datatypes(bids_test_dir)
     assert modalities == ["meg"]
-    assert path_counter.count == 4
+    assert path_counter.count == 2
     modalities = mne_bids.get_datatypes(bids_test_dir_dense.root)
-    assert modalities == ["meg", "eeg"]
-    assert path_counter.count == 3611
+    assert modalities == ["eeg", "meg"]
+    assert path_counter.count == 108
 
 
 @pytest.mark.parametrize(
