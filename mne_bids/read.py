@@ -17,6 +17,13 @@ from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 from mne.utils import get_subjects_dir, logger
 
+try:
+    # MNE 1.12 ships HEDAnnotations in mne.annotations but does not re-export
+    # it at the top level; MNE >=1.13 exposes mne.HEDAnnotations directly.
+    from mne.annotations import HEDAnnotations as _HEDAnnotations
+except ImportError:
+    _HEDAnnotations = None
+
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
@@ -892,10 +899,10 @@ def _handle_events_reading(
     if (
         hed_strings is not None
         and all(s and s != "n/a" for s in hed_strings)
-        and hasattr(mne, "HEDAnnotations")
+        and _HEDAnnotations is not None
     ):
         try:
-            annot_from_events = mne.HEDAnnotations(
+            annot_from_events = _HEDAnnotations(
                 onset=annotations_info["onset"],
                 duration=annotations_info["duration"],
                 description=annotations_info["description"],

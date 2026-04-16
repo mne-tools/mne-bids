@@ -2117,8 +2117,10 @@ def test_events_file_to_annotation_kwargs(tmp_path):
 def test_handle_events_reading_hed(tmp_path):
     """Test HEDAnnotations from column HED, sidecar HED, and fallbacks."""
     pytest.importorskip("hed")
-    if not hasattr(mne, "HEDAnnotations"):
-        pytest.skip("mne.HEDAnnotations not available")
+    try:
+        from mne.annotations import HEDAnnotations
+    except ImportError:
+        pytest.skip("HEDAnnotations not available in this MNE version")
 
     bids_root = tmp_path / "tiny_bids"
     sh.copytree(tiny_bids_root, bids_root)
@@ -2133,7 +2135,7 @@ def test_handle_events_reading_hed(tmp_path):
     raw_sb, _ = _handle_events_reading(
         events_tsv, raw.copy(), bids_root=bids_root, events_json_fname=events_json
     )
-    assert isinstance(raw_sb.annotations, mne.HEDAnnotations)
+    assert isinstance(raw_sb.annotations, HEDAnnotations)
     assert list(raw_sb.annotations.hed_string) == hed_tags
     assert raw_sb.annotations._hed_version == "8.3.0"
 
@@ -2142,7 +2144,7 @@ def test_handle_events_reading_hed(tmp_path):
     df["HED"] = hed_tags
     df.to_csv(events_tsv, sep="\t", index=False)
     raw_col, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
-    assert isinstance(raw_col.annotations, mne.HEDAnnotations)
+    assert isinstance(raw_col.annotations, HEDAnnotations)
     assert list(raw_col.annotations.hed_string) == hed_tags
 
     # Default version when HEDVersion missing
@@ -2157,7 +2159,7 @@ def test_handle_events_reading_hed(tmp_path):
     df.loc[0, "HED"] = "n/a"
     df.to_csv(events_tsv, sep="\t", index=False)
     raw_na, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
-    assert not isinstance(raw_na.annotations, mne.HEDAnnotations)
+    assert not isinstance(raw_na.annotations, HEDAnnotations)
     extras = raw_na.annotations.extras
     assert extras[1].get("HED") == hed_tags[1]
     assert "HED" not in extras[0]  # n/a row has no HED in extras
