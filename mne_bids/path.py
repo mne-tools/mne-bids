@@ -473,7 +473,9 @@ class BIDSPath:
 
     def __hash__(self):
         """Compute the object hash."""
-        return hash(frozenset(self.__getstate__().items()))
+        state = self.__getstate__()
+        state["__class__"] = "BIDSPath"
+        return hash(frozenset(state.items()))
 
     @property
     def basename(self):
