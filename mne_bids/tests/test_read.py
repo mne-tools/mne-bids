@@ -2102,6 +2102,9 @@ def test_events_file_to_annotation_kwargs(tmp_path):
     # ---------------- HED column separated from extras ----------------------
     df_hed = df.copy()
     df_hed["HED"] = ["Experiment-structure", "Sensory-event, Visual-presentation"]
+    # Add an unrelated column so extras is non-None and we can verify HED
+    # does not leak into it.
+    df_hed["my_extra"] = ["a", "b"]
     df_hed.to_csv(tmp_tsv_file, sep="\t", index=False)
 
     ev_kwargs_hed = events_file_to_annotation_kwargs(events_fname=tmp_tsv_file)
@@ -2109,9 +2112,9 @@ def test_events_file_to_annotation_kwargs(tmp_path):
         "Experiment-structure",
         "Sensory-event, Visual-presentation",
     ]
-    if ev_kwargs_hed["extras"] is not None:
-        for extra in ev_kwargs_hed["extras"]:
-            assert "HED" not in extra
+    assert ev_kwargs_hed["extras"] is not None
+    for extra in ev_kwargs_hed["extras"]:
+        assert "HED" not in extra
 
 
 def test_handle_events_reading_hed(tmp_path):
@@ -2147,6 +2150,17 @@ def test_handle_events_reading_hed(tmp_path):
     assert isinstance(raw_col.annotations, HEDAnnotations)
     assert list(raw_col.annotations.hed_string) == hed_tags
 
+    # Column HED + sidecar HED: BIDS spec says concatenate the two sources
+    raw_both, _ = _handle_events_reading(
+        events_tsv,
+        raw.copy(),
+        bids_root=bids_root,
+        events_json_fname=events_json,
+    )
+    assert isinstance(raw_both.annotations, HEDAnnotations)
+    for combined, col_tag in zip(raw_both.annotations.hed_string, hed_tags):
+        assert col_tag in combined
+
     # Default version when HEDVersion missing
     desc_path = bids_root / "dataset_description.json"
     desc = json.loads(desc_path.read_text())
@@ -2163,6 +2177,37 @@ def test_handle_events_reading_hed(tmp_path):
     extras = raw_na.annotations.extras
     assert extras[1].get("HED") == hed_tags[1]
     assert "HED" not in extras[0]  # n/a row has no HED in extras
+
+
+def test_handle_events_reading_hed_parse_failure_warns(tmp_path, monkeypatch):
+    """Warn (and fall back) when HEDAnnotations construction raises."""
+    import mne_bids.read as read_mod
+
+    bids_root = tmp_path / "tiny_bids"
+    sh.copytree(tiny_bids_root, bids_root)
+    eeg_dir = bids_root / "sub-01" / "ses-eeg" / "eeg"
+    events_tsv = eeg_dir / "sub-01_ses-eeg_task-rest_events.tsv"
+    events_json = eeg_dir / "sub-01_ses-eeg_task-rest_events.json"
+    info = mne.create_info(ch_names=["EEG1"], sfreq=5000.0, ch_types=["eeg"])
+    raw = mne.io.RawArray(np.zeros((1, 10000)), info)
+
+    def _boom(*args, **kwargs):
+        raise ValueError("bad HED string")
+
+    monkeypatch.setattr(read_mod, "_HEDAnnotations", _boom)
+    with pytest.warns(
+        RuntimeWarning, match="HED annotations were detected but could not be parsed"
+    ):
+        raw_out, _ = _handle_events_reading(
+            events_tsv,
+            raw.copy(),
+            bids_root=bids_root,
+            events_json_fname=events_json,
+        )
+    # Falls back to regular Annotations (not HEDAnnotations)
+    assert type(raw_out.annotations).__name__ == "Annotations"
+    # HED is still preserved in extras
+    assert raw_out.annotations.extras[0].get("HED")
 
 
 def test_assemble_hed_from_sidecar(tmp_path):
@@ -2203,6 +2248,7 @@ def test_assemble_hed_from_sidecar(tmp_path):
     "json_content, expect_warn",
     [
         pytest.param(None, False, id="none_fname"),
+        pytest.param("MISSING", False, id="missing_file"),
         pytest.param("{invalid json", True, id="bad_json"),
         pytest.param(
             json.dumps({"trial_type": {"Description": "type"}}),
@@ -2226,6 +2272,9 @@ def test_assemble_hed_from_sidecar_returns_none(tmp_path, json_content, expect_w
 
     if json_content is None:
         json_fname = None
+    elif json_content == "MISSING":
+        # Path to a file that does not exist — must return None silently.
+        json_fname = tmp_path / "does_not_exist.json"
     else:
         json_fname = tmp_path / "events.json"
         json_fname.write_text(json_content)
