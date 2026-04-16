@@ -35,7 +35,13 @@ from mne_bids.path import (
     get_bids_path_from_fname,
 )
 from mne_bids.tsv_handler import _drop, _from_tsv
-from mne_bids.utils import _get_ch_type_mapping, _import_nibabel, verbose, warn
+from mne_bids.utils import (
+    _convert_dt_to_utc,
+    _get_ch_type_mapping,
+    _import_nibabel,
+    verbose,
+    warn,
+)
 
 _DEFAULT_HED_VERSION = "8.3.0"
 
@@ -448,12 +454,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
             # Enforce setting timezone to UTC without additonal conversion
             acq_time = acq_time.replace(tzinfo=UTC)
         else:
-            # Convert time offset to UTC
-            if acq_time.tzinfo is None:
-                # Windows needs an explicit local tz for naive, pre-epoch times.
-                local_tz = datetime.now().astimezone().tzinfo or UTC
-                acq_time = acq_time.replace(tzinfo=local_tz)
-            acq_time = acq_time.astimezone(UTC)
+            acq_time = _convert_dt_to_utc(acq_time)
 
         logger.debug(f"Loaded {scans_fname} scans file to set acq_time as {acq_time}.")
         # First set measurement date to None and then call call anonymize() to

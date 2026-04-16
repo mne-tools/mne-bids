@@ -13,7 +13,8 @@ import re
 import shutil as sh
 from collections import OrderedDict
 from contextlib import nullcontext
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta, timezone
+from functools import partial
 from pathlib import Path
 
 import mne
@@ -25,6 +26,7 @@ from mne.io.constants import FIFF
 from mne.utils import assert_dig_allclose, check_version, object_diff
 from numpy.testing import assert_almost_equal
 
+import mne_bids.utils
 import mne_bids.write
 from mne_bids import BIDSPath
 from mne_bids.config import (
@@ -103,6 +105,21 @@ def _wrap_read_raw(read_raw):
 _read_raw_fif = _wrap_read_raw(mne.io.read_raw_fif)
 _read_raw_ctf = _wrap_read_raw(mne.io.read_raw_ctf)
 _read_raw_edf = _wrap_read_raw(mne.io.read_raw_edf)
+
+
+def _get_scans_info(tmp_path):
+    """Write sample raw data to BIDS and return the scans.tsv data."""
+    raw = _read_raw_fif(raw_fname).pick(["meg", "stim"])
+    bids_path = _bids_path.copy().update(root=tmp_path, run=None, acquisition=None)
+    bids_path = write_raw_bids(raw, bids_path, overwrite=True)
+    # FIXME: find_matching_sidecar should *just* be able to find this scans.tsv?
+    scans_path = (
+        bids_path.copy()
+        .update(datatype=None)
+        .find_matching_sidecar(suffix="scans", extension=".tsv")
+    )
+    scans_data = _from_tsv(scans_path)
+    return raw, bids_path, scans_path, scans_data
 
 
 def _make_parallel_raw(subject, *, seed=None):
@@ -866,39 +883,14 @@ def test_adding_essential_annotations_to_dict(tmp_path):
 @testing.requires_testing_data
 def test_handle_scans_reading(tmp_path):
     """Test reading data from a BIDS scans.tsv file."""
-    raw = _read_raw_fif(raw_fname)
-    suffix = "meg"
-
-    # write copy of raw with line freq of 60
-    # bids basename and fname
-    bids_path = BIDSPath(
-        subject="01",
-        session="01",
-        task="audiovisual",
-        run="01",
-        datatype=suffix,
-        root=tmp_path,
-    )
-    bids_path = write_raw_bids(raw, bids_path, overwrite=True)
-    raw_01 = read_raw_bids(bids_path)
-
-    # find sidecar scans.tsv file and alter the
-    # acquisition time to not have the optional microseconds
-    scans_path = BIDSPath(
-        subject=bids_path.subject,
-        session=bids_path.session,
-        root=tmp_path,
-        suffix="scans",
-        extension=".tsv",
-    )
-    scans_tsv = _from_tsv(scans_path)
-    acq_time_str = scans_tsv["acq_time"][0]
+    raw, bids_path, scans_path, scans_data = _get_scans_info(tmp_path)
+    acq_time_str = scans_data["acq_time"][0]
     acq_time = datetime.strptime(acq_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
     acq_time = acq_time.replace(tzinfo=UTC)
     new_acq_time = acq_time_str.split(".")[0] + "Z"
-    assert acq_time == raw_01.info["meas_date"]
-    scans_tsv["acq_time"][0] = new_acq_time
-    _to_tsv(scans_tsv, scans_path)
+    assert acq_time == raw.info["meas_date"]
+    scans_data["acq_time"][0] = new_acq_time
+    _to_tsv(scans_data, scans_path)
 
     # now re-load the data and it should be different
     # from the original date and the same as the newly altered date
@@ -907,7 +899,7 @@ def test_handle_scans_reading(tmp_path):
     new_acq_time = datetime.strptime(new_acq_time, "%Y-%m-%dT%H:%M:%S.%fZ")
     new_acq_time = new_acq_time.replace(tzinfo=UTC)
     assert raw_02.info["meas_date"] == new_acq_time
-    assert new_acq_time != raw_01.info["meas_date"]
+    assert new_acq_time != raw.info["meas_date"]
 
     # Test without optional zero-offset UTC time-zone indicator (i.e., without trailing
     # "Z")
@@ -918,8 +910,8 @@ def test_handle_scans_reading(tmp_path):
             new_acq_time_str += ".0"
             date_format += ".%f"
 
-        scans_tsv["acq_time"][0] = new_acq_time_str
-        _to_tsv(scans_tsv, scans_path)
+        scans_data["acq_time"][0] = new_acq_time_str
+        _to_tsv(scans_data, scans_path)
 
         # now re-load the data and it should be different
         # from the original date and the same as the newly altered date
@@ -927,18 +919,29 @@ def test_handle_scans_reading(tmp_path):
         new_acq_time = datetime.strptime(new_acq_time_str, date_format)
         assert raw_03.info["meas_date"] == new_acq_time.astimezone(UTC)
 
-    # Regression for naive, pre-epoch acquisition times (Windows bug GH-1399)
-    pre_epoch_str = "1950-06-15T13:45:30"
-    scans_tsv["acq_time"][0] = pre_epoch_str
-    _to_tsv(scans_tsv, scans_path)
 
-    raw_pre_epoch = read_raw_bids(bids_path)
-    pre_epoch_naive = datetime.strptime(pre_epoch_str, "%Y-%m-%dT%H:%M:%S")
-    local_tz = datetime.now().astimezone().tzinfo or UTC
-    expected_pre_epoch = pre_epoch_naive.replace(tzinfo=local_tz).astimezone(UTC)
-    assert raw_pre_epoch.info["meas_date"] == expected_pre_epoch
-    if raw_pre_epoch.annotations.orig_time is not None:
-        assert raw_pre_epoch.annotations.orig_time == expected_pre_epoch
+@testing.requires_testing_data
+def test_very_old_scan_date(tmp_path, windows_datetime, monkeypatch):
+    """Test Regression for naive, pre-epoch acquisition times on Windows (GH-1399)."""
+    _, bids_path, scans_path, scans_data = _get_scans_info(tmp_path)
+
+    ts = "1950-06-15T13:00:00"
+    scans_data["acq_time"][0] = ts
+    _to_tsv(scans_data, scans_path)
+
+    # Explicitly set a timezone to avoid relying on the computers timezone
+    naive = datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S")
+    local_tz = timezone(timedelta(hours=-5), name="EST")
+    expected = naive.replace(tzinfo=local_tz).astimezone(UTC)
+
+    func = partial(mne_bids.utils._convert_dt_to_utc, local_tz=local_tz)
+    monkeypatch.setattr("mne_bids.read._convert_dt_to_utc", func)
+    monkeypatch.setattr("mne_bids.read.datetime", windows_datetime)
+
+    raw = read_raw_bids(bids_path)
+    assert raw.info["meas_date"] == expected
+    if raw.annotations.orig_time is not None:
+        assert raw.annotations.orig_time == expected
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
