@@ -1446,7 +1446,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     )
 
 
-def _write_raw_edf_bdf(raw, bids_fname, physical_range, overwrite):
+def _write_raw_edf_bdf(raw, bids_fname, overwrite, *, physical_range="auto"):
     """Store data as EDF.
 
     Parameters
@@ -1457,6 +1457,10 @@ def _write_raw_edf_bdf(raw, bids_fname, physical_range, overwrite):
         The output filename.
     physical_range : str | tuple
         How to get the physical minimal and maximal values from the data.
+        If ``'auto'`` (default), the physical range is inferred from the data,
+        taking the minimum and maximum values per channel type.
+        If ``'channelwise'``, the range will be defined per channel.
+        If a tuple of minimum and maximum, this manual physical range will be used.
     overwrite : bool
         Whether to overwrite an existing file or not.
     """
@@ -1841,9 +1845,9 @@ def write_raw_bids(
         to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,
         and to FIF for MEG data.
     physical_range : str | tuple
-        If 'auto' (default), the physical range is inferred from the data,
+        If ``'auto'`` (default), the physical range is inferred from the data,
         taking the minimum and maximum values per channel type.
-        If 'channelwise', the range will be defined per channel.
+        If ``'channelwise'``, the range will be defined per channel.
         If a tuple of minimum and maximum, this manual physical range will be used.
         Only used for exporting EDF files.
     symlink : bool
