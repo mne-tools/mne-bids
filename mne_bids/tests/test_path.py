@@ -3,9 +3,11 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import functools
 import glob
 import os
 import os.path as op
+import pickle
 import shutil
 import shutil as sh
 import timeit
@@ -2213,3 +2215,41 @@ def test_fpath_common_prefix(tmp_path):
         BIDSPath(root=tmp_path, subject="1", run="2").fpath
         == sub_dir / "sub-1_run-2.edf"
     )
+
+
+def test_hash():
+    """Test that BIDSPath is hashable."""
+    bp1 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"))
+    bp2 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"))
+    # test standard hash properties:
+    assert hash(bp1) == hash(bp1)  # same object
+    assert hash(bp1) == hash(bp2)  # different objects, same content
+    bp_other = bp1.copy().update(extension=".fif")
+    assert bp1.extension != bp_other.extension
+    assert hash(bp1) != hash(bp_other)  # different content
+    assert hash(bp1) != hash("not a BIDSPath")  # different type
+    assert bp1 == bp2  # equality should be true for same content
+    bp3 = pickle.loads(pickle.dumps(bp1))  # test pickling
+    assert bp1 == bp3
+    assert hash(bp1) == hash(bp3)
+    # equality and pickling
+    assert bp1.__dict__ != bp_other.__dict__  # different content
+    assert bp1.fpath == bp_other.fpath  # okay, I guess
+    assert bp1 == bp_other
+    bp_other.datatype = "meg"
+    assert bp1 != bp_other
+    assert bp1 != "foo"  # other type
+    # make sure everything in our entities plus properties is in __getstate__
+    slim_dict = {k: v for k, v in bp1.__dict__.items() if not k.startswith("_")}
+    slim_dict.update(bp1.entities)
+    slim_dict.update(
+        {k: getattr(bp1, k) for k in ("datatype", "extension", "suffix", "root")}
+    )
+    assert bp1.__getstate__() == slim_dict
+    functools.lru_cache(lambda x, y: x)(bp1, "whatever")  # test cachable
+    # TODO: One more oddity about our equality that we maybe want to fix someday
+    bp3 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"), extension=".fif")
+    bp4 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"), extension=".bdf")
+    # equality is true even though extension differs because .fpath omits it here
+    assert bp3 == bp4
+    assert "." not in str(bp3.fpath)
