@@ -460,6 +460,23 @@ class BIDSPath:
             "tracking_system": self.tracking_system,
         }
 
+    def __getstate__(self):
+        """Get the object state."""
+        state = self.entities
+        for key in ("root", "suffix", "extension", "datatype", "check"):
+            state[key] = getattr(self, key)
+        return state
+
+    def __setstate__(self, state):
+        """Set the object state."""
+        self.update(**state)
+
+    def __hash__(self):
+        """Compute the object hash."""
+        state = self.__getstate__()
+        state["__class__"] = "BIDSPath"
+        return hash(frozenset(state.items()))
+
     @property
     def basename(self):
         """Path basename."""
@@ -664,13 +681,11 @@ class BIDSPath:
         """Return the string representation for any fs functions."""
         return str(self.fpath)
 
+    # TODO: This allows some of the attributes to differ between objects (like one can
+    # have .extension None and the other .fif for example) but maybe okay
     def __eq__(self, other):
         """Compare str representations."""
         return str(self) == str(other)
-
-    def __ne__(self, other):
-        """Compare str representations."""
-        return str(self) != str(other)
 
     def copy(self):
         """Copy the instance.
@@ -2055,12 +2070,20 @@ def get_datatypes(root, verbose=None):
 
     """
     datatypes = list()
-    for root, dirs, files in os.walk(root):
-        for _dir in dirs:
+    for sub_dir in glob.iglob(os.path.join(root, "sub-*/*/"), recursive=True):
+        _dir = Path(sub_dir).parts[-1]
+        if _dir in _DATATYPE_LIST:
+            if _dir not in datatypes:
+                datatypes.append(_dir)
+        # Check session subdirs
+        elif not _dir.startswith("ses-"):
+            continue
+        for next_dir in glob.iglob(os.path.join(sub_dir, "*/")):
+            _dir = Path(next_dir).parts[-1]
             if _dir in _DATATYPE_LIST and _dir not in datatypes:
                 datatypes.append(_dir)
 
-    return datatypes
+    return sorted(datatypes)
 
 
 # Helpers for testing glob accesses
