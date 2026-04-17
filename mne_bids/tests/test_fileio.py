@@ -4,9 +4,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import importlib
+import os
 import threading
 import time
 from concurrent.futures import ProcessPoolExecutor
+from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import patch
 
@@ -21,6 +23,17 @@ from mne_bids._fileio import (
     _open_lock,
     cleanup_lock_files,
 )
+
+
+@contextmanager
+def _readonly(directory):
+    """Temporarily strip write bit from ``directory``."""
+    original = directory.stat().st_mode
+    os.chmod(directory, 0o555)
+    try:
+        yield directory
+    finally:
+        os.chmod(directory, original)
 
 
 def _worker_increment_file(file_path, iterations):
@@ -260,6 +273,50 @@ def test_open_lock_without_filelock(tmp_path):
         with _open_lock(test_file, "r") as fid:
             content = fid.read()
             assert content == "test"
+
+
+def test_open_lock_symlink_to_readonly_target(tmp_path):
+    """Regression test for issue #1569 (datalad/git-annex symlinks).
+
+    When the symlink target lives in a read-only directory, the lock must
+    be placed next to the symlink itself rather than resolved through it.
+    Previously this raised ``PermissionError``.
+    """
+    pytest.importorskip("filelock")
+
+    annex_dir = tmp_path / "annex"
+    annex_dir.mkdir()
+    target = annex_dir / "blob.json"
+    target.write_text('{"k": 2}')
+
+    work_dir = tmp_path / "work"
+    work_dir.mkdir()
+    link = work_dir / "sidecar.json"
+    try:
+        link.symlink_to(target)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks not supported on this platform")
+
+    with _readonly(annex_dir):
+        with _open_lock(link, encoding="utf-8") as fin:
+            assert fin.read() == '{"k": 2}'
+        assert not (annex_dir / "blob.json.lock").exists()
+        assert not (work_dir / "sidecar.json.lock").exists()
+
+
+def test_open_lock_readonly_parent_falls_back(tmp_path):
+    """If the lock file cannot be created, warn and fall back gracefully."""
+    pytest.importorskip("filelock")
+
+    ro_dir = tmp_path / "ro"
+    ro_dir.mkdir()
+    test_file = ro_dir / "file.json"
+    test_file.write_text("payload")
+
+    with _readonly(ro_dir):
+        with pytest.warns(RuntimeWarning, match="without a lock"):
+            with _open_lock(test_file, "r", encoding="utf-8") as fid:
+                assert fid.read() == "payload"
 
 
 def test_open_lock_custom_timeout(tmp_path):
