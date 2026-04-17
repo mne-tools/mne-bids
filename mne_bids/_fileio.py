@@ -37,7 +37,8 @@ def _canonical_lock_path(path: str | os.PathLike[str]) -> Path:
     datalad/git-annex datasets, where the symlink target lives in a
     read-only ``.git/annex/objects/`` directory (see issue #1569).
     """
-    return Path(os.path.abspath(os.path.expanduser(os.fspath(path))))
+    path = Path(path)
+    return  Path(os.path.abspath(path.expanduser()))
 
 
 @contextmanager
