@@ -264,7 +264,19 @@ def bids_test_dir_dense(tmp_path_factory):
     out.bids_subdirectories = ["", "sourcedata", *derivatives]
 
     # Create a BIDS compliant directory tree with high number of branches
+    for root_file in (
+        "dataset_description.json",
+        "participants.tsv",
+        "participants.csv",
+        "README",
+        "coordsystem.json",
+        "scans.tsv",
+    ):
+        (tmp_bids_root / root_file).touch()
     for i in range(1, out.n_subjects + 1):
+        sub_root = tmp_bids_root / f"sub-{i}"
+        sub_root.mkdir()
+        (sub_root / f"sub-{i}_electrodes.tsv").touch()
         for j in range(1, out.n_sessions + 1):
             for subdir in out.bids_subdirectories:
                 for datatype in ["eeg", "meg"]:
@@ -276,28 +288,29 @@ def bids_test_dir_dense(tmp_path_factory):
                         root=str(tmp_bids_root / subdir),
                     )
                     bids_subdir.mkdir(exist_ok=True)
-                    Path(bids_subdir.root / "participants.tsv").touch()
-                    Path(bids_subdir.root / "participants.csv").touch()
-                    Path(bids_subdir.root / "README").touch()
+                    bsd_path = Path(bids_subdir.directory)
+                    (bsd_path / "participants.tsv").touch()
+                    (bsd_path / "participants.csv").touch()
+                    (bsd_path / "README").touch()
 
                     # os.makedirs(bids_subdir.directory, exist_ok=True)
-                    Path(
-                        bids_subdir.directory, bids_subdir.basename + "_events.tsv"
-                    ).touch()
-                    Path(
-                        bids_subdir.directory, bids_subdir.basename + "_events.csv"
-                    ).touch()
+                    for ext_suf in ("events.tsv", "events.csv"):
+                        (bsd_path / f"{bids_subdir.basename}_{ext_suf}").touch()
 
                     if datatype == "meg":
-                        ctf_path = Path(
-                            bids_subdir.directory, bids_subdir.basename + "_meg.ds"
-                        )
+                        ctf_path = bsd_path / f"{bids_subdir.basename}_meg.ds"
                         ctf_path.mkdir(exist_ok=True)
-                        Path(ctf_path, bids_subdir.basename + ".meg4").touch()
-                        Path(ctf_path, bids_subdir.basename + ".hc").touch()
-                        Path(ctf_path / "hz.ds").mkdir(exist_ok=True)
-                        Path(ctf_path / "hz.ds" / "hz.meg4").touch()
-                        Path(ctf_path / "hz.ds" / "hz.hc").touch()
+                        (ctf_path / f"{bids_subdir.basename}.meg4").touch()
+                        (ctf_path / f"{bids_subdir.basename}.hc").touch()
+                        (ctf_path / "hz.ds").mkdir(exist_ok=True)
+                        (ctf_path / "hz.ds" / "hz.meg4").touch()
+                        (ctf_path / "hz.ds" / "hz.hc").touch()
+                    else:
+                        assert datatype == "eeg"
+                        assert str(bsd_path).endswith("eeg")
+                        for ext_suf in ("eeg.edf", "channels.tsv", "eeg.json"):
+                            (bsd_path / f"{bids_subdir.basename}_{ext_suf}").touch()
+
     return out
 
 
@@ -310,8 +323,10 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
     # This benchmark is to verify the speed-up in function call get_entity_vals with
     # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
     fnames = mne_bids.path._return_root_paths(tmp_bids_root)
-    assert len(fnames) == 6878
-    assert path_counter.count == 6878
+    assert len(fnames) == len(set(fnames))
+    assert len(fnames) == 10956
+    max_count = 11642
+    assert path_counter.count == max_count
 
     # apply nosub on find_matching_matchs with root level bids directory should
     # yield a performance boost of order of length from bids_subdirectories.
@@ -319,13 +334,13 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
     timed_all = timeit.timeit(
         "mne_bids.find_matching_paths(tmp_bids_root)", setup=setup, number=1
     )
-    assert path_counter.count == 6878
+    assert path_counter.count == max_count
     timed_ignored_nosub = timeit.timeit(
         "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
         setup=setup,
         number=1,
     )
-    assert path_counter.count == 360
+    assert path_counter.count == 621
 
     # while this should be of same order, lets give it some space by a factor of 3
     target = 3 * timed_all / len(bids_test_dir_dense.bids_subdirectories)
@@ -338,13 +353,13 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
         setup=setup,
         number=1,
     )
-    assert path_counter.count == 4788
+    assert path_counter.count == 6840
     timed_entity_match = timeit.timeit(
         "mne_bids.get_entity_vals(tmp_bids_root, 'session', include_match='sub-*/')",  # noqa: E501
         setup=setup,
         number=1,
     )
-    assert path_counter.count == 252
+    assert path_counter.count == 360
 
     # while this should be of same order, lets give it some space by a factor of 3
     target = 3 * timed_entity / len(bids_test_dir_dense.bids_subdirectories)
@@ -352,12 +367,12 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
 
     # and these should be equivalent
     out_1 = mne_bids.get_entity_vals(tmp_bids_root, "session")
-    assert path_counter.count == 4788
+    assert path_counter.count == 6840
     out_2 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="**/")
-    assert path_counter.count == 29340
+    assert path_counter.count == 41328
     assert out_1 == out_2
     out_3 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="sub-*/")
-    assert path_counter.count == 252
+    assert path_counter.count == 360
     assert out_2 == out_3  # all are sub-* vals
     out_4 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="none/")
     assert path_counter.count == 0
@@ -377,15 +392,15 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
     # bids_root/derivatives/derivatives1/sub-1/ses-1/meg/sub-1_ses-1_task-audvis_meg.ds
     # And _fnames_to_bidspaths converts these to the same names!
     assert paths[0] == paths[n_subjects * n_sessions]
-    assert path_counter.count == 2052
+    assert path_counter.count == 3420
     path.subject = "1"  # add subject
     paths = path.match()
     assert len(paths) == n_sessions
-    assert path_counter.count == 12
+    assert path_counter.count == 20
     path.session = "2"  # add session
     paths = path.match()
     assert len(paths) == 1, paths
-    assert path_counter.count == 3
+    assert path_counter.count == 5
 
 
 def _scan_targeted_meg(root, entities=None):
@@ -1027,36 +1042,50 @@ def test_find_matching_sidecar_basic(
     assert s.name == "sub-test_task-task_events.tsv"
 
 
-def test_find_matching_sidecar_fast(bids_test_dir, path_counter, fast_sidecar):
-    """Test that we can find sidecars with the fast method."""
-    # *_events.tsv
-    # *_channels.tsv
-    # *_electrodes.tsv
-    # *_coordsystem.json
-    # *_<datatype>.json
-    # *scans.tsv
-    path = BIDSPath(
-        subject="01",
-        session="01",
-        run="01",
-        task="testing",
-        datatype="meg",
-        root=bids_test_dir,
-    )
+@pytest.mark.parametrize("dataset", ("basic", "dense"))
+def test_find_matching_sidecar_fast(
+    bids_test_dir, bids_test_dir_dense, path_counter, fast_sidecar, dataset
+):
+    """Test that we can find sidecars with the fast shortcut method."""
+    if dataset == "basic":
+        path = BIDSPath(
+            subject="01",
+            session="01",
+            run="01",
+            task="testing",
+            root=bids_test_dir,
+        )
+        datatype = "meg"
+        call_count = 2
+    else:
+        path = BIDSPath(
+            subject="1",
+            session="1",
+            task="audvis",
+            root=bids_test_dir_dense.root,
+        )
+        datatype = "eeg"
+        call_count = 1
+    path.update(datatype=datatype)
     assert path.fpath.is_file()
 
     for ii, (suffix, extension, slow_count, fast_count) in enumerate(
         (
-            ("events", ".tsv", 2, 2),
-            ("channels", ".tsv", 2, 2),
-            # ("electrodes", ".tsv", 1, 1),  # TODO: Need to add for this dataset maybe?
+            ("events", ".tsv", call_count, 0),
+            ("channels", ".tsv", call_count, 0),
+            ("electrodes", ".tsv", 1, 0),
             ("coordsystem", ".json", 1, 1),
-            ("meg", ".json", 2, 2),
+            (datatype, ".json", call_count, 0),
             ("scans", ".tsv", 1, 0),
         )
     ):
+        if suffix == "electrodes" and datatype != "eeg":
+            with pytest.raises(RuntimeError, match="Did not find any"):
+                path.find_matching_sidecar(suffix=suffix, extension=extension)
+            continue
         sidecar_path = path.find_matching_sidecar(suffix=suffix, extension=extension)
         assert sidecar_path.is_file(), suffix
+        assert sidecar_path.name.endswith(f"{suffix}{extension}"), suffix
         assert len(path_counter.calls) == ii + 1, suffix
         want_count = fast_count if fast_sidecar else slow_count
         assert path_counter.count == want_count, suffix

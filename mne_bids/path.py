@@ -1987,31 +1987,46 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
-    search_str_filename = f"sub-{bids_path.subject}"
-    if bids_path.session is not None:
-        search_str_filename += f"_ses-{bids_path.session}"
+    candidate_list = []
 
-    # Find all potential sidecar files from bids_root/sub-* and immediate subdirs,
+    # Start with searches using subject as root
+    subj_base = f"sub-{bids_path.subject}"
+
+    # Find all potential sidecar files from bids_root/sub-* and session subdirs,
     # potentially taking into account the data type
     search_dir = bids_root / f"sub-{bids_path.subject}"
-    candidate_list = []
-    leaf_node = bids_path.datatype or "*"
-    search_dirs = [
-        search_dir,
-        search_dir / leaf_node,
-    ]
-    if bids_path.session is not None:
-        # Need to special-case  to look for sub-*/ses-*/sub-*_ses-*_scans.tsv
-        # when there is a datatype defined
-        if suffix == "scans" and leaf_node != "*":
-            search_dirs.append(search_dir / "ses-*")
-        search_dirs.append(search_dir / "ses-*" / leaf_node)
-    search_strs_complete = []
-    for search_dir in search_dirs:
+    this_name = f"{subj_base}*{search_suffix}"
+    search_strs_complete = [str(search_dir / this_name)]
+    subj_sessions_wildcard = False
+    if bids_path.datatype is not None:
         search_strs_complete.append(
-            str(search_dir / f"{search_str_filename}*{search_suffix}")
+            str(search_dir / bids_path.datatype / f"{subj_base}*{search_suffix}")
         )
-        candidate_list.extend(glob.iglob(search_strs_complete[-1]))
+    else:
+        subj_sessions_wildcard = True
+        search_strs_complete.append(
+            str(search_dir / "*" / f"{subj_base}*{search_suffix}")
+        )
+    if bids_path.session is None:  # could be any session subdir
+        this_dir = search_dir / "ses-*"
+        if not subj_sessions_wildcard:  # no need as the broader one will catch it
+            this_name = f"{subj_base}_ses-*{search_suffix}"
+            search_strs_complete.append(str(this_dir / this_name))
+        if bids_path.datatype is not None:
+            search_strs_complete.append(str(this_dir / bids_path.datatype / this_name))
+        else:
+            search_strs_complete.append(str(this_dir / "*" / this_name))
+    else:
+        this_dir = search_dir / f"ses-{bids_path.session}"
+        if not subj_sessions_wildcard:
+            this_name = f"{subj_base}_ses-{bids_path.session}*{search_suffix}"
+            search_strs_complete.append(str(this_dir / this_name))
+        if bids_path.datatype is not None:
+            search_strs_complete.append(str(this_dir / bids_path.datatype / this_name))
+        else:
+            search_strs_complete.append(str(this_dir / "*" / this_name))
+    for search_str in search_strs_complete:
+        candidate_list.extend(glob.iglob(str(search_str)))
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)
 
     # If no candidates found within subject directory, search at dataset root
@@ -2087,11 +2102,11 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
     hierarchy_paths.append((bids_root, ""))
 
     # Now do the heavy lifting: look for the files
-    if suffix in ("scans", "coordsystem"):
+    if suffix in ("scans", "coordsystem", "electrodes"):
         path_end = f"{suffix}{extension or '.json'}"
         for dir_, entity_str in hierarchy_paths:
-            # for coordsystem, we need to check with task as well
-            if suffix == "coordsystem" and bids_path.task is not None:
+            # we need to check with task as well
+            if suffix != "scans" and bids_path.task is not None:
                 shortcut_file = dir_ / f"{entity_str}task-{bids_path.task}_{path_end}"
                 if shortcut_file.is_file():
                     return shortcut_file
@@ -2110,12 +2125,7 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
         ):
             fast_path = shortcut_path.fpath
             if fast_path.is_file():
-                # raise RuntimeError(fast_path)
-                # return fast_path
-                pass
-            else:
-                # coordsystem
-                pass  # TODO: Raise some errors here
+                return fast_path
 
 
 def _get_bids_suffix_and_ext(str_suffix):
