@@ -136,7 +136,7 @@ def _find_empty_room_candidates(bids_path):
     # Now try to discover all recordings inside the session directories.
     candidate_er_fnames = []
     for session_dir in emptyroom_session_dirs:
-        dir_contents = glob.glob(
+        dir_contents = glob.iglob(
             op.join(session_dir, datatype, f"sub-emptyroom_*_{datatype}*")
         )
         for item in dir_contents:
@@ -1941,7 +1941,48 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
             f"ignore, but got: {on_error}"
         )
 
-    bids_root = bids_path.root
+    if bids_path.root is None:
+        raise ValueError(
+            "The root of the BIDSPath must be set to find a matching sidecar file."
+        )
+    bids_root = Path(bids_path.root)
+
+    # try some shortcuts that should work for some standard files
+    # (e.g., those written with MNE-BIDS) when the BIDSPath is sufficiently complete
+    if suffix == "scans":
+        if bids_path.subject is not None:
+            subj_str = f"sub-{bids_path.subject}"
+            shortcut_root = bids_root / subj_str
+            if bids_path.session is not None:
+                sess_str = f"ses-{bids_path.session}"
+                shortcut_file = (
+                    shortcut_root / sess_str / f"{subj_str}_{sess_str}_scans.tsv"
+                )
+                if shortcut_file.is_file():
+                    pass
+                    # return shortcut_file
+            shortcut_file = shortcut_root / f"{subj_str}_scans.tsv"
+            if shortcut_file.is_file():
+                pass
+                # return shortcut_file
+    elif bids_path.datatype is not None:
+        shortcut_path = bids_path.copy().update(
+            check=False,
+            suffix=suffix or bids_path.suffix,
+            extension=extension or bids_path.extension,
+        )
+        if (
+            # Ensure we can use our fast path in .fpath
+            shortcut_path.suffix is not None and shortcut_path.extension is not None
+        ):
+            fast_path = shortcut_path.fpath
+            if fast_path.is_file():
+                # raise RuntimeError(fast_path)
+                # return fast_path
+                pass
+            else:
+                # coordsystem
+                pass  # TODO: Raise some errors here
 
     # search suffix is BIDS-suffix and extension
     if suffix is not None:
@@ -1974,7 +2015,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
 
     # Find all potential sidecar files from bids_root/sub-* and immediate subdirs,
     # potentially taking into account the data type
-    search_dir = Path(bids_root) / f"sub-{bids_path.subject}"
+    search_dir = bids_root / f"sub-{bids_path.subject}"
     candidate_list = []
     leaf_node = bids_path.datatype or "*"
     search_dirs = [
@@ -1988,7 +2029,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         search_strs_complete.append(
             str(search_dir / f"{search_str_filename}*{search_suffix}")
         )
-        candidate_list.extend(glob.glob(search_strs_complete[-1]))
+        candidate_list.extend(glob.iglob(search_strs_complete[-1]))
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)
 
     # If no candidates found within subject directory, search at dataset root
@@ -1996,8 +2037,8 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     # subjects and have no subject/session entities in the filename.
     root_candidates = []
     if len(best_candidates) == 0:
-        root_search_str = str(Path(bids_root) / f"*{search_suffix}")
-        root_candidates = glob.glob(root_search_str)
+        root_search_str = str(bids_root / f"*{search_suffix}")
+        root_candidates = glob.iglob(root_search_str)
         # Filter to only files without subject entity (true root-level sidecars)
         root_candidates = [c for c in root_candidates if "sub-" not in Path(c).name]
         if root_candidates:
