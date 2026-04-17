@@ -183,13 +183,14 @@ def test_get_entity_vals(entity, expected_vals, kwargs, bids_test_dir):
 
 @dataclass
 class _PathAccessCounter:
+    calls: list[str]
     count: int = 0
 
 
 @pytest.fixture
 def path_counter(monkeypatch):
     """Count number of files traversed using iglob."""
-    out = _PathAccessCounter()
+    out = _PathAccessCounter(calls=list())
     orig_iglob = glob.iglob
 
     def iglob_count(*args, **kwargs):
@@ -202,12 +203,21 @@ def path_counter(monkeypatch):
         return _return_root_paths(*args, **kwargs)
 
     def get_entity_vals_count(*args, **kwargs):
+        out.calls.append("get_entity_vals")
         out.count = 0
         return get_entity_vals(*args, **kwargs)
 
     def get_datatypes_count(*args, **kwargs):
+        out.calls.append("get_datatypes")
         out.count = 0
         return get_datatypes(*args, **kwargs)
+
+    orig_find = mne_bids.path._find_matching_sidecar
+
+    def _find_matching_sidecar_count(*args, **kwargs):
+        out.calls.append("_find_matching_sidecar")
+        out.count = 0
+        return orig_find(*args, **kwargs)
 
     def _path_glob_iglob(root, pattern):
         # Reroute Path.glob through iglob to count accesses
@@ -225,6 +235,9 @@ def path_counter(monkeypatch):
     monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
     monkeypatch.setattr(mne_bids, "get_entity_vals", get_entity_vals_count)
     monkeypatch.setattr(mne_bids, "get_datatypes", get_datatypes_count)
+    monkeypatch.setattr(
+        mne_bids.path, "_find_matching_sidecar", _find_matching_sidecar_count
+    )
     yield out
 
 
@@ -287,6 +300,7 @@ def bids_test_dir_dense(tmp_path_factory):
     return out
 
 
+@pytest.mark.slow  # ~5s
 def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
     """Benchmark exploring bids tree."""
     tmp_bids_root = bids_test_dir_dense.root
@@ -537,7 +551,7 @@ def test_make_folders(tmp_path):
 
 
 @testing.requires_testing_data
-def test_rm(bids_test_dir, capsys, tmp_path):
+def test_rm(bids_test_dir, capsys, tmp_path, path_counter, fast_sidecar):
     """Test BIDSPath's rm method to remove files."""
     # for some reason, mne's logger can't be captured by caplog....
     bids_root = tmp_path / "mnebids_utils_test_bids_ds"
@@ -555,6 +569,11 @@ def test_rm(bids_test_dir, capsys, tmp_path):
 
     # Delete one run:
     deleted_paths = bids_path.match(ignore_json=False)
+    assert len(path_counter.calls) == 0
+    want_path = (
+        bids_path.directory
+        / f"sub-{bids_path.subject}_ses-{bids_path.session}_scans.tsv"
+    )
     updated_paths = [
         bids_path.copy()
         .update(datatype=None)
@@ -564,9 +583,15 @@ def test_rm(bids_test_dir, capsys, tmp_path):
             on_error="raise",
         )
     ]
+    assert updated_paths[0] == want_path
+    want_count = 0 if fast_sidecar else 1
+    assert len(path_counter.calls) == 1
+    assert path_counter.count == want_count
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
     expected += [str(p) for p in deleted_paths + updated_paths]
+    assert len(path_counter.calls) == 1
     bids_path.rm(safe_remove=False, verbose="INFO")
+    assert len(path_counter.calls) == 6
     captured = capsys.readouterr().out
     assert set(captured.splitlines()) == set(expected)
 
@@ -583,6 +608,7 @@ def test_rm(bids_test_dir, capsys, tmp_path):
             subject=bids_path.subject,
         ).directory
     ]
+    assert len(path_counter.calls) == 6
     updated_paths = [
         bids_path.copy()
         .update(datatype=None)
@@ -593,6 +619,8 @@ def test_rm(bids_test_dir, capsys, tmp_path):
         ),
         bids_path.root / "participants.tsv",
     ]
+    assert len(path_counter.calls) == 7
+    assert path_counter.count == want_count
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
     expected += [str(p) for p in deleted_paths + updated_paths]
     bids_path.rm(safe_remove=False, verbose="INFO")
@@ -912,18 +940,22 @@ def test_find_best_candidates(candidate_list, best_candidates):
 
 
 @testing.requires_testing_data
-def test_find_matching_sidecar(bids_test_dir, tmp_path):
+def test_find_matching_sidecar(bids_test_dir, tmp_path, path_counter, fast_sidecar):
     """Test finding a sidecar file from a BIDS dir."""
     bids_root = bids_test_dir
 
     bids_path = _bids_path.copy().update(root=bids_root)
 
     # Now find a sidecar
+    expected_file = (
+        bids_root / "sub-01" / "ses-01" / "meg" / "sub-01_ses-01_coordsystem.json"
+    )
     sidecar_fname = bids_path.find_matching_sidecar(
         suffix="coordsystem", extension=".json"
     )
-    expected_file = op.join("sub-01", "ses-01", "meg", "sub-01_ses-01_coordsystem.json")
-    assert str(sidecar_fname).endswith(expected_file)
+    assert sidecar_fname == expected_file
+    assert len(path_counter.calls) == 1
+    assert path_counter.count == 1
 
     # create a duplicate sidecar, which will be tied in match score, triggering an error
     dupe = Path(str(sidecar_fname).replace("coordsystem.json", "2coordsystem.json"))
@@ -994,7 +1026,20 @@ def test_find_matching_sidecar(bids_test_dir, tmp_path):
     assert s.name == "sub-test_task-task_events.tsv"
 
 
-def test_find_matching_sidecar_at_root(tmp_path):
+@pytest.fixture(params=[True, False], ids=["fast", "slow"])
+def fast_sidecar(request, monkeypatch):
+    """Fixture to test both fast and slow sidecar finding."""
+    fast = request.param
+    if not fast:
+        monkeypatch.setattr(
+            mne_bids.path,
+            "_find_matching_sidecar_shortcut",
+            lambda *args, **kwargs: None,
+        )
+    return fast
+
+
+def test_find_matching_sidecar_at_root(tmp_path, path_counter, fast_sidecar):
     """Test finding a sidecar file located at dataset root level.
 
     BIDS inheritance principle allows sidecars at dataset root that apply
@@ -1019,27 +1064,33 @@ def test_find_matching_sidecar_at_root(tmp_path):
     # Now try to find the sidecar from a BIDSPath
     bids_path = BIDSPath(subject="01", task="rest", datatype="eeg", root=bids_root)
     sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
-    assert sidecar is not None
-    assert sidecar.name == "coordsystem.json"
-    assert sidecar.parent == bids_root
+    assert sidecar == root_coordsystem
+    assert len(path_counter.calls) == 1
+    assert path_counter.count == 1
 
     # Test that subject-level sidecar takes precedence over root-level
     sub_coordsystem = sub_dir / "sub-01_coordsystem.json"
     sub_coordsystem.write_text('{"EEGCoordinateSystem": "Other"}')
     sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
-    assert sidecar.name == "sub-01_coordsystem.json"
+    assert sidecar == sub_coordsystem
+    assert len(path_counter.calls) == 2
+    assert path_counter.count == 1
 
     # Clean up subject-level sidecar and test root-level again
     sub_coordsystem.unlink()
     sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
-    assert sidecar.name == "coordsystem.json"
+    assert sidecar == root_coordsystem
+    assert len(path_counter.calls) == 3
+    assert path_counter.count == 1
 
     # Test with task-specific root-level sidecar
     task_coordsystem = bids_root / "task-rest_coordsystem.json"
     task_coordsystem.write_text('{"EEGCoordinateSystem": "TaskSpecific"}')
     sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
     # task-rest_coordsystem.json should match better than coordsystem.json
-    assert sidecar.name == "task-rest_coordsystem.json"
+    assert sidecar == task_coordsystem
+    assert len(path_counter.calls) == 4
+    assert path_counter.count == 2
 
 
 @testing.requires_testing_data

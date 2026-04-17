@@ -141,6 +141,9 @@ filterwarnings = [
   "ignore:tostring\\(\\) is deprecated.*:DeprecationWarning",
   "ignore:Writing of electrodes.tsv is not supported for datatype.*:RuntimeWarning",
 ]
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
 
 [tool.ruff.lint]
 exclude = ["__init__.py"]

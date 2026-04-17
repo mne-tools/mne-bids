@@ -1947,43 +1947,6 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         )
     bids_root = Path(bids_path.root)
 
-    # try some shortcuts that should work for some standard files
-    # (e.g., those written with MNE-BIDS) when the BIDSPath is sufficiently complete
-    if suffix == "scans":
-        if bids_path.subject is not None:
-            subj_str = f"sub-{bids_path.subject}"
-            shortcut_root = bids_root / subj_str
-            if bids_path.session is not None:
-                sess_str = f"ses-{bids_path.session}"
-                shortcut_file = (
-                    shortcut_root / sess_str / f"{subj_str}_{sess_str}_scans.tsv"
-                )
-                if shortcut_file.is_file():
-                    pass
-                    # return shortcut_file
-            shortcut_file = shortcut_root / f"{subj_str}_scans.tsv"
-            if shortcut_file.is_file():
-                pass
-                # return shortcut_file
-    elif bids_path.datatype is not None:
-        shortcut_path = bids_path.copy().update(
-            check=False,
-            suffix=suffix or bids_path.suffix,
-            extension=extension or bids_path.extension,
-        )
-        if (
-            # Ensure we can use our fast path in .fpath
-            shortcut_path.suffix is not None and shortcut_path.extension is not None
-        ):
-            fast_path = shortcut_path.fpath
-            if fast_path.is_file():
-                # raise RuntimeError(fast_path)
-                # return fast_path
-                pass
-            else:
-                # coordsystem
-                pass  # TODO: Raise some errors here
-
     # search suffix is BIDS-suffix and extension
     if suffix is not None:
         search_suffix = suffix
@@ -2006,6 +1969,21 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         bids_path = bids_path.update(extension=None)
     elif bids_path.extension is not None:
         search_suffix += bids_path.extension
+
+    shortcut_file = _find_matching_sidecar_shortcut(
+        bids_path, suffix=suffix, extension=extension
+    )
+    if shortcut_file is not None:
+        # Have to treat coordsystem a special way: check for others at same level of
+        # hierarchy and
+        if suffix == "coordsystem":
+            # if we have more than one, don't shortcut, allow code below to be
+            # executed (slow but will result in the error message)
+            check_name = f"{shortcut_file.name[-16:]}*{search_suffix}"
+            if len(list(_path_glob(shortcut_file.parent, check_name))) == 1:
+                return shortcut_file
+        else:
+            return shortcut_file
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
@@ -2068,6 +2046,70 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         warn(msg)
 
     return None
+
+
+def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
+    # try some shortcuts that should work for some standard files
+    # (e.g., those written with MNE-BIDS) when the BIDSPath is sufficiently complete
+    bids_root = bids_path.root
+
+    # The directory hierarchy checked (in order):
+    hierarchy_paths = list()
+    suffix = suffix or bids_path.suffix
+    extension = extension or bids_path.extension
+    if bids_path.subject is not None:
+        subj_str = f"sub-{bids_path.subject}"
+        if bids_path.session is not None:
+            sess_str = f"ses-{bids_path.session}"
+            if bids_path.datatype is not None:
+                # 1. sub-*/ses-*/datatype/
+                path = bids_root / subj_str / sess_str / bids_path.datatype
+                if path.is_dir():
+                    hierarchy_paths.append((path, f"{subj_str}_{sess_str}_"))
+            # 2. sub-*/ses-*/
+            path = bids_root / subj_str / sess_str
+            if path.is_dir():
+                hierarchy_paths.append((path, f"{subj_str}_{sess_str}_"))
+        if bids_path.datatype is not None:
+            # 3. sub-*/datatype/
+            path = bids_root / subj_str / bids_path.datatype
+            if path.is_dir():
+                hierarchy_paths.append((path, f"{subj_str}_"))
+        # 4. sub-*/
+        path = bids_root / subj_str
+        if path.is_dir():
+            hierarchy_paths.append((path, f"{subj_str}_"))
+    # 5. root
+    hierarchy_paths.append((bids_root, ""))
+    if suffix in ("scans", "coordsystem"):
+        path_end = f"{suffix}{extension or '.json'}"
+        for dir_, entity_str in hierarchy_paths:
+            # for coordsystem, we need to check with task as well
+            if suffix == "coordsystem" and bids_path.task is not None:
+                shortcut_file = dir_ / f"{entity_str}task-{bids_path.task}_{path_end}"
+                if shortcut_file.is_file():
+                    return shortcut_file
+            shortcut_file = dir_ / f"{entity_str}{path_end}"
+            if shortcut_file.is_file():
+                return shortcut_file
+    elif bids_path.datatype is not None:
+        shortcut_path = bids_path.copy().update(
+            check=False,
+            suffix=suffix,
+            extension=extension or bids_path.extension,
+        )
+        if (
+            # Ensure we can use our fast path in .fpath
+            shortcut_path.suffix is not None and shortcut_path.extension is not None
+        ):
+            fast_path = shortcut_path.fpath
+            if fast_path.is_file():
+                # raise RuntimeError(fast_path)
+                # return fast_path
+                pass
+            else:
+                # coordsystem
+                pass  # TODO: Raise some errors here
 
 
 def _get_bids_suffix_and_ext(str_suffix):
