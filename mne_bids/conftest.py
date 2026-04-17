@@ -5,6 +5,7 @@
 from datetime import datetime
 
 import mne
+import mne.datasets.utils
 import pytest
 
 
