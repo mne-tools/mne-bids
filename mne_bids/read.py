@@ -43,8 +43,6 @@ from mne_bids.utils import (
     warn,
 )
 
-_DEFAULT_HED_VERSION = "8.3.0"
-
 
 @verbose
 def _read_raw(
@@ -848,7 +846,7 @@ def _read_hed_version(bids_root):
     except (json.JSONDecodeError, OSError) as exc:
         warn(
             f"Could not read HEDVersion from {desc_path}: {exc}. "
-            f"Falling back to default HED schema {_DEFAULT_HED_VERSION}."
+            "Falling back to MNE's default HED schema."
         )
         return None
 
@@ -906,13 +904,14 @@ def _handle_events_reading(
         and hed_strings is not None
         and all(s and s != "n/a" for s in hed_strings)
     ):
+        hed_kwargs = dict(**kwargs, hed_string=hed_strings, extras=extras)
+        # Only pass hed_version when the dataset specifies one; otherwise let
+        # mne.HEDAnnotations apply its own default.
+        hed_version = _read_hed_version(bids_root)
+        if hed_version is not None:
+            hed_kwargs["hed_version"] = hed_version
         try:
-            annot_from_events = mne.HEDAnnotations(
-                **kwargs,
-                hed_string=hed_strings,
-                hed_version=_read_hed_version(bids_root) or _DEFAULT_HED_VERSION,
-                extras=extras,
-            )
+            annot_from_events = mne.HEDAnnotations(**hed_kwargs)
         except (ValueError, ImportError) as exc:
             warn(
                 f"HED annotations were detected but could not be parsed: {exc}. "

@@ -36,7 +36,6 @@ from mne_bids.config import (
 )
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.read import (
-    _DEFAULT_HED_VERSION,
     _assemble_hed_from_sidecar,
     _handle_channels_reading,
     _handle_events_reading,
@@ -2174,13 +2173,14 @@ def test_handle_events_reading_hed(_hed_tiny_bids):
         assert col_tag in combined
         assert sidecar_tag in combined
 
-    # Default version when HEDVersion missing
+    # When HEDVersion is missing from dataset_description, mne.HEDAnnotations'
+    # own default applies — we don't duplicate that default in mne_bids.
     desc_path = bids_root / "dataset_description.json"
     desc = json.loads(desc_path.read_text())
     desc.pop("HEDVersion")
     desc_path.write_text(json.dumps(desc))
     raw_def, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
-    assert raw_def.annotations._hed_version == _DEFAULT_HED_VERSION
+    assert raw_def.annotations._hed_version  # non-empty; MNE picks its default
 
     # Fallback to regular Annotations when HED has n/a — HED preserved in extras.
     # df currently holds col_tags_distinct in the HED column.
