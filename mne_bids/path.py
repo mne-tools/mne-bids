@@ -2082,7 +2082,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     return None
 
 
-_ext_map = {
+_ext_map = {  # these sidecar files should only ever have these extensions
     "scans": ".tsv",
     "coordsystem": ".json",
     "electrodes": ".tsv",
@@ -2114,9 +2114,9 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
             root_subj_sess = root_subj / sess_str
             subj_sess_name = f"{subj_str}_{sess_str}_"
             if bids_path.datatype is not None:
-                # 1. sub-N/ses-M/datatype/sub-N_ses-M_<end>
+                # 1. root/sub-N/ses-M/datatype/sub-N_ses-M_<end>
                 paths.append((root_subj_sess / bids_path.datatype, subj_sess_name))
-            # 2. sub-N/ses-M/sub-N_ses-M_<end>
+            # 2. root/sub-N/ses-M/sub-N_ses-M_<end>
             paths.append((root_subj_sess, subj_sess_name))
         if bids_path.datatype is not None:
             # 3. root/sub-N/datatype/sub-N_<end>
