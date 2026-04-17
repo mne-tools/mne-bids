@@ -176,6 +176,55 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     shutil.rmtree(deriv_path)
 
 
+@testing.requires_testing_data
+def test_get_entity_vals_ignore_hidden(return_bids_test_dir):
+    """Test that hidden directories are skipped by default and included when opted in."""
+    bids_root = return_bids_test_dir
+    hidden_meg_dir = (
+        Path(bids_root) / ".hidden_data" / "sub-hid" / "ses-hid" / "meg"
+    )
+    hidden_meg_dir.mkdir(parents=True)
+    (hidden_meg_dir / "sub-hid_ses-hid_task-hid_meg.fif").touch()
+
+    # Default (ignore_hidden=True): hidden dir must not contribute any values
+    for entity_key in ("subject", "session", "task"):
+        vals = get_entity_vals(root=bids_root, entity_key=entity_key)
+        assert "hid" not in vals, (
+            f"entity '{entity_key}' leaked from hidden dir: {vals}"
+        )
+
+    # ignore_hidden=False + ignore_dirs=None: hidden dir must be included
+    for entity_key in ("subject", "session", "task"):
+        vals = get_entity_vals(
+            root=bids_root,
+            entity_key=entity_key,
+            ignore_hidden=False,
+            ignore_dirs=None,
+        )
+        assert "hid" in vals, (
+            f"entity '{entity_key}' not found in hidden dir when ignore_hidden=False: {vals}"
+        )
+
+    # include_match branch: hidden dir must also be excluded by default
+    vals_include = get_entity_vals(
+        root=bids_root, entity_key="subject", include_match="**/"
+    )
+    assert "hid" not in vals_include
+
+    # include_match branch: hidden dir included when ignore_hidden=False
+    vals_include_hidden = get_entity_vals(
+        root=bids_root,
+        entity_key="subject",
+        include_match="**/",
+        ignore_hidden=False,
+        ignore_dirs=None,
+    )
+    assert "hid" in vals_include_hidden
+
+    # Clean up
+    shutil.rmtree(Path(bids_root) / ".hidden_data")
+
+
 def test_path_benchmark(tmp_path_factory, monkeypatch):
     """Benchmark exploring bids tree."""
     # This benchmark is to verify the speed-up in function call get_entity_vals with
