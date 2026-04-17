@@ -460,6 +460,23 @@ class BIDSPath:
             "tracking_system": self.tracking_system,
         }
 
+    def __getstate__(self):
+        """Get the object state."""
+        state = self.entities
+        for key in ("root", "suffix", "extension", "datatype", "check"):
+            state[key] = getattr(self, key)
+        return state
+
+    def __setstate__(self, state):
+        """Set the object state."""
+        self.update(**state)
+
+    def __hash__(self):
+        """Compute the object hash."""
+        state = self.__getstate__()
+        state["__class__"] = "BIDSPath"
+        return hash(frozenset(state.items()))
+
     @property
     def basename(self):
         """Path basename."""
@@ -664,13 +681,11 @@ class BIDSPath:
         """Return the string representation for any fs functions."""
         return str(self.fpath)
 
+    # TODO: This allows some of the attributes to differ between objects (like one can
+    # have .extension None and the other .fif for example) but maybe okay
     def __eq__(self, other):
         """Compare str representations."""
         return str(self) == str(other)
-
-    def __ne__(self, other):
-        """Compare str representations."""
-        return str(self) != str(other)
 
     def copy(self):
         """Copy the instance.
