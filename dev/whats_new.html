@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev35+gc30986ad0 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev36+g8412217f0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="_static/documentation_options.js?v=776fc4d7"></script>
+    <script src="_static/documentation_options.js?v=c303702b"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,7 +81,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev35+gc30986ad0" />
+  <meta name="docsearch:version" content="0.19.0.dev36+g8412217f0" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev35+gc30986ad0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev36+g8412217f0 documentation</p>
   
 </a></div>
     
@@ -529,6 +529,7 @@
 <li><p>Save <code class="docutils literal notranslate"><span class="pre">Annotations.extras</span></code> fields in events.tsv files when writing events, by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1502">#1502</a>)</p></li>
 <li><p>Added support for <code class="docutils literal notranslate"><span class="pre">EEGLAB</span></code> and <code class="docutils literal notranslate"><span class="pre">EEGLAB-HJ</span></code> coordinate systems as defined in the BIDS specification. Both use ALS orientation (identical to CTF) and map to MNE’s <code class="docutils literal notranslate"><span class="pre">ctf_head</span></code> coordinate frame, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1514">#1514</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now reads channel units from <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> and sets them on the raw object. This includes support for units like <code class="docutils literal notranslate"><span class="pre">rad</span></code> (radians), <code class="docutils literal notranslate"><span class="pre">V</span></code>, <code class="docutils literal notranslate"><span class="pre">µV</span></code>, <code class="docutils literal notranslate"><span class="pre">mV</span></code>, <code class="docutils literal notranslate"><span class="pre">T</span></code>, <code class="docutils literal notranslate"><span class="pre">T/m</span></code>, <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">oC</span></code>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, and <code class="docutils literal notranslate"><span class="pre">px</span></code>. The write path was also updated to correctly write <code class="docutils literal notranslate"><span class="pre">rad</span></code> units to <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code>, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1509">#1509</a>)</p></li>
+<li><p>Added support for hashing <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> objects so they can be used in caching and other contexts that require hashable objects, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1563">#1563</a>)</p></li>
 <li><p>Speed up <a class="reference internal" href="generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes" title="mne_bids.get_datatypes"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_datatypes()</span></code></a> by restricting filesystem traversal to <code class="docutils literal notranslate"><span class="pre">bids_root/sub-*/(ses-*/)&lt;datatype&gt;</span></code> directories, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1563">#1563</a>)</p></li>
 </ul>
 </section>
