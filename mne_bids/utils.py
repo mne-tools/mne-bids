@@ -567,3 +567,22 @@ def warn(
 
 # Some of the defaults here will be wrong but it should be close enough
 warn.__doc__ = getattr(_warn, "__doc__", None)
+
+
+def _convert_dt_to_utc(dt, *, local_tz=None):
+    """Convert a naive datetime to UTC.
+
+    Fallsback to the computers *current* tz if needed (e.g. Windows pre-epoch failures).
+
+    This is in a helper in order to make unit testing this behavior easier.
+    The local_tz parameter exists so that tests can make the fallback path deterministic
+    """
+    try:
+        return dt.astimezone(UTC)
+    except OSError as e:
+        # Windows needs an explicit local tz for naive, pre-epoch datetimes.
+        # https://bugs.python.org/issue36759
+        logger.debug("Using the current local tz for %s, due to: %s", dt, e)
+        if local_tz is None:
+            local_tz = datetime.now().astimezone().tzinfo or UTC
+        return dt.replace(tzinfo=local_tz).astimezone(UTC)

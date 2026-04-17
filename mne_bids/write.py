@@ -768,8 +768,8 @@ def _participants_json(fname, overwrite=False):
             "Units": "years",
         },
         "sex": {
-            "Description": "Biological sex of the participant",
-            "Levels": {"F": "female", "M": "male"},
+            "Description": "Sex of the participant",
+            "Levels": {"F": "female", "M": "male", "O": "other"},
         },
         "hand": {
             "Description": "Handedness of the participant",
