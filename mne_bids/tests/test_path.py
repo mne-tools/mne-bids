@@ -62,7 +62,10 @@ def test_datatypes_alphabetical():
     assert _DATATYPE_LIST == tuple(sorted(_DATATYPE_LIST))
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(
+    scope="session",
+    params=[pytest.param("testing", marks=mne.datasets.testing._pytest_mark())],
+)
 def bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
@@ -98,7 +101,6 @@ def bids_test_dir(tmp_path_factory):
     return bids_root
 
 
-@testing.requires_testing_data
 def test_get_datatypes(bids_test_dir_dense, bids_test_dir, path_counter):
     """Test getting the datatypes (=modalities) of a dir."""
     modalities = mne_bids.get_datatypes(bids_test_dir)
@@ -139,7 +141,6 @@ def test_get_datatypes(bids_test_dir_dense, bids_test_dir, path_counter):
         ("run", [], dict(ignore_datatypes=["meg"])),
     ],
 )
-@testing.requires_testing_data
 def test_get_entity_vals(entity, expected_vals, kwargs, bids_test_dir):
     """Test getting a list of entities."""
     bids_root = bids_test_dir
@@ -550,7 +551,6 @@ def test_make_folders(tmp_path):
     os.chdir(curr_dir)
 
 
-@testing.requires_testing_data
 def test_rm(bids_test_dir, capsys, tmp_path, path_counter, fast_sidecar):
     """Test BIDSPath's rm method to remove files."""
     # for some reason, mne's logger can't be captured by caplog....
@@ -939,8 +939,9 @@ def test_find_best_candidates(candidate_list, best_candidates):
     assert _find_best_candidates(params, candidate_list) == best_candidates
 
 
-@testing.requires_testing_data
-def test_find_matching_sidecar(bids_test_dir, tmp_path, path_counter, fast_sidecar):
+def test_find_matching_sidecar_basic(
+    bids_test_dir, tmp_path, path_counter, fast_sidecar
+):
     """Test finding a sidecar file from a BIDS dir."""
     bids_root = bids_test_dir
 
@@ -1026,6 +1027,41 @@ def test_find_matching_sidecar(bids_test_dir, tmp_path, path_counter, fast_sidec
     assert s.name == "sub-test_task-task_events.tsv"
 
 
+def test_find_matching_sidecar_fast(bids_test_dir, path_counter, fast_sidecar):
+    """Test that we can find sidecars with the fast method."""
+    # *_events.tsv
+    # *_channels.tsv
+    # *_electrodes.tsv
+    # *_coordsystem.json
+    # *_<datatype>.json
+    # *scans.tsv
+    path = BIDSPath(
+        subject="01",
+        session="01",
+        run="01",
+        task="testing",
+        datatype="meg",
+        root=bids_test_dir,
+    )
+    assert path.fpath.is_file()
+
+    for ii, (suffix, extension, slow_count, fast_count) in enumerate(
+        (
+            ("events", ".tsv", 2, 2),
+            ("channels", ".tsv", 2, 2),
+            # ("electrodes", ".tsv", 1, 1),  # TODO: Need to add for this dataset maybe?
+            ("coordsystem", ".json", 1, 1),
+            ("meg", ".json", 2, 2),
+            ("scans", ".tsv", 1, 0),
+        )
+    ):
+        sidecar_path = path.find_matching_sidecar(suffix=suffix, extension=extension)
+        assert sidecar_path.is_file(), suffix
+        assert len(path_counter.calls) == ii + 1, suffix
+        want_count = fast_count if fast_sidecar else slow_count
+        assert path_counter.count == want_count, suffix
+
+
 @pytest.fixture(params=[True, False], ids=["fast", "slow"])
 def fast_sidecar(request, monkeypatch):
     """Fixture to test both fast and slow sidecar finding."""
@@ -1093,7 +1129,6 @@ def test_find_matching_sidecar_at_root(tmp_path, path_counter, fast_sidecar):
     assert path_counter.count == 2
 
 
-@testing.requires_testing_data
 def test_bids_path_inference(bids_test_dir):
     """Test usage of BIDSPath object and fpath."""
     bids_root = bids_test_dir
@@ -1145,7 +1180,6 @@ def test_bids_path_inference(bids_test_dir):
     shutil.rmtree(Path(extra_file).parent)
 
 
-@testing.requires_testing_data
 def test_bids_path(bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = bids_test_dir
@@ -1477,7 +1511,6 @@ def test_filter_fnames(entities, expected_n_matches):
     assert len(output) == expected_n_matches
 
 
-@testing.requires_testing_data
 def test_match_basic(bids_test_dir):
     """Test retrieval of matching basenames."""
     bids_root = bids_test_dir
@@ -1593,7 +1626,6 @@ def test_match_advanced(tmp_path):
     assert len(matches) == len(fnames), path
 
 
-@testing.requires_testing_data
 def test_find_matching_paths(bids_test_dir):
     """We test by yielding the same results as BIDSPath.match().
 
@@ -1717,7 +1749,6 @@ def test_return_root_paths_entity_aware(tmp_path):
 
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
-@testing.requires_testing_data
 def test_find_empty_room(bids_test_dir, tmp_path):
     """Test reading of empty room data."""
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
@@ -1993,7 +2024,6 @@ def test_bids_path_label_vs_index_entity():
     BIDSPath(subject="01", split=1)  # ok as <index> entity
 
 
-@testing.requires_testing_data
 def test_meg_calibration_fpath(bids_test_dir, tmp_path):
     """Test BIDSPath.meg_calibration_fpath."""
     bids_root = bids_test_dir
@@ -2028,7 +2058,6 @@ def test_meg_calibration_fpath(bids_test_dir, tmp_path):
     assert bids_path_.meg_calibration_fpath is not None
 
 
-@testing.requires_testing_data
 def test_meg_crosstalk_fpath(bids_test_dir, tmp_path):
     """Test BIDSPath.meg_crosstalk_fpath."""
     bids_root = bids_test_dir
@@ -2063,7 +2092,6 @@ def test_meg_crosstalk_fpath(bids_test_dir, tmp_path):
     assert bids_path.meg_crosstalk_fpath is not None
 
 
-@testing.requires_testing_data
 def test_datasetdescription_with_bidspath(bids_test_dir):
     """Test a BIDSPath can generate a valid path to dataset_description.json."""
     with pytest.raises(ValueError, match="Unallowed"):
@@ -2092,7 +2120,6 @@ def test_datasetdescription_with_bidspath(bids_test_dir):
     )
 
 
-@testing.requires_testing_data
 def test_update_check(bids_test_dir):
     """Test check argument is passed BIDSPath properly."""
     bids_path = BIDSPath(root=bids_test_dir, check=False)

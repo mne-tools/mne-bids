@@ -2001,6 +2001,10 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         search_dir / leaf_node,
     ]
     if bids_path.session is not None:
+        # Need to special-case  to look for sub-*/ses-*/sub-*_ses-*_scans.tsv
+        # when there is a datatype defined
+        if suffix == "scans" and leaf_node != "*":
+            search_dirs.append(search_dir / "ses-*")
         search_dirs.append(search_dir / "ses-*" / leaf_node)
     search_strs_complete = []
     for search_dir in search_dirs:
@@ -2081,6 +2085,8 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
             hierarchy_paths.append((path, f"{subj_str}_"))
     # 5. root
     hierarchy_paths.append((bids_root, ""))
+
+    # Now do the heavy lifting: look for the files
     if suffix in ("scans", "coordsystem"):
         path_end = f"{suffix}{extension or '.json'}"
         for dir_, entity_str in hierarchy_paths:
