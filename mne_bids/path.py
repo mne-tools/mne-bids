@@ -2093,6 +2093,7 @@ def get_entity_vals(
     ignore_suffixes=None,
     include_match=None,
     with_key=False,
+    ignore_hidden=True,
     verbose=None,
 ):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
@@ -2169,6 +2170,9 @@ def get_entity_vals(
         will for example look like ``['sub-001', 'sub-002']``.
         If ``False`` (default), just returns the entity values. This
         will for example look like ``['001', '002']``.
+    ignore_hidden : bool
+        If ``True``, ignore hidden files and directories (those starting 
+        with a period ``.``).
     %(verbose)s
 
     Returns
@@ -2259,21 +2263,29 @@ def get_entity_vals(
 
     p = re.compile(rf"{entity_long_abbr_map[entity_key]}-(.*?)_")
     values = list()
-    search_str = f"**/*{entity_long_abbr_map[entity_key]}-*_*"
+    entity_abbr = entity_long_abbr_map[entity_key]
+    search_str = f"**/*{entity_abbr}-*_*"
+    ignore_dirs_set = set(ignore_dirs)  # resolved absolute Paths, for fast lookup
+
     if include_match is not None:
         include_match = _ensure_tuple(include_match)
         filenames = [
             f for im in include_match for f in _path_glob(root, im + search_str)
+            if not any(f.is_relative_to(d) for d in ignore_dirs_set)
         ]
     else:
-        filenames = _path_glob(root, search_str)
+        filenames = []
+        for dirpath, dirs, files in os.walk(root, topdown=True):
+            dp = Path(dirpath)
+            # Prevent os.walk from descending into ignored dirs
+            dirs[:] = [d for d in dirs if dp / d not in ignore_dirs_set]
+            if ignore_hidden:
+                dirs[:] = [d for d in dirs if not d.startswith(".")]
+            for f in files:
+                if f"{entity_abbr}-" in f and "_" in f:
+                    filenames.append(dp / f)
 
     for filename in filenames:
-        # Skip ignored directories
-        if any(
-            [Path(filename).is_relative_to(ignore_dir) for ignore_dir in ignore_dirs]
-        ):
-            continue
 
         if ignore_suffixes and any(
             [filename.stem.endswith(s) for s in ignore_suffixes]
