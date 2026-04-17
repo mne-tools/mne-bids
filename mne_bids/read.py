@@ -15,19 +15,13 @@ import numpy as np
 from mne import events_from_annotations, io, pick_channels_regexp, read_events
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
-from mne.utils import get_subjects_dir, logger
-
-try:
-    # HEDAnnotations was added in MNE 1.12; importing from mne.annotations
-    # works regardless of whether the top-level lazy-loader stub re-exports it.
-    from mne.annotations import HEDAnnotations as _HEDAnnotations
-except ImportError:
-    _HEDAnnotations = None
+from mne.utils import check_version, get_subjects_dir, logger
 
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
+    DEFAULT_HED_VERSION,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
     _map_options,
@@ -49,8 +43,6 @@ from mne_bids.utils import (
     verbose,
     warn,
 )
-
-_DEFAULT_HED_VERSION = "8.3.0"
 
 
 @verbose
@@ -855,7 +847,7 @@ def _read_hed_version(bids_root):
     except (json.JSONDecodeError, OSError) as exc:
         warn(
             f"Could not read HEDVersion from {desc_path}: {exc}. "
-            f"Falling back to default HED schema {_DEFAULT_HED_VERSION}."
+            f"Falling back to default HED schema {DEFAULT_HED_VERSION}."
         )
         return None
 
@@ -864,6 +856,7 @@ def _handle_events_reading(
     events_fname, raw, *, bids_root=None, events_json_fname=None
 ):
     """Read associated events.tsv and convert valid events to annotations on Raw."""
+    mne_supports_hed = check_version("mne", min_version="1.12")
     events_dict = _from_tsv(events_fname)
     annotations_info, filtered_events_dict = _make_annotation_kwargs(
         events_dict, events_fname
@@ -897,26 +890,29 @@ def _handle_events_reading(
             if hs and hs != "n/a":
                 extras[i]["HED"] = hs
 
-    # Try to create HEDAnnotations when all HED strings are valid.
-    # Skip silently when MNE is too old to expose HEDAnnotations — that is a
-    # feature-availability fallback, not a parse failure (HED is still kept in
-    # extras). Only warn when construction is actually attempted and fails.
+    kwargs = dict(
+        onset=annotations_info["onset"],
+        duration=annotations_info["duration"],
+        description=annotations_info["description"],
+    )
+
+    # Try to create HEDAnnotations when all HED strings are valid. Skip
+    # silently on MNE <1.12 (HED preserved in extras as a fallback). Only warn
+    # when construction is actually attempted and fails.
     annot_from_events = None
     if (
-        hed_strings is not None
+        mne_supports_hed
+        and hed_strings is not None
         and all(s and s != "n/a" for s in hed_strings)
-        and _HEDAnnotations is not None
     ):
         try:
-            annot_from_events = _HEDAnnotations(
-                onset=annotations_info["onset"],
-                duration=annotations_info["duration"],
-                description=annotations_info["description"],
+            annot_from_events = mne.HEDAnnotations(
+                **kwargs,
                 hed_string=hed_strings,
-                hed_version=_read_hed_version(bids_root) or _DEFAULT_HED_VERSION,
+                hed_version=_read_hed_version(bids_root) or DEFAULT_HED_VERSION,
                 extras=extras,
             )
-        except (AttributeError, ValueError, ImportError) as exc:
+        except (ValueError, ImportError) as exc:
             warn(
                 f"HED annotations were detected but could not be parsed: {exc}. "
                 "Falling back to regular Annotations (HED strings preserved in "
@@ -928,12 +924,7 @@ def _handle_events_reading(
     # TypeError, so degrade gracefully with a warning.
     if annot_from_events is None:
         try:
-            annot_from_events = mne.Annotations(
-                onset=annotations_info["onset"],
-                duration=annotations_info["duration"],
-                description=annotations_info["description"],
-                extras=extras,
-            )
+            annot_from_events = mne.Annotations(**kwargs, extras=extras)
         except TypeError:
             if extras:
                 warn(
@@ -942,11 +933,7 @@ def _handle_events_reading(
                     f"The extra column(s) {list(extras[0].keys())} will be "
                     "ignored."
                 )
-            annot_from_events = mne.Annotations(
-                onset=annotations_info["onset"],
-                duration=annotations_info["duration"],
-                description=annotations_info["description"],
-            )
+            annot_from_events = mne.Annotations(**kwargs)
     raw.set_annotations(annot_from_events)
 
     annot_idx_to_keep = [

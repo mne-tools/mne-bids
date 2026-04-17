@@ -29,15 +29,14 @@ from numpy.testing import assert_almost_equal
 import mne_bids.utils
 import mne_bids.write
 from mne_bids import BIDSPath
-from mne_bids import read as _read_module
 from mne_bids.config import (
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
+    DEFAULT_HED_VERSION,
     MNE_STR_TO_FRAME,
 )
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.read import (
-    _DEFAULT_HED_VERSION,
     _assemble_hed_from_sidecar,
     _handle_channels_reading,
     _handle_events_reading,
@@ -2134,10 +2133,8 @@ def _hed_tiny_bids(tmp_path):
 def test_handle_events_reading_hed(_hed_tiny_bids):
     """Test HEDAnnotations from column HED, sidecar HED, and fallbacks."""
     pytest.importorskip("hed")
-    try:
-        from mne.annotations import HEDAnnotations
-    except ImportError:
-        pytest.skip("HEDAnnotations not available in this MNE version")
+    pytest.importorskip("mne", minversion="1.12")
+    from mne.annotations import HEDAnnotations
 
     bids_root, events_tsv, events_json, raw = _hed_tiny_bids
     hed_tags = ["Experiment-structure", "Sensory-event, Visual-presentation"]
@@ -2183,7 +2180,7 @@ def test_handle_events_reading_hed(_hed_tiny_bids):
     desc.pop("HEDVersion")
     desc_path.write_text(json.dumps(desc))
     raw_def, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
-    assert raw_def.annotations._hed_version == _DEFAULT_HED_VERSION
+    assert raw_def.annotations._hed_version == DEFAULT_HED_VERSION
 
     # Fallback to regular Annotations when HED has n/a — HED preserved in extras.
     # df currently holds col_tags_distinct in the HED column.
@@ -2198,12 +2195,13 @@ def test_handle_events_reading_hed(_hed_tiny_bids):
 
 def test_handle_events_reading_hed_parse_failure_warns(_hed_tiny_bids, monkeypatch):
     """Warn (and fall back) when HEDAnnotations construction raises."""
+    pytest.importorskip("mne", minversion="1.12")
     bids_root, events_tsv, events_json, raw = _hed_tiny_bids
 
     def _boom(*args, **kwargs):
         raise ValueError("bad HED string")
 
-    monkeypatch.setattr(_read_module, "_HEDAnnotations", _boom)
+    monkeypatch.setattr(mne, "HEDAnnotations", _boom, raising=False)
     with pytest.warns(
         RuntimeWarning, match="HED annotations were detected but could not be parsed"
     ):
