@@ -2272,6 +2272,7 @@ def get_entity_vals(
         filenames = [
             f for im in include_match for f in _path_glob(root, im + search_str)
             if not any(f.is_relative_to(d) for d in ignore_dirs_set)
+            and not (ignore_hidden and any(p.startswith(".") for p in f.parts))
         ]
     else:
         filenames = []
