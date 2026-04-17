@@ -2130,120 +2130,105 @@ def _hed_tiny_bids(tmp_path):
 
 
 def test_handle_events_reading_hed(_hed_tiny_bids):
-    """Test HEDAnnotations from column HED, sidecar HED, and fallbacks."""
+    """HEDAnnotations from column HED, sidecar HED, and fallbacks."""
     pytest.importorskip("hed")
     pytest.importorskip("mne", minversion="1.12")
     from mne.annotations import HEDAnnotations
 
     bids_root, events_tsv, events_json, raw = _hed_tiny_bids
-    hed_tags = ["Experiment-structure", "Sensory-event, Visual-presentation"]
+    sidecar_tags = ["Experiment-structure", "Sensory-event, Visual-presentation"]
 
-    # Sidecar HED (fixture already has HED in events.json + HEDVersion)
-    raw_sb, _ = _handle_events_reading(
-        events_tsv, raw.copy(), bids_root=bids_root, events_json_fname=events_json
-    )
-    assert isinstance(raw_sb.annotations, HEDAnnotations)
-    assert list(raw_sb.annotations.hed_string) == hed_tags
-    assert raw_sb.annotations._hed_version == "8.3.0"
+    def read(*, with_sidecar=False):
+        kw = {"events_json_fname": events_json} if with_sidecar else {}
+        return _handle_events_reading(
+            events_tsv, raw.copy(), bids_root=bids_root, **kw
+        )[0].annotations
 
-    # Column HED
-    df = pd.read_csv(events_tsv, sep="\t")
-    df["HED"] = hed_tags
-    df.to_csv(events_tsv, sep="\t", index=False)
-    raw_col, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
-    assert isinstance(raw_col.annotations, HEDAnnotations)
-    assert list(raw_col.annotations.hed_string) == hed_tags
+    def set_hed_column(tags):
+        df = pd.read_csv(events_tsv, sep="\t")
+        df["HED"] = tags
+        df.to_csv(events_tsv, sep="\t", index=False)
+        return df
 
-    # Column HED + sidecar HED: BIDS spec says concatenate the two sources.
-    # Use column tags distinct from the sidecar to avoid TAG_EXPRESSION_REPEATED
-    # validation errors on recent HED schemas.
-    col_tags_distinct = ["Label/col-0", "Label/col-1"]
-    df["HED"] = col_tags_distinct
-    df.to_csv(events_tsv, sep="\t", index=False)
-    raw_both, _ = _handle_events_reading(
-        events_tsv,
-        raw.copy(),
-        bids_root=bids_root,
-        events_json_fname=events_json,
-    )
-    assert isinstance(raw_both.annotations, HEDAnnotations)
-    for combined, col_tag, sidecar_tag in zip(
-        raw_both.annotations.hed_string, col_tags_distinct, hed_tags
-    ):
-        assert col_tag in combined
-        assert sidecar_tag in combined
+    # Sidecar-only (fixture has HED in events.json + HEDVersion)
+    ann = read(with_sidecar=True)
+    assert isinstance(ann, HEDAnnotations)
+    assert list(ann.hed_string) == sidecar_tags
+    assert ann._hed_version == "8.3.0"
 
-    # When HEDVersion is missing from dataset_description, mne.HEDAnnotations'
-    # own default applies — we don't duplicate that default in mne_bids.
+    # Column-only
+    set_hed_column(sidecar_tags)
+    ann = read()
+    assert isinstance(ann, HEDAnnotations)
+    assert list(ann.hed_string) == sidecar_tags
+
+    # Column + sidecar: BIDS concatenates. Use distinct tags to avoid
+    # TAG_EXPRESSION_REPEATED on recent HED schemas.
+    col_tags = ["Label/col-0", "Label/col-1"]
+    set_hed_column(col_tags)
+    ann = read(with_sidecar=True)
+    assert isinstance(ann, HEDAnnotations)
+    for combined, c, s in zip(ann.hed_string, col_tags, sidecar_tags):
+        assert c in combined and s in combined
+
+    # HEDVersion missing from dataset_description → MNE's own default applies.
     desc_path = bids_root / "dataset_description.json"
     desc = json.loads(desc_path.read_text())
     desc.pop("HEDVersion")
     desc_path.write_text(json.dumps(desc))
-    raw_def, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
-    assert raw_def.annotations._hed_version  # non-empty; MNE picks its default
+    assert read()._hed_version  # non-empty
 
-    # Fallback to regular Annotations when HED has n/a — HED preserved in extras.
-    # df currently holds col_tags_distinct in the HED column.
+    # n/a HED → plain Annotations fallback with HED preserved in extras.
+    df = set_hed_column(col_tags)
     df.loc[0, "HED"] = "n/a"
     df.to_csv(events_tsv, sep="\t", index=False)
-    raw_na, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
-    assert not isinstance(raw_na.annotations, HEDAnnotations)
-    extras = raw_na.annotations.extras
-    assert extras[1].get("HED") == col_tags_distinct[1]
-    assert "HED" not in extras[0]  # n/a row has no HED in extras
+    ann = read()
+    assert not isinstance(ann, HEDAnnotations)
+    assert ann.extras[1].get("HED") == col_tags[1]
+    assert "HED" not in ann.extras[0]
 
 
 @pytest.mark.parametrize(
-    "exc_type, exc_msg",
-    [
-        # ValueError: invalid HED string (raised by MNE's _validate_hed_string)
-        pytest.param(ValueError, "bad HED string", id="invalid_hed"),
-        # RuntimeError: missing hedtools install (raised by mne.utils._soft_import)
-        pytest.param(RuntimeError, "hedtools not installed", id="missing_hedtools"),
-    ],
+    "exc_type",
+    # ValueError: invalid HED string (raised by mne.annotations._validate_hed_string)
+    # RuntimeError: missing hedtools (raised by mne.utils._soft_import)
+    [ValueError, RuntimeError],
+    ids=["invalid_hed", "missing_hedtools"],
 )
 def test_handle_events_reading_hed_parse_failure_warns(
-    _hed_tiny_bids, monkeypatch, exc_type, exc_msg
+    _hed_tiny_bids, monkeypatch, exc_type
 ):
     """Warn (and fall back) when HEDAnnotations construction raises."""
     pytest.importorskip("mne", minversion="1.12")
     bids_root, events_tsv, events_json, raw = _hed_tiny_bids
 
-    def _boom(*args, **kwargs):
-        raise exc_type(exc_msg)
+    def _boom(*a, **kw):
+        raise exc_type("x")
 
     monkeypatch.setattr(mne, "HEDAnnotations", _boom, raising=False)
-    with pytest.warns(
-        RuntimeWarning, match="HED annotations were detected but could not be parsed"
-    ):
-        raw_out, _ = _handle_events_reading(
-            events_tsv,
-            raw.copy(),
-            bids_root=bids_root,
-            events_json_fname=events_json,
-        )
-    # Falls back to regular Annotations (not HEDAnnotations)
-    assert type(raw_out.annotations).__name__ == "Annotations"
-    # HED is still preserved in extras
-    assert raw_out.annotations.extras[0].get("HED")
+    with pytest.warns(RuntimeWarning, match="could not be parsed"):
+        ann = _handle_events_reading(
+            events_tsv, raw.copy(), bids_root=bids_root, events_json_fname=events_json
+        )[0].annotations
+    assert type(ann).__name__ == "Annotations"
+    assert ann.extras[0].get("HED")  # preserved in extras
 
 
 def test_assemble_hed_from_sidecar(tmp_path):
-    """Test HED assembly from JSON sidecar (categorical + template)."""
-    tsv_file = tmp_path / "events.tsv"
+    """HED assembly from JSON sidecar (categorical + '#' template)."""
+    tsv = tmp_path / "events.tsv"
     pd.DataFrame(
-        {
-            "onset": [0.0, 1.0],
-            "duration": [0.0, 0.0],
-            "trial_type": ["show_face", "left_press"],
-            "value": [1, 2],
-            "sample": [0, 100],
-            "rep_lag": [0, "n/a"],
-        }
-    ).to_csv(tsv_file, sep="\t", index=False)
-
-    json_file = tmp_path / "events.json"
-    json_file.write_text(
+        dict(
+            onset=[0.0, 1.0],
+            duration=[0.0, 0.0],
+            trial_type=["show_face", "left_press"],
+            value=[1, 2],
+            sample=[0, 100],
+            rep_lag=[0, "n/a"],
+        )
+    ).to_csv(tsv, sep="\t", index=False)
+    sidecar = tmp_path / "events.json"
+    sidecar.write_text(
         json.dumps(
             {
                 "trial_type": {
@@ -2253,11 +2238,8 @@ def test_assemble_hed_from_sidecar(tmp_path):
             }
         )
     )
-
-    events_dict = _from_tsv(tsv_file)
-    events_dict = _drop(events_dict, "n/a", "onset")
-    result = _assemble_hed_from_sidecar(events_dict, json_file)
-
+    events = _drop(_from_tsv(tsv), "n/a", "onset")
+    result = _assemble_hed_from_sidecar(events, sidecar)
     assert "Sensory-event" in result[0] and "Item-interval/0" in result[0]
     assert result[1] == "Agent-action"
 
@@ -2266,12 +2248,10 @@ def test_assemble_hed_from_sidecar(tmp_path):
     "json_content, expect_warn",
     [
         pytest.param(None, False, id="none_fname"),
-        pytest.param("MISSING", False, id="missing_file"),
+        pytest.param(..., False, id="missing_file"),  # ellipsis = path that won't exist
         pytest.param("{invalid json", True, id="bad_json"),
         pytest.param(
-            json.dumps({"trial_type": {"Description": "type"}}),
-            False,
-            id="no_hed_keys",
+            json.dumps({"trial_type": {"Description": "type"}}), False, id="no_hed"
         ),
         pytest.param(
             json.dumps({"nonexistent_col": {"HED": {"a": "Tag-a"}}}),
@@ -2281,60 +2261,60 @@ def test_assemble_hed_from_sidecar(tmp_path):
     ],
 )
 def test_assemble_hed_from_sidecar_returns_none(tmp_path, json_content, expect_warn):
-    """Test _assemble_hed_from_sidecar returns None for invalid inputs."""
+    """_assemble_hed_from_sidecar returns None for invalid inputs."""
     tsv_file = tmp_path / "events.tsv"
     pd.DataFrame({"onset": [0.0], "duration": [0.0], "trial_type": ["ev1"]}).to_csv(
         tsv_file, sep="\t", index=False
     )
     events_dict = _from_tsv(tsv_file)
-
     if json_content is None:
         json_fname = None
-    elif json_content == "MISSING":
-        # Path to a file that does not exist — must return None silently.
+    elif json_content is ...:
         json_fname = tmp_path / "does_not_exist.json"
     else:
         json_fname = tmp_path / "events.json"
         json_fname.write_text(json_content)
 
-    if expect_warn:
-        with pytest.warns(RuntimeWarning, match="Could not read HED annotations"):
-            result = _assemble_hed_from_sidecar(events_dict, json_fname)
-    else:
-        result = _assemble_hed_from_sidecar(events_dict, json_fname)
-    assert result is None
+    ctx = (
+        pytest.warns(RuntimeWarning, match="Could not read HED annotations")
+        if expect_warn
+        else nullcontext()
+    )
+    with ctx:
+        assert _assemble_hed_from_sidecar(events_dict, json_fname) is None
 
 
 @pytest.mark.parametrize(
     "desc_content, expected, expect_warn",
     [
         pytest.param(
-            json.dumps({"Name": "test", "HEDVersion": "8.3.0"}),
+            json.dumps({"Name": "t", "HEDVersion": "8.3.0"}),
             "8.3.0",
             False,
             id="has_version",
         ),
-        pytest.param(json.dumps({"Name": "test"}), None, False, id="no_version_key"),
+        pytest.param(json.dumps({"Name": "t"}), None, False, id="no_version_key"),
         pytest.param("{invalid", None, True, id="bad_json"),
     ],
 )
 def test_read_hed_version(tmp_path, desc_content, expected, expect_warn):
-    """Test _read_hed_version reads HEDVersion from dataset_description."""
-    desc_path = tmp_path / "dataset_description.json"
-    desc_path.write_text(desc_content)
-    if expect_warn:
-        with pytest.warns(RuntimeWarning, match="Could not read HEDVersion"):
-            result = _read_hed_version(tmp_path)
-    else:
-        result = _read_hed_version(tmp_path)
-    assert result == expected
+    """_read_hed_version reads HEDVersion from dataset_description."""
+    (tmp_path / "dataset_description.json").write_text(desc_content)
+    ctx = (
+        pytest.warns(RuntimeWarning, match="Could not read HEDVersion")
+        if expect_warn
+        else nullcontext()
+    )
+    with ctx:
+        assert _read_hed_version(tmp_path) == expected
 
 
-def test_read_hed_version_returns_none_for_none_root():
-    """Test _read_hed_version returns None when bids_root is None."""
-    assert _read_hed_version(None) is None
-
-
-def test_read_hed_version_returns_none_for_missing_file(tmp_path):
-    """Test _read_hed_version returns None when dataset_description is missing."""
-    assert _read_hed_version(tmp_path / "missing") is None
+@pytest.mark.parametrize(
+    "bids_root",
+    [None, "missing"],
+    ids=["none_root", "missing_dir"],
+)
+def test_read_hed_version_returns_none(tmp_path, bids_root):
+    """_read_hed_version returns None for absent root / missing file."""
+    root = None if bids_root is None else tmp_path / bids_root
+    assert _read_hed_version(root) is None
