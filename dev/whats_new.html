@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev36+g8412217f0 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev37+g8489ff3c7 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="_static/documentation_options.js?v=c303702b"></script>
+    <script src="_static/documentation_options.js?v=b52ee4e1"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,7 +81,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev36+g8412217f0" />
+  <meta name="docsearch:version" content="0.19.0.dev37+g8489ff3c7" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev36+g8412217f0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev37+g8489ff3c7 documentation</p>
   
 </a></div>
     
@@ -553,6 +553,7 @@
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a> ignoring <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> when <code class="docutils literal notranslate"><span class="pre">EEGCoordinateUnits</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;n/a&quot;</span></code> by inferring the unit from coordinate magnitudes, and synthesize approximate fiducials for <code class="docutils literal notranslate"><span class="pre">ctf_head</span></code> montages to enable the coordinate transform to <code class="docutils literal notranslate"><span class="pre">head</span></code> frame, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1506">#1506</a>)</p></li>
 <li><p>Improve <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> handling when <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> exists without <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code>: keep strict failure for iEEG, and for EEG/MEG emit a warning and continue without applying a montage, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a></p></li>
 <li><p>Allow <code class="docutils literal notranslate"><span class="pre">task=None</span></code> in <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> for BIDS paths without a task entity (e.g. datasets that omit task in the path), by <a class="reference external" href="https://github.com/AmanJaiswal1503">Aman Jaiswal</a></p></li>
+<li><p>Fix <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> and related read paths failing with <code class="docutils literal notranslate"><span class="pre">PermissionError</span></code> on datalad/git-annex datasets by keeping the file lock next to the symlink instead of its (read-only) target, and gracefully continuing without a lock when one cannot be created, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1569">#1569</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">
