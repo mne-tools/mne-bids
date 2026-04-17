@@ -2014,37 +2014,33 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
 
     # Find all potential sidecar files from bids_root/sub-* and session subdirs,
     # potentially taking into account the data type
-    search_dir = bids_root / f"sub-{bids_path.subject}"
-    this_name = f"{subj_base}*{search_suffix}"
-    search_strs_complete = [str(search_dir / this_name)]
-    subj_sessions_wildcard = False
+
+    # Always check the subject root:
+    # - sub-N/sub-N*<search_suffix>
+    subj_dir = bids_root / subj_base
+    search_name = f"{subj_base}*{search_suffix}"
+    search_strs_complete = [str(subj_dir / search_name)]
+    # Check in datatype subdirs:
+    # - sub-N/<datatype>/sub-N*<search_suffix>
     if bids_path.datatype is not None:
-        search_strs_complete.append(
-            str(search_dir / bids_path.datatype / f"{subj_base}*{search_suffix}")
-        )
+        datatype_dir = bids_path.datatype
+        broad_wildcard = False
     else:
-        subj_sessions_wildcard = True
-        search_strs_complete.append(
-            str(search_dir / "*" / f"{subj_base}*{search_suffix}")
-        )
-    if bids_path.session is None:  # could be any session subdir
-        this_dir = search_dir / "ses-*"
-        if not subj_sessions_wildcard:  # no need as the broader one will catch it
-            this_name = f"{subj_base}_ses-*{search_suffix}"
-            search_strs_complete.append(str(this_dir / this_name))
-        if bids_path.datatype is not None:
-            search_strs_complete.append(str(this_dir / bids_path.datatype / this_name))
-        else:
-            search_strs_complete.append(str(this_dir / "*" / this_name))
-    else:
-        this_dir = search_dir / f"ses-{bids_path.session}"
-        if not subj_sessions_wildcard:
-            this_name = f"{subj_base}_ses-{bids_path.session}*{search_suffix}"
-            search_strs_complete.append(str(this_dir / this_name))
-        if bids_path.datatype is not None:
-            search_strs_complete.append(str(this_dir / bids_path.datatype / this_name))
-        else:
-            search_strs_complete.append(str(this_dir / "*" / this_name))
+        datatype_dir = "*"
+        broad_wildcard = True
+    search_strs_complete.append(str(subj_dir / datatype_dir / search_name))
+    # Check in session subdirs:
+    # - sub-N/ses-*/sub-N_ses-*<search_suffix>
+    ses_name = bids_path.session or "*"
+    this_dir = subj_dir / f"ses-{ses_name}"
+    search_name = f"{subj_base}_ses-{ses_name}*{search_suffix}"
+    if not broad_wildcard:  # Redundant with 2b!
+        search_strs_complete.append(str(this_dir / search_name))
+    # Check in datatype subdirs within session subdirs:
+    # - sub-N/ses-*/<datatype>/sub-N_ses-*<search_suffix>
+    search_strs_complete.append(str(this_dir / datatype_dir / search_name))
+
+    # Actually search now!
     for search_str in search_strs_complete:
         candidate_list.extend(glob.iglob(str(search_str)))
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)
