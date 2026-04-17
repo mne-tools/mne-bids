@@ -2048,7 +2048,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     # Actually search now!
     candidate_list = []
     for search_str in search_strs_complete:
-        candidate_list.extend(glob.iglob(str(search_str)))
+        candidate_list.extend(glob.iglob(search_str))
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)
 
     # If no candidates found within subject directory, search at dataset root
