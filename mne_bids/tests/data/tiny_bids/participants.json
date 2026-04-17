@@ -7,10 +7,11 @@
         "Units": "years"
     },
     "sex": {
-        "Description": "Biological sex of the participant",
+        "Description": "Sex of the participant",
         "Levels": {
             "F": "female",
-            "M": "male"
+            "M": "male",
+            "O": "other"
         }
     },
     "hand": {
