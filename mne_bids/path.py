@@ -1962,6 +1962,26 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         )
     bids_root = Path(bids_path.root)
 
+    # Try to shortcut the search
+    shortcut_file = _find_matching_sidecar_shortcut(
+        bids_path, suffix=suffix, extension=extension
+    )
+    if shortcut_file is not None:
+        # Have to treat coordsystem and electrodes a special way: check for others at
+        # same level of hierarchy and only take the short path if exactly one match is
+        # found; if we find more than one let the slow code below run and emit
+        # a proper message (or ignore etc.)
+        if suffix in ("coordsystem", "electrodes"):
+            # if we have more than one, don't shortcut, allow code below to be
+            # executed (slow but will result in the error message)
+            use_ext = extension or ".json"
+            search_suffix = f"{suffix}{use_ext}"
+            check_name = f"{shortcut_file.name[-len(search_suffix) :]}*{search_suffix}"
+            if len(list(_path_glob(shortcut_file.parent, check_name))) == 1:
+                return shortcut_file
+        else:
+            return shortcut_file
+
     # search suffix is BIDS-suffix and extension
     if suffix is not None:
         search_suffix = suffix
@@ -1984,25 +2004,6 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         bids_path = bids_path.update(extension=None)
     elif bids_path.extension is not None:
         search_suffix += bids_path.extension
-
-    shortcut_file = _find_matching_sidecar_shortcut(
-        bids_path, suffix=suffix, extension=extension
-    )
-    if shortcut_file is not None:
-        # Have to treat coordsystem and electrodes a special way: check for others at
-        # same level of hierarchy and only take the short path if exactly one match is
-        # found; if we find more than one let the slow code below run and emit
-        # a proper message (or ignore etc.)
-        if suffix in ("coordsystem", "electrodes"):
-            # if we have more than one, don't shortcut, allow code below to be
-            # executed (slow but will result in the error message)
-            use_ext = extension or ".json"
-            back = len(suffix) + len(use_ext)
-            check_name = f"{shortcut_file.name[-back:]}*{search_suffix}"
-            if len(list(_path_glob(shortcut_file.parent, check_name))) == 1:
-                return shortcut_file
-        else:
-            return shortcut_file
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
