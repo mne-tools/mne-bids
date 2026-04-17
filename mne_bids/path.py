@@ -1974,8 +1974,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         if suffix in ("coordsystem", "electrodes"):
             # if we have more than one, don't shortcut, allow code below to be
             # executed (slow but will result in the error message)
-            use_ext = extension or ".json"
-            search_suffix = f"{suffix}{use_ext}"
+            search_suffix = f"{suffix}{extension or _ext_map[suffix]}"
             check_name = f"{shortcut_file.name[-len(search_suffix) :]}*{search_suffix}"
             if len(list(_path_glob(shortcut_file.parent, check_name))) == 1:
                 return shortcut_file
@@ -2083,6 +2082,13 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     return None
 
 
+_ext_map = {
+    "scans": ".tsv",
+    "coordsystem": ".json",
+    "electrodes": ".tsv",
+}
+
+
 def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
     # try some shortcuts that should work for some standard files
     # (e.g., those written with MNE-BIDS) when the BIDSPath is sufficiently complete
@@ -2092,11 +2098,8 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
     if not suffix:
         return
     if extension is None:
-        if suffix == "scans":
-            extension = ".tsv"
-        elif suffix in ("coordsystem", "electrodes"):
-            extension = ".json"
-        else:
+        extension = _ext_map.get(suffix)
+        if extension is None:
             return
     assert isinstance(suffix, str)
     assert isinstance(extension, str)
