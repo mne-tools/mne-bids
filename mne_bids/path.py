@@ -2097,10 +2097,9 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
     # Only proceed if suffix and extension are provided, or can be inferred
     if not suffix:
         return
+    extension = extension or _ext_map.get(suffix)
     if extension is None:
-        extension = _ext_map.get(suffix)
-        if extension is None:
-            return
+        return
     assert isinstance(suffix, str)
     assert isinstance(extension, str)
 
