@@ -32,11 +32,11 @@ from mne_bids import BIDSPath
 from mne_bids.config import (
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
-    DEFAULT_HED_VERSION,
     MNE_STR_TO_FRAME,
 )
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.read import (
+    _DEFAULT_HED_VERSION,
     _assemble_hed_from_sidecar,
     _handle_channels_reading,
     _handle_events_reading,
@@ -2180,7 +2180,7 @@ def test_handle_events_reading_hed(_hed_tiny_bids):
     desc.pop("HEDVersion")
     desc_path.write_text(json.dumps(desc))
     raw_def, _ = _handle_events_reading(events_tsv, raw.copy(), bids_root=bids_root)
-    assert raw_def.annotations._hed_version == DEFAULT_HED_VERSION
+    assert raw_def.annotations._hed_version == _DEFAULT_HED_VERSION
 
     # Fallback to regular Annotations when HED has n/a — HED preserved in extras.
     # df currently holds col_tags_distinct in the HED column.

@@ -12,9 +12,6 @@ PYBV_VERSION = "0.7.3"
 EEGLABIO_VERSION = "0.0.2"
 CURRYREADER_VERSION = "0.1.2"
 
-# Default HED schema used when dataset_description.json does not specify one
-DEFAULT_HED_VERSION = "8.3.0"
-
 DOI = """https://doi.org/10.21105/joss.01896"""
 
 EPHY_ALLOWED_DATATYPES = ["eeg", "emg", "ieeg", "meg", "nirs"]

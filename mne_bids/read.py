@@ -21,7 +21,6 @@ from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
-    DEFAULT_HED_VERSION,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
     _map_options,
@@ -43,6 +42,8 @@ from mne_bids.utils import (
     verbose,
     warn,
 )
+
+_DEFAULT_HED_VERSION = "8.3.0"
 
 
 @verbose
@@ -847,7 +848,7 @@ def _read_hed_version(bids_root):
     except (json.JSONDecodeError, OSError) as exc:
         warn(
             f"Could not read HEDVersion from {desc_path}: {exc}. "
-            f"Falling back to default HED schema {DEFAULT_HED_VERSION}."
+            f"Falling back to default HED schema {_DEFAULT_HED_VERSION}."
         )
         return None
 
@@ -909,7 +910,7 @@ def _handle_events_reading(
             annot_from_events = mne.HEDAnnotations(
                 **kwargs,
                 hed_string=hed_strings,
-                hed_version=_read_hed_version(bids_root) or DEFAULT_HED_VERSION,
+                hed_version=_read_hed_version(bids_root) or _DEFAULT_HED_VERSION,
                 extras=extras,
             )
         except (ValueError, ImportError) as exc:
