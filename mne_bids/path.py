@@ -2194,7 +2194,7 @@ def get_entity_vals(
         If ``False`` (default), just returns the entity values. This
         will for example look like ``['001', '002']``.
     ignore_hidden : bool
-        If ``True``, ignore hidden files and directories (those starting 
+        If ``True``, ignore hidden files and directories (those starting
         with a period ``.``).
     %(verbose)s
 
@@ -2293,7 +2293,9 @@ def get_entity_vals(
     if include_match is not None:
         include_match = _ensure_tuple(include_match)
         filenames = [
-            f for im in include_match for f in _path_glob(root, im + search_str)
+            f
+            for im in include_match
+            for f in _path_glob(root, im + search_str)
             if not any(f.is_relative_to(d) for d in ignore_dirs_set)
             and not (ignore_hidden and any(p.startswith(".") for p in f.parts))
         ]
@@ -2310,7 +2312,6 @@ def get_entity_vals(
                     filenames.append(dp / f)
 
     for filename in filenames:
-
         if ignore_suffixes and any(
             [filename.stem.endswith(s) for s in ignore_suffixes]
         ):

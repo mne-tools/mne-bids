@@ -187,9 +187,7 @@ def test_get_entity_vals(entity, expected_vals, kwargs, bids_test_dir):
 def test_get_entity_vals_ignore_hidden(return_bids_test_dir):
     """Test that hidden directories are skipped by default and included when opted in."""
     bids_root = return_bids_test_dir
-    hidden_meg_dir = (
-        Path(bids_root) / ".hidden_data" / "sub-hid" / "ses-hid" / "meg"
-    )
+    hidden_meg_dir = Path(bids_root) / ".hidden_data" / "sub-hid" / "ses-hid" / "meg"
     hidden_meg_dir.mkdir(parents=True)
     (hidden_meg_dir / "sub-hid_ses-hid_task-hid_meg.fif").touch()
 
