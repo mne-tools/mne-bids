@@ -38,7 +38,7 @@ def _canonical_lock_path(path: str | os.PathLike[str]) -> Path:
     read-only ``.git/annex/objects/`` directory (see issue #1569).
     """
     path = Path(path)
-    return  Path(os.path.abspath(path.expanduser()))
+    return Path(os.path.abspath(path.expanduser()))
 
 
 @contextmanager
