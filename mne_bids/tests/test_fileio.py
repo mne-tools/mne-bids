@@ -5,6 +5,7 @@
 
 import importlib
 import os
+import sys
 import threading
 import time
 from concurrent.futures import ProcessPoolExecutor
@@ -304,6 +305,10 @@ def test_open_lock_symlink_to_readonly_target(tmp_path):
         assert not (work_dir / "sidecar.json.lock").exists()
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="POSIX chmod 0o555 does not restrict directory writes on Windows",
+)
 def test_open_lock_readonly_parent_falls_back(tmp_path):
     """If the lock file cannot be created, warn and fall back gracefully."""
     pytest.importorskip("filelock")
