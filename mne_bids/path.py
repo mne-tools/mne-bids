@@ -1989,12 +1989,16 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         bids_path, suffix=suffix, extension=extension
     )
     if shortcut_file is not None:
-        # Have to treat coordsystem a special way: check for others at same level of
-        # hierarchy and
-        if suffix == "coordsystem":
+        # Have to treat coordsystem and electrodes a special way: check for others at
+        # same level of hierarchy and only take the short path if exactly one match is
+        # found; if we find more than one let the slow code below run and emit
+        # a proper message (or ignore etc.)
+        if suffix in ("coordsystem", "electrodes"):
             # if we have more than one, don't shortcut, allow code below to be
             # executed (slow but will result in the error message)
-            check_name = f"{shortcut_file.name[-16:]}*{search_suffix}"
+            use_ext = extension or ".json"
+            back = len(suffix) + len(use_ext)
+            check_name = f"{shortcut_file.name[-back:]}*{search_suffix}"
             if len(list(_path_glob(shortcut_file.parent, check_name))) == 1:
                 return shortcut_file
         else:

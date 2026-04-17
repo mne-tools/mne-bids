@@ -1108,7 +1108,7 @@ def test_find_matching_sidecar_fast(
         assert sidecar_path.name.endswith(f"{suffix}{extension}"), suffix
         assert len(path_counter.calls) == ii + 1, suffix
         if fast_sidecar:
-            want_count = 1 if suffix == "coordsystem" else 0
+            want_count = 1 if suffix in ("coordsystem", "electrodes") else 0
         else:
             want_count = slow_count
         assert path_counter.count == want_count, suffix
