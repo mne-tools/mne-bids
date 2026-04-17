@@ -2006,21 +2006,23 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
-    candidate_list = []
 
     # Start with searches using subject as root
     subj_base = f"sub-{bids_path.subject}"
 
-    # Find all potential sidecar files from bids_root/sub-* and session subdirs,
-    # potentially taking into account the data type
+    # Find all potential sidecar files
 
-    # Always check the subject root:
-    # - sub-N/sub-N*<search_suffix>
+    # 1. Always check the subject root:
+    #
+    #    sub-N/sub-N*<search_suffix>
+    #
     subj_dir = bids_root / subj_base
     search_name = f"{subj_base}*{search_suffix}"
     search_strs_complete = [str(subj_dir / search_name)]
-    # Check in datatype subdirs:
-    # - sub-N/<datatype>/sub-N*<search_suffix>
+    # 2. Check in datatype subdirs:
+    #
+    #    sub-N/<datatype>/sub-N*<search_suffix>
+    #
     if bids_path.datatype is not None:
         datatype_dir = bids_path.datatype
         broad_wildcard = False
@@ -2028,18 +2030,23 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         datatype_dir = "*"
         broad_wildcard = True
     search_strs_complete.append(str(subj_dir / datatype_dir / search_name))
-    # Check in session subdirs:
-    # - sub-N/ses-*/sub-N_ses-*<search_suffix>
+    # 3. Check in session subdirs (if not already implicitly checked above):
+    #
+    #    sub-N/ses-*/sub-N_ses-*<search_suffix>
+    #
     ses_name = bids_path.session or "*"
     this_dir = subj_dir / f"ses-{ses_name}"
     search_name = f"{subj_base}_ses-{ses_name}*{search_suffix}"
-    if not broad_wildcard:  # Redundant with 2b!
+    if not broad_wildcard:  # the broad wildcard will return a superset of this search
         search_strs_complete.append(str(this_dir / search_name))
-    # Check in datatype subdirs within session subdirs:
-    # - sub-N/ses-*/<datatype>/sub-N_ses-*<search_suffix>
+    # 4. Check in datatype subdirs within session subdirs:
+    #
+    #    sub-N/ses-*/<datatype>/sub-N_ses-*<search_suffix>
+    #
     search_strs_complete.append(str(this_dir / datatype_dir / search_name))
 
     # Actually search now!
+    candidate_list = []
     for search_str in search_strs_complete:
         candidate_list.extend(glob.iglob(str(search_str)))
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)
