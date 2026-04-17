@@ -2193,13 +2193,24 @@ def test_handle_events_reading_hed(_hed_tiny_bids):
     assert "HED" not in extras[0]  # n/a row has no HED in extras
 
 
-def test_handle_events_reading_hed_parse_failure_warns(_hed_tiny_bids, monkeypatch):
+@pytest.mark.parametrize(
+    "exc_type, exc_msg",
+    [
+        # ValueError: invalid HED string (raised by MNE's _validate_hed_string)
+        pytest.param(ValueError, "bad HED string", id="invalid_hed"),
+        # RuntimeError: missing hedtools install (raised by mne.utils._soft_import)
+        pytest.param(RuntimeError, "hedtools not installed", id="missing_hedtools"),
+    ],
+)
+def test_handle_events_reading_hed_parse_failure_warns(
+    _hed_tiny_bids, monkeypatch, exc_type, exc_msg
+):
     """Warn (and fall back) when HEDAnnotations construction raises."""
     pytest.importorskip("mne", minversion="1.12")
     bids_root, events_tsv, events_json, raw = _hed_tiny_bids
 
     def _boom(*args, **kwargs):
-        raise ValueError("bad HED string")
+        raise exc_type(exc_msg)
 
     monkeypatch.setattr(mne, "HEDAnnotations", _boom, raising=False)
     with pytest.warns(

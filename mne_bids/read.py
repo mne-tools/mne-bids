@@ -825,6 +825,7 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
             elif isinstance(hed_spec, str) and "#" in hed_spec:
                 # Value template: "Item-interval/#"
                 per_row_tags[i].append(hed_spec.replace("#", val_str))
+            # Other shapes are not defined by the BIDS HED spec; silently skip.
 
     # Build final strings; use "n/a" for rows with no HED match
     result = [", ".join(tags) if tags else "n/a" for tags in per_row_tags]
@@ -912,7 +913,10 @@ def _handle_events_reading(
             hed_kwargs["hed_version"] = hed_version
         try:
             annot_from_events = mne.HEDAnnotations(**hed_kwargs)
-        except (ValueError, ImportError) as exc:
+        except (RuntimeError, ValueError) as exc:
+            # RuntimeError covers a missing ``hedtools`` install (raised by
+            # mne.utils._soft_import); ValueError covers invalid HED strings
+            # (raised by mne.annotations._validate_hed_string).
             warn(
                 f"HED annotations were detected but could not be parsed: {exc}. "
                 "Falling back to regular Annotations (HED strings preserved in "
