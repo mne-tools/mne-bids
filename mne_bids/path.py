@@ -2087,39 +2087,46 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
     # (e.g., those written with MNE-BIDS) when the BIDSPath is sufficiently complete
     bids_root = bids_path.root
 
+    # Only proceed if suffix and extension are provided, or can be inferred
+    if not suffix:
+        return
+    if extension is None:
+        if suffix == "scans":
+            extension = ".tsv"
+        elif suffix in ("coordsystem", "electrodes"):
+            extension = ".json"
+        else:
+            return
+    assert isinstance(suffix, str)
+    assert isinstance(extension, str)
+
     # The directory hierarchy checked (in order):
-    hierarchy_paths = list()
-    suffix = suffix or bids_path.suffix
-    extension = extension or bids_path.extension
+    paths = list()
     if bids_path.subject is not None:
         subj_str = f"sub-{bids_path.subject}"
+        subj_name = f"{subj_str}_"
+        root_subj = bids_root / subj_str
         if bids_path.session is not None:
             sess_str = f"ses-{bids_path.session}"
+            root_subj_sess = root_subj / sess_str
+            subj_sess_name = f"{subj_str}_{sess_str}_"
             if bids_path.datatype is not None:
-                # 1. sub-*/ses-*/datatype/
-                path = bids_root / subj_str / sess_str / bids_path.datatype
-                if path.is_dir():
-                    hierarchy_paths.append((path, f"{subj_str}_{sess_str}_"))
-            # 2. sub-*/ses-*/
-            path = bids_root / subj_str / sess_str
-            if path.is_dir():
-                hierarchy_paths.append((path, f"{subj_str}_{sess_str}_"))
+                # 1. sub-N/ses-M/datatype/sub-N_ses-M_<end>
+                paths.append((root_subj_sess / bids_path.datatype, subj_sess_name))
+            # 2. sub-N/ses-M/sub-N_ses-M_<end>
+            paths.append((root_subj_sess, subj_sess_name))
         if bids_path.datatype is not None:
-            # 3. sub-*/datatype/
-            path = bids_root / subj_str / bids_path.datatype
-            if path.is_dir():
-                hierarchy_paths.append((path, f"{subj_str}_"))
-        # 4. sub-*/
-        path = bids_root / subj_str
-        if path.is_dir():
-            hierarchy_paths.append((path, f"{subj_str}_"))
-    # 5. root
-    hierarchy_paths.append((bids_root, ""))
+            # 3. root/sub-N/datatype/sub-N_<end>
+            paths.append((root_subj / bids_path.datatype, subj_name))
+        # 4. root/sub-N/sub-N_<end>
+        paths.append((root_subj, subj_name))
+    # 5. root/<end>
+    paths.append((bids_root, ""))
 
     # Now do the heavy lifting: look for the files
     if suffix in ("scans", "coordsystem", "electrodes"):
-        path_end = f"{suffix}{extension or '.json'}"
-        for dir_, entity_str in hierarchy_paths:
+        path_end = f"{suffix}{extension}"
+        for dir_, entity_str in paths:
             # we need to check with task as well
             if suffix != "scans" and bids_path.task is not None:
                 shortcut_file = dir_ / f"{entity_str}task-{bids_path.task}_{path_end}"
@@ -2128,19 +2135,20 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
             shortcut_file = dir_ / f"{entity_str}{path_end}"
             if shortcut_file.is_file():
                 return shortcut_file
+    # Ensure we can use our fast path in .fpath
+    # knowing that extension and suffix are not None already
     elif bids_path.datatype is not None:
-        shortcut_path = bids_path.copy().update(
-            check=False,
-            suffix=suffix,
-            extension=extension or bids_path.extension,
+        fast_path = (
+            bids_path.copy()
+            .update(
+                check=False,
+                suffix=suffix,
+                extension=extension,
+            )
+            .fpath
         )
-        if (
-            # Ensure we can use our fast path in .fpath
-            shortcut_path.suffix is not None and shortcut_path.extension is not None
-        ):
-            fast_path = shortcut_path.fpath
-            if fast_path.is_file():
-                return fast_path
+        if fast_path.is_file():
+            return fast_path
 
 
 def _get_bids_suffix_and_ext(str_suffix):

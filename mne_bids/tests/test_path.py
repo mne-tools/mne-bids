@@ -1043,6 +1043,24 @@ def test_find_matching_sidecar_basic(
     s = bids_path.find_matching_sidecar()
     assert s.name == "sub-test_task-task_events.tsv"
 
+    # Degenerate case
+    bad_path = BIDSPath(subject="foo")
+    with pytest.raises(ValueError, match="The root"):
+        bad_path.find_matching_sidecar()
+
+
+@pytest.fixture(params=[True, False], ids=["fast", "slow"])
+def fast_sidecar(request, monkeypatch):
+    """Fixture to test both fast and slow sidecar finding."""
+    fast = request.param
+    if not fast:
+        monkeypatch.setattr(
+            mne_bids.path,
+            "_find_matching_sidecar_shortcut",
+            lambda *args, **kwargs: None,
+        )
+    return fast
+
 
 @pytest.mark.parametrize("dataset", ("basic", "dense"))
 def test_find_matching_sidecar_fast(
@@ -1071,14 +1089,14 @@ def test_find_matching_sidecar_fast(
     path.update(datatype=datatype)
     assert path.fpath.is_file()
 
-    for ii, (suffix, extension, slow_count, fast_count) in enumerate(
+    for ii, (suffix, extension, slow_count) in enumerate(
         (
-            ("events", ".tsv", call_count, 0),
-            ("channels", ".tsv", call_count, 0),
-            ("electrodes", ".tsv", 1, 0),
-            ("coordsystem", ".json", 1, 1),
-            (datatype, ".json", call_count, 0),
-            ("scans", ".tsv", 1, 0),
+            ("events", ".tsv", call_count),
+            ("channels", ".tsv", call_count),
+            ("electrodes", ".tsv", 1),
+            ("coordsystem", ".json", 1),
+            (datatype, ".json", call_count),
+            ("scans", ".tsv", 1),
         )
     ):
         if suffix == "electrodes" and datatype != "eeg":
@@ -1089,21 +1107,11 @@ def test_find_matching_sidecar_fast(
         assert sidecar_path.is_file(), suffix
         assert sidecar_path.name.endswith(f"{suffix}{extension}"), suffix
         assert len(path_counter.calls) == ii + 1, suffix
-        want_count = fast_count if fast_sidecar else slow_count
+        if fast_sidecar:
+            want_count = 1 if suffix == "coordsystem" else 0
+        else:
+            want_count = slow_count
         assert path_counter.count == want_count, suffix
-
-
-@pytest.fixture(params=[True, False], ids=["fast", "slow"])
-def fast_sidecar(request, monkeypatch):
-    """Fixture to test both fast and slow sidecar finding."""
-    fast = request.param
-    if not fast:
-        monkeypatch.setattr(
-            mne_bids.path,
-            "_find_matching_sidecar_shortcut",
-            lambda *args, **kwargs: None,
-        )
-    return fast
 
 
 def test_find_matching_sidecar_at_root(tmp_path, path_counter, fast_sidecar):
