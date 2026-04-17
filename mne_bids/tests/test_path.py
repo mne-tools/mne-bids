@@ -3,12 +3,15 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import functools
 import glob
 import os
 import os.path as op
+import pickle
 import shutil
 import shutil as sh
 import timeit
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -62,9 +65,9 @@ def test_datatypes_alphabetical():
 
 
 @pytest.fixture(scope="session")
-def return_bids_test_dir(tmp_path_factory):
+def bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
-    bids_root = str(tmp_path_factory.mktemp("mnebids_utils_test_bids_ds"))
+    bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     event_id = {
@@ -76,8 +79,8 @@ def return_bids_test_dir(tmp_path_factory):
         "Button": 32,
     }
     events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
-    cal_fname = op.join(data_path, "SSS", "sss_cal_mgh.dat")
-    crosstalk_fname = op.join(data_path, "SSS", "ct_sparse.fif")
+    cal_fname = data_path / "SSS" / "sss_cal_mgh.dat"
+    crosstalk_fname = data_path / "SSS" / "ct_sparse.fif"
 
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info["line_freq"] = 60
@@ -98,10 +101,14 @@ def return_bids_test_dir(tmp_path_factory):
 
 
 @testing.requires_testing_data
-def test_get_keys(return_bids_test_dir):
+def test_get_datatypes(bids_test_dir_dense, bids_test_dir, path_counter):
     """Test getting the datatypes (=modalities) of a dir."""
-    modalities = get_datatypes(return_bids_test_dir)
+    modalities = mne_bids.get_datatypes(bids_test_dir)
     assert modalities == ["meg"]
+    assert path_counter.count == 2
+    modalities = mne_bids.get_datatypes(bids_test_dir_dense.root)
+    assert modalities == ["eeg", "meg"]
+    assert path_counter.count == 108
 
 
 @pytest.mark.parametrize(
@@ -135,9 +142,9 @@ def test_get_keys(return_bids_test_dir):
     ],
 )
 @testing.requires_testing_data
-def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
+def test_get_entity_vals(entity, expected_vals, kwargs, bids_test_dir):
     """Test getting a list of entities."""
-    bids_root = return_bids_test_dir
+    bids_root = bids_test_dir
     # Add some derivative data that should be ignored by get_entity_vals()
     deriv_path = Path(bids_root) / "derivatives"
     deriv_meg_dir = deriv_path / "pipeline" / "sub-deriv" / "ses-deriv" / "meg"
@@ -176,25 +183,78 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     shutil.rmtree(deriv_path)
 
 
-def test_path_benchmark(tmp_path_factory, monkeypatch):
-    """Benchmark exploring bids tree."""
-    # This benchmark is to verify the speed-up in function call get_entity_vals with
-    # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
+@dataclass
+class _PathAccessCounter:
+    count: int = 0
+
+
+@pytest.fixture
+def path_counter(monkeypatch):
+    """Count number of files traversed using iglob."""
+    out = _PathAccessCounter()
+    orig_iglob = glob.iglob
+
+    def iglob_count(*args, **kwargs):
+        for fn in orig_iglob(*args, **kwargs):
+            out.count += 1
+            yield fn
+
+    def _return_root_paths_count(*args, **kwargs):
+        out.count = 0
+        return _return_root_paths(*args, **kwargs)
+
+    def get_entity_vals_count(*args, **kwargs):
+        out.count = 0
+        return get_entity_vals(*args, **kwargs)
+
+    def get_datatypes_count(*args, **kwargs):
+        out.count = 0
+        return get_datatypes(*args, **kwargs)
+
+    def _path_glob_iglob(root, pattern):
+        # Reroute Path.glob through iglob to count accesses
+        return [root / f for f in glob.iglob(pattern, root_dir=root, recursive=True)]
+
+    def _path_rglob_iglob(root, pattern):
+        # Reroute Path.rglob through iglob to count accesses
+        return [
+            root / f for f in glob.iglob(f"**/{pattern}", root_dir=root, recursive=True)
+        ]
+
+    monkeypatch.setattr(glob, "iglob", iglob_count)
+    monkeypatch.setattr(mne_bids.path, "_path_glob", _path_glob_iglob)
+    monkeypatch.setattr(mne_bids.path, "_path_rglob", _path_rglob_iglob)
+    monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
+    monkeypatch.setattr(mne_bids, "get_entity_vals", get_entity_vals_count)
+    monkeypatch.setattr(mne_bids, "get_datatypes", get_datatypes_count)
+    yield out
+
+
+@dataclass
+class _BIDSDirDense:
+    root: BIDSPath
+    bids_subdirectories: list[str]
     n_subjects = 9
     n_sessions = 4
     n_derivatives = 17
+
+
+@pytest.fixture
+def bids_test_dir_dense(tmp_path_factory):
+    """Create a dense BIDS directory tree."""
     tmp_bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
+    out = _BIDSDirDense(root=tmp_bids_root, bids_subdirectories=[])
 
     derivatives = [
-        Path("derivatives", "derivatives" + str(i)) for i in range(n_derivatives)
+        Path("derivatives", "derivatives" + str(i)) for i in range(out.n_derivatives)
     ]
 
-    bids_subdirectories = ["", "sourcedata", *derivatives]
+    out.bids_subdirectories = ["", "sourcedata", *derivatives]
 
     # Create a BIDS compliant directory tree with high number of branches
-    for i in range(1, n_subjects + 1):
-        for j in range(1, n_sessions + 1):
-            for subdir in bids_subdirectories:
+    for i in range(1, out.n_subjects + 1):
+        for j in range(1, out.n_sessions + 1):
+            for subdir in out.bids_subdirectories:
                 for datatype in ["eeg", "meg"]:
                     bids_subdir = BIDSPath(
                         subject=str(i),
@@ -226,45 +286,19 @@ def test_path_benchmark(tmp_path_factory, monkeypatch):
                         Path(ctf_path / "hz.ds").mkdir(exist_ok=True)
                         Path(ctf_path / "hz.ds" / "hz.meg4").touch()
                         Path(ctf_path / "hz.ds" / "hz.hc").touch()
+    return out
 
-    # count number of accesses
-    count = 0
-    orig_iglob = glob.iglob
 
-    def iglob_count(*args, **kwargs):
-        for fn in orig_iglob(*args, **kwargs):
-            nonlocal count
-            count += 1
-            yield fn
-
-    def _return_root_paths_count(*args, **kwargs):
-        nonlocal count
-        count = 0
-        return _return_root_paths(*args, **kwargs)
-
-    def get_entity_vals_count(*args, **kwargs):
-        nonlocal count
-        count = 0
-        return get_entity_vals(*args, **kwargs)
-
-    def _path_glob_iglob(root, pattern):
-        # Reroute Path.glob through iglob to count accesses
-        return [root / f for f in glob.iglob(pattern, root_dir=root, recursive=True)]
-
-    def _path_rglob_iglob(root, pattern):
-        # Reroute Path.rglob through iglob to count accesses
-        return [
-            root / f for f in glob.iglob(f"**/{pattern}", root_dir=root, recursive=True)
-        ]
-
-    monkeypatch.setattr(glob, "iglob", iglob_count)
-    monkeypatch.setattr(mne_bids.path, "_path_glob", _path_glob_iglob)
-    monkeypatch.setattr(mne_bids.path, "_path_rglob", _path_rglob_iglob)
-    monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
-    monkeypatch.setattr(mne_bids, "get_entity_vals", get_entity_vals_count)
-    fnames = _return_root_paths_count(tmp_bids_root)
+def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
+    """Benchmark exploring bids tree."""
+    tmp_bids_root = bids_test_dir_dense.root
+    n_subjects = bids_test_dir_dense.n_subjects
+    n_sessions = bids_test_dir_dense.n_sessions
+    # This benchmark is to verify the speed-up in function call get_entity_vals with
+    # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
+    fnames = mne_bids.path._return_root_paths(tmp_bids_root)
     assert len(fnames) == 6878
-    assert count == 6878
+    assert path_counter.count == 6878
 
     # apply nosub on find_matching_matchs with root level bids directory should
     # yield a performance boost of order of length from bids_subdirectories.
@@ -272,16 +306,16 @@ def test_path_benchmark(tmp_path_factory, monkeypatch):
     timed_all = timeit.timeit(
         "mne_bids.find_matching_paths(tmp_bids_root)", setup=setup, number=1
     )
-    assert count == 6878
+    assert path_counter.count == 6878
     timed_ignored_nosub = timeit.timeit(
         "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
         setup=setup,
         number=1,
     )
-    assert count == 360
+    assert path_counter.count == 360
 
     # while this should be of same order, lets give it some space by a factor of 3
-    target = 3 * timed_all / len(bids_subdirectories)
+    target = 3 * timed_all / len(bids_test_dir_dense.bids_subdirectories)
     assert timed_ignored_nosub < target
 
     # apply include_match on get_entity_vals with root level bids directory should
@@ -291,29 +325,29 @@ def test_path_benchmark(tmp_path_factory, monkeypatch):
         setup=setup,
         number=1,
     )
-    assert count == 4788
+    assert path_counter.count == 4788
     timed_entity_match = timeit.timeit(
         "mne_bids.get_entity_vals(tmp_bids_root, 'session', include_match='sub-*/')",  # noqa: E501
         setup=setup,
         number=1,
     )
-    assert count == 252
+    assert path_counter.count == 252
 
     # while this should be of same order, lets give it some space by a factor of 3
-    target = 3 * timed_entity / len(bids_subdirectories)
+    target = 3 * timed_entity / len(bids_test_dir_dense.bids_subdirectories)
     assert timed_entity_match < target
 
     # and these should be equivalent
     out_1 = mne_bids.get_entity_vals(tmp_bids_root, "session")
-    assert count == 4788
+    assert path_counter.count == 4788
     out_2 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="**/")
-    assert count == 29340
+    assert path_counter.count == 29340
     assert out_1 == out_2
     out_3 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="sub-*/")
-    assert count == 252
+    assert path_counter.count == 252
     assert out_2 == out_3  # all are sub-* vals
     out_4 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="none/")
-    assert count == 0
+    assert path_counter.count == 0
     assert out_4 == []
 
     # BIDSPath.match optimizations as well
@@ -330,15 +364,15 @@ def test_path_benchmark(tmp_path_factory, monkeypatch):
     # bids_root/derivatives/derivatives1/sub-1/ses-1/meg/sub-1_ses-1_task-audvis_meg.ds
     # And _fnames_to_bidspaths converts these to the same names!
     assert paths[0] == paths[n_subjects * n_sessions]
-    assert count == 2052
+    assert path_counter.count == 2052
     path.subject = "1"  # add subject
     paths = path.match()
     assert len(paths) == n_sessions
-    assert count == 12
+    assert path_counter.count == 12
     path.session = "2"  # add session
     paths = path.match()
     assert len(paths) == 1, paths
-    assert count == 3
+    assert path_counter.count == 3
 
 
 def _scan_targeted_meg(root, entities=None):
@@ -505,11 +539,11 @@ def test_make_folders(tmp_path):
 
 
 @testing.requires_testing_data
-def test_rm(return_bids_test_dir, capsys, tmp_path):
+def test_rm(bids_test_dir, capsys, tmp_path):
     """Test BIDSPath's rm method to remove files."""
     # for some reason, mne's logger can't be captured by caplog....
     bids_root = tmp_path / "mnebids_utils_test_bids_ds"
-    shutil.copytree(return_bids_test_dir, bids_root)
+    shutil.copytree(bids_test_dir, bids_root)
 
     # without providing all the entities, ambiguous when trying to use fpath
     bids_path = BIDSPath(
@@ -880,9 +914,9 @@ def test_find_best_candidates(candidate_list, best_candidates):
 
 
 @testing.requires_testing_data
-def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
+def test_find_matching_sidecar(bids_test_dir, tmp_path):
     """Test finding a sidecar file from a BIDS dir."""
-    bids_root = return_bids_test_dir
+    bids_root = bids_test_dir
 
     bids_path = _bids_path.copy().update(root=bids_root)
 
@@ -1011,9 +1045,9 @@ def test_find_matching_sidecar_at_root(tmp_path):
 
 
 @testing.requires_testing_data
-def test_bids_path_inference(return_bids_test_dir):
+def test_bids_path_inference(bids_test_dir):
     """Test usage of BIDSPath object and fpath."""
-    bids_root = return_bids_test_dir
+    bids_root = bids_test_dir
 
     # without providing all the entities, ambiguous when trying
     # to use fpath
@@ -1063,9 +1097,9 @@ def test_bids_path_inference(return_bids_test_dir):
 
 
 @testing.requires_testing_data
-def test_bids_path(return_bids_test_dir):
+def test_bids_path(bids_test_dir):
     """Test usage of BIDSPath object."""
-    bids_root = return_bids_test_dir
+    bids_root = bids_test_dir
 
     bids_path = BIDSPath(
         subject=subject_id,
@@ -1086,7 +1120,7 @@ def test_bids_path(return_bids_test_dir):
     # basename and fpath should be the same
     expected_basename = f"sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}"
     assert op.basename(bids_path.fpath) == expected_basename + "_meg.fif"
-    assert op.dirname(bids_path.fpath).startswith(bids_root)
+    assert op.dirname(bids_path.fpath).startswith(str(bids_root))
 
     # when bids root is not passed in, passes relative path
     bids_path2 = bids_path.copy().update(datatype="meg", root=None)
@@ -1395,9 +1429,9 @@ def test_filter_fnames(entities, expected_n_matches):
 
 
 @testing.requires_testing_data
-def test_match_basic(return_bids_test_dir):
+def test_match_basic(bids_test_dir):
     """Test retrieval of matching basenames."""
-    bids_root = Path(return_bids_test_dir)
+    bids_root = bids_test_dir
 
     bids_path_01 = BIDSPath(root=bids_root)
     paths = bids_path_01.match()
@@ -1511,12 +1545,12 @@ def test_match_advanced(tmp_path):
 
 
 @testing.requires_testing_data
-def test_find_matching_paths(return_bids_test_dir):
+def test_find_matching_paths(bids_test_dir):
     """We test by yielding the same results as BIDSPath.match().
 
     BIDSPath.match() is extensively tested above.
     """
-    bids_root = Path(return_bids_test_dir)
+    bids_root = bids_test_dir
 
     # Check a few exemplary entities
     bids_path_01 = BIDSPath(root=bids_root)
@@ -1635,7 +1669,7 @@ def test_return_root_paths_entity_aware(tmp_path):
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
-def test_find_empty_room(return_bids_test_dir, tmp_path):
+def test_find_empty_room(bids_test_dir, tmp_path):
     """Test reading of empty room data."""
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     bids_root = tmp_path / "bids"
@@ -1911,9 +1945,9 @@ def test_bids_path_label_vs_index_entity():
 
 
 @testing.requires_testing_data
-def test_meg_calibration_fpath(return_bids_test_dir, tmp_path):
+def test_meg_calibration_fpath(bids_test_dir, tmp_path):
     """Test BIDSPath.meg_calibration_fpath."""
-    bids_root = return_bids_test_dir
+    bids_root = bids_test_dir
 
     # File exists, so BIDSPath.meg_calibration_fpath should return a non-None
     # value.
@@ -1946,9 +1980,9 @@ def test_meg_calibration_fpath(return_bids_test_dir, tmp_path):
 
 
 @testing.requires_testing_data
-def test_meg_crosstalk_fpath(return_bids_test_dir, tmp_path):
+def test_meg_crosstalk_fpath(bids_test_dir, tmp_path):
     """Test BIDSPath.meg_crosstalk_fpath."""
-    bids_root = return_bids_test_dir
+    bids_root = bids_test_dir
 
     # File exists, so BIDSPath.crosstalk_fpath should return a non-None
     # value.
@@ -1981,46 +2015,40 @@ def test_meg_crosstalk_fpath(return_bids_test_dir, tmp_path):
 
 
 @testing.requires_testing_data
-def test_datasetdescription_with_bidspath(return_bids_test_dir):
+def test_datasetdescription_with_bidspath(bids_test_dir):
     """Test a BIDSPath can generate a valid path to dataset_description.json."""
     with pytest.raises(ValueError, match="Unallowed"):
         bids_path = BIDSPath(
-            root=return_bids_test_dir, suffix="dataset_description", extension=".json"
+            root=bids_test_dir, suffix="dataset_description", extension=".json"
         )
 
     # initialization should work
     bids_path = BIDSPath(
-        root=return_bids_test_dir,
+        root=bids_test_dir,
         suffix="dataset_description",
         extension=".json",
         check=False,
     )
     assert (
         bids_path.fpath.as_posix()
-        == Path(f"{return_bids_test_dir}/dataset_description.json").as_posix()
+        == Path(f"{bids_test_dir}/dataset_description.json").as_posix()
     )
 
     # setting it via update should work
-    bids_path = BIDSPath(root=return_bids_test_dir, extension=".json", check=True)
+    bids_path = BIDSPath(root=bids_test_dir, extension=".json", check=True)
     bids_path.update(suffix="dataset_description", check=False)
     assert (
         bids_path.fpath.as_posix()
-        == Path(f"{return_bids_test_dir}/dataset_description.json").as_posix()
+        == Path(f"{bids_test_dir}/dataset_description.json").as_posix()
     )
 
 
 @testing.requires_testing_data
-def test_update_check(return_bids_test_dir):
+def test_update_check(bids_test_dir):
     """Test check argument is passed BIDSPath properly."""
-    bids_path = BIDSPath(
-        root=return_bids_test_dir,
-        check=False,
-    )
+    bids_path = BIDSPath(root=bids_test_dir, check=False)
     bids_path.update(datatype="eyetrack")
-    assert (
-        bids_path.fpath.as_posix()
-        == Path(f"{return_bids_test_dir}/eyetrack").as_posix()
-    )
+    assert bids_path.fpath.as_posix() == (bids_test_dir / "eyetrack").as_posix()
 
 
 def test_update_fail_check_no_change():
@@ -2080,3 +2108,41 @@ def test_fpath_common_prefix(tmp_path):
         BIDSPath(root=tmp_path, subject="1", run="2").fpath
         == sub_dir / "sub-1_run-2.edf"
     )
+
+
+def test_hash():
+    """Test that BIDSPath is hashable."""
+    bp1 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"))
+    bp2 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"))
+    # test standard hash properties:
+    assert hash(bp1) == hash(bp1)  # same object
+    assert hash(bp1) == hash(bp2)  # different objects, same content
+    bp_other = bp1.copy().update(extension=".fif")
+    assert bp1.extension != bp_other.extension
+    assert hash(bp1) != hash(bp_other)  # different content
+    assert hash(bp1) != hash("not a BIDSPath")  # different type
+    assert bp1 == bp2  # equality should be true for same content
+    bp3 = pickle.loads(pickle.dumps(bp1))  # test pickling
+    assert bp1 == bp3
+    assert hash(bp1) == hash(bp3)
+    # equality and pickling
+    assert bp1.__dict__ != bp_other.__dict__  # different content
+    assert bp1.fpath == bp_other.fpath  # okay, I guess
+    assert bp1 == bp_other
+    bp_other.datatype = "meg"
+    assert bp1 != bp_other
+    assert bp1 != "foo"  # other type
+    # make sure everything in our entities plus properties is in __getstate__
+    slim_dict = {k: v for k, v in bp1.__dict__.items() if not k.startswith("_")}
+    slim_dict.update(bp1.entities)
+    slim_dict.update(
+        {k: getattr(bp1, k) for k in ("datatype", "extension", "suffix", "root")}
+    )
+    assert bp1.__getstate__() == slim_dict
+    functools.lru_cache(lambda x, y: x)(bp1, "whatever")  # test cachable
+    # TODO: One more oddity about our equality that we maybe want to fix someday
+    bp3 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"), extension=".fif")
+    bp4 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"), extension=".bdf")
+    # equality is true even though extension differs because .fpath omits it here
+    assert bp3 == bp4
+    assert "." not in str(bp3.fpath)
