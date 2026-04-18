@@ -17,7 +17,6 @@ from datetime import UTC, date, datetime, timedelta, timezone
 from functools import partial
 from pathlib import Path
 
-import mne
 import numpy as np
 import pandas as pd
 import pytest
@@ -26,6 +25,7 @@ from mne.io.constants import FIFF
 from mne.utils import assert_dig_allclose, check_version, object_diff
 from numpy.testing import assert_almost_equal
 
+import mne
 import mne_bids.utils
 import mne_bids.write
 from mne_bids import BIDSPath
@@ -2182,7 +2182,8 @@ def test_handle_events_reading_hed(_hed_tiny_bids):
     df = set_hed_column(col_tags)
     df.loc[0, "HED"] = "n/a"
     df.to_csv(events_tsv, sep="\t", index=False)
-    ann = read()
+    with pytest.warns(RuntimeWarning, match="HEDAnnotations could not be used"):
+        ann = read()
     assert not isinstance(ann, HEDAnnotations)
     assert ann.extras[1].get("HED") == col_tags[1]
     assert "HED" not in ann.extras[0]

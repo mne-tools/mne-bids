@@ -10,13 +10,13 @@ from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
 from pathlib import Path
 
-import mne
 import numpy as np
-from mne import events_from_annotations, io, pick_channels_regexp, read_events
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 from mne.utils import check_version, get_subjects_dir, logger
 
+import mne
+from mne import events_from_annotations, io, pick_channels_regexp, read_events
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
@@ -914,6 +914,14 @@ def _build_event_annotations(
                 "Falling back to regular Annotations (HED strings preserved in "
                 "extras)."
             )
+    elif hed_strings is not None:
+        # HED data present but HEDAnnotations path skipped (MNE <1.12 or n/a rows).
+        warn(
+            "HED annotations were detected but HEDAnnotations could not be used "
+            "(requires MNE-Python >=1.12 and a non-'n/a' HED string for every "
+            "event). Falling back to regular Annotations (HED strings preserved "
+            "in extras)."
+        )
 
     # Plain Annotations fallback. The ``extras`` kwarg was added in MNE 1.10;
     # older versions raise TypeError, so degrade gracefully with a warning.
