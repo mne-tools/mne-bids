@@ -17,6 +17,7 @@ from datetime import UTC, date, datetime, timedelta, timezone
 from functools import partial
 from pathlib import Path
 
+import mne
 import numpy as np
 import pandas as pd
 import pytest
@@ -25,7 +26,6 @@ from mne.io.constants import FIFF
 from mne.utils import assert_dig_allclose, check_version, object_diff
 from numpy.testing import assert_almost_equal
 
-import mne
 import mne_bids.utils
 import mne_bids.write
 from mne_bids import BIDSPath

@@ -10,13 +10,13 @@ from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
 from pathlib import Path
 
+import mne
 import numpy as np
+from mne import events_from_annotations, io, pick_channels_regexp, read_events
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 from mne.utils import check_version, get_subjects_dir, logger
 
-import mne
-from mne import events_from_annotations, io, pick_channels_regexp, read_events
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
