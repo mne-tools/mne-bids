@@ -914,13 +914,14 @@ def _build_event_annotations(
                 "Falling back to regular Annotations (HED strings preserved in "
                 "extras)."
             )
-    elif hed_strings is not None:
-        # HED data present but HEDAnnotations path skipped (MNE <1.12 or n/a rows).
+    elif hed_strings is not None and check_version("mne", min_version="1.12"):
+        # HED detected and MNE supports HEDAnnotations, but some rows are ``n/a``.
+        # Actionable: fill in the missing HED strings. On MNE <1.12 we skip the
+        # warning because it would fire on every read without a path forward.
         warn(
             "HED annotations were detected but HEDAnnotations could not be used "
-            "(requires MNE-Python >=1.12 and a non-'n/a' HED string for every "
-            "event). Falling back to regular Annotations (HED strings preserved "
-            "in extras)."
+            "because some event rows have 'n/a' HED strings. Falling back to "
+            "regular Annotations (HED strings preserved in extras)."
         )
 
     # Plain Annotations fallback. The ``extras`` kwarg was added in MNE 1.10;
