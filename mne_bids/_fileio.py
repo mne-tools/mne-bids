@@ -75,6 +75,7 @@ def _get_lock_context(path, timeout=None):
     lock_path = canonical_path.with_name(f"{canonical_path.name}.lock")
     lock_context = contextlib.nullcontext()
 
+    where = None
     stack = "unknown"
     try:  # this should always work but let's be safe
         # [0] = here
@@ -82,11 +83,13 @@ def _get_lock_context(path, timeout=None):
         # [2] = _open_lock
         # [3] = contextlib __enter__
         # [4] = caller of _open_lock
-        where = inspect.stack()[4]
-        stack = f"{where.filename}:{where.lineno} {where.function}"
-        del where
+        # Using inspect.stack is expensive, so traverse directly instead
+        where = inspect.currentframe().f_back.f_back.f_back.f_back
+        stack = f"{where.f_code.co_filename}:{where.f_lineno} {where.f_code.co_name}"
     except Exception:
         pass
+    finally:
+        del where
     logger.debug(f"Lock: acquiring {canonical_path} from {stack}")
 
     if filelock:
@@ -154,6 +157,8 @@ def _open_lock(path, *args, lock_timeout=None, **kwargs):
 
     try:
         if is_reentrant:
+            if lock_key.endswith("participants.tsv"):
+                print(f"Lock: reentrant for {lock_key}")
             if args or kwargs:
                 with open(canonical_path, *args, **kwargs) as fid:
                     yield fid
