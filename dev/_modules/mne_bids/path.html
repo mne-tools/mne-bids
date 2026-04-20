@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev38+g0b77bd7b9 documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev39+g2ddfbf719 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../../_static/documentation_options.js?v=b54d5ad1"></script>
+    <script src="../../_static/documentation_options.js?v=b688adb7"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev38+g0b77bd7b9" />
+  <meta name="docsearch:version" content="0.19.0.dev39+g2ddfbf719" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -145,7 +145,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev38+g0b77bd7b9 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev39+g2ddfbf719 documentation</p>
   
 </a></div>
     
@@ -2651,6 +2651,7 @@
     <span class="n">ignore_suffixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">include_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">with_key</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">ignore_hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get list of values associated with an `entity_key` in a BIDS dataset.</span>
@@ -2727,6 +2728,9 @@
 <span class="sd">        will for example look like ``[&#39;sub-001&#39;, &#39;sub-002&#39;]``.</span>
 <span class="sd">        If ``False`` (default), just returns the entity values. This</span>
 <span class="sd">        will for example look like ``[&#39;001&#39;, &#39;002&#39;]``.</span>
+<span class="sd">    ignore_hidden : bool</span>
+<span class="sd">        If ``True``, ignore hidden files and directories (those starting</span>
+<span class="sd">        with a period ``.``).</span>
 <span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
@@ -2817,22 +2821,32 @@
 
     <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">entity_long_abbr_map</span><span class="p">[</span><span class="n">entity_key</span><span class="p">]</span><span class="si">}</span><span class="s2">-(.*?)_&quot;</span><span class="p">)</span>
     <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;**/*</span><span class="si">{</span><span class="n">entity_long_abbr_map</span><span class="p">[</span><span class="n">entity_key</span><span class="p">]</span><span class="si">}</span><span class="s2">-*_*&quot;</span>
+    <span class="n">entity_abbr</span> <span class="o">=</span> <span class="n">entity_long_abbr_map</span><span class="p">[</span><span class="n">entity_key</span><span class="p">]</span>
+    <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;**/*</span><span class="si">{</span><span class="n">entity_abbr</span><span class="si">}</span><span class="s2">-*_*&quot;</span>
+    <span class="n">ignore_dirs_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ignore_dirs</span><span class="p">)</span>  <span class="c1"># resolved absolute Paths, for fast lookup</span>
+
     <span class="k">if</span> <span class="n">include_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">include_match</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">include_match</span><span class="p">)</span>
         <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">f</span> <span class="k">for</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">include_match</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_path_glob</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">im</span> <span class="o">+</span> <span class="n">search_str</span><span class="p">)</span>
+            <span class="n">f</span>
+            <span class="k">for</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">include_match</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_path_glob</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">im</span> <span class="o">+</span> <span class="n">search_str</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ignore_dirs_set</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ignore_hidden</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">parts</span><span class="p">))</span>
         <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">filenames</span> <span class="o">=</span> <span class="n">_path_glob</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">search_str</span><span class="p">)</span>
+        <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">topdown</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">dp</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dirpath</span><span class="p">)</span>
+            <span class="c1"># Prevent os.walk from descending into ignored dirs</span>
+            <span class="n">dirs</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span> <span class="k">if</span> <span class="n">dp</span> <span class="o">/</span> <span class="n">d</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_dirs_set</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ignore_hidden</span><span class="p">:</span>
+                <span class="n">dirs</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">entity_abbr</span><span class="si">}</span><span class="s2">-&quot;</span> <span class="ow">in</span> <span class="n">f</span> <span class="ow">and</span> <span class="s2">&quot;_&quot;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span> <span class="o">/</span> <span class="n">f</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-        <span class="c1"># Skip ignored directories</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="n">ignore_dir</span><span class="p">)</span> <span class="k">for</span> <span class="n">ignore_dir</span> <span class="ow">in</span> <span class="n">ignore_dirs</span><span class="p">]</span>
-        <span class="p">):</span>
-            <span class="k">continue</span>
-
         <span class="k">if</span> <span class="n">ignore_suffixes</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
             <span class="p">[</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ignore_suffixes</span><span class="p">]</span>
         <span class="p">):</span>
@@ -3469,7 +3483,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-17.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-20.
       <br/>
     
   </p>

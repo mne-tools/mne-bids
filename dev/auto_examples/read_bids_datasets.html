@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Read BIDS datasets &#8212; MNE-BIDS 0.19.0.dev38+g0b77bd7b9 documentation</title>
+    <title>Read BIDS datasets &#8212; MNE-BIDS 0.19.0.dev39+g2ddfbf719 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../_static/documentation_options.js?v=b54d5ad1"></script>
+    <script src="../_static/documentation_options.js?v=b688adb7"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,7 +81,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev38+g0b77bd7b9" />
+  <meta name="docsearch:version" content="0.19.0.dev39+g2ddfbf719" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev38+g0b77bd7b9 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev39+g2ddfbf719 documentation</p>
   
 </a></div>
     
@@ -602,19 +602,19 @@ Could not read the /home/circleci/.mne/mne-python.json json file during the writ
 🌍 Preparing to download ds002778 …
 
 📁 Traversing directories for ds002778 : 0 entities [00:00, ? entities/s]
-📁 Traversing directories for ds002778 : 8 entities [00:00, 26.73 entities/s]
-📁 Traversing directories for ds002778 : 11 entities [00:00, 22.67 entities/s]
-📁 Traversing directories for ds002778 : 16 entities [00:00, 25.37 entities/s]
-📁 Traversing directories for ds002778 : 21 entities [00:00, 32.87 entities/s]
+📁 Traversing directories for ds002778 : 8 entities [00:00, 26.97 entities/s]
+📁 Traversing directories for ds002778 : 11 entities [00:00, 23.06 entities/s]
+📁 Traversing directories for ds002778 : 16 entities [00:00, 26.30 entities/s]
+📁 Traversing directories for ds002778 : 21 entities [00:00, 33.74 entities/s]
 📥 Retrieving up to 19 files (5 concurrent downloads).
 
-participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s]
+dataset_description.json:   0%|          | 0.00/354 [00:00&lt;?, ?B/s]
 
 
 CHANGES:   0%|          | 0.00/379 [00:00&lt;?, ?B/s]
 
 
-dataset_description.json:   0%|          | 0.00/354 [00:00&lt;?, ?B/s]
+participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s]
 
 
 participants.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
@@ -623,7 +623,10 @@ participants.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
 README:   0%|          | 0.00/4.55k [00:00&lt;?, ?B/s]
 
 
-sub-pd6_ses-off_scans.tsv:   0%|          | 0.00/75.0 [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
+
+
+sub-pd6_ses-off_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
 
 
 sub-pd6_ses-off_task-rest_eeg.bdf:   0%|          | 0.00/11.5M [00:00&lt;?, ?B/s]
@@ -632,7 +635,7 @@ sub-pd6_ses-off_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
 
 
 
-sub-pd6_ses-off_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_scans.tsv:   0%|          | 0.00/75.0 [00:00&lt;?, ?B/s]
 
 
 
@@ -640,43 +643,49 @@ sub-pd6_ses-off_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
 
 
 
-sub-pd6_ses-off_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
-
-
-
 sub-pd6_ses-off_task-rest_events.tsv:   0%|          | 0.00/66.0 [00:00&lt;?, ?B/s]
-
-
-sub-pd6_ses-off_task-rest_eeg.bdf:  29%|██▊       | 3.29M/11.5M [00:00&lt;00:00, 34.5MB/s]
-
-sub-pd6_ses-on_scans.tsv:   0%|          | 0.00/74.0 [00:00&lt;?, ?B/s]
-
-
-
-sub-pd6_ses-on_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
 
 
 
 sub-pd6_ses-on_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
 
 
-sub-pd6_ses-off_task-rest_eeg.bdf:  62%|██████▏   | 7.06M/11.5M [00:00&lt;00:00, 37.4MB/s]
+sub-pd6_ses-off_task-rest_eeg.bdf:  28%|██▊       | 3.25M/11.5M [00:00&lt;00:00, 34.0MB/s]
 
-sub-pd6_ses-on_task-rest_eeg.bdf:   0%|          | 0.00/17.4M [00:00&lt;?, ?B/s]
+sub-pd6_ses-on_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
+
+
+
+sub-pd6_ses-on_scans.tsv:   0%|          | 0.00/74.0 [00:00&lt;?, ?B/s]
+
 
 
 sub-pd6_ses-on_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
 
 
+
 sub-pd6_ses-on_task-rest_events.tsv:   0%|          | 0.00/51.0 [00:00&lt;?, ?B/s]
 
 
+
 sub-pd6_ses-on_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_task-rest_eeg.bdf:  57%|█████▋    | 6.59M/11.5M [00:00&lt;00:00, 34.5MB/s]
 
 
-sub-pd6_ses-on_task-rest_eeg.bdf:  23%|██▎       | 4.01M/17.4M [00:00&lt;00:00, 41.9MB/s]
 
-sub-pd6_ses-on_task-rest_eeg.bdf:  63%|██████▎   | 10.9M/17.4M [00:00&lt;00:00, 59.4MB/s]
+sub-pd6_ses-on_task-rest_eeg.bdf:   0%|          | 0.00/17.4M [00:00&lt;?, ?B/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  11%|█▏        | 1.99M/17.4M [00:00&lt;00:00, 20.9MB/s]
+sub-pd6_ses-off_task-rest_eeg.bdf:  86%|████████▌ | 9.89M/11.5M [00:00&lt;00:00, 27.2MB/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  23%|██▎       | 4.03M/17.4M [00:00&lt;00:00, 21.2MB/s]
+
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  44%|████▍     | 7.70M/17.4M [00:00&lt;00:00, 29.0MB/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  70%|██████▉   | 12.1M/17.4M [00:00&lt;00:00, 35.8MB/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  95%|█████████▌| 16.6M/17.4M [00:00&lt;00:00, 39.7MB/s]
 
                                                                                       ✅ Finished downloading ds002778.
 
@@ -922,7 +931,7 @@ ignore this warning as it does not affect the data reading process at all.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.740 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.938 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/07841a9269d1816a3add41f32d8a5ed2/read_bids_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">read_bids_datasets.ipynb</span></code></a></p>
@@ -1018,7 +1027,7 @@ ignore this warning as it does not affect the data reading process at all.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-17.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-20.
       <br/>
     
   </p>
