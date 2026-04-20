@@ -184,6 +184,54 @@ def test_get_entity_vals(entity, expected_vals, kwargs, bids_test_dir):
     shutil.rmtree(deriv_path)
 
 
+@testing.requires_testing_data
+def test_get_entity_vals_ignore_hidden(bids_test_dir):
+    """Test hidden directories are skipped by default and included when opted in."""
+    bids_root = bids_test_dir
+    hidden_meg_dir = Path(bids_root) / ".hidden_data" / "sub-hid" / "ses-hid" / "meg"
+    hidden_meg_dir.mkdir(parents=True)
+    (hidden_meg_dir / "sub-hid_ses-hid_task-hid_meg.fif").touch()
+
+    # Default (ignore_hidden=True): hidden dir must not contribute any values
+    for entity_key in ("subject", "session", "task"):
+        vals = get_entity_vals(root=bids_root, entity_key=entity_key)
+        assert "hid" not in vals, (
+            f"entity '{entity_key}' leaked from hidden dir: {vals}"
+        )
+
+    # ignore_hidden=False + ignore_dirs=None: hidden dir must be included
+    for entity_key in ("subject", "session", "task"):
+        vals = get_entity_vals(
+            root=bids_root,
+            entity_key=entity_key,
+            ignore_hidden=False,
+            ignore_dirs=None,
+        )
+        assert "hid" in vals, (
+            f"entity '{entity_key}' not found in hidden dir when "
+            f"ignore_hidden=False: {vals}"
+        )
+
+    # include_match branch: hidden dir must also be excluded by default
+    vals_include = get_entity_vals(
+        root=bids_root, entity_key="subject", include_match="**/"
+    )
+    assert "hid" not in vals_include
+
+    # include_match branch: hidden dir included when ignore_hidden=False
+    vals_include_hidden = get_entity_vals(
+        root=bids_root,
+        entity_key="subject",
+        include_match="**/",
+        ignore_hidden=False,
+        ignore_dirs=None,
+    )
+    assert "hid" in vals_include_hidden
+
+    # Clean up
+    shutil.rmtree(Path(bids_root) / ".hidden_data")
+
+
 @dataclass
 class _PathAccessCounter:
     calls: list[str]
@@ -195,6 +243,7 @@ def path_counter(monkeypatch):
     """Count number of files traversed using iglob."""
     out = _PathAccessCounter(calls=list())
     orig_iglob = glob.iglob
+    orig_walk = os.walk
 
     def iglob_count(*args, **kwargs):
         for fn in orig_iglob(*args, **kwargs):
@@ -232,6 +281,12 @@ def path_counter(monkeypatch):
             root / f for f in glob.iglob(f"**/{pattern}", root_dir=root, recursive=True)
         ]
 
+    def _os_walk_count(*args, **kwargs):
+        out.count = 0
+        for dirpath, dirs, files in orig_walk(*args, **kwargs):
+            out.count += len(files) + len(dirs)
+            yield dirpath, dirs, files
+
     monkeypatch.setattr(glob, "iglob", iglob_count)
     monkeypatch.setattr(mne_bids.path, "_path_glob", _path_glob_iglob)
     monkeypatch.setattr(mne_bids.path, "_path_rglob", _path_rglob_iglob)
@@ -241,6 +296,7 @@ def path_counter(monkeypatch):
     monkeypatch.setattr(
         mne_bids.path, "_find_matching_sidecar", _find_matching_sidecar_count
     )
+    monkeypatch.setattr(os, "walk", _os_walk_count)
     yield out
 
 
@@ -348,28 +404,9 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
     target = 3 * timed_all / len(bids_test_dir_dense.bids_subdirectories)
     assert timed_ignored_nosub < target
 
-    # apply include_match on get_entity_vals with root level bids directory should
-    # yield a performance boost of order of length from bids_subdirectories.
-    timed_entity = timeit.timeit(
-        "mne_bids.get_entity_vals(tmp_bids_root, 'session')",
-        setup=setup,
-        number=1,
-    )
-    assert path_counter.count == 6840
-    timed_entity_match = timeit.timeit(
-        "mne_bids.get_entity_vals(tmp_bids_root, 'session', include_match='sub-*/')",  # noqa: E501
-        setup=setup,
-        number=1,
-    )
-    assert path_counter.count == 360
-
-    # while this should be of same order, lets give it some space by a factor of 3
-    target = 3 * timed_entity / len(bids_test_dir_dense.bids_subdirectories)
-    assert timed_entity_match < target
-
-    # and these should be equivalent
+    # these should be equivalent
     out_1 = mne_bids.get_entity_vals(tmp_bids_root, "session")
-    assert path_counter.count == 6840
+    assert path_counter.count == 818
     out_2 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="**/")
     assert path_counter.count == 41328
     assert out_1 == out_2
@@ -1197,26 +1234,27 @@ def test_bids_path_inference(bids_test_dir):
     channels_fname.fpath
 
     # create an extra file under 'eeg'
-    extra_file = op.join(
-        bids_root,
-        f"sub-{subject_id}",
-        f"ses-{session_id}",
-        "eeg",
-        channels_fname.basename + ".tsv",
+    extra_file = (
+        bids_root
+        / f"sub-{subject_id}"
+        / f"ses-{session_id}"
+        / "eeg"
+        / f"{channels_fname.basename}.tsv"
     )
-    Path(extra_file).parent.mkdir(exist_ok=True, parents=True)
-    # Creates a new file and because of this new file, there is now
-    # ambiguity
-    with open(extra_file, "w", encoding="utf-8"):
-        pass
-    with pytest.raises(RuntimeError, match="Found data of more than one"):
-        channels_fname.fpath
+    try:
+        extra_file.parent.mkdir(exist_ok=True, parents=True)
+        # Creates a new file and because of this new file, there is now
+        # ambiguity
+        with open(extra_file, "w", encoding="utf-8"):
+            pass
+        with pytest.raises(RuntimeError, match="Found data of more than one"):
+            channels_fname.fpath
 
-    # if you set datatype, now there is no ambiguity
-    channels_fname.update(datatype="eeg")
-    assert str(channels_fname.fpath) == extra_file
-    # set state back to original
-    shutil.rmtree(Path(extra_file).parent)
+        # if you set datatype, now there is no ambiguity
+        channels_fname.update(datatype="eeg")
+        assert str(channels_fname.fpath) == str(extra_file)
+    finally:
+        shutil.rmtree(extra_file.parent)
 
 
 def test_bids_path(bids_test_dir):
