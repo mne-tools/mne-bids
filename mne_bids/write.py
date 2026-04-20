@@ -126,7 +126,7 @@ def _should_use_bti_pdf_suffix() -> bool:
                 check=True,
             )
         except (subprocess.CalledProcessError, FileNotFoundError, OSError) as e:
-            logger.warning(f"Failed to run bids-validator to check version: {e}")
+            warn(f"Failed to run bids-validator to check version: {e}")
         else:
             version_output = res.stdout.strip() or res.stderr.strip()
             match = re.search(r"(\d+)\.(\d+)\.(\d+)", version_output)
@@ -803,7 +803,7 @@ def _participants_json(fname, overwrite=False):
             except json.JSONDecodeError as e:
                 # File is corrupted/incomplete - this can happen in a race condition
                 # when one process truncates while another reads
-                logger.warning(
+                warn(
                     f"Could not parse JSON in '{fname}': {e}. "
                     "This may occur when reading during concurrent writes. "
                     "Treating as empty."
