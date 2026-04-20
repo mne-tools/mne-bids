@@ -64,7 +64,10 @@ def test_datatypes_alphabetical():
     assert _DATATYPE_LIST == tuple(sorted(_DATATYPE_LIST))
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(
+    scope="session",
+    params=[pytest.param("testing", marks=mne.datasets.testing._pytest_mark())],
+)
 def bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
@@ -100,7 +103,6 @@ def bids_test_dir(tmp_path_factory):
     return bids_root
 
 
-@testing.requires_testing_data
 def test_get_datatypes(bids_test_dir_dense, bids_test_dir, path_counter):
     """Test getting the datatypes (=modalities) of a dir."""
     modalities = mne_bids.get_datatypes(bids_test_dir)
@@ -141,7 +143,6 @@ def test_get_datatypes(bids_test_dir_dense, bids_test_dir, path_counter):
         ("run", [], dict(ignore_datatypes=["meg"])),
     ],
 )
-@testing.requires_testing_data
 def test_get_entity_vals(entity, expected_vals, kwargs, bids_test_dir):
     """Test getting a list of entities."""
     bids_root = bids_test_dir
@@ -233,13 +234,14 @@ def test_get_entity_vals_ignore_hidden(bids_test_dir):
 
 @dataclass
 class _PathAccessCounter:
+    calls: list[str]
     count: int = 0
 
 
 @pytest.fixture
 def path_counter(monkeypatch):
     """Count number of files traversed using iglob."""
-    out = _PathAccessCounter()
+    out = _PathAccessCounter(calls=list())
     orig_iglob = glob.iglob
     orig_walk = os.walk
 
@@ -253,12 +255,21 @@ def path_counter(monkeypatch):
         return _return_root_paths(*args, **kwargs)
 
     def get_entity_vals_count(*args, **kwargs):
+        out.calls.append("get_entity_vals")
         out.count = 0
         return get_entity_vals(*args, **kwargs)
 
     def get_datatypes_count(*args, **kwargs):
+        out.calls.append("get_datatypes")
         out.count = 0
         return get_datatypes(*args, **kwargs)
+
+    orig_find = mne_bids.path._find_matching_sidecar
+
+    def _find_matching_sidecar_count(*args, **kwargs):
+        out.calls.append("_find_matching_sidecar")
+        out.count = 0
+        return orig_find(*args, **kwargs)
 
     def _path_glob_iglob(root, pattern):
         # Reroute Path.glob through iglob to count accesses
@@ -282,6 +293,9 @@ def path_counter(monkeypatch):
     monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
     monkeypatch.setattr(mne_bids, "get_entity_vals", get_entity_vals_count)
     monkeypatch.setattr(mne_bids, "get_datatypes", get_datatypes_count)
+    monkeypatch.setattr(
+        mne_bids.path, "_find_matching_sidecar", _find_matching_sidecar_count
+    )
     monkeypatch.setattr(os, "walk", _os_walk_count)
     yield out
 
@@ -308,7 +322,19 @@ def bids_test_dir_dense(tmp_path_factory):
     out.bids_subdirectories = ["", "sourcedata", *derivatives]
 
     # Create a BIDS compliant directory tree with high number of branches
+    for root_file in (
+        "dataset_description.json",
+        "participants.tsv",
+        "participants.csv",
+        "README",
+        "coordsystem.json",
+        "scans.tsv",
+    ):
+        (tmp_bids_root / root_file).touch()
     for i in range(1, out.n_subjects + 1):
+        sub_root = tmp_bids_root / f"sub-{i}"
+        sub_root.mkdir()
+        (sub_root / f"sub-{i}_electrodes.tsv").touch()
         for j in range(1, out.n_sessions + 1):
             for subdir in out.bids_subdirectories:
                 for datatype in ["eeg", "meg"]:
@@ -320,31 +346,33 @@ def bids_test_dir_dense(tmp_path_factory):
                         root=str(tmp_bids_root / subdir),
                     )
                     bids_subdir.mkdir(exist_ok=True)
-                    Path(bids_subdir.root / "participants.tsv").touch()
-                    Path(bids_subdir.root / "participants.csv").touch()
-                    Path(bids_subdir.root / "README").touch()
+                    bsd_path = Path(bids_subdir.directory)
+                    (bsd_path / "participants.tsv").touch()
+                    (bsd_path / "participants.csv").touch()
+                    (bsd_path / "README").touch()
 
                     # os.makedirs(bids_subdir.directory, exist_ok=True)
-                    Path(
-                        bids_subdir.directory, bids_subdir.basename + "_events.tsv"
-                    ).touch()
-                    Path(
-                        bids_subdir.directory, bids_subdir.basename + "_events.csv"
-                    ).touch()
+                    for ext_suf in ("events.tsv", "events.csv"):
+                        (bsd_path / f"{bids_subdir.basename}_{ext_suf}").touch()
 
                     if datatype == "meg":
-                        ctf_path = Path(
-                            bids_subdir.directory, bids_subdir.basename + "_meg.ds"
-                        )
+                        ctf_path = bsd_path / f"{bids_subdir.basename}_meg.ds"
                         ctf_path.mkdir(exist_ok=True)
-                        Path(ctf_path, bids_subdir.basename + ".meg4").touch()
-                        Path(ctf_path, bids_subdir.basename + ".hc").touch()
-                        Path(ctf_path / "hz.ds").mkdir(exist_ok=True)
-                        Path(ctf_path / "hz.ds" / "hz.meg4").touch()
-                        Path(ctf_path / "hz.ds" / "hz.hc").touch()
+                        (ctf_path / f"{bids_subdir.basename}.meg4").touch()
+                        (ctf_path / f"{bids_subdir.basename}.hc").touch()
+                        (ctf_path / "hz.ds").mkdir(exist_ok=True)
+                        (ctf_path / "hz.ds" / "hz.meg4").touch()
+                        (ctf_path / "hz.ds" / "hz.hc").touch()
+                    else:
+                        assert datatype == "eeg"
+                        assert str(bsd_path).endswith("eeg")
+                        for ext_suf in ("eeg.edf", "channels.tsv", "eeg.json"):
+                            (bsd_path / f"{bids_subdir.basename}_{ext_suf}").touch()
+
     return out
 
 
+@pytest.mark.slow  # ~5s
 def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
     """Benchmark exploring bids tree."""
     tmp_bids_root = bids_test_dir_dense.root
@@ -353,8 +381,10 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
     # This benchmark is to verify the speed-up in function call get_entity_vals with
     # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
     fnames = mne_bids.path._return_root_paths(tmp_bids_root)
-    assert len(fnames) == 6878
-    assert path_counter.count == 6878
+    assert len(fnames) == len(set(fnames))
+    assert len(fnames) == 10956
+    max_count = 11642
+    assert path_counter.count == max_count
 
     # apply nosub on find_matching_matchs with root level bids directory should
     # yield a performance boost of order of length from bids_subdirectories.
@@ -362,13 +392,13 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
     timed_all = timeit.timeit(
         "mne_bids.find_matching_paths(tmp_bids_root)", setup=setup, number=1
     )
-    assert path_counter.count == 6878
+    assert path_counter.count == max_count
     timed_ignored_nosub = timeit.timeit(
         "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
         setup=setup,
         number=1,
     )
-    assert path_counter.count == 360
+    assert path_counter.count == 621
 
     # while this should be of same order, lets give it some space by a factor of 3
     target = 3 * timed_all / len(bids_test_dir_dense.bids_subdirectories)
@@ -376,12 +406,12 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
 
     # these should be equivalent
     out_1 = mne_bids.get_entity_vals(tmp_bids_root, "session")
-    assert path_counter.count == 482
+    assert path_counter.count == 818
     out_2 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="**/")
-    assert path_counter.count == 29340
+    assert path_counter.count == 41328
     assert out_1 == out_2
     out_3 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="sub-*/")
-    assert path_counter.count == 252
+    assert path_counter.count == 360
     assert out_2 == out_3  # all are sub-* vals
     out_4 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="none/")
     assert path_counter.count == 0
@@ -401,15 +431,15 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
     # bids_root/derivatives/derivatives1/sub-1/ses-1/meg/sub-1_ses-1_task-audvis_meg.ds
     # And _fnames_to_bidspaths converts these to the same names!
     assert paths[0] == paths[n_subjects * n_sessions]
-    assert path_counter.count == 2052
+    assert path_counter.count == 3420
     path.subject = "1"  # add subject
     paths = path.match()
     assert len(paths) == n_sessions
-    assert path_counter.count == 12
+    assert path_counter.count == 20
     path.session = "2"  # add session
     paths = path.match()
     assert len(paths) == 1, paths
-    assert path_counter.count == 3
+    assert path_counter.count == 5
 
 
 def _scan_targeted_meg(root, entities=None):
@@ -575,8 +605,7 @@ def test_make_folders(tmp_path):
     os.chdir(curr_dir)
 
 
-@testing.requires_testing_data
-def test_rm(bids_test_dir, capsys, tmp_path):
+def test_rm(bids_test_dir, capsys, tmp_path, path_counter, fast_sidecar):
     """Test BIDSPath's rm method to remove files."""
     # for some reason, mne's logger can't be captured by caplog....
     bids_root = tmp_path / "mnebids_utils_test_bids_ds"
@@ -594,6 +623,11 @@ def test_rm(bids_test_dir, capsys, tmp_path):
 
     # Delete one run:
     deleted_paths = bids_path.match(ignore_json=False)
+    assert len(path_counter.calls) == 0
+    want_path = (
+        bids_path.directory
+        / f"sub-{bids_path.subject}_ses-{bids_path.session}_scans.tsv"
+    )
     updated_paths = [
         bids_path.copy()
         .update(datatype=None)
@@ -603,9 +637,15 @@ def test_rm(bids_test_dir, capsys, tmp_path):
             on_error="raise",
         )
     ]
+    assert updated_paths[0] == want_path
+    want_count = 0 if fast_sidecar else 1
+    assert len(path_counter.calls) == 1
+    assert path_counter.count == want_count
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
     expected += [str(p) for p in deleted_paths + updated_paths]
+    assert len(path_counter.calls) == 1
     bids_path.rm(safe_remove=False, verbose="INFO")
+    assert len(path_counter.calls) == 6
     captured = capsys.readouterr().out
     assert set(captured.splitlines()) == set(expected)
 
@@ -622,6 +662,7 @@ def test_rm(bids_test_dir, capsys, tmp_path):
             subject=bids_path.subject,
         ).directory
     ]
+    assert len(path_counter.calls) == 6
     updated_paths = [
         bids_path.copy()
         .update(datatype=None)
@@ -632,6 +673,8 @@ def test_rm(bids_test_dir, capsys, tmp_path):
         ),
         bids_path.root / "participants.tsv",
     ]
+    assert len(path_counter.calls) == 7
+    assert path_counter.count == want_count
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
     expected += [str(p) for p in deleted_paths + updated_paths]
     bids_path.rm(safe_remove=False, verbose="INFO")
@@ -950,19 +993,24 @@ def test_find_best_candidates(candidate_list, best_candidates):
     assert _find_best_candidates(params, candidate_list) == best_candidates
 
 
-@testing.requires_testing_data
-def test_find_matching_sidecar(bids_test_dir, tmp_path):
+def test_find_matching_sidecar_basic(
+    bids_test_dir, tmp_path, path_counter, fast_sidecar
+):
     """Test finding a sidecar file from a BIDS dir."""
     bids_root = bids_test_dir
 
     bids_path = _bids_path.copy().update(root=bids_root)
 
     # Now find a sidecar
+    expected_file = (
+        bids_root / "sub-01" / "ses-01" / "meg" / "sub-01_ses-01_coordsystem.json"
+    )
     sidecar_fname = bids_path.find_matching_sidecar(
         suffix="coordsystem", extension=".json"
     )
-    expected_file = op.join("sub-01", "ses-01", "meg", "sub-01_ses-01_coordsystem.json")
-    assert str(sidecar_fname).endswith(expected_file)
+    assert sidecar_fname == expected_file
+    assert len(path_counter.calls) == 1
+    assert path_counter.count == 1
 
     # create a duplicate sidecar, which will be tied in match score, triggering an error
     dupe = Path(str(sidecar_fname).replace("coordsystem.json", "2coordsystem.json"))
@@ -1032,8 +1080,78 @@ def test_find_matching_sidecar(bids_test_dir, tmp_path):
     s = bids_path.find_matching_sidecar()
     assert s.name == "sub-test_task-task_events.tsv"
 
+    # Degenerate case
+    bad_path = BIDSPath(subject="foo")
+    with pytest.raises(ValueError, match="The root"):
+        bad_path.find_matching_sidecar()
 
-def test_find_matching_sidecar_at_root(tmp_path):
+
+@pytest.fixture(params=[True, False], ids=["fast", "slow"])
+def fast_sidecar(request, monkeypatch):
+    """Fixture to test both fast and slow sidecar finding."""
+    fast = request.param
+    if not fast:
+        monkeypatch.setattr(
+            mne_bids.path,
+            "_find_matching_sidecar_shortcut",
+            lambda *args, **kwargs: None,
+        )
+    return fast
+
+
+@pytest.mark.parametrize("dataset", ("basic", "dense"))
+def test_find_matching_sidecar_fast(
+    bids_test_dir, bids_test_dir_dense, path_counter, fast_sidecar, dataset
+):
+    """Test that we can find sidecars with the fast shortcut method."""
+    if dataset == "basic":
+        path = BIDSPath(
+            subject="01",
+            session="01",
+            run="01",
+            task="testing",
+            root=bids_test_dir,
+        )
+        datatype = "meg"
+        call_count = 2
+    else:
+        path = BIDSPath(
+            subject="1",
+            session="1",
+            task="audvis",
+            root=bids_test_dir_dense.root,
+        )
+        datatype = "eeg"
+        call_count = 1
+    path.update(datatype=datatype)
+    assert path.fpath.is_file()
+
+    for ii, (suffix, extension, slow_count) in enumerate(
+        (
+            ("events", ".tsv", call_count),
+            ("channels", ".tsv", call_count),
+            ("electrodes", ".tsv", 1),
+            ("coordsystem", ".json", 1),
+            (datatype, ".json", call_count),
+            ("scans", ".tsv", 1),
+        )
+    ):
+        if suffix == "electrodes" and datatype != "eeg":
+            with pytest.raises(RuntimeError, match="Did not find any"):
+                path.find_matching_sidecar(suffix=suffix, extension=extension)
+            continue
+        sidecar_path = path.find_matching_sidecar(suffix=suffix, extension=extension)
+        assert sidecar_path.is_file(), suffix
+        assert sidecar_path.name.endswith(f"{suffix}{extension}"), suffix
+        assert len(path_counter.calls) == ii + 1, suffix
+        if fast_sidecar:
+            want_count = 1 if suffix in ("coordsystem", "electrodes") else 0
+        else:
+            want_count = slow_count
+        assert path_counter.count == want_count, suffix
+
+
+def test_find_matching_sidecar_at_root(tmp_path, path_counter, fast_sidecar):
     """Test finding a sidecar file located at dataset root level.
 
     BIDS inheritance principle allows sidecars at dataset root that apply
@@ -1058,30 +1176,35 @@ def test_find_matching_sidecar_at_root(tmp_path):
     # Now try to find the sidecar from a BIDSPath
     bids_path = BIDSPath(subject="01", task="rest", datatype="eeg", root=bids_root)
     sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
-    assert sidecar is not None
-    assert sidecar.name == "coordsystem.json"
-    assert sidecar.parent == bids_root
+    assert sidecar == root_coordsystem
+    assert len(path_counter.calls) == 1
+    assert path_counter.count == 1
 
     # Test that subject-level sidecar takes precedence over root-level
     sub_coordsystem = sub_dir / "sub-01_coordsystem.json"
     sub_coordsystem.write_text('{"EEGCoordinateSystem": "Other"}')
     sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
-    assert sidecar.name == "sub-01_coordsystem.json"
+    assert sidecar == sub_coordsystem
+    assert len(path_counter.calls) == 2
+    assert path_counter.count == 1
 
     # Clean up subject-level sidecar and test root-level again
     sub_coordsystem.unlink()
     sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
-    assert sidecar.name == "coordsystem.json"
+    assert sidecar == root_coordsystem
+    assert len(path_counter.calls) == 3
+    assert path_counter.count == 1
 
     # Test with task-specific root-level sidecar
     task_coordsystem = bids_root / "task-rest_coordsystem.json"
     task_coordsystem.write_text('{"EEGCoordinateSystem": "TaskSpecific"}')
     sidecar = bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
     # task-rest_coordsystem.json should match better than coordsystem.json
-    assert sidecar.name == "task-rest_coordsystem.json"
+    assert sidecar == task_coordsystem
+    assert len(path_counter.calls) == 4
+    assert path_counter.count == 2
 
 
-@testing.requires_testing_data
 def test_bids_path_inference(bids_test_dir):
     """Test usage of BIDSPath object and fpath."""
     bids_root = bids_test_dir
@@ -1134,7 +1257,6 @@ def test_bids_path_inference(bids_test_dir):
         shutil.rmtree(extra_file.parent)
 
 
-@testing.requires_testing_data
 def test_bids_path(bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = bids_test_dir
@@ -1466,7 +1588,6 @@ def test_filter_fnames(entities, expected_n_matches):
     assert len(output) == expected_n_matches
 
 
-@testing.requires_testing_data
 def test_match_basic(bids_test_dir):
     """Test retrieval of matching basenames."""
     bids_root = bids_test_dir
@@ -1582,7 +1703,6 @@ def test_match_advanced(tmp_path):
     assert len(matches) == len(fnames), path
 
 
-@testing.requires_testing_data
 def test_find_matching_paths(bids_test_dir):
     """We test by yielding the same results as BIDSPath.match().
 
@@ -1706,7 +1826,6 @@ def test_return_root_paths_entity_aware(tmp_path):
 
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
-@testing.requires_testing_data
 def test_find_empty_room(bids_test_dir, tmp_path):
     """Test reading of empty room data."""
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
@@ -1982,7 +2101,6 @@ def test_bids_path_label_vs_index_entity():
     BIDSPath(subject="01", split=1)  # ok as <index> entity
 
 
-@testing.requires_testing_data
 def test_meg_calibration_fpath(bids_test_dir, tmp_path):
     """Test BIDSPath.meg_calibration_fpath."""
     bids_root = bids_test_dir
@@ -2017,7 +2135,6 @@ def test_meg_calibration_fpath(bids_test_dir, tmp_path):
     assert bids_path_.meg_calibration_fpath is not None
 
 
-@testing.requires_testing_data
 def test_meg_crosstalk_fpath(bids_test_dir, tmp_path):
     """Test BIDSPath.meg_crosstalk_fpath."""
     bids_root = bids_test_dir
@@ -2052,7 +2169,6 @@ def test_meg_crosstalk_fpath(bids_test_dir, tmp_path):
     assert bids_path.meg_crosstalk_fpath is not None
 
 
-@testing.requires_testing_data
 def test_datasetdescription_with_bidspath(bids_test_dir):
     """Test a BIDSPath can generate a valid path to dataset_description.json."""
     with pytest.raises(ValueError, match="Unallowed"):
@@ -2081,7 +2197,6 @@ def test_datasetdescription_with_bidspath(bids_test_dir):
     )
 
 
-@testing.requires_testing_data
 def test_update_check(bids_test_dir):
     """Test check argument is passed BIDSPath properly."""
     bids_path = BIDSPath(root=bids_test_dir, check=False)

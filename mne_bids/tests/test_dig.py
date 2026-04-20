@@ -364,7 +364,7 @@ def test_convert_montage():
 
 @testing.requires_testing_data
 def test_electrodes_io(tmp_path):
-    """Ensure only electrodes end up in *_electrodes.json."""
+    """Ensure only electrodes end up in *_electrodes.tsv."""
     raw = _load_raw()
     raw.pick(["eeg", "stim"])  # we don't need meg channels
     bids_root = tmp_path / "bids1"
@@ -374,6 +374,7 @@ def test_electrodes_io(tmp_path):
     electrodes_path = bids_path.copy().update(
         task=None, run=None, space="CapTrak", suffix="electrodes", extension=".tsv"
     )
+    assert electrodes_path.fpath.is_file()
     with open(electrodes_path, encoding="utf-8") as sidecar:
         n_entries = len(
             [line for line in sidecar if "name" not in line]
