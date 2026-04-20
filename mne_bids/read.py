@@ -1102,7 +1102,7 @@ def read_raw_bids(
                 f"In: {bids_raw_folder}"
             )
         elif len(pdf_list) > 1:  # pragma: no cover
-            logger.warn(
+            warn(
                 "Found more than one BTi 'processed data file' (pdf). "
                 f"Picking:\n\n    {pdf_list[0]}\n\nout of the options:\n\n"
                 f"{pdf_list}\n\n"

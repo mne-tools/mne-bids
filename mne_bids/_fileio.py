@@ -75,6 +75,7 @@ def _get_lock_context(path, timeout=None):
     lock_path = canonical_path.with_name(f"{canonical_path.name}.lock")
     lock_context = contextlib.nullcontext()
 
+    where = None
     stack = "unknown"
     try:  # this should always work but let's be safe
         # [0] = here
@@ -82,11 +83,13 @@ def _get_lock_context(path, timeout=None):
         # [2] = _open_lock
         # [3] = contextlib __enter__
         # [4] = caller of _open_lock
-        # Using inspect.stack is expensive
+        # Using inspect.stack is expensive, so traverse directly instead
         where = inspect.currentframe().f_back.f_back.f_back.f_back
         stack = f"{where.f_code.co_filename}:{where.f_lineno} {where.f_code.co_name}"
     except Exception:
         pass
+    finally:
+        del where
     logger.debug(f"Lock: acquiring {canonical_path} from {stack}")
 
     if filelock:
