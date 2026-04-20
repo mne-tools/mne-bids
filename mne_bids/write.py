@@ -1850,7 +1850,7 @@ def write_raw_bids(
         If ``'channelwise'``, the range will be defined per channel.
         If a tuple of minimum and maximum, this manual physical range will be used.
         Only used for exporting EDF files.
-        
+
         .. versionadded:: 0.19
     symlink : bool
         Instead of copying the source files, only create symbolic links to
