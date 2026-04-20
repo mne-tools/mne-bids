@@ -8,7 +8,6 @@ from __future__ import annotations
 import contextlib
 import inspect
 import os
-import threading
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -25,9 +24,6 @@ try:
 except ValueError:
     DEFAULT_LOCK_TIMEOUT = _LOCK_TIMEOUT_FALLBACK
 
-_ACTIVE_LOCKS: dict[str, int] = {}
-_ACTIVE_LOCKS_GUARD = threading.RLock()
-
 
 def _canonical_lock_path(path: str | os.PathLike[str]) -> Path:
     """Return an absolute, normalised path without following symlinks.
@@ -42,7 +38,7 @@ def _canonical_lock_path(path: str | os.PathLike[str]) -> Path:
 
 
 @contextmanager
-def _get_lock_context(path, timeout=None):
+def _get_lock_context(path, *, timeout=None, lock=True):
     """Get a file lock context for the given path.
 
     Internal helper function that creates a FileLock if available,
@@ -92,7 +88,7 @@ def _get_lock_context(path, timeout=None):
         del where
     logger.debug(f"Lock: acquiring {canonical_path} from {stack}")
 
-    if filelock:
+    if lock and filelock:
         try:
             # Ensure parent directory exists
             Path(lock_path).parent.mkdir(parents=True, exist_ok=True)
@@ -117,7 +113,7 @@ def _get_lock_context(path, timeout=None):
 
 
 @contextmanager
-def _open_lock(path, *args, lock_timeout=None, **kwargs):
+def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
     """Context manager that acquires a file lock with optional file opening.
 
     If the `filelock` package is available, a lock is acquired on a lock file
@@ -139,6 +135,8 @@ def _open_lock(path, *args, lock_timeout=None, **kwargs):
     lock_timeout : float | None
         Timeout in seconds for acquiring the lock. If ``None``, the default
         timeout applies.
+    lock : bool
+        If True, use a FileLock (if available) to lock the file.
     **kwargs : dict
         Additional keyword arguments forwarded to ``open``.
 
@@ -148,203 +146,22 @@ def _open_lock(path, *args, lock_timeout=None, **kwargs):
         File object if file opening args were provided, None otherwise.
     """
     canonical_path = _canonical_lock_path(path)
-    lock_key = str(canonical_path)
 
-    with _ACTIVE_LOCKS_GUARD:
-        lock_depth = _ACTIVE_LOCKS.get(lock_key, 0)
-        _ACTIVE_LOCKS[lock_key] = lock_depth + 1
-    is_reentrant = lock_depth > 0
-
-    try:
-        if is_reentrant:
-            if lock_key.endswith("participants.tsv"):
-                print(f"Lock: reentrant for {lock_key}")
+    with _get_lock_context(
+        canonical_path,
+        timeout=lock_timeout,
+        lock=lock,
+    ) as lock_context:
+        with contextlib.ExitStack() as stack:
+            try:
+                stack.enter_context(lock_context)
+            except OSError as exp:
+                warn(
+                    f"Could not acquire lock for {canonical_path} "
+                    f"({exp}); proceeding without a lock."
+                )
             if args or kwargs:
-                with open(canonical_path, *args, **kwargs) as fid:
-                    yield fid
+                fid = stack.enter_context(open(canonical_path, *args, **kwargs))
+                yield fid
             else:
                 yield None
-            return
-
-        # Increment multiprocess refcount before acquiring lock
-        _increment_lock_refcount(canonical_path)
-
-        with _get_lock_context(
-            canonical_path,
-            timeout=lock_timeout,
-        ) as lock_context:
-            with contextlib.ExitStack() as stack:
-                try:
-                    stack.enter_context(lock_context)
-                except OSError as exp:
-                    warn(
-                        f"Could not acquire lock for {canonical_path} "
-                        f"({exp}); proceeding without a lock."
-                    )
-                if args or kwargs:
-                    fid = stack.enter_context(open(canonical_path, *args, **kwargs))
-                    yield fid
-                else:
-                    yield None
-    finally:
-        with _ACTIVE_LOCKS_GUARD:
-            _ACTIVE_LOCKS[lock_key] -= 1
-            if _ACTIVE_LOCKS[lock_key] == 0:
-                del _ACTIVE_LOCKS[lock_key]
-
-        # Clean up lock files safely using reference counting across processes.
-        # Only clean up when this was the outermost lock (not re-entrant) and
-        # when the lock depth was 0 (meaning we actually acquired the lock).
-        if not is_reentrant and lock_depth == 0:
-            _decrement_and_cleanup_lock_file(canonical_path)
-
-
-def _increment_lock_refcount(file_path):
-    """Increment the multiprocess reference count for a lock file.
-
-    Parameters
-    ----------
-    file_path : Path
-        The original file path (not the lock file path).
-    """
-    file_path = Path(file_path)
-    refcount_path = file_path.parent / f"{file_path.name}.lock.refcount"
-    refcount_lock_path = Path(f"{refcount_path}.lock")
-
-    filelock = _soft_import("filelock", purpose="lock refcounting", strict=False)
-    if not filelock:
-        return
-
-    refcount_lock = filelock.FileLock(str(refcount_lock_path), timeout=5.0)
-    try:
-        with refcount_lock:
-            # Read current refcount or initialize to 0
-            current_count = 0
-            if refcount_path.exists():
-                try:
-                    current_count = int(refcount_path.read_text().strip())
-                except (ValueError, OSError):
-                    logger.debug(f"Could not read refcount from {refcount_path}")
-
-            # Increment and write back
-            current_count += 1
-            try:
-                refcount_path.write_text(str(current_count))
-            except OSError as exp:
-                logger.debug(f"Could not write refcount to {refcount_path}: {exp}")
-    except TimeoutError:
-        # Another process is updating refcount concurrently
-        logger.debug(f"Timeout acquiring refcount lock for {file_path}")
-    except Exception as exp:
-        logger.debug(f"Error incrementing refcount for {file_path}: {exp}")
-    finally:
-        # Clean up the refcount lock file
-        try:
-            if refcount_lock_path.exists():
-                refcount_lock_path.unlink()
-        except OSError:
-            pass
-
-
-def _decrement_and_cleanup_lock_file(file_path):
-    """Decrement refcount and remove lock file if no longer in use.
-
-    Maintains a reference count in a .refcount file to track how many processes
-    are currently using or waiting for the lock. Only deletes the lock file when
-    the reference count reaches zero.
-
-    Parameters
-    ----------
-    file_path : Path
-        The original file path (not the lock file path).
-    """
-    from pathlib import Path
-
-    file_path = Path(file_path)
-    lock_path = file_path.parent / f"{file_path.name}.lock"
-    refcount_path = file_path.parent / f"{file_path.name}.lock.refcount"
-    refcount_lock_path = Path(f"{refcount_path}.lock")
-
-    # Early return if lock file doesn't exist
-    if not lock_path.exists():
-        # Clean up orphaned refcount file if it exists
-        try:
-            if refcount_path.exists():
-                refcount_path.unlink()
-        except OSError:
-            pass
-        return
-
-    filelock = _soft_import("filelock", purpose="lock refcounting", strict=False)
-    if not filelock:
-        return
-
-    refcount_lock = filelock.FileLock(str(refcount_lock_path), timeout=5.0)
-    try:
-        with refcount_lock:
-            # Read current refcount or initialize to 0
-            current_count = 0
-            if refcount_path.exists():
-                try:
-                    current_count = int(refcount_path.read_text().strip())
-                except (ValueError, OSError):
-                    logger.debug(f"Could not read refcount from {refcount_path}")
-
-            # Decrement refcount, ensuring it doesn't go negative
-            current_count = max(0, current_count - 1)
-
-            if current_count == 0:
-                # No more processes using this lock, safe to delete
-                try:
-                    lock_path.unlink()
-                except OSError as exp:
-                    logger.debug(f"Could not remove lock file {lock_path}: {exp}")
-                try:
-                    if refcount_path.exists():
-                        refcount_path.unlink()
-                except OSError as exp:
-                    logger.debug(f"Could not remove refcount {refcount_path}: {exp}")
-            else:
-                # Write back decremented count
-                try:
-                    refcount_path.write_text(str(current_count))
-                except OSError as exp:
-                    logger.debug(f"Could not write refcount to {refcount_path}: {exp}")
-    except TimeoutError:
-        # Another process is updating refcount, it will handle cleanup
-        logger.debug(f"Timeout acquiring refcount lock for {file_path}")
-    except Exception as exp:
-        logger.debug(f"Error decrementing refcount for {file_path}: {exp}")
-    finally:
-        # Clean up the refcount lock file
-        try:
-            if refcount_lock_path.exists():
-                refcount_lock_path.unlink()
-        except OSError:
-            pass
-
-
-def cleanup_lock_files(root_path):
-    """Remove lock files associated with a path or an entire tree.
-
-    Parameters
-    ----------
-    root_path : str | Path
-        Root directory or file path used to derive lock file locations.
-    """
-    root_path = Path(root_path)
-
-    if root_path.is_dir():
-        for lock_file in root_path.rglob("*.lock"):
-            try:
-                lock_file.unlink()
-            except OSError:
-                pass
-        return
-
-    lock_candidate = root_path.parent / f"{root_path.name}.lock"
-    if lock_candidate.exists():
-        try:
-            lock_candidate.unlink()
-        except OSError:
-            pass

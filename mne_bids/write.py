@@ -290,7 +290,7 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         ch_data.move_to_end("type", last=False)
         ch_data.move_to_end("name", last=False)
 
-    _write_tsv(fname, ch_data, overwrite)
+    _write_tsv(fname, ch_data, overwrite=overwrite)
 
 
 _cardinal_ident_mapping = {
@@ -478,7 +478,7 @@ def _events_tsv(
             continue
         data[key] = values
 
-    _write_tsv(fname, data, overwrite)
+    _write_tsv(fname, data, overwrite=overwrite)
 
 
 def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False):
@@ -544,7 +544,7 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
         )
         new_data = {**orig_data, **new_data}
 
-    _write_json(fname, new_data, overwrite)
+    _write_json(fname, new_data, overwrite=overwrite)
 
 
 def _readme(datatype, fname, overwrite=False):
@@ -744,7 +744,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             if existing_participants:
                 data = _combine_rows(orig_data, data, "participant_id")
 
-        _write_tsv(fname, data, overwrite=True)
+        _write_tsv(fname, data, overwrite=True, lock=False)  # already have a lock
 
 
 def _participants_json(fname, overwrite=False):
@@ -926,7 +926,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
             # otherwise add the new data
             data = _combine_rows(orig_data, data, "filename")
 
-        _write_tsv(fpath, data, overwrite=True)
+        _write_tsv(fpath, data, overwrite=True, lock=False)  # already have a lock
 
 
 def _load_image(image, name="image"):
@@ -1274,7 +1274,7 @@ def _sidecar_json(
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
 
-    _write_json(fname, ch_info_json, overwrite)
+    _write_json(fname, ch_info_json, overwrite=overwrite)
 
     return fname
 
@@ -1695,7 +1695,7 @@ def make_dataset_description(
         pop_keys = [key for key, val in description.items() if val is None]
         for key in pop_keys:
             description.pop(key)
-        _write_json(fname, description, overwrite=True)
+        _write_json(fname, description, overwrite=True, lock=False)
 
 
 @verbose
@@ -2877,7 +2877,7 @@ def write_anat(
                 "Wanted to write a file but it already exists and "
                 f'`overwrite` is set to False. File: "{fname}"'
             )
-        _write_json(fname, img_json, overwrite)
+        _write_json(fname, img_json, overwrite=overwrite)
 
         if deface:
             landmarks_deface = landmarks.get("deface")
