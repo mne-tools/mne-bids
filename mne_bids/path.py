@@ -28,6 +28,7 @@ from mne_bids.config import (
     ALLOWED_PATH_ENTITIES,
     ALLOWED_PATH_ENTITIES_SHORT,
     ALLOWED_SPACES,
+    ENCODINGS,
     ENTITY_VALUE_TYPE,
     reader,
 )
@@ -1484,7 +1485,7 @@ def _print_lines_with_entry(file, entry, folder, is_tsv, line_numbers, outfile):
         prints to the console, else a string is printed to.
     """
     entry_lines = list()
-    with _open_lock(file, encoding="utf-8-sig") as fid:
+    with _open_lock(file, encoding=ENCODINGS.TSV_READ) as fid:
         if is_tsv:  # format tsv files nicely
             header = _truncate_tsv_line(fid.readline())
             if line_numbers:

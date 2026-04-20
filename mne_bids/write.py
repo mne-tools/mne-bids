@@ -51,6 +51,7 @@ from mne_bids.config import (
     BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
     BIDS_VERSION,
     CONVERT_FORMATS,
+    ENCODINGS,
     EXT_TO_UNIT_MAP,
     FORMAT_EXTENSIONS,
     IGNORED_CHANNELS,
@@ -568,7 +569,7 @@ def _readme(datatype, fname, overwrite=False):
         already contains that citation.
     """
     if fname.is_file() and not overwrite:
-        with _open_lock(fname, encoding="utf-8-sig") as fid:
+        with _open_lock(fname, encoding=ENCODINGS.TSV_READ) as fid:
             orig_data = fid.read()
         mne_bids_ref = REFERENCES["mne-bids"] in orig_data
         datatype_ref = REFERENCES[datatype] in orig_data
@@ -1662,7 +1663,7 @@ def make_dataset_description(
     with _open_lock(fname):
         if op.isfile(fname):
             try:
-                with open(fname, encoding="utf-8-sig") as fin:
+                with open(fname, encoding=ENCODINGS.JSON) as fin:
                     orig_cols = json.load(fin)
             except (json.JSONDecodeError, OSError):
                 # File is empty, corrupted, or being written to by another process
