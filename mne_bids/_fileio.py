@@ -82,8 +82,7 @@ def _get_lock_context(path, timeout=None):
         # [2] = _open_lock
         # [3] = contextlib __enter__
         # [4] = caller of _open_lock
-        # Using inspect.stack is expensive, so only do it if logger.debug is enabled
-        # In theory this should work:
+        # Using inspect.stack is expensive
         where = inspect.currentframe().f_back.f_back.f_back.f_back
         stack = f"{where.f_code.co_filename}:{where.f_lineno} {where.f_code.co_name}"
     except Exception:
