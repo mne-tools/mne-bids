@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev39+g2ddfbf719 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev40+ge4318eb1e documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../../_static/documentation_options.js?v=b688adb7"></script>
+    <script src="../../_static/documentation_options.js?v=9274d87b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev39+g2ddfbf719" />
+  <meta name="docsearch:version" content="0.19.0.dev40+ge4318eb1e" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -145,7 +145,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev39+g2ddfbf719 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev40+ge4318eb1e documentation</p>
   
 </a></div>
     
@@ -1934,7 +1934,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">physical_range</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store data as EDF.</span>
 
 <span class="sd">    Parameters</span>
@@ -1943,6 +1943,12 @@
 <span class="sd">        Raw data to save.</span>
 <span class="sd">    bids_fname : str</span>
 <span class="sd">        The output filename.</span>
+<span class="sd">    physical_range : str | tuple</span>
+<span class="sd">        How to get the physical minimal and maximal values from the data.</span>
+<span class="sd">        If ``&#39;auto&#39;`` (default), the physical range is inferred from the data,</span>
+<span class="sd">        taking the minimum and maximum values per channel type.</span>
+<span class="sd">        If ``&#39;channelwise&#39;``, the range will be defined per channel.</span>
+<span class="sd">        If a tuple of minimum and maximum, this manual physical range will be used.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite an existing file or not.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1963,7 +1969,7 @@
                 <span class="n">year</span><span class="o">=</span><span class="mi">1985</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">physical_range</span><span class="o">=</span><span class="n">physical_range</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_eeglab</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
@@ -2196,6 +2202,7 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">physical_range</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
     <span class="n">symlink</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">empty_room</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">allow_preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -2330,6 +2337,14 @@
 <span class="sd">        Conversion may be forced to BrainVision, BDF, EDF, or EEGLAB for EEG,</span>
 <span class="sd">        to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,</span>
 <span class="sd">        and to FIF for MEG data.</span>
+<span class="sd">    physical_range : str | tuple</span>
+<span class="sd">        If ``&#39;auto&#39;`` (default), the physical range is inferred from the data,</span>
+<span class="sd">        taking the minimum and maximum values per channel type.</span>
+<span class="sd">        If ``&#39;channelwise&#39;``, the range will be defined per channel.</span>
+<span class="sd">        If a tuple of minimum and maximum, this manual physical range will be used.</span>
+<span class="sd">        Only used for exporting EDF files.</span>
+
+<span class="sd">        .. versionadded:: 0.19</span>
 <span class="sd">    symlink : bool</span>
 <span class="sd">        Instead of copying the source files, only create symbolic links to</span>
 <span class="sd">        preserve storage space. This is only allowed when not anonymizing the</span>
@@ -3023,7 +3038,9 @@
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">write_format</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;BDF&quot;</span><span class="p">,</span> <span class="s2">&quot;EDF&quot;</span><span class="p">):</span>
             <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converting data files to </span><span class="si">{</span><span class="n">write_format</span><span class="si">}</span><span class="s2"> format&quot;</span><span class="p">)</span>
-            <span class="n">_write_raw_edf_bdf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+            <span class="n">_write_raw_edf_bdf</span><span class="p">(</span>
+                <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">physical_range</span><span class="o">=</span><span class="n">physical_range</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">write_format</span> <span class="o">==</span> <span class="s2">&quot;EEGLAB&quot;</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to EEGLAB format&quot;</span><span class="p">)</span>
             <span class="n">_write_raw_eeglab</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
