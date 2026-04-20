@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev40+ge4318eb1e documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev41+g9a12fa430 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../../_static/documentation_options.js?v=9274d87b"></script>
+    <script src="../../_static/documentation_options.js?v=2450224c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev40+ge4318eb1e" />
+  <meta name="docsearch:version" content="0.19.0.dev41+g9a12fa430" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -145,7 +145,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev40+ge4318eb1e documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev41+g9a12fa430 documentation</p>
   
 </a></div>
     
@@ -624,7 +624,7 @@
     <span class="c1"># Now try to discover all recordings inside the session directories.</span>
     <span class="n">candidate_er_fnames</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">session_dir</span> <span class="ow">in</span> <span class="n">emptyroom_session_dirs</span><span class="p">:</span>
-        <span class="n">dir_contents</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+        <span class="n">dir_contents</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span>
             <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">session_dir</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;sub-emptyroom_*_</span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dir_contents</span><span class="p">:</span>
@@ -2486,48 +2486,99 @@
             <span class="sa">f</span><span class="s2">&quot;ignore, but got: </span><span class="si">{</span><span class="n">on_error</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The root of the BIDSPath must be set to find a matching sidecar file.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># Try to shortcut the search</span>
+    <span class="n">shortcut_file</span> <span class="o">=</span> <span class="n">_find_matching_sidecar_shortcut</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">shortcut_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Have to treat coordsystem and electrodes a special way: check for others at</span>
+        <span class="c1"># same level of hierarchy and only take the short path if exactly one match is</span>
+        <span class="c1"># found; if we find more than one let the slow code below run and emit</span>
+        <span class="c1"># a proper message (or ignore etc.)</span>
+        <span class="k">if</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;coordsystem&quot;</span><span class="p">,</span> <span class="s2">&quot;electrodes&quot;</span><span class="p">):</span>
+            <span class="c1"># if we have more than one, don&#39;t shortcut, allow code below to be</span>
+            <span class="c1"># executed (slow but will result in the error message)</span>
+            <span class="n">search_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">suffix</span><span class="si">}{</span><span class="n">extension</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">_ext_map</span><span class="p">[</span><span class="n">suffix</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">check_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shortcut_file</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">search_suffix</span><span class="p">)</span><span class="w"> </span><span class="p">:]</span><span class="si">}</span><span class="s2">*</span><span class="si">{</span><span class="n">search_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">_path_glob</span><span class="p">(</span><span class="n">shortcut_file</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">check_name</span><span class="p">)))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">shortcut_file</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">shortcut_file</span>
 
     <span class="c1"># search suffix is BIDS-suffix and extension</span>
-    <span class="n">search_suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">search_suffix</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span>
-    <span class="k">elif</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">search_suffix</span> <span class="o">=</span> <span class="n">suffix</span>
 
         <span class="c1"># do not search for suffix if suffix is explicitly passed</span>
         <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">search_suffix</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">search_suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">search_suffix</span> <span class="o">=</span> <span class="n">search_suffix</span> <span class="o">+</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span>
-    <span class="k">elif</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">search_suffix</span> <span class="o">=</span> <span class="n">search_suffix</span> <span class="o">+</span> <span class="n">extension</span>
+    <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">search_suffix</span> <span class="o">+=</span> <span class="n">extension</span>
 
         <span class="c1"># do not search for extension if extension is explicitly passed</span>
         <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">search_suffix</span> <span class="o">+=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span>
 
     <span class="c1"># We only use subject and session as identifier, because all other</span>
     <span class="c1"># parameters are potentially not binding for metadata sidecar files</span>
-    <span class="n">search_str_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">search_str_filename</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;_ses-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="si">}</span><span class="s2">&quot;</span>
 
-    <span class="c1"># Find all potential sidecar files, doing a recursive glob</span>
-    <span class="c1"># from bids_root/sub-*, potentially taking into account the data type</span>
-    <span class="n">search_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="c1"># ** -&gt; don&#39;t forget about potentially present session directories</span>
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">search_dir</span> <span class="o">=</span> <span class="n">search_dir</span> <span class="o">/</span> <span class="s2">&quot;**&quot;</span>
+    <span class="c1"># Start with searches using subject as root</span>
+    <span class="n">subj_base</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Find all potential sidecar files</span>
+
+    <span class="c1"># 1. Always check the subject root:</span>
+    <span class="c1">#</span>
+    <span class="c1">#    sub-N/sub-N*&lt;search_suffix&gt;</span>
+    <span class="c1">#</span>
+    <span class="n">subj_dir</span> <span class="o">=</span> <span class="n">bids_root</span> <span class="o">/</span> <span class="n">subj_base</span>
+    <span class="n">search_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subj_base</span><span class="si">}</span><span class="s2">*</span><span class="si">{</span><span class="n">search_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">search_strs_complete</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">subj_dir</span> <span class="o">/</span> <span class="n">search_name</span><span class="p">)]</span>
+    <span class="c1"># 2. Check in datatype subdirs:</span>
+    <span class="c1">#</span>
+    <span class="c1">#    sub-N/&lt;datatype&gt;/sub-N*&lt;search_suffix&gt;</span>
+    <span class="c1">#</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">datatype_dir</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
+        <span class="n">broad_wildcard</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">search_dir</span> <span class="o">=</span> <span class="n">search_dir</span> <span class="o">/</span> <span class="s2">&quot;**&quot;</span> <span class="o">/</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
+        <span class="n">datatype_dir</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+        <span class="n">broad_wildcard</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">search_strs_complete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">subj_dir</span> <span class="o">/</span> <span class="n">datatype_dir</span> <span class="o">/</span> <span class="n">search_name</span><span class="p">))</span>
+    <span class="c1"># 3. Check in session subdirs (if not already implicitly checked above):</span>
+    <span class="c1">#</span>
+    <span class="c1">#    sub-N/ses-*/sub-N_ses-*&lt;search_suffix&gt;</span>
+    <span class="c1">#</span>
+    <span class="n">ses_name</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span> <span class="ow">or</span> <span class="s2">&quot;*&quot;</span>
+    <span class="n">this_dir</span> <span class="o">=</span> <span class="n">subj_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;ses-</span><span class="si">{</span><span class="n">ses_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">search_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subj_base</span><span class="si">}</span><span class="s2">_ses-</span><span class="si">{</span><span class="n">ses_name</span><span class="si">}</span><span class="s2">*</span><span class="si">{</span><span class="n">search_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">broad_wildcard</span><span class="p">:</span>  <span class="c1"># the broad wildcard will return a superset of this search</span>
+        <span class="n">search_strs_complete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">this_dir</span> <span class="o">/</span> <span class="n">search_name</span><span class="p">))</span>
+    <span class="c1"># 4. Check in datatype subdirs within session subdirs:</span>
+    <span class="c1">#</span>
+    <span class="c1">#    sub-N/ses-*/&lt;datatype&gt;/sub-N_ses-*&lt;search_suffix&gt;</span>
+    <span class="c1">#</span>
+    <span class="n">search_strs_complete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">this_dir</span> <span class="o">/</span> <span class="n">datatype_dir</span> <span class="o">/</span> <span class="n">search_name</span><span class="p">))</span>
 
-    <span class="n">search_str_complete</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">search_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">search_str_filename</span><span class="si">}</span><span class="s2">*</span><span class="si">{</span><span class="n">search_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">candidate_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">search_str_complete</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Actually search now!</span>
+    <span class="n">candidate_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">search_str</span> <span class="ow">in</span> <span class="n">search_strs_complete</span><span class="p">:</span>
+        <span class="n">candidate_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">))</span>
     <span class="n">best_candidates</span> <span class="o">=</span> <span class="n">_find_best_candidates</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">entities</span><span class="p">,</span> <span class="n">candidate_list</span><span class="p">)</span>
 
     <span class="c1"># If no candidates found within subject directory, search at dataset root</span>
@@ -2535,8 +2586,8 @@
     <span class="c1"># subjects and have no subject/session entities in the filename.</span>
     <span class="n">root_candidates</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">root_search_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">search_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">root_candidates</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">root_search_str</span><span class="p">)</span>
+        <span class="n">root_search_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_root</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">search_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">root_candidates</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">root_search_str</span><span class="p">)</span>
         <span class="c1"># Filter to only files without subject entity (true root-level sidecars)</span>
         <span class="n">root_candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">root_candidates</span> <span class="k">if</span> <span class="s2">&quot;sub-&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">root_candidates</span><span class="p">:</span>
@@ -2559,13 +2610,85 @@
             <span class="sa">f</span><span class="s2">&quot;associated with </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;but found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_candidates</span><span class="p">)</span><span class="si">}</span><span class="s2">:</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">all_candidates</span><span class="p">)</span>
         <span class="p">)</span>
-    <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">The search_str was &quot;</span><span class="si">{</span><span class="n">search_str_complete</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+    <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">The search strings were:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_strs_complete</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="n">_ext_map</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># these sidecar files should only ever have these extensions</span>
+    <span class="s2">&quot;scans&quot;</span><span class="p">:</span> <span class="s2">&quot;.tsv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;coordsystem&quot;</span><span class="p">:</span> <span class="s2">&quot;.json&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;electrodes&quot;</span><span class="p">:</span> <span class="s2">&quot;.tsv&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_matching_sidecar_shortcut</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># try some shortcuts that should work for some standard files</span>
+    <span class="c1"># (e.g., those written with MNE-BIDS) when the BIDSPath is sufficiently complete</span>
+    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
+
+    <span class="c1"># Only proceed if suffix and extension are provided, or can be inferred</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">suffix</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">extension</span> <span class="o">=</span> <span class="n">extension</span> <span class="ow">or</span> <span class="n">_ext_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">extension</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># The directory hierarchy checked (in order):</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">subj_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">subj_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subj_str</span><span class="si">}</span><span class="s2">_&quot;</span>
+        <span class="n">root_subj</span> <span class="o">=</span> <span class="n">bids_root</span> <span class="o">/</span> <span class="n">subj_str</span>
+        <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sess_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ses-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">root_subj_sess</span> <span class="o">=</span> <span class="n">root_subj</span> <span class="o">/</span> <span class="n">sess_str</span>
+            <span class="n">subj_sess_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subj_str</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">sess_str</span><span class="si">}</span><span class="s2">_&quot;</span>
+            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># 1. root/sub-N/ses-M/datatype/sub-N_ses-M_&lt;end&gt;</span>
+                <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">root_subj_sess</span> <span class="o">/</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">subj_sess_name</span><span class="p">))</span>
+            <span class="c1"># 2. root/sub-N/ses-M/sub-N_ses-M_&lt;end&gt;</span>
+            <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">root_subj_sess</span><span class="p">,</span> <span class="n">subj_sess_name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># 3. root/sub-N/datatype/sub-N_&lt;end&gt;</span>
+            <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">root_subj</span> <span class="o">/</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">subj_name</span><span class="p">))</span>
+        <span class="c1"># 4. root/sub-N/sub-N_&lt;end&gt;</span>
+        <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">root_subj</span><span class="p">,</span> <span class="n">subj_name</span><span class="p">))</span>
+    <span class="c1"># 5. root/&lt;end&gt;</span>
+    <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">bids_root</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+    <span class="c1"># Now do the heavy lifting: look for the files</span>
+    <span class="k">if</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;scans&quot;</span><span class="p">,</span> <span class="s2">&quot;coordsystem&quot;</span><span class="p">,</span> <span class="s2">&quot;electrodes&quot;</span><span class="p">):</span>
+        <span class="n">path_end</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">suffix</span><span class="si">}{</span><span class="n">extension</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">dir_</span><span class="p">,</span> <span class="n">entity_str</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="c1"># we need to check with task as well</span>
+            <span class="k">if</span> <span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;scans&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">shortcut_file</span> <span class="o">=</span> <span class="n">dir_</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">entity_str</span><span class="si">}</span><span class="s2">task-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">path_end</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">if</span> <span class="n">shortcut_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="n">shortcut_file</span>
+            <span class="n">shortcut_file</span> <span class="o">=</span> <span class="n">dir_</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">entity_str</span><span class="si">}{</span><span class="n">path_end</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">shortcut_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">shortcut_file</span>
+    <span class="c1"># Ensure we can use our fast path in .fpath</span>
+    <span class="c1"># knowing that extension and suffix are not None already</span>
+    <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fast_path</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span>
+                <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="o">.</span><span class="n">fpath</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">fast_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">fast_path</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_bids_suffix_and_ext</span><span class="p">(</span><span class="n">str_suffix</span><span class="p">):</span>
