@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import contextlib
 import inspect
+import logging
 import os
 import threading
 from contextlib import contextmanager
@@ -83,9 +84,14 @@ def _get_lock_context(path, timeout=None):
         # [2] = _open_lock
         # [3] = contextlib __enter__
         # [4] = caller of _open_lock
-        # Using inspect.stack is expensive, so use inspect.currentframe() instead
-        where = inspect.currentframe().f_back.f_back.f_back.f_back
-        stack = f"{where.f_code.co_filename}:{where.f_lineno} {where.f_code.co_name}"
+        # Using inspect.stack is expensive, so only do it if logger.debug is enabled
+        # In theory this should work:
+        # where = inspect.currentframe().f_back.f_back.f_back.f_back
+        # stack = f"{where.f_code.co_filename}:{where.f_lineno} {where.f_code.co_name}"
+        # But causes mysterious errors in test_parallel_write_many_subjects!
+        if logger.level <= logging.DEBUG:
+            where = inspect.stack(context=0)[4]
+            stack = f"{where.filename}:{where.lineno} {where.function}"
     except Exception:
         pass
     finally:
