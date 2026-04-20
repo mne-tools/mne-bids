@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import contextlib
 import inspect
-import logging
 import os
 import threading
 from contextlib import contextmanager
@@ -76,7 +75,6 @@ def _get_lock_context(path, timeout=None):
     lock_path = canonical_path.with_name(f"{canonical_path.name}.lock")
     lock_context = contextlib.nullcontext()
 
-    where = None
     stack = "unknown"
     try:  # this should always work but let's be safe
         # [0] = here
@@ -86,16 +84,10 @@ def _get_lock_context(path, timeout=None):
         # [4] = caller of _open_lock
         # Using inspect.stack is expensive, so only do it if logger.debug is enabled
         # In theory this should work:
-        # where = inspect.currentframe().f_back.f_back.f_back.f_back
-        # stack = f"{where.f_code.co_filename}:{where.f_lineno} {where.f_code.co_name}"
-        # But causes mysterious errors in test_parallel_write_many_subjects!
-        if logger.level <= logging.DEBUG:
-            where = inspect.stack(context=0)[4]
-            stack = f"{where.filename}:{where.lineno} {where.function}"
+        where = inspect.currentframe().f_back.f_back.f_back.f_back
+        stack = f"{where.f_code.co_filename}:{where.f_lineno} {where.f_code.co_name}"
     except Exception:
         pass
-    finally:
-        del where
     logger.debug(f"Lock: acquiring {canonical_path} from {stack}")
 
     if filelock:
