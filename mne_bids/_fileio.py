@@ -30,8 +30,15 @@ _ACTIVE_LOCKS_GUARD = threading.RLock()
 
 
 def _canonical_lock_path(path: str | os.PathLike[str]) -> Path:
-    """Return an absolute, normalised path without requiring it to exist."""
-    return Path(path).expanduser().resolve(strict=False)
+    """Return an absolute, normalised path without following symlinks.
+
+    Symlinks are preserved so that the ``.lock`` companion file is written
+    next to the symlink itself rather than its target. This matters for
+    datalad/git-annex datasets, where the symlink target lives in a
+    read-only ``.git/annex/objects/`` directory (see issue #1569).
+    """
+    path = Path(path)
+    return Path(os.path.abspath(path.expanduser()))
 
 
 @contextmanager
@@ -90,10 +97,13 @@ def _get_lock_context(path, timeout=None):
                 str(lock_path),
                 timeout=timeout,
             )
-        except (OSError, TypeError):
+        except (OSError, TypeError) as exp:
             # OSError: permission issues creating lock file
             # TypeError: invalid timeout parameter
-            warn("Could not create lock. Proceeding without a lock.")
+            warn(
+                f"Could not create lock at {lock_path} ({exp}); "
+                "proceeding without a lock."
+            )
     try:
         yield lock_context
     except Exception:
@@ -158,10 +168,17 @@ def _open_lock(path, *args, lock_timeout=None, **kwargs):
             canonical_path,
             timeout=lock_timeout,
         ) as lock_context:
-            with lock_context:
+            with contextlib.ExitStack() as stack:
+                try:
+                    stack.enter_context(lock_context)
+                except OSError as exp:
+                    warn(
+                        f"Could not acquire lock for {canonical_path} "
+                        f"({exp}); proceeding without a lock."
+                    )
                 if args or kwargs:
-                    with open(canonical_path, *args, **kwargs) as fid:
-                        yield fid
+                    fid = stack.enter_context(open(canonical_path, *args, **kwargs))
+                    yield fid
                 else:
                     yield None
     finally:
