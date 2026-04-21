@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev43+g031db3c31 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev44+gbcfe88c8c documentation</title>
   
   
   
@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -38,12 +38,12 @@
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=81d8d220" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=0bcd0962"></script>
+    <script src="../../_static/documentation_options.js?v=b88ca529"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -63,7 +63,7 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_bids/read';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.17.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev43+g031db3c31" />
+  <meta name="docsearch:version" content="0.19.0.dev44+gbcfe88c8c" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -97,7 +97,9 @@
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -145,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev43+g031db3c31 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev44+gbcfe88c8c documentation</p>
   
 </a></div>
     
@@ -503,7 +505,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">events_from_annotations</span><span class="p">,</span> <span class="n">io</span><span class="p">,</span> <span class="n">pick_channels_regexp</span><span class="p">,</span> <span class="n">read_events</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.coreg</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_matched_points</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_trans</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">logger</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids._fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">_open_lock</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -1125,12 +1127,34 @@
 <span class="sd">    &gt;&gt;&gt; # Read the events file using the function</span>
 <span class="sd">    &gt;&gt;&gt; events_dict = events_file_to_annotation_kwargs(events_file, verbose=False)</span>
 <span class="sd">    &gt;&gt;&gt; events_dict</span>
-<span class="sd">    {&#39;onset&#39;: array([0.1, 0.2, 0.3]), &#39;duration&#39;: array([0.1, 0.1, 0.1]), &#39;description&#39;: array([&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;], dtype=&#39;&lt;U6&#39;), &#39;event_id&#39;: {&#39;event1&#39;: 1, &#39;event2&#39;: 2}, &#39;extras&#39;: [{&#39;foo&#39;: &#39;a&#39;}, {&#39;foo&#39;: &#39;b&#39;}, {&#39;foo&#39;: &#39;c&#39;}]}</span>
+<span class="sd">    {&#39;onset&#39;: array([0.1, 0.2, 0.3]), &#39;duration&#39;: array([0.1, 0.1, 0.1]), &#39;description&#39;: array([&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;], dtype=&#39;&lt;U6&#39;), &#39;event_id&#39;: {&#39;event1&#39;: 1, &#39;event2&#39;: 2}, &#39;extras&#39;: [{&#39;foo&#39;: &#39;a&#39;}, {&#39;foo&#39;: &#39;b&#39;}, {&#39;foo&#39;: &#39;c&#39;}], &#39;hed_strings&#39;: None}</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa E501</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading events from </span><span class="si">{</span><span class="n">events_fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">events_fname</span><span class="p">)</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_make_annotation_kwargs</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="n">events_fname</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_annotation_kwargs</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="n">events_fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process an events dict into annotation kwargs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events_dict : dict</span>
+<span class="sd">        Raw events dict as returned by ``_from_tsv``.</span>
+<span class="sd">    events_fname : str | Path | None</span>
+<span class="sd">        Path used only for warning messages.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    kwargs : dict</span>
+<span class="sd">        Annotation keyword arguments (onset, duration, description, etc.).</span>
+<span class="sd">    events_dict : dict</span>
+<span class="sd">        The filtered events dict (n/a rows dropped), suitable for reuse</span>
+<span class="sd">        by ``_assemble_hed_from_sidecar``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># drop events where onset is n/a; we can&#39;t annotate them and thus don&#39;t need entries</span>
     <span class="c1"># for them in event_id either</span>
     <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">)</span>
@@ -1216,6 +1240,7 @@
             <span class="s2">&quot;trial_type&quot;</span><span class="p">,</span>
             <span class="s2">&quot;stim_type&quot;</span><span class="p">,</span>
             <span class="s2">&quot;sample&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;HED&quot;</span><span class="p">,</span>
         <span class="p">}</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">extra_columns</span><span class="p">:</span>
@@ -1234,46 +1259,197 @@
                 <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="p">])</span>
             <span class="p">]</span>
 
+    <span class="n">hed_strings</span> <span class="o">=</span> <span class="n">events_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HED&quot;</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;onset&quot;</span><span class="p">:</span> <span class="n">ons</span><span class="p">,</span>
         <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="n">durs</span><span class="p">,</span>
         <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">descrs</span><span class="p">,</span>
         <span class="s2">&quot;event_id&quot;</span><span class="p">:</span> <span class="n">event_id</span><span class="p">,</span>
         <span class="s2">&quot;extras&quot;</span><span class="p">:</span> <span class="n">extras</span><span class="p">,</span>
-    <span class="p">}</span></div>
+        <span class="s2">&quot;hed_strings&quot;</span><span class="p">:</span> <span class="n">hed_strings</span><span class="p">,</span>
+    <span class="p">},</span> <span class="n">events_dict</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_assemble_hed_from_sidecar</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="n">events_json_fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assemble per-row HED strings from column annotations in events.json.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">events_json_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_handle_events_reading</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">events_json_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">sidecar</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not read HED annotations from </span><span class="si">{</span><span class="n">events_json_fname</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="s2">&quot;Skipping sidecar HED assembly.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Collect columns that have HED annotations in the sidecar</span>
+    <span class="n">hed_columns</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">sidecar</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;HED&quot;</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">:</span>
+            <span class="n">hed_columns</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;HED&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hed_columns</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">])</span>
+    <span class="n">per_row_tags</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rows</span><span class="p">)]</span>
+
+    <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">hed_spec</span> <span class="ow">in</span> <span class="n">hed_columns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">col_values</span> <span class="o">=</span> <span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">col_values</span><span class="p">):</span>
+            <span class="n">val_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">val_str</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hed_spec</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="c1"># Categorical: {&quot;famous_face&quot;: &quot;Def/Famous-face-cond&quot;, ...}</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="n">hed_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">val_str</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">tag</span><span class="p">:</span>
+                    <span class="n">per_row_tags</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hed_spec</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;#&quot;</span> <span class="ow">in</span> <span class="n">hed_spec</span><span class="p">:</span>
+                <span class="c1"># Value template: &quot;Item-interval/#&quot;</span>
+                <span class="n">per_row_tags</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hed_spec</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="n">val_str</span><span class="p">))</span>
+
+    <span class="c1"># Build final strings; use &quot;n/a&quot; for rows with no HED match</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="k">if</span> <span class="n">tags</span> <span class="k">else</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">for</span> <span class="n">tags</span> <span class="ow">in</span> <span class="n">per_row_tags</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">result</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_hed_version</span><span class="p">(</span><span class="n">bids_root</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read HEDVersion from dataset_description.json.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">desc_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;dataset_description.json&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">desc_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HEDVersion&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not read HEDVersion from </span><span class="si">{</span><span class="n">desc_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="s2">&quot;Falling back to MNE&#39;s default HED schema.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_collect_hed_strings</span><span class="p">(</span><span class="n">annotations_info</span><span class="p">,</span> <span class="n">events_dict</span><span class="p">,</span> <span class="n">events_json_fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return per-row HED strings from events.tsv + sidecar (or ``None``).&quot;&quot;&quot;</span>
+    <span class="n">hed_strings</span> <span class="o">=</span> <span class="n">annotations_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hed_strings&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">events_json_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">hed_strings</span>
+    <span class="n">sidecar_hed</span> <span class="o">=</span> <span class="n">_assemble_hed_from_sidecar</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="n">events_json_fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sidecar_hed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">hed_strings</span>
+    <span class="k">if</span> <span class="n">hed_strings</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sidecar_hed</span>
+    <span class="c1"># BIDS spec: concatenate column HED with sidecar HED</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">sb</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">sb</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">hed_strings</span><span class="p">,</span> <span class="n">sidecar_hed</span><span class="p">)</span>
+    <span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_inject_hed_into_extras</span><span class="p">(</span><span class="n">extras</span><span class="p">,</span> <span class="n">n_rows</span><span class="p">,</span> <span class="n">hed_strings</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Attach each row&#39;s HED string onto the corresponding ``extras`` dict.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">hed_strings</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">extras</span>
+    <span class="k">if</span> <span class="n">extras</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">extras</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rows</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">hs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hed_strings</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">hs</span> <span class="ow">and</span> <span class="n">hs</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
+            <span class="n">extras</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;HED&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hs</span>
+    <span class="k">return</span> <span class="n">extras</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_event_annotations</span><span class="p">(</span>
+    <span class="n">annotations_info</span><span class="p">,</span> <span class="n">events_dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">events_json_fname</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build HEDAnnotations when HED is present and supported, else Annotations.&quot;&quot;&quot;</span>
+    <span class="n">hed_strings</span> <span class="o">=</span> <span class="n">_collect_hed_strings</span><span class="p">(</span><span class="n">annotations_info</span><span class="p">,</span> <span class="n">events_dict</span><span class="p">,</span> <span class="n">events_json_fname</span><span class="p">)</span>
+    <span class="n">extras</span> <span class="o">=</span> <span class="n">_inject_hed_into_extras</span><span class="p">(</span>
+        <span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;extras&quot;</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">]),</span> <span class="n">hed_strings</span>
+    <span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">onset</span><span class="o">=</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">],</span>
+        <span class="n">duration</span><span class="o">=</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">],</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="c1"># HED path: only when MNE &gt;=1.12 and every row has a usable HED string.</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">hed_strings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">s</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">hed_strings</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">check_version</span><span class="p">(</span><span class="s2">&quot;mne&quot;</span><span class="p">,</span> <span class="n">min_version</span><span class="o">=</span><span class="s2">&quot;1.12&quot;</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">hed_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">hed_string</span><span class="o">=</span><span class="n">hed_strings</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+        <span class="n">hed_version</span> <span class="o">=</span> <span class="n">_read_hed_version</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hed_version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">hed_kwargs</span><span class="p">[</span><span class="s2">&quot;hed_version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hed_version</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mne</span><span class="o">.</span><span class="n">HEDAnnotations</span><span class="p">(</span><span class="o">**</span><span class="n">hed_kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="c1"># RuntimeError: missing ``hedtools`` (mne.utils._soft_import).</span>
+            <span class="c1"># ValueError: invalid HED string (mne.annotations._validate_hed_string).</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;HED annotations were detected but could not be parsed: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Falling back to regular Annotations (HED strings preserved in &quot;</span>
+                <span class="s2">&quot;extras).&quot;</span>
+            <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">hed_strings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">check_version</span><span class="p">(</span><span class="s2">&quot;mne&quot;</span><span class="p">,</span> <span class="n">min_version</span><span class="o">=</span><span class="s2">&quot;1.12&quot;</span><span class="p">):</span>
+        <span class="c1"># HED detected and MNE supports HEDAnnotations, but some rows are ``n/a``.</span>
+        <span class="c1"># Actionable: fill in the missing HED strings. On MNE &lt;1.12 we skip the</span>
+        <span class="c1"># warning because it would fire on every read without a path forward.</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;HED annotations were detected but HEDAnnotations could not be used &quot;</span>
+            <span class="s2">&quot;because some event rows have &#39;n/a&#39; HED strings. Falling back to &quot;</span>
+            <span class="s2">&quot;regular Annotations (HED strings preserved in extras).&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Plain Annotations fallback. The ``extras`` kwarg was added in MNE 1.10;</span>
+    <span class="c1"># older versions raise TypeError, so degrade gracefully with a warning.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">extras</span><span class="o">=</span><span class="n">extras</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">extras</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;The version of MNE-Python you are using (&lt;1.10) does &quot;</span>
+                <span class="s2">&quot;not support the extras argument in mne.Annotations. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;The extra column(s) </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">extras</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> will be &quot;</span>
+                <span class="s2">&quot;ignored.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_events_reading</span><span class="p">(</span>
+    <span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">events_json_fname</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read associated events.tsv and convert valid events to annotations on Raw.&quot;&quot;&quot;</span>
-    <span class="n">annotations_info</span> <span class="o">=</span> <span class="n">events_file_to_annotation_kwargs</span><span class="p">(</span><span class="n">events_fname</span><span class="p">)</span>
+    <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">events_fname</span><span class="p">)</span>
+    <span class="n">annotations_info</span><span class="p">,</span> <span class="n">filtered_events_dict</span> <span class="o">=</span> <span class="n">_make_annotation_kwargs</span><span class="p">(</span>
+        <span class="n">events_dict</span><span class="p">,</span> <span class="n">events_fname</span>
+    <span class="p">)</span>
     <span class="n">event_id</span> <span class="o">=</span> <span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;event_id&quot;</span><span class="p">]</span>
 
     <span class="c1"># Add events as Annotations, but keep essential Annotations present in raw file</span>
     <span class="n">annot_from_raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">annot_from_events</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span>
-            <span class="n">onset</span><span class="o">=</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">],</span>
-            <span class="n">duration</span><span class="o">=</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">],</span>
-            <span class="n">description</span><span class="o">=</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span>
-            <span class="n">extras</span><span class="o">=</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;extras&quot;</span><span class="p">],</span>
-        <span class="p">)</span>
-    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;extras&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;extras&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;The version of MNE-Python you are using (&lt;1.10) &quot;</span>
-                <span class="s2">&quot;does not support the extras argument in mne.Annotations. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;The extra column(s) </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">annotations_info</span><span class="p">[</span><span class="s1">&#39;extras&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;will be ignored.&quot;</span>
-            <span class="p">)</span>
-        <span class="n">annot_from_events</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span>
-            <span class="n">onset</span><span class="o">=</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">],</span>
-            <span class="n">duration</span><span class="o">=</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">],</span>
-            <span class="n">description</span><span class="o">=</span><span class="n">annotations_info</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span>
-        <span class="p">)</span>
+    <span class="n">annot_from_events</span> <span class="o">=</span> <span class="n">_build_event_annotations</span><span class="p">(</span>
+        <span class="n">annotations_info</span><span class="p">,</span>
+        <span class="n">filtered_events_dict</span><span class="p">,</span>
+        <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+        <span class="n">events_json_fname</span><span class="o">=</span><span class="n">events_json_fname</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annot_from_events</span><span class="p">)</span>
 
     <span class="n">annot_idx_to_keep</span> <span class="o">=</span> <span class="p">[</span>
@@ -1667,7 +1843,15 @@
         <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">events_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">raw</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_handle_events_reading</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">events_json_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+            <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span>
+        <span class="p">)</span>
+        <span class="n">raw</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_handle_events_reading</span><span class="p">(</span>
+            <span class="n">events_fname</span><span class="p">,</span>
+            <span class="n">raw</span><span class="p">,</span>
+            <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+            <span class="n">events_json_fname</span><span class="o">=</span><span class="n">events_json_fname</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># Try to find an associated channels.tsv to get information about the</span>
     <span class="c1"># status and type of present channels</span>
@@ -2017,8 +2201,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2052,7 +2236,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.1.
 </p></div>
       
     </div>
