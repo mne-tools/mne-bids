@@ -185,6 +185,7 @@ jobs:
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
+      MNE_BIDS_FILELOCK_TIMEOUT: 5  # be more stringent than it would be for end-users
     steps:
     - uses: actions/checkout@v6
       with:

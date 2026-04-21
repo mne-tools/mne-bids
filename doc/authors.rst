@@ -24,6 +24,7 @@
 .. _Ethan Knights: https://github.com/ethanknights
 .. _Evgenii Kalenkovich: https://github.com/kalenkovich
 .. _Ezequiel Mikulan: https://github.com/ezemikulan
+.. _Flore Boscher: https://github.com/boscherf
 .. _Ford McDonald: https://github.com/fordmcdonald
 .. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
 .. _Fu-Te Wong: https://github.com/zuxfoucault
