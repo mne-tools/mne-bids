@@ -503,7 +503,7 @@ def _extract_hed_for_write(raw, *, n_events):
         )
         return None
     sidecar_map = {}
-    for desc, s in zip(raw.annotations.description, strings):
+    for desc, s in zip(raw.annotations.description, strings, strict=True):
         if sidecar_map.setdefault(desc, s) != s:
             sidecar_map = None
             break
