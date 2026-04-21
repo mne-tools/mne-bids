@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev42+g48ceabfc3 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev43+g031db3c31 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
 
-    <script src="../../_static/documentation_options.js?v=7f7a593c"></script>
+    <script src="../../_static/documentation_options.js?v=0bcd0962"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev42+g48ceabfc3" />
+  <meta name="docsearch:version" content="0.19.0.dev43+g031db3c31" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -145,7 +145,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev42+g48ceabfc3 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev43+g031db3c31 documentation</p>
   
 </a></div>
     
@@ -778,7 +778,7 @@
         <span class="n">ch_data</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">ch_data</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
 
 <span class="n">_cardinal_ident_mapping</span> <span class="o">=</span> <span class="p">{</span>
@@ -966,7 +966,7 @@
             <span class="k">continue</span>
         <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
 
-    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">extra_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">has_trial_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1032,7 +1032,7 @@
         <span class="p">)</span>
         <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">orig_data</span><span class="p">,</span> <span class="o">**</span><span class="n">new_data</span><span class="p">}</span>
 
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_readme</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1232,7 +1232,7 @@
             <span class="k">if</span> <span class="n">existing_participants</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">_combine_rows</span><span class="p">(</span><span class="n">orig_data</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;participant_id&quot;</span><span class="p">)</span>
 
-        <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># already have a lock</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_participants_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1414,7 +1414,7 @@
             <span class="c1"># otherwise add the new data</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">_combine_rows</span><span class="p">(</span><span class="n">orig_data</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">)</span>
 
-        <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># already have a lock</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_load_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;image&quot;</span><span class="p">):</span>
@@ -1762,7 +1762,7 @@
     <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">ch_info_ch_counts</span>
     <span class="n">ch_info_json</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">ch_info_json</span><span class="p">)</span>
 
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_info_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_info_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fname</span>
 
@@ -2185,7 +2185,7 @@
         <span class="n">pop_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">description</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pop_keys</span><span class="p">:</span>
             <span class="n">description</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 
@@ -3376,7 +3376,7 @@
                 <span class="s2">&quot;Wanted to write a file but it already exists and &quot;</span>
                 <span class="sa">f</span><span class="s1">&#39;`overwrite` is set to False. File: &quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
             <span class="p">)</span>
-        <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">img_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+        <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">img_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">deface</span><span class="p">:</span>
             <span class="n">landmarks_deface</span> <span class="o">=</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deface&quot;</span><span class="p">)</span>
@@ -4180,7 +4180,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-20.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-21.
       <br/>
     
   </p>
