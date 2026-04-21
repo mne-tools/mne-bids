@@ -4489,9 +4489,9 @@ def test_parallel_write_many_subjects(tmp_path):
 
 @testing.requires_testing_data
 def test_write_hed_annotations(tmp_path):
-    """Ensure HEDAnnotations write to BIDS and roundtrip correctly."""
-    if not hasattr(mne, "HEDAnnotations"):
-        pytest.skip("HEDAnnotations requires a recent MNE-Python version")
+    """HEDAnnotations write to the events.json sidecar and round-trip."""
+    pytest.importorskip("hed")
+    pytest.importorskip("mne", minversion="1.12")
 
     bids_root = tmp_path / "bids"
     raw = _read_raw_fif(data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif")
@@ -4515,25 +4515,20 @@ def test_write_hed_annotations(tmp_path):
         raw, bids_path=bids_path, overwrite=True, allow_preload=True, format="FIF"
     )
 
-    # events.tsv should NOT have a HED column (sidecar-based)
     events_tsv = _from_tsv(bids_path.copy().update(suffix="events", extension=".tsv"))
     assert "HED" not in events_tsv
 
-    # events.json has HED under trial_type (sidecar pattern)
     events_json = json.loads(
         bids_path.copy().update(suffix="events", extension=".json").fpath.read_text()
     )
-    assert "HED" in events_json["trial_type"]
     assert events_json["trial_type"]["HED"] == {
         "visual": "Sensory-event, Visual-presentation",
         "auditory": "Sensory-event, Auditory-presentation",
     }
 
-    # dataset_description.json has HEDVersion
     desc = json.loads((bids_root / "dataset_description.json").read_text())
     assert desc["HEDVersion"] == "8.3.0"
 
-    # Roundtrip
     raw_rt = read_raw_bids(bids_path=bids_path, verbose=False)
     assert isinstance(raw_rt.annotations, mne.HEDAnnotations)
     assert list(raw_rt.annotations.hed_string) == hed_tags

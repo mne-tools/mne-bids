@@ -481,6 +481,39 @@ def _events_tsv(
     _write_tsv(fname, data, overwrite=overwrite)
 
 
+def _extract_hed_for_write(raw, *, n_events):
+    """Pull HED strings, version, and an optional trial_type→HED sidecar map.
+
+    Returns ``None`` when annotations aren't ``HEDAnnotations``, or when the
+    HED-string count doesn't match the number of events. Otherwise the
+    ``sidecar_map`` key is a description→HED mapping (preferred, standard
+    BIDS pattern) or ``None`` when descriptions collide on different HED
+    strings and a HED column in events.tsv is required instead.
+    """
+    if not (
+        hasattr(mne, "HEDAnnotations")
+        and isinstance(raw.annotations, mne.HEDAnnotations)
+    ):
+        return None
+    strings = list(raw.annotations.hed_string)
+    if len(strings) != n_events:
+        warn(
+            f"Number of HED strings ({len(strings)}) does not match number "
+            f"of events ({n_events}). HED data will not be written."
+        )
+        return None
+    sidecar_map = {}
+    for desc, s in zip(raw.annotations.description, strings):
+        if sidecar_map.setdefault(desc, s) != s:
+            sidecar_map = None
+            break
+    return {
+        "strings": strings,
+        "version": raw.annotations._hed_version,
+        "sidecar_map": sidecar_map,
+    }
+
+
 def _events_json(
     fname,
     extra_columns=None,
@@ -2383,9 +2416,7 @@ def write_raw_bids(
         )
 
     # Write events.
-    hed_strings = None
-    hed_version = None
-    hed_sidecar_map = None
+    hed = None
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map, event_extras = _read_events(
             events,
@@ -2393,42 +2424,7 @@ def write_raw_bids(
             raw,
             bids_path=bids_path,
         )
-
-        # Extract HED info from annotations (raw is unmodified when
-        # events=None)
-        if hasattr(mne, "HEDAnnotations") and isinstance(
-            raw.annotations, mne.HEDAnnotations
-        ):
-            _hed_strings = [str(s) for s in raw.annotations.hed_string]
-            if len(_hed_strings) == len(events_array):
-                hed_strings = _hed_strings
-                hed_version = raw.annotations._hed_version
-
-                # Try to build a trial_type → HED sidecar mapping.
-                # If all events of the same trial_type share the same HED
-                # string, write to the JSON sidecar (standard BIDS pattern).
-                # Otherwise fall back to a HED column in events.tsv.
-                # This mapping is by value (not positional), so it is safe
-                # even if _read_events() reordered annotations.
-                descriptions = list(raw.annotations.description)
-                _hed_by_tt = {}
-                use_sidecar = True
-                for desc, hed_str in zip(descriptions, hed_strings):
-                    if desc in _hed_by_tt:
-                        if _hed_by_tt[desc] != hed_str:
-                            use_sidecar = False
-                            break
-                    else:
-                        _hed_by_tt[desc] = hed_str
-
-                if use_sidecar:
-                    hed_sidecar_map = _hed_by_tt
-            else:
-                warn(
-                    f"Number of HED strings ({len(_hed_strings)}) does not "
-                    f"match number of events ({len(events_array)}). "
-                    f"HED data will not be written."
-                )
+        hed = _extract_hed_for_write(raw, n_events=len(events_array))
 
         if event_metadata is not None:
             event_desc_id_map = None
@@ -2437,10 +2433,9 @@ def write_raw_bids(
             extras_columns = _extras_dicts_to_columns(
                 event_extras, n_events=len(events_array)
             )
-
-            # Write HED as column only when sidecar grouping isn't possible
-            if hed_strings is not None and hed_sidecar_map is None:
-                extras_columns["HED"] = hed_strings
+            write_hed_as_column = hed is not None and hed["sidecar_map"] is None
+            if write_hed_as_column:
+                extras_columns["HED"] = hed["strings"]
 
             _events_tsv(
                 events=events_array,
@@ -2459,9 +2454,7 @@ def write_raw_bids(
                 if extra_columns_descriptions is None
                 else dict(extra_columns_descriptions)
             )
-
-            # Write HED column description only when using column-based HED
-            if hed_strings is not None and hed_sidecar_map is None:
+            if write_hed_as_column:
                 events_extra_columns["HED"] = (
                     "Hierarchical Event Descriptor (HED) tags for this event."
                 )
@@ -2476,7 +2469,7 @@ def write_raw_bids(
                 fname=events_json_path.fpath,
                 extra_columns=events_extra_columns,
                 has_trial_type=has_trial_type,
-                hed_by_trial_type=hed_sidecar_map,
+                hed_by_trial_type=hed["sidecar_map"] if hed else None,
                 overwrite=overwrite,
             )
         # Kepp events_array around for BrainVision writing below.
@@ -2486,11 +2479,10 @@ def write_raw_bids(
     # already exist. Always set overwrite to False here. If users
     # want to edit their dataset_description, they can directly call
     # this function.
-    # hed_version is set above; None when no HED data present
     make_dataset_description(
         path=bids_path.root,
         name="[Unspecified]",
-        hed_version=hed_version,
+        hed_version=hed["version"] if hed else None,
         overwrite=False,
     )
 
