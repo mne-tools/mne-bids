@@ -4443,7 +4443,6 @@ def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
     write_raw_bids(raw, bids_path=bids_path)
 
 
-@pytest.mark.flaky(reruns=3, reruns_delay=5)
 @pytest.mark.filterwarnings(
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",
