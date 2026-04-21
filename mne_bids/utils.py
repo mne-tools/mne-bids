@@ -228,7 +228,7 @@ def _check_types(variables):
             )
 
 
-def _write_json(fname, dictionary, overwrite=False):
+def _write_json(fname, dictionary, *, overwrite=False, lock=True):
     """Write JSON to a file."""
     fname = Path(fname)
     if fname.exists() and not overwrite:
@@ -237,7 +237,7 @@ def _write_json(fname, dictionary, overwrite=False):
         )
 
     json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
-    with _open_lock(fname, "w", encoding="utf-8") as fid:
+    with _open_lock(fname, "w", encoding="utf-8", lock=lock) as fid:
         fid.write(json_output)
         fid.write("\n")
 
@@ -245,14 +245,14 @@ def _write_json(fname, dictionary, overwrite=False):
 
 
 @verbose
-def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
+def _write_tsv(fname, dictionary, *, overwrite=False, lock=True, verbose=None):
     """Write an ordered dictionary to a .tsv file."""
     fname = Path(fname)
     if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    _to_tsv(dictionary, fname)
+    _to_tsv(dictionary, fname, lock=lock)
 
     logger.info(f"Writing '{fname}'...")
 
@@ -567,3 +567,22 @@ def warn(
 
 # Some of the defaults here will be wrong but it should be close enough
 warn.__doc__ = getattr(_warn, "__doc__", None)
+
+
+def _convert_dt_to_utc(dt, *, local_tz=None):
+    """Convert a naive datetime to UTC.
+
+    Fallsback to the computers *current* tz if needed (e.g. Windows pre-epoch failures).
+
+    This is in a helper in order to make unit testing this behavior easier.
+    The local_tz parameter exists so that tests can make the fallback path deterministic
+    """
+    try:
+        return dt.astimezone(UTC)
+    except OSError as e:
+        # Windows needs an explicit local tz for naive, pre-epoch datetimes.
+        # https://bugs.python.org/issue36759
+        logger.debug("Using the current local tz for %s, due to: %s", dt, e)
+        if local_tz is None:
+            local_tz = datetime.now().astimezone().tzinfo or UTC
+        return dt.replace(tzinfo=local_tz).astimezone(UTC)

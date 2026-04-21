@@ -4,6 +4,7 @@
 .. _Alex Rockhill: https://github.com/alexrockhill
 .. _Alexandre Gramfort: http://alexandre.gramfort.net
 .. _Amaia Benitez: https://github.com/AmaiaBA
+.. _Aman Jaiswal: https://github.com/AmanJaiswal1503
 .. _Anand Saini: https://github.com/anandsaini024
 .. _Ariel Rokem: https://github.com/arokem
 .. _Arne Gottwald: https://github.com/waldie11
@@ -23,6 +24,7 @@
 .. _Ethan Knights: https://github.com/ethanknights
 .. _Evgenii Kalenkovich: https://github.com/kalenkovich
 .. _Ezequiel Mikulan: https://github.com/ezemikulan
+.. _Flore Boscher: https://github.com/boscherf
 .. _Ford McDonald: https://github.com/fordmcdonald
 .. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
 .. _Fu-Te Wong: https://github.com/zuxfoucault

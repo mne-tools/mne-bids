@@ -149,6 +149,8 @@ def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
         if Path(fname).suffix == ".mff":
             kwargs["events_as_annotations"] = True
+        if Path(fname).suffix.lower() == ".cnt":
+            kwargs.setdefault("data_format", "int16")
         raw = read_raw(fname, *args, **kwargs)
         raw.info["line_freq"] = 60
         return raw
@@ -196,6 +198,7 @@ test_convertmeg_data = [
 # parametrization for testing converting file formats for EEG/iEEG
 test_converteeg_data = [
     ("EEGLAB", "EEGLAB", "test_raw.set", _read_raw_eeglab),
+    ("CNT", "auto", "scan41_short.cnt", _read_raw_cnt),
     (
         "Persyst",
         "BrainVision",
@@ -3191,7 +3194,15 @@ def test_coordsystem_json_compliance(
     warning_str["edf_date"],
 )
 @testing.requires_testing_data
-def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
+def test_anonymize(
+    subject,
+    dir_name,
+    fname,
+    reader,
+    tmp_path,
+    _bids_validate,
+    _using_legacy_validator,
+):
     """Test writing anonymized data."""
     raw_fname = op.join(data_path, dir_name, fname)
 
@@ -3259,7 +3270,8 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     )
     scans_tsv = _from_tsv(scans_fname)
     assert scans_tsv["source"] == [Path(f).name for f in raw.filenames]
-    if dir_name != "Brainvision":  # EMG not yet supported by validator
+    # The Legacy-Validator isn't aware of the EMG-BIDS spec
+    if not (bids_path.datatype == "emg" and _using_legacy_validator):
         _bids_validate(bids_path.root)
 
     # update the scans sidecar JSON with information
@@ -3430,7 +3442,7 @@ def test_convert_emg_formats(tmp_path, dir_name, fmt, fname, reader):
 @testing.requires_testing_data
 def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
-    if dir_name == "BrainVision" or fmt == "BrainVision":
+    if dir_name == "BrainVision" or fmt in ("BrainVision", "auto"):
         pytest.importorskip("pybv", PYBV_VERSION)
     elif dir_name == "EEGLAB" or fmt == "EEGLAB":
         pytest.importorskip("eeglabio", EEGLABIO_VERSION)
@@ -3494,7 +3506,7 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     channels_tsv = _from_tsv(channels_fname)
     assert channels_tsv["units"][0] == "µV"
 
-    if fmt == "BrainVision":
+    if fmt in ["BrainVision", "auto"]:
         assert Path(raw2.filenames[0]).suffix == ".eeg"
         assert bids_output_path.extension == ".vhdr"
     elif fmt == "EDF":
@@ -3869,9 +3881,10 @@ def test_preload_errors(tmp_path):
     warning_str["emg_coords_missing"],
 )
 @pytest.mark.parametrize(
-    "format,ch_type", (("BrainVision", "eeg"), ("BDF", "emg"), ("EDF", "seeg"))
+    "format,ch_type",
+    (("BrainVision", "eeg"), ("BDF", "emg"), ("EDF", "seeg"), ("BDF", "eeg")),
 )
-def test_preload(_bids_validate, tmp_path, format, ch_type):
+def test_preload(_bids_validate, _using_legacy_validator, tmp_path, format, ch_type):
     """Test writing custom preloaded raw objects."""
     if ch_type == "emg":
         pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
@@ -3894,8 +3907,9 @@ def test_preload(_bids_validate, tmp_path, format, ch_type):
         overwrite=True,
         **kw,
     )
-    if ch_type != "emg":  # TODO validator support for EMG not available yet
-        _bids_validate(bids_root)
+    if ch_type == "emg" and _using_legacy_validator:
+        return
+    _bids_validate(bids_root)
 
 
 @pytest.mark.parametrize("dir_name", ("tsv_test", "json_test"))
@@ -4429,7 +4443,6 @@ def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
     write_raw_bids(raw, bids_path=bids_path)
 
 
-@pytest.mark.flaky(reruns=3, reruns_delay=5)
 @pytest.mark.filterwarnings(
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",

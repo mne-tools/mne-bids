@@ -52,6 +52,7 @@ from mne_bids.config import (
     BIDS_VERSION,
     CONVERT_FORMATS,
     EXT_TO_UNIT_MAP,
+    FORMAT_EXTENSIONS,
     IGNORED_CHANNELS,
     MANUFACTURERS,
     ORIENTATION,
@@ -125,7 +126,7 @@ def _should_use_bti_pdf_suffix() -> bool:
                 check=True,
             )
         except (subprocess.CalledProcessError, FileNotFoundError, OSError) as e:
-            logger.warning(f"Failed to run bids-validator to check version: {e}")
+            warn(f"Failed to run bids-validator to check version: {e}")
         else:
             version_output = res.stdout.strip() or res.stderr.strip()
             match = re.search(r"(\d+)\.(\d+)\.(\d+)", version_output)
@@ -289,7 +290,7 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         ch_data.move_to_end("type", last=False)
         ch_data.move_to_end("name", last=False)
 
-    _write_tsv(fname, ch_data, overwrite)
+    _write_tsv(fname, ch_data, overwrite=overwrite)
 
 
 _cardinal_ident_mapping = {
@@ -477,7 +478,7 @@ def _events_tsv(
             continue
         data[key] = values
 
-    _write_tsv(fname, data, overwrite)
+    _write_tsv(fname, data, overwrite=overwrite)
 
 
 def _events_json(
@@ -553,7 +554,7 @@ def _events_json(
         )
         new_data = {**orig_data, **new_data}
 
-    _write_json(fname, new_data, overwrite)
+    _write_json(fname, new_data, overwrite=overwrite)
 
 
 def _readme(datatype, fname, overwrite=False):
@@ -753,7 +754,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             if existing_participants:
                 data = _combine_rows(orig_data, data, "participant_id")
 
-        _write_tsv(fname, data, overwrite=True)
+        _write_tsv(fname, data, overwrite=True, lock=False)  # already have a lock
 
 
 def _participants_json(fname, overwrite=False):
@@ -777,8 +778,8 @@ def _participants_json(fname, overwrite=False):
             "Units": "years",
         },
         "sex": {
-            "Description": "Biological sex of the participant",
-            "Levels": {"F": "female", "M": "male"},
+            "Description": "Sex of the participant",
+            "Levels": {"F": "female", "M": "male", "O": "other"},
         },
         "hand": {
             "Description": "Handedness of the participant",
@@ -812,7 +813,7 @@ def _participants_json(fname, overwrite=False):
             except json.JSONDecodeError as e:
                 # File is corrupted/incomplete - this can happen in a race condition
                 # when one process truncates while another reads
-                logger.warning(
+                warn(
                     f"Could not parse JSON in '{fname}': {e}. "
                     "This may occur when reading during concurrent writes. "
                     "Treating as empty."
@@ -935,7 +936,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
             # otherwise add the new data
             data = _combine_rows(orig_data, data, "filename")
 
-        _write_tsv(fpath, data, overwrite=True)
+        _write_tsv(fpath, data, overwrite=True, lock=False)  # already have a lock
 
 
 def _load_image(image, name="image"):
@@ -1283,7 +1284,7 @@ def _sidecar_json(
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
 
-    _write_json(fname, ch_info_json, overwrite)
+    _write_json(fname, ch_info_json, overwrite=overwrite)
 
     return fname
 
@@ -1455,7 +1456,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     )
 
 
-def _write_raw_edf_bdf(raw, bids_fname, overwrite):
+def _write_raw_edf_bdf(raw, bids_fname, overwrite, *, physical_range="auto"):
     """Store data as EDF.
 
     Parameters
@@ -1464,6 +1465,12 @@ def _write_raw_edf_bdf(raw, bids_fname, overwrite):
         Raw data to save.
     bids_fname : str
         The output filename.
+    physical_range : str | tuple
+        How to get the physical minimal and maximal values from the data.
+        If ``'auto'`` (default), the physical range is inferred from the data,
+        taking the minimum and maximum values per channel type.
+        If ``'channelwise'``, the range will be defined per channel.
+        If a tuple of minimum and maximum, this manual physical range will be used.
     overwrite : bool
         Whether to overwrite an existing file or not.
     """
@@ -1484,7 +1491,7 @@ def _write_raw_edf_bdf(raw, bids_fname, overwrite):
                 year=1985, month=1, day=1, hour=0, minute=0, second=0, microsecond=0
             )
         )
-    raw.export(bids_fname, overwrite=overwrite)
+    raw.export(bids_fname, physical_range=physical_range, overwrite=overwrite)
 
 
 def _write_raw_eeglab(raw, bids_fname, overwrite):
@@ -1700,7 +1707,7 @@ def make_dataset_description(
         pop_keys = [key for key, val in description.items() if val is None]
         for key in pop_keys:
             description.pop(key)
-        _write_json(fname, description, overwrite=True)
+        _write_json(fname, description, overwrite=True, lock=False)
 
 
 @verbose
@@ -1714,6 +1721,7 @@ def write_raw_bids(
     *,
     anonymize=None,
     format="auto",
+    physical_range="auto",
     symlink=False,
     empty_room=None,
     allow_preload=False,
@@ -1845,8 +1853,17 @@ def write_raw_bids(
         without a change of the original file format. A conversion to a
         different file format will then only take place if the original file
         format lacks some necessary features.
-        Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
-        to BDF or EDF for EMG, and to FIF for MEG data.
+        Conversion may be forced to BrainVision, BDF, EDF, or EEGLAB for EEG,
+        to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,
+        and to FIF for MEG data.
+    physical_range : str | tuple
+        If ``'auto'`` (default), the physical range is inferred from the data,
+        taking the minimum and maximum values per channel type.
+        If ``'channelwise'``, the range will be defined per channel.
+        If a tuple of minimum and maximum, this manual physical range will be used.
+        Only used for exporting EDF files.
+
+        .. versionadded:: 0.19
     symlink : bool
         Instead of copying the source files, only create symbolic links to
         preserve storage space. This is only allowed when not anonymizing the
@@ -2085,20 +2102,12 @@ def write_raw_bids(
 
         raw_orig = reader[ext](**raw._init_kwargs)
     else:
-        if format == "BrainVision":
-            ext = ".vhdr"
-        elif format == "BDF":
-            ext = ".bdf"
-        elif format == "EDF":
-            ext = ".edf"
-        elif format == "EEGLAB":
-            ext = ".set"
-        elif format == "FIF":
-            ext = ".fif"
+        if format in FORMAT_EXTENSIONS:
+            ext = FORMAT_EXTENSIONS[format]
         else:
             msg = (
                 'For preloaded data, you must set the "format" parameter '
-                "to one of: BrainVision, BDF, EDF, EEGLAB, or FIF"
+                f"to one of: {', '.join(FORMAT_EXTENSIONS)}"
             )
             if format != "auto":  # the default was changed
                 msg += f', but got: "{format}"'
@@ -2524,24 +2533,11 @@ def write_raw_bids(
     if not convert:
         logger.info(f"Copying data files to {bids_path.fpath.name}")
 
+    write_format = format
+
     # If users desire a certain format, will handle auto-conversion
     if format != "auto":
-        if format == "BrainVision" and bids_path.datatype in ["ieeg", "eeg"]:
-            convert = True
-            bids_path.update(extension=".vhdr")
-        elif format == "EDF" and bids_path.datatype in ["ieeg", "eeg", "emg"]:
-            convert = True
-            bids_path.update(extension=".edf")
-        elif format == "BDF" and bids_path.datatype in ["emg"]:
-            convert = True
-            bids_path.update(extension=".bdf")
-        elif format == "EEGLAB" and bids_path.datatype in ["ieeg", "eeg"]:
-            convert = True
-            bids_path.update(extension=".set")
-        elif format == "FIF" and bids_path.datatype == "meg":
-            convert = True
-            bids_path.update(extension=".fif")
-        elif all(format not in values for values in CONVERT_FORMATS.values()):
+        if format not in FORMAT_EXTENSIONS:
             raise ValueError(
                 f'The input "format" {format} is not an '
                 f"accepted input format for `write_raw_bids`. "
@@ -2555,12 +2551,26 @@ def write_raw_bids(
                 f"Please use one of {CONVERT_FORMATS[datatype]} "
                 f"for {datatype} datatype."
             )
+        else:
+            convert = True
+            bids_path.update(extension=FORMAT_EXTENSIONS[format])
+
+    if convert and write_format == "auto":
+        # Resolve the actual export format before writing sidecars so metadata
+        # reflects the file format that will be written below.
+        if bids_path.datatype == "meg":
+            write_format = "FIF"
+        elif bids_path.datatype == "emg":
+            write_format = "BDF"
+        else:
+            write_format = "BrainVision"
+        bids_path.update(extension=FORMAT_EXTENSIONS[write_format])
 
     # this can't happen until after value of `convert` has been determined
     _channels_tsv(
         raw,
         channels_path.fpath,
-        convert_fmt=format if convert else None,
+        convert_fmt=write_format if convert else None,
         overwrite=overwrite,
     )
 
@@ -2594,7 +2604,7 @@ def write_raw_bids(
 
     # File saving branching logic
     if convert:
-        if bids_path.datatype == "meg":
+        if write_format == "FIF":
             _write_raw_fif(
                 raw,
                 (
@@ -2603,23 +2613,17 @@ def write_raw_bids(
                     else bids_path.fpath
                 ),
             )
-        elif bids_path.datatype in ["emg"] and format == "BDF":
-            bids_path.update(extension=".bdf")
-            _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ["eeg", "emg", "ieeg"] and format == "EDF":
-            warn("Converting data files to EDF format")
-            bids_path.update(extension=".edf")
-            _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ["eeg", "ieeg"] and format == "EEGLAB":
+        elif write_format in ("BDF", "EDF"):
+            warn(f"Converting data files to {write_format} format")
+            _write_raw_edf_bdf(
+                raw, bids_path.fpath, physical_range=physical_range, overwrite=overwrite
+            )
+        elif write_format == "EEGLAB":
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ["emg"]:
-            bids_path.update(extension=".bdf")
-            warn("Converting data files to BDF format")
-            _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
-        else:
+        else:  # BrainVision
             warn("Converting data files to BrainVision format")
-            bids_path.update(suffix=bids_path.datatype, extension=".vhdr")
+            bids_path.update(suffix=bids_path.datatype)
             # XXX Should we write durations here too?
             _write_raw_brainvision(
                 raw, bids_path.fpath, events=events_array, overwrite=overwrite
@@ -2943,7 +2947,7 @@ def write_anat(
                 "Wanted to write a file but it already exists and "
                 f'`overwrite` is set to False. File: "{fname}"'
             )
-        _write_json(fname, img_json, overwrite)
+        _write_json(fname, img_json, overwrite=overwrite)
 
         if deface:
             landmarks_deface = landmarks.get("deface")

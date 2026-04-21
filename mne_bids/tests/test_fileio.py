@@ -4,9 +4,12 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import importlib
+import os
+import sys
 import threading
 import time
 from concurrent.futures import ProcessPoolExecutor
+from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import patch
 
@@ -15,12 +18,20 @@ import pytest
 import mne_bids._fileio
 from mne_bids._fileio import (
     _canonical_lock_path,
-    _decrement_and_cleanup_lock_file,
     _get_lock_context,
-    _increment_lock_refcount,
     _open_lock,
-    cleanup_lock_files,
 )
+
+
+@contextmanager
+def _readonly(directory):
+    """Temporarily strip write bit from ``directory``."""
+    original = directory.stat().st_mode
+    os.chmod(directory, 0o555)
+    try:
+        yield directory
+    finally:
+        os.chmod(directory, original)
 
 
 def _worker_increment_file(file_path, iterations):
@@ -191,7 +202,7 @@ def test_open_lock_reentrant(tmp_path):
     # Nested lock calls should work
     with _open_lock(test_file, "r") as fid1:
         assert fid1 is not None
-        with _open_lock(test_file, "r") as fid2:
+        with _open_lock(test_file, "r", lock=False) as fid2:
             assert fid2 is not None
             # Both should be able to read
             content1 = fid1.read()
@@ -262,6 +273,54 @@ def test_open_lock_without_filelock(tmp_path):
             assert content == "test"
 
 
+def test_open_lock_symlink_to_readonly_target(tmp_path):
+    """Regression test for issue #1569 (datalad/git-annex symlinks).
+
+    When the symlink target lives in a read-only directory, the lock must
+    be placed next to the symlink itself rather than resolved through it.
+    Previously this raised ``PermissionError``.
+    """
+    pytest.importorskip("filelock")
+
+    annex_dir = tmp_path / "annex"
+    annex_dir.mkdir()
+    target = annex_dir / "blob.json"
+    target.write_text('{"k": 2}')
+
+    work_dir = tmp_path / "work"
+    work_dir.mkdir()
+    link = work_dir / "sidecar.json"
+    try:
+        link.symlink_to(target)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks not supported on this platform")
+
+    with _readonly(annex_dir):
+        with _open_lock(link, encoding="utf-8") as fin:
+            assert fin.read() == '{"k": 2}'
+        assert not (annex_dir / "blob.json.lock").exists()
+        assert not (work_dir / "sidecar.json.lock").exists()
+
+
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="POSIX chmod 0o555 does not restrict directory writes on Windows",
+)
+def test_open_lock_readonly_parent_falls_back(tmp_path):
+    """If the lock file cannot be created, warn and fall back gracefully."""
+    pytest.importorskip("filelock")
+
+    ro_dir = tmp_path / "ro"
+    ro_dir.mkdir()
+    test_file = ro_dir / "file.json"
+    test_file.write_text("payload")
+
+    with _readonly(ro_dir):
+        with pytest.warns(RuntimeWarning, match="without a lock"):
+            with _open_lock(test_file, "r", encoding="utf-8") as fid:
+                assert fid.read() == "payload"
+
+
 def test_open_lock_custom_timeout(tmp_path):
     """Test custom timeout parameter."""
     pytest.importorskip("filelock")
@@ -271,247 +330,6 @@ def test_open_lock_custom_timeout(tmp_path):
 
     with _open_lock(test_file, lock_timeout=10) as fid:
         assert fid is None
-
-
-def test_increment_lock_refcount(tmp_path):
-    """Test incrementing lock refcount."""
-    pytest.importorskip("filelock")
-
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-    refcount_file = tmp_path / f"{test_file.name}.lock.refcount"
-
-    # Increment refcount
-    _increment_lock_refcount(test_file)
-
-    # Check refcount file
-    assert refcount_file.exists()
-    assert int(refcount_file.read_text().strip()) == 1
-
-    # Increment again
-    _increment_lock_refcount(test_file)
-    assert int(refcount_file.read_text().strip()) == 2
-
-
-def test_increment_lock_refcount_no_filelock(tmp_path):
-    """Test increment refcount when filelock is not available."""
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-
-    with patch("mne_bids._fileio._soft_import", return_value=None):
-        # Should not raise an error
-        _increment_lock_refcount(test_file)
-
-        # Refcount file should not be created
-        refcount_file = tmp_path / f"{test_file.name}.lock.refcount"
-        assert not refcount_file.exists()
-
-
-def test_increment_lock_refcount_timeout(tmp_path):
-    """Test increment refcount with timeout."""
-    pytest.importorskip("filelock")
-
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-
-    # Mock FileLock to raise TimeoutError
-    with patch("filelock.FileLock") as mock_lock:
-        mock_lock.return_value.__enter__.side_effect = TimeoutError()
-
-        # Should not raise an error
-        _increment_lock_refcount(test_file)
-
-
-def test_increment_lock_refcount_write_error(tmp_path):
-    """Test increment refcount when write fails."""
-    pytest.importorskip("filelock")
-
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-
-    # Mock write_text to raise OSError
-    with patch.object(Path, "write_text", side_effect=OSError("Write failed")):
-        # Should not raise an error
-        _increment_lock_refcount(test_file)
-
-
-def test_increment_lock_refcount_invalid_content(tmp_path):
-    """Test increment refcount with invalid refcount file content."""
-    pytest.importorskip("filelock")
-
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-    refcount_file = tmp_path / f"{test_file.name}.lock.refcount"
-
-    # Create invalid refcount file
-    refcount_file.write_text("invalid")
-
-    # Should reset to 0 and increment
-    _increment_lock_refcount(test_file)
-    assert int(refcount_file.read_text().strip()) == 1
-
-
-def test_decrement_and_cleanup_no_lock_file(tmp_path):
-    """Test cleanup when lock file doesn't exist."""
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-    refcount_file = tmp_path / f"{test_file.name}.lock.refcount"
-
-    # Create orphaned refcount file
-    refcount_file.write_text("1")
-
-    # Should clean up the refcount file
-    _decrement_and_cleanup_lock_file(test_file)
-    assert not refcount_file.exists()
-
-
-def test_decrement_and_cleanup_lock_file(tmp_path):
-    """Test decrementing and cleanup of lock file."""
-    pytest.importorskip("filelock")
-
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-    lock_file = tmp_path / f"{test_file.name}.lock"
-    refcount_file = tmp_path / f"{test_file.name}.lock.refcount"
-
-    # Create lock and refcount files
-    lock_file.write_text("")
-    refcount_file.write_text("1")
-
-    # Decrement - should delete both files
-    _decrement_and_cleanup_lock_file(test_file)
-
-    assert not lock_file.exists()
-    assert not refcount_file.exists()
-
-
-def test_decrement_and_cleanup_multiple_refs(tmp_path):
-    """Test cleanup with multiple references."""
-    pytest.importorskip("filelock")
-
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-    lock_file = tmp_path / f"{test_file.name}.lock"
-    refcount_file = tmp_path / f"{test_file.name}.lock.refcount"
-
-    # Create lock and refcount files with count > 1
-    lock_file.write_text("")
-    refcount_file.write_text("3")
-
-    # Decrement - should NOT delete lock file
-    _decrement_and_cleanup_lock_file(test_file)
-
-    assert lock_file.exists()
-    assert refcount_file.exists()
-    assert int(refcount_file.read_text().strip()) == 2
-
-
-def test_decrement_and_cleanup_no_filelock(tmp_path):
-    """Test cleanup when filelock is not available."""
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-    lock_file = tmp_path / f"{test_file.name}.lock"
-    lock_file.write_text("")
-
-    with patch("mne_bids._fileio._soft_import", return_value=None):
-        # Should not raise an error
-        _decrement_and_cleanup_lock_file(test_file)
-
-
-def test_decrement_and_cleanup_timeout(tmp_path):
-    """Test cleanup with timeout."""
-    pytest.importorskip("filelock")
-
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-    lock_file = tmp_path / f"{test_file.name}.lock"
-    lock_file.write_text("")
-
-    # Mock FileLock to raise TimeoutError
-    with patch("filelock.FileLock") as mock_lock:
-        mock_lock.return_value.__enter__.side_effect = TimeoutError()
-
-        # Should not raise an error
-        _decrement_and_cleanup_lock_file(test_file)
-
-
-def test_decrement_and_cleanup_invalid_refcount(tmp_path):
-    """Test cleanup with invalid refcount content."""
-    pytest.importorskip("filelock")
-
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-    lock_file = tmp_path / f"{test_file.name}.lock"
-    refcount_file = tmp_path / f"{test_file.name}.lock.refcount"
-
-    # Create files with invalid refcount
-    lock_file.write_text("")
-    refcount_file.write_text("invalid")
-
-    # Should treat as 0 and delete lock file
-    _decrement_and_cleanup_lock_file(test_file)
-    assert not lock_file.exists()
-
-
-def test_cleanup_lock_files_directory(tmp_path):
-    """Test cleanup of all lock files in a directory."""
-    # Create some lock files
-    (tmp_path / "file1.txt.lock").write_text("")
-    (tmp_path / "file2.txt.lock").write_text("")
-    (tmp_path / "subdir").mkdir()
-    (tmp_path / "subdir" / "file3.txt.lock").write_text("")
-
-    # Also create some non-lock files
-    (tmp_path / "regular.txt").write_text("test")
-    (tmp_path / "file1.txt").write_text("test")
-
-    cleanup_lock_files(tmp_path)
-
-    # Lock files should be gone
-    assert not (tmp_path / "file1.txt.lock").exists()
-    assert not (tmp_path / "file2.txt.lock").exists()
-    assert not (tmp_path / "subdir" / "file3.txt.lock").exists()
-
-    # Regular files should remain
-    assert (tmp_path / "regular.txt").exists()
-    assert (tmp_path / "file1.txt").exists()
-
-
-def test_cleanup_lock_files_single_file(tmp_path):
-    """Test cleanup of lock file for a specific file."""
-    test_file = tmp_path / "test.txt"
-    lock_file = tmp_path / "test.txt.lock"
-
-    test_file.write_text("test")
-    lock_file.write_text("")
-
-    cleanup_lock_files(test_file)
-
-    # Lock file should be gone
-    assert not lock_file.exists()
-    # Original file should remain
-    assert test_file.exists()
-
-
-def test_cleanup_lock_files_no_lock(tmp_path):
-    """Test cleanup when no lock file exists."""
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("test")
-
-    # Should not raise an error
-    cleanup_lock_files(test_file)
-    assert test_file.exists()
-
-
-def test_cleanup_lock_files_oserror(tmp_path):
-    """Test cleanup handles OSError gracefully."""
-    lock_file = tmp_path / "test.txt.lock"
-    lock_file.write_text("")
-
-    # Mock unlink to raise OSError
-    with patch.object(Path, "unlink", side_effect=OSError("Permission denied")):
-        # Should not raise an error
-        cleanup_lock_files(tmp_path)
 
 
 def test_lock_refcount_multiprocess(tmp_path):

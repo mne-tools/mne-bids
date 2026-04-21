@@ -185,6 +185,7 @@ jobs:
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
+      MNE_BIDS_FILELOCK_TIMEOUT: 5  # be more stringent than it would be for end-users
     steps:
     - uses: actions/checkout@v6
       with:
@@ -324,7 +325,7 @@ jobs:
       run: make test
 
     - name: Upload coverage stats to codecov
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       with:
         files: ./coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
