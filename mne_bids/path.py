@@ -2432,16 +2432,11 @@ def get_entity_vals(
         filenames = []
         for dirpath, dirs, files in os.walk(root, topdown=True):
             dp = Path(dirpath)
-<<<<<<< speedup_more_get_entity_vals
             depth = len(dp.relative_to(root).parts)
-
-=======
->>>>>>> main
             # Prevent os.walk from descending into ignored dirs
             dirs[:] = [d for d in dirs if dp / d not in ignore_dirs_set]
             if ignore_hidden:
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
-<<<<<<< speedup_more_get_entity_vals
             matched_in_dir = False
             for f in files:
                 if ignore_hidden and f.startswith("."):
@@ -2452,11 +2447,6 @@ def get_entity_vals(
             # Beyond maxdepth, stop descending once a match was found here
             if depth >= maxdepth and matched_in_dir:
                 dirs[:] = []
-=======
-            for f in files:
-                if f"{entity_abbr}-" in f and "_" in f:
-                    filenames.append(dp / f)
->>>>>>> main
 
     for filename in filenames:
         if ignore_suffixes and any(
