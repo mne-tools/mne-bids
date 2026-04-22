@@ -18,7 +18,7 @@ from pathlib import Path
 import mne
 import pytest
 from mne.datasets import testing
-from mne.io import anonymize_info
+from mne.io import anonymize_info, read_raw_fif
 from test_read import _read_raw_fif, warning_str
 
 import mne_bids
@@ -1826,7 +1826,7 @@ def test_return_root_paths_entity_aware(tmp_path):
 
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
-def test_find_empty_room(bids_test_dir, tmp_path):
+def test_find_empty_room_basic(bids_test_dir, tmp_path):
     """Test reading of empty room data."""
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     bids_root = tmp_path / "bids"
@@ -1842,7 +1842,9 @@ def test_find_empty_room(bids_test_dir, tmp_path):
         datatype="meg",
         suffix="meg",
     )
-    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    with raw.info._unlock():
+        raw.info["maxshield"] = True
+    write_raw_bids(raw, bids_path, allow_preload=True, format="FIF")
     noroot = bids_path.copy().update(root=None)
     with pytest.raises(ValueError, match="The root of the"):
         noroot.find_empty_room()
@@ -1858,20 +1860,27 @@ def test_find_empty_room(bids_test_dir, tmp_path):
     tmp_dir = tmp_path / "tmp"
     tmp_dir.mkdir()
     er_raw_fname = op.join(tmp_dir, "ernoise_raw.fif")
-    raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
-    er_raw = _read_raw_fif(er_raw_fname)
+    raw.copy().crop(0, 10).save(er_raw_fname)
+    er_raw = _read_raw_fif(er_raw_fname, allow_maxshield="yes").load_data()
+    # set it as MaxShielded (ensure we don't warn about reading MS data in
+    # find_empty_room)
+    with er_raw.info._unlock():
+        er_raw.info["maxshield"] = True
 
     er_date = er_raw.info["meas_date"].strftime("%Y%m%d")
     er_bids_path = BIDSPath(
         subject="emptyroom", task="noise", session=er_date, suffix="meg", root=bids_root
     )
-    write_raw_bids(er_raw, er_bids_path, overwrite=True, verbose=False)
+    write_raw_bids(er_raw, er_bids_path, allow_preload=True, format="FIF")
+    with pytest.raises(ValueError, match="Internal Active"):
+        read_raw_fif(er_bids_path.fpath)
 
     recovered_er_bids_path = bids_path.find_empty_room()
     assert er_bids_path == recovered_er_bids_path
 
     # Test that when there is a noise task file in the subject directory it will take
     # precedence over the emptyroom directory file
+    er_raw = _read_raw_fif(er_raw_fname, allow_maxshield="yes")
     er_noise_task_path = bids_path.copy().update(
         run=None,
         task="noise",
@@ -1925,7 +1934,8 @@ def test_find_empty_room(bids_test_dir, tmp_path):
         bids_path.copy().update(root=None).find_empty_room()
 
     # assert that we get an error if meas_date is not available.
-    raw = read_raw_bids(bids_path=bids_path)
+    extra_params = dict(allow_maxshield="yes")
+    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
     raw.set_meas_date(None)
     anonymize_info(raw.info)
     write_raw_bids(raw, bids_path, overwrite=True, format="FIF")
