@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev45+gea008ec5f documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev46+g766811936 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="_static/documentation_options.js?v=ea36284a"></script>
+    <script src="_static/documentation_options.js?v=007d1002"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,7 +81,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev45+gea008ec5f" />
+  <meta name="docsearch:version" content="0.19.0.dev46+g766811936" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev45+gea008ec5f documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev46+g766811936 documentation</p>
   
 </a></div>
     
@@ -534,6 +534,8 @@
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now reads channel units from <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> and sets them on the raw object. This includes support for units like <code class="docutils literal notranslate"><span class="pre">rad</span></code> (radians), <code class="docutils literal notranslate"><span class="pre">V</span></code>, <code class="docutils literal notranslate"><span class="pre">µV</span></code>, <code class="docutils literal notranslate"><span class="pre">mV</span></code>, <code class="docutils literal notranslate"><span class="pre">T</span></code>, <code class="docutils literal notranslate"><span class="pre">T/m</span></code>, <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">oC</span></code>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, and <code class="docutils literal notranslate"><span class="pre">px</span></code>. The write path was also updated to correctly write <code class="docutils literal notranslate"><span class="pre">rad</span></code> units to <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code>, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1509">#1509</a>)</p></li>
 <li><p>Added support for hashing <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> objects so they can be used in caching and other contexts that require hashable objects, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1563">#1563</a>)</p></li>
 <li><p>Speed up <a class="reference internal" href="generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes" title="mne_bids.get_datatypes"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_datatypes()</span></code></a> by restricting filesystem traversal to <code class="docutils literal notranslate"><span class="pre">bids_root/sub-*/(ses-*/)&lt;datatype&gt;</span></code> directories, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1563">#1563</a>)</p></li>
+<li><p>Speed up <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_matching_sidecar" title="mne_bids.BIDSPath.find_matching_sidecar"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.find_matching_sidecar()</span></code></a> by searching most likely file locations first, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1565">#1565</a>)</p></li>
+<li><p>Add support for CHPI channels and gracefully handle incorrect channel definition <code class="docutils literal notranslate"><span class="pre">MEGGRAD</span></code>, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1578">#1578</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -558,6 +560,7 @@
 <li><p>Allow <code class="docutils literal notranslate"><span class="pre">task=None</span></code> in <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> for BIDS paths without a task entity (e.g. datasets that omit task in the path), by <a class="reference external" href="https://github.com/AmanJaiswal1503">Aman Jaiswal</a></p></li>
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> and related read paths failing with <code class="docutils literal notranslate"><span class="pre">PermissionError</span></code> on datalad/git-annex datasets by keeping the file lock next to the symlink instead of its (read-only) target, and gracefully continuing without a lock when one cannot be created, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1569">#1569</a>)</p></li>
 <li><p>Avoid modifying calibration files by making <a class="reference internal" href="generated/mne_bids.write_meg_calibration.html#mne_bids.write_meg_calibration" title="mne_bids.write_meg_calibration"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_meg_calibration()</span></code></a> copy instead of parsing and rewriting, by <a class="reference external" href="https://github.com/wmvanvliet">Marijn van Vliet</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1576">#1576</a>)</p></li>
+<li><p>Fix bug with <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_matching_sidecar" title="mne_bids.BIDSPath.find_matching_sidecar"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.find_matching_sidecar()</span></code></a> not searching parent directories properly, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1565">#1565</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">
