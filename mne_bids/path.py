@@ -2117,6 +2117,7 @@ def get_entity_vals(
     include_match=None,
     with_key=False,
     ignore_hidden=True,
+    maxdepth=1000,
     verbose=None,
 ):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
@@ -2266,6 +2267,11 @@ def get_entity_vals(
             f"`key` must be one of: {', '.join(entities)}. Got: {entity_key}"
         )
 
+    if entity_key == "subject" and maxdepth == 1000:
+        maxdepth = 1
+    if entity_key == "session" and maxdepth == 1000:
+        maxdepth = 2
+        
     ignore_subjects = _ensure_tuple(ignore_subjects)
     ignore_sessions = _ensure_tuple(ignore_sessions)
     ignore_tasks = _ensure_tuple(ignore_tasks)
@@ -2303,13 +2309,22 @@ def get_entity_vals(
         filenames = []
         for dirpath, dirs, files in os.walk(root, topdown=True):
             dp = Path(dirpath)
+            depth = len(dp.relative_to(root).parts)
+
             # Prevent os.walk from descending into ignored dirs
             dirs[:] = [d for d in dirs if dp / d not in ignore_dirs_set]
             if ignore_hidden:
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
+            matched_in_dir = False
             for f in files:
+                if ignore_hidden and f.startswith("."):
+                    continue
                 if f"{entity_abbr}-" in f and "_" in f:
                     filenames.append(dp / f)
+                    matched_in_dir = True
+            # Beyond maxdepth, stop descending once a match was found here
+            if depth >= maxdepth and matched_in_dir:
+                dirs[:] = []
 
     for filename in filenames:
         if ignore_suffixes and any(
