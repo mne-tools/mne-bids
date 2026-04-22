@@ -293,12 +293,9 @@ def path_counter(monkeypatch):
     monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
     monkeypatch.setattr(mne_bids, "get_entity_vals", get_entity_vals_count)
     monkeypatch.setattr(mne_bids, "get_datatypes", get_datatypes_count)
-<<<<<<< speedup_more_get_entity_vals
-=======
     monkeypatch.setattr(
         mne_bids.path, "_find_matching_sidecar", _find_matching_sidecar_count
     )
->>>>>>> main
     monkeypatch.setattr(os, "walk", _os_walk_count)
     yield out
 
@@ -409,11 +406,7 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
 
     # these should be equivalent
     out_1 = mne_bids.get_entity_vals(tmp_bids_root, "session")
-<<<<<<< speedup_more_get_entity_vals
-    assert path_counter.count == 482
-=======
     assert path_counter.count == 818
->>>>>>> main
     out_2 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="**/")
     assert path_counter.count == 41328
     assert out_1 == out_2
