@@ -1027,10 +1027,12 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
         if ch_type.upper() in (
             "MEGGRADAXIAL",
             "MEGMAG",
+            "MEGGRAD",  # be tolerant (ds000117 for example)
             "MEGREFGRADAXIAL",
             "MEGGRADPLANAR",
             "MEGREFMAG",
             "MEGOTHER",
+            "HLU",  # (C)HPI channels, assume correct
         ):
             continue
 

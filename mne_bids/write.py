@@ -3164,9 +3164,6 @@ def write_meg_calibration(calibration, bids_path, *, verbose=None):
             "filename."
         )
 
-    if not isinstance(calibration, dict):
-        calibration = mne.preprocessing.read_fine_calibration(calibration)
-
     out_path = BIDSPath(
         subject=bids_path.subject,
         session=bids_path.session,
@@ -3179,9 +3176,12 @@ def write_meg_calibration(calibration, bids_path, *, verbose=None):
 
     logger.info(f"Writing fine-calibration file to {out_path}")
     out_path.mkdir()
-    mne.preprocessing.write_fine_calibration(
-        fname=str(out_path), calibration=calibration
-    )
+    if not isinstance(calibration, dict):
+        shutil.copyfile(src=calibration, dst=str(out_path))
+    else:
+        mne.preprocessing.write_fine_calibration(
+            fname=str(out_path), calibration=calibration
+        )
 
 
 @verbose
