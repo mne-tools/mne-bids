@@ -229,6 +229,10 @@ authors:
       family-names: Mäkelä
       affiliation: 'University of Helsinki, Helsinki, Finland'
       orcid: 'https://orcid.org/0009-0005-5706-0842'
+    - given-names: Flore
+      family-names: Boscher
+      affiliation: 'Laboratoire de Psychologie et Neurocognition, Grenoble, France'
+      orcid: 'https://orcid.org/0009-0005-1615-1369'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'

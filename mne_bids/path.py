@@ -136,7 +136,7 @@ def _find_empty_room_candidates(bids_path):
     # Now try to discover all recordings inside the session directories.
     candidate_er_fnames = []
     for session_dir in emptyroom_session_dirs:
-        dir_contents = glob.glob(
+        dir_contents = glob.iglob(
             op.join(session_dir, datatype, f"sub-emptyroom_*_{datatype}*")
         )
         for item in dir_contents:
@@ -1956,48 +1956,99 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
             f"ignore, but got: {on_error}"
         )
 
-    bids_root = bids_path.root
+    if bids_path.root is None:
+        raise ValueError(
+            "The root of the BIDSPath must be set to find a matching sidecar file."
+        )
+    bids_root = Path(bids_path.root)
+
+    # Try to shortcut the search
+    shortcut_file = _find_matching_sidecar_shortcut(
+        bids_path, suffix=suffix, extension=extension
+    )
+    if shortcut_file is not None:
+        # Have to treat coordsystem and electrodes a special way: check for others at
+        # same level of hierarchy and only take the short path if exactly one match is
+        # found; if we find more than one let the slow code below run and emit
+        # a proper message (or ignore etc.)
+        if suffix in ("coordsystem", "electrodes"):
+            # if we have more than one, don't shortcut, allow code below to be
+            # executed (slow but will result in the error message)
+            search_suffix = f"{suffix}{extension or _ext_map[suffix]}"
+            check_name = f"{shortcut_file.name[-len(search_suffix) :]}*{search_suffix}"
+            if len(list(_path_glob(shortcut_file.parent, check_name))) == 1:
+                return shortcut_file
+        else:
+            return shortcut_file
 
     # search suffix is BIDS-suffix and extension
-    search_suffix = ""
-    if suffix is None and bids_path.suffix is not None:
-        search_suffix = bids_path.suffix
-    elif suffix is not None:
+    if suffix is not None:
         search_suffix = suffix
 
         # do not search for suffix if suffix is explicitly passed
         bids_path = bids_path.copy()
         bids_path.check = False
         bids_path.update(suffix=None)
+    elif bids_path.suffix is not None:
+        search_suffix = bids_path.suffix
+    else:
+        search_suffix = ""
 
-    if extension is None and bids_path.extension is not None:
-        search_suffix = search_suffix + bids_path.extension
-    elif extension is not None:
-        search_suffix = search_suffix + extension
+    if extension is not None:
+        search_suffix += extension
 
         # do not search for extension if extension is explicitly passed
         bids_path = bids_path.copy()
         bids_path.check = False
         bids_path = bids_path.update(extension=None)
+    elif bids_path.extension is not None:
+        search_suffix += bids_path.extension
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
-    search_str_filename = f"sub-{bids_path.subject}"
-    if bids_path.session is not None:
-        search_str_filename += f"_ses-{bids_path.session}"
 
-    # Find all potential sidecar files, doing a recursive glob
-    # from bids_root/sub-*, potentially taking into account the data type
-    search_dir = Path(bids_root) / f"sub-{bids_path.subject}"
-    # ** -> don't forget about potentially present session directories
-    if bids_path.datatype is None:
-        search_dir = search_dir / "**"
+    # Start with searches using subject as root
+    subj_base = f"sub-{bids_path.subject}"
+
+    # Find all potential sidecar files
+
+    # 1. Always check the subject root:
+    #
+    #    sub-N/sub-N*<search_suffix>
+    #
+    subj_dir = bids_root / subj_base
+    search_name = f"{subj_base}*{search_suffix}"
+    search_strs_complete = [str(subj_dir / search_name)]
+    # 2. Check in datatype subdirs:
+    #
+    #    sub-N/<datatype>/sub-N*<search_suffix>
+    #
+    if bids_path.datatype is not None:
+        datatype_dir = bids_path.datatype
+        broad_wildcard = False
     else:
-        search_dir = search_dir / "**" / bids_path.datatype
+        datatype_dir = "*"
+        broad_wildcard = True
+    search_strs_complete.append(str(subj_dir / datatype_dir / search_name))
+    # 3. Check in session subdirs (if not already implicitly checked above):
+    #
+    #    sub-N/ses-*/sub-N_ses-*<search_suffix>
+    #
+    ses_name = bids_path.session or "*"
+    this_dir = subj_dir / f"ses-{ses_name}"
+    search_name = f"{subj_base}_ses-{ses_name}*{search_suffix}"
+    if not broad_wildcard:  # the broad wildcard will return a superset of this search
+        search_strs_complete.append(str(this_dir / search_name))
+    # 4. Check in datatype subdirs within session subdirs:
+    #
+    #    sub-N/ses-*/<datatype>/sub-N_ses-*<search_suffix>
+    #
+    search_strs_complete.append(str(this_dir / datatype_dir / search_name))
 
-    search_str_complete = str(search_dir / f"{search_str_filename}*{search_suffix}")
-
-    candidate_list = glob.glob(search_str_complete, recursive=True)
+    # Actually search now!
+    candidate_list = []
+    for search_str in search_strs_complete:
+        candidate_list.extend(glob.iglob(search_str))
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)
 
     # If no candidates found within subject directory, search at dataset root
@@ -2005,8 +2056,8 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     # subjects and have no subject/session entities in the filename.
     root_candidates = []
     if len(best_candidates) == 0:
-        root_search_str = str(Path(bids_root) / f"*{search_suffix}")
-        root_candidates = glob.glob(root_search_str)
+        root_search_str = str(bids_root / f"*{search_suffix}")
+        root_candidates = glob.iglob(root_search_str)
         # Filter to only files without subject entity (true root-level sidecars)
         root_candidates = [c for c in root_candidates if "sub-" not in Path(c).name]
         if root_candidates:
@@ -2029,13 +2080,85 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
             f"associated with {bids_path.basename}, "
             f"but found {len(all_candidates)}:\n\n" + "\n".join(all_candidates)
         )
-    msg += f'\n\nThe search_str was "{search_str_complete}"'
+    msg += "\n\nThe search strings were:\n" + "\n".join(search_strs_complete)
     if on_error == "raise":
         raise RuntimeError(msg)
     elif on_error == "warn":
         warn(msg)
 
     return None
+
+
+_ext_map = {  # these sidecar files should only ever have these extensions
+    "scans": ".tsv",
+    "coordsystem": ".json",
+    "electrodes": ".tsv",
+}
+
+
+def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
+    # try some shortcuts that should work for some standard files
+    # (e.g., those written with MNE-BIDS) when the BIDSPath is sufficiently complete
+    bids_root = bids_path.root
+
+    # Only proceed if suffix and extension are provided, or can be inferred
+    if not suffix:
+        return
+    extension = extension or _ext_map.get(suffix)
+    if extension is None:
+        return
+    assert isinstance(suffix, str)
+    assert isinstance(extension, str)
+
+    # The directory hierarchy checked (in order):
+    paths = list()
+    if bids_path.subject is not None:
+        subj_str = f"sub-{bids_path.subject}"
+        subj_name = f"{subj_str}_"
+        root_subj = bids_root / subj_str
+        if bids_path.session is not None:
+            sess_str = f"ses-{bids_path.session}"
+            root_subj_sess = root_subj / sess_str
+            subj_sess_name = f"{subj_str}_{sess_str}_"
+            if bids_path.datatype is not None:
+                # 1. root/sub-N/ses-M/datatype/sub-N_ses-M_<end>
+                paths.append((root_subj_sess / bids_path.datatype, subj_sess_name))
+            # 2. root/sub-N/ses-M/sub-N_ses-M_<end>
+            paths.append((root_subj_sess, subj_sess_name))
+        if bids_path.datatype is not None:
+            # 3. root/sub-N/datatype/sub-N_<end>
+            paths.append((root_subj / bids_path.datatype, subj_name))
+        # 4. root/sub-N/sub-N_<end>
+        paths.append((root_subj, subj_name))
+    # 5. root/<end>
+    paths.append((bids_root, ""))
+
+    # Now do the heavy lifting: look for the files
+    if suffix in ("scans", "coordsystem", "electrodes"):
+        path_end = f"{suffix}{extension}"
+        for dir_, entity_str in paths:
+            # we need to check with task as well
+            if suffix != "scans" and bids_path.task is not None:
+                shortcut_file = dir_ / f"{entity_str}task-{bids_path.task}_{path_end}"
+                if shortcut_file.is_file():
+                    return shortcut_file
+            shortcut_file = dir_ / f"{entity_str}{path_end}"
+            if shortcut_file.is_file():
+                return shortcut_file
+    # Ensure we can use our fast path in .fpath
+    # knowing that extension and suffix are not None already
+    elif bids_path.datatype is not None:
+        fast_path = (
+            bids_path.copy()
+            .update(
+                check=False,
+                suffix=suffix,
+                extension=extension,
+            )
+            .fpath
+        )
+        if fast_path.is_file():
+            return fast_path
 
 
 def _get_bids_suffix_and_ext(str_suffix):
@@ -2117,7 +2240,10 @@ def get_entity_vals(
     include_match=None,
     with_key=False,
     ignore_hidden=True,
+<<<<<<< speedup_more_get_entity_vals
     maxdepth=1000,
+=======
+>>>>>>> main
     verbose=None,
 ):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
@@ -2309,12 +2435,16 @@ def get_entity_vals(
         filenames = []
         for dirpath, dirs, files in os.walk(root, topdown=True):
             dp = Path(dirpath)
+<<<<<<< speedup_more_get_entity_vals
             depth = len(dp.relative_to(root).parts)
 
+=======
+>>>>>>> main
             # Prevent os.walk from descending into ignored dirs
             dirs[:] = [d for d in dirs if dp / d not in ignore_dirs_set]
             if ignore_hidden:
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
+<<<<<<< speedup_more_get_entity_vals
             matched_in_dir = False
             for f in files:
                 if ignore_hidden and f.startswith("."):
@@ -2325,6 +2455,11 @@ def get_entity_vals(
             # Beyond maxdepth, stop descending once a match was found here
             if depth >= maxdepth and matched_in_dir:
                 dirs[:] = []
+=======
+            for f in files:
+                if f"{entity_abbr}-" in f and "_" in f:
+                    filenames.append(dp / f)
+>>>>>>> main
 
     for filename in filenames:
         if ignore_suffixes and any(

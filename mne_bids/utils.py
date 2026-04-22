@@ -228,7 +228,7 @@ def _check_types(variables):
             )
 
 
-def _write_json(fname, dictionary, overwrite=False):
+def _write_json(fname, dictionary, *, overwrite=False, lock=True):
     """Write JSON to a file."""
     fname = Path(fname)
     if fname.exists() and not overwrite:
@@ -237,7 +237,7 @@ def _write_json(fname, dictionary, overwrite=False):
         )
 
     json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
-    with _open_lock(fname, "w", encoding="utf-8") as fid:
+    with _open_lock(fname, "w", encoding="utf-8", lock=lock) as fid:
         fid.write(json_output)
         fid.write("\n")
 
@@ -245,14 +245,14 @@ def _write_json(fname, dictionary, overwrite=False):
 
 
 @verbose
-def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
+def _write_tsv(fname, dictionary, *, overwrite=False, lock=True, verbose=None):
     """Write an ordered dictionary to a .tsv file."""
     fname = Path(fname)
     if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    _to_tsv(dictionary, fname)
+    _to_tsv(dictionary, fname, lock=lock)
 
     logger.info(f"Writing '{fname}'...")
 
