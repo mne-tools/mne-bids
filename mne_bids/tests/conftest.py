@@ -7,9 +7,16 @@ import platform
 import re
 import shutil
 
+import numpy as np
 import pytest
+from mne import read_trans
+from mne.datasets import testing
+from mne.io import read_raw_fif
+from mne.transforms import apply_trans
 from mne.utils import run_subprocess
 from packaging.version import Version
+
+test_path = testing.data_path(download=False)
 
 
 @pytest.fixture(scope="session")
@@ -88,3 +95,48 @@ def close_all():
 
     yield
     plt.close("all")
+
+
+def _load_t1():
+    import nibabel as nib
+
+    t1_path = test_path / "subjects" / "sample" / "mri" / "T1.mgz"
+    t1 = nib.load(t1_path)
+    return t1
+
+
+def _get_head_to_vox_trans(t1):
+    from numpy.linalg import inv
+
+    vox_to_ras = t1.header.get_vox2ras_tkr()
+    ras_to_vox_trans = inv(vox_to_ras)
+    return ras_to_vox_trans
+
+
+def _get_head_fids():
+    raw_path = test_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    raw_info = read_raw_fif(raw_path).info
+    head_fids = [dig["r"] for dig in raw_info["dig"] if dig["kind"] == 1]
+    head_fids = np.array(head_fids)
+    return head_fids
+
+
+@pytest.fixture(scope="module")
+def mri_landmarks():
+    trans_name = "sample_audvis_trunc-trans.fif"
+    trans_path = test_path / "MEG" / "sample" / trans_name
+    trans = read_trans(trans_path)
+    head_fids = _get_head_fids()
+    t1 = _load_t1()
+    head_to_mri_trans = _get_head_to_vox_trans(t1)
+    mri_fids = np.zeros(shape=head_fids.shape)
+    for hfi, hfid in enumerate(head_fids):
+        t_fid = apply_trans(trans, hfid, move=True)
+        mri_fids[hfi] = apply_trans(head_to_mri_trans, t_fid * 1e3, move=True)
+    return mri_fids
+
+
+@pytest.fixture(scope="module")
+def t1_image():
+    t1_im = _load_t1()
+    return t1_im

@@ -63,7 +63,7 @@ from mne_bids.utils import (
     _write_json,
     get_anonymization_daysback,
 )
-from mne_bids.write import _get_fid_coords
+from mne_bids.write import _get_fid_coords, deface_mri
 
 base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
@@ -4485,3 +4485,45 @@ def test_parallel_write_many_subjects(tmp_path):
     time.sleep(1)
     # No stale lock files should remain after the parallel writes complete.
     assert not any(bids_root.rglob("*.lock"))
+
+
+@testing.requires_testing_data
+def test_deface_mri_errors(t1_image, mri_landmarks):
+    """Test error raising for mri defacing function."""
+    bad_inset_type = "foo"
+    bad_inset_val = -1
+    bad_theta_type = "foo"
+    bad_theta_val = -5
+
+    deface = dict(inset=5.0, theta=15.0)
+
+    # image type error
+    with pytest.raises(TypeError, match="nibabel.spatialimages"):
+        deface_mri("foo", mri_landmarks, None)
+
+    # landmark type error
+    with pytest.raises(TypeError, match="landmarks"):
+        deface_mri(t1_image, "foo", None)
+
+    # inset errors
+    with pytest.raises(ValueError, match="inset must be numeric"):
+        deface_mri(t1_image, mri_landmarks, dict(deface, inset=bad_inset_type))
+
+    with pytest.raises(ValueError, match="inset should be positive"):
+        deface_mri(t1_image, mri_landmarks, dict(deface, inset=bad_inset_val))
+
+    # theta errors
+    with pytest.raises(ValueError, match="theta must be numeric"):
+        deface_mri(t1_image, mri_landmarks, dict(deface, theta=bad_theta_type))
+
+    with pytest.raises(ValueError, match="theta should be between"):
+        deface_mri(t1_image, mri_landmarks, dict(deface, theta=bad_theta_val))
+
+
+@testing.requires_testing_data
+def test_deface_mri(t1_image, mri_landmarks):
+    """Test that defacing completes successfully."""
+    from nibabel.spatialimages import SpatialImage
+
+    defaced_mri = deface_mri(t1_image, mri_landmarks, None)
+    assert isinstance(defaced_mri, SpatialImage)
