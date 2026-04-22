@@ -2397,7 +2397,7 @@ def get_entity_vals(
         maxdepth = 1
     if entity_key == "session" and maxdepth == 1000:
         maxdepth = 2
-        
+
     ignore_subjects = _ensure_tuple(ignore_subjects)
     ignore_sessions = _ensure_tuple(ignore_sessions)
     ignore_tasks = _ensure_tuple(ignore_tasks)
