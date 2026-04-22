@@ -2240,10 +2240,7 @@ def get_entity_vals(
     include_match=None,
     with_key=False,
     ignore_hidden=True,
-<<<<<<< speedup_more_get_entity_vals
     maxdepth=1000,
-=======
->>>>>>> main
     verbose=None,
 ):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
