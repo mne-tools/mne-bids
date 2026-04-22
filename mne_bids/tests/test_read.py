@@ -1001,9 +1001,19 @@ def test_handle_info_reading(tmp_path):
     bids_fname.update(datatype=suffix)
     sidecar_fname = _find_matching_sidecar(bids_fname, suffix=suffix, extension=".json")
     sidecar_fname = Path(sidecar_fname)
+    channels_fname = _find_matching_sidecar(
+        bids_fname, suffix="channels", extension=".tsv"
+    )
+    assert channels_fname is not None
+    channels_txt = channels_fname.read_text(encoding="utf-8")
+    channels_txt = channels_txt.replace(
+        "MEGGRADPLANAR", "MEGGRAD"
+    )  # be tolerant, e.g., ds000117
+    channels_fname.write_text(channels_txt, encoding="utf-8")
 
     # assert that we get the same line frequency set
     raw = read_raw_bids(bids_path=bids_path)
+    assert "misc" not in raw
     assert raw.info["line_freq"] == 60
 
     # setting line_freq to None should produce 'n/a' in the JSON sidecar
