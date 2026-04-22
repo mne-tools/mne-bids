@@ -986,7 +986,14 @@ def test_handle_scans_reading_brainvision(tmp_path):
 def test_handle_info_reading(tmp_path):
     """Test reading information from a BIDS sidecar JSON file."""
     # read in USA dataset, so it should find 50 Hz
-    raw = _read_raw_fif(raw_fname)
+    raw = _read_raw_fif(raw_fname).load_data()
+    assert "chpi" not in raw
+    chpi = mne.io.RawArray(
+        np.zeros((1, len(raw.times))),
+        mne.create_info(["CHPI001"], raw.info["sfreq"], "chpi"),
+    )
+    raw.add_channels([chpi], force_update_info=True)
+    assert "chpi" in raw
 
     # write copy of raw with line freq of 60
     # bids basename and fname
@@ -995,7 +1002,7 @@ def test_handle_info_reading(tmp_path):
     )
     suffix = "meg"
     bids_fname = bids_path.copy().update(suffix=suffix, extension=".fif")
-    write_raw_bids(raw, bids_path, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True, allow_preload=True, format="FIF")
 
     # find sidecar JSON fname
     bids_fname.update(datatype=suffix)
@@ -1014,6 +1021,7 @@ def test_handle_info_reading(tmp_path):
     # assert that we get the same line frequency set
     raw = read_raw_bids(bids_path=bids_path)
     assert "misc" not in raw
+    assert "chpi" in raw
     assert raw.info["line_freq"] == 60
 
     # setting line_freq to None should produce 'n/a' in the JSON sidecar

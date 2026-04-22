@@ -42,7 +42,7 @@ Detailed list of changes
 - Added support for hashing ``BIDSPath`` objects so they can be used in caching and other contexts that require hashable objects, by `Eric Larson`_ (:gh:`1563`)
 - Speed up :func:`mne_bids.get_datatypes` by restricting filesystem traversal to ``bids_root/sub-*/(ses-*/)<datatype>`` directories, by `Eric Larson`_ (:gh:`1563`)
 - Speed up :meth:`mne_bids.BIDSPath.find_matching_sidecar` by searching most likely file locations first, by `Eric Larson`_ (:gh:`1565`)
-- Gracefully handle incorrect channel definition ``MEGGRAD``, by `Eric Larson`_ (:gh:`1578`)
+- Add support for CHPI channels and gracefully handle incorrect channel definition ``MEGGRAD``, by `Eric Larson`_ (:gh:`1578`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

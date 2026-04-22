@@ -1032,6 +1032,7 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
             "MEGGRADPLANAR",
             "MEGREFMAG",
             "MEGOTHER",
+            "HLU",  # assume it's correct
         ):
             continue
 
