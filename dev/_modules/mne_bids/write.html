@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev47+g272142beb documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=168cd1d0"></script>
+    <script src="../../_static/documentation_options.js?v=5f147cf4"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev47+g272142beb" />
+  <meta name="docsearch:version" content="0.19.0.dev48+g4a83fb2fd" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -147,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev47+g272142beb documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</p>
   
 </a></div>
     
@@ -971,8 +971,47 @@
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">extra_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">has_trial_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create participants.json for non-default columns in accompanying TSV.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_extract_hed_for_write</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n_events</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pull HED strings, version, and an optional trial_type→HED sidecar map.</span>
+
+<span class="sd">    Returns ``None`` when annotations aren&#39;t ``HEDAnnotations``, or when the</span>
+<span class="sd">    HED-string count doesn&#39;t match the number of events. Otherwise the</span>
+<span class="sd">    ``sidecar_map`` key is a description→HED mapping (preferred, standard</span>
+<span class="sd">    BIDS pattern) or ``None`` when descriptions collide on different HED</span>
+<span class="sd">    strings and a HED column in events.tsv is required instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="nb">hasattr</span><span class="p">(</span><span class="n">mne</span><span class="p">,</span> <span class="s2">&quot;HEDAnnotations&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">HEDAnnotations</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">strings</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">hed_string</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_events</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Number of HED strings (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match number &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;of events (</span><span class="si">{</span><span class="n">n_events</span><span class="si">}</span><span class="s2">). HED data will not be written.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">sidecar_map</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">desc</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">strings</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sidecar_map</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="o">!=</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">sidecar_map</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;strings&quot;</span><span class="p">:</span> <span class="n">strings</span><span class="p">,</span>
+        <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">_hed_version</span><span class="p">,</span>
+        <span class="s2">&quot;sidecar_map&quot;</span><span class="p">:</span> <span class="n">sidecar_map</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_events_json</span><span class="p">(</span>
+    <span class="n">fname</span><span class="p">,</span>
+    <span class="n">extra_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">has_trial_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">hed_by_trial_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create events.json for non-default columns in accompanying TSV.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -982,6 +1021,9 @@
 <span class="sd">        Dictionary with additional columns to be added to the events.json file.</span>
 <span class="sd">    has_trial_type : bool</span>
 <span class="sd">        Whether the events.tsv file should contain a &#39;trial_type&#39; column.</span>
+<span class="sd">    hed_by_trial_type : dict | None</span>
+<span class="sd">        Mapping of trial_type values to HED strings. When provided, a ``HED``</span>
+<span class="sd">        entry is added under the ``trial_type`` key in the JSON sidecar.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the output file if it exists.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1019,9 +1061,10 @@
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">has_trial_type</span><span class="p">:</span>
-        <span class="n">new_data</span><span class="p">[</span><span class="s2">&quot;trial_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;The type, category, or name of the event.&quot;</span>
-        <span class="p">}</span>
+        <span class="n">trial_type_entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;The type, category, or name of the event.&quot;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">hed_by_trial_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">trial_type_entry</span><span class="p">[</span><span class="s2">&quot;HED&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hed_by_trial_type</span>
+        <span class="n">new_data</span><span class="p">[</span><span class="s2">&quot;trial_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial_type_entry</span>
 
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">new_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
@@ -2174,8 +2217,10 @@
                 <span class="p">)</span>
                 <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">description</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig_cols</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                    <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig_cols</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
         <span class="c1"># default author to make dataset description BIDS compliant</span>
         <span class="c1"># if the user passed an author don&#39;t overwrite,</span>
@@ -2866,6 +2911,7 @@
         <span class="p">)</span>
 
     <span class="c1"># Write events.</span>
+    <span class="n">hed</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">data_is_emptyroom</span><span class="p">:</span>
         <span class="n">events_array</span><span class="p">,</span> <span class="n">event_dur</span><span class="p">,</span> <span class="n">event_desc_id_map</span><span class="p">,</span> <span class="n">event_extras</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span>
             <span class="n">events</span><span class="p">,</span>
@@ -2873,6 +2919,7 @@
             <span class="n">raw</span><span class="p">,</span>
             <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">hed</span> <span class="o">=</span> <span class="n">_extract_hed_for_write</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">n_events</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">events_array</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">event_desc_id_map</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2881,6 +2928,10 @@
             <span class="n">extras_columns</span> <span class="o">=</span> <span class="n">_extras_dicts_to_columns</span><span class="p">(</span>
                 <span class="n">event_extras</span><span class="p">,</span> <span class="n">n_events</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">events_array</span><span class="p">)</span>
             <span class="p">)</span>
+            <span class="n">write_hed_as_column</span> <span class="o">=</span> <span class="n">hed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">hed</span><span class="p">[</span><span class="s2">&quot;sidecar_map&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">write_hed_as_column</span><span class="p">:</span>
+                <span class="n">extras_columns</span><span class="p">[</span><span class="s2">&quot;HED&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hed</span><span class="p">[</span><span class="s2">&quot;strings&quot;</span><span class="p">]</span>
+
             <span class="n">_events_tsv</span><span class="p">(</span>
                 <span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">,</span>
                 <span class="n">durations</span><span class="o">=</span><span class="n">event_dur</span><span class="p">,</span>
@@ -2898,6 +2949,11 @@
                 <span class="k">if</span> <span class="n">extra_columns_descriptions</span> <span class="ow">is</span> <span class="kc">None</span>
                 <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">extra_columns_descriptions</span><span class="p">)</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">write_hed_as_column</span><span class="p">:</span>
+                <span class="n">events_extra_columns</span><span class="p">[</span><span class="s2">&quot;HED&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Hierarchical Event Descriptor (HED) tags for this event.&quot;</span>
+                <span class="p">)</span>
+
             <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">extras_columns</span><span class="p">:</span>
                 <span class="n">events_extra_columns</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span>
                     <span class="n">column</span><span class="p">,</span>
@@ -2908,6 +2964,7 @@
                 <span class="n">fname</span><span class="o">=</span><span class="n">events_json_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
                 <span class="n">extra_columns</span><span class="o">=</span><span class="n">events_extra_columns</span><span class="p">,</span>
                 <span class="n">has_trial_type</span><span class="o">=</span><span class="n">has_trial_type</span><span class="p">,</span>
+                <span class="n">hed_by_trial_type</span><span class="o">=</span><span class="n">hed</span><span class="p">[</span><span class="s2">&quot;sidecar_map&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">hed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="c1"># Kepp events_array around for BrainVision writing below.</span>
@@ -2917,7 +2974,12 @@
     <span class="c1"># already exist. Always set overwrite to False here. If users</span>
     <span class="c1"># want to edit their dataset_description, they can directly call</span>
     <span class="c1"># this function.</span>
-    <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;[Unspecified]&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">make_dataset_description</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;[Unspecified]&quot;</span><span class="p">,</span>
+        <span class="n">hed_version</span><span class="o">=</span><span class="n">hed</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">hed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">_sidecar_json</span><span class="p">(</span>
         <span class="n">raw</span><span class="p">,</span>
@@ -4182,7 +4244,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-22.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-23.
       <br/>
     
   </p>
