@@ -174,7 +174,11 @@ def _find_matched_empty_room(bids_path):
     date_tie = False
     failed_to_get_er_date_count = 0
     bids_path = bids_path.copy().update(datatype="meg")
-    raw = read_raw_bids(bids_path=bids_path)
+    _, ext = _parse_ext(bids_path.fpath)
+    extra_params = None
+    if ext == ".fif":
+        extra_params = dict(allow_maxshield="yes")
+    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
     if raw.info["meas_date"] is None:
         raise ValueError(
             "The provided recording does not have a measurement "
@@ -196,11 +200,6 @@ def _find_matched_empty_room(bids_path):
                 pass
 
         if er_meas_date is None:  # No luck so far! Check info['meas_date']
-            _, ext = _parse_ext(er_bids_path.fpath)
-            extra_params = None
-            if ext == ".fif":
-                extra_params = dict(allow_maxshield="yes")
-
             er_raw = read_raw_bids(bids_path=er_bids_path, extra_params=extra_params)
 
             er_meas_date = er_raw.info["meas_date"]
