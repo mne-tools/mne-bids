@@ -2240,7 +2240,7 @@ def get_entity_vals(
     include_match=None,
     with_key=False,
     ignore_hidden=True,
-    maxdepth=1000,
+    maxdepth=None,
     verbose=None,
 ):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
@@ -2390,9 +2390,9 @@ def get_entity_vals(
             f"`key` must be one of: {', '.join(entities)}. Got: {entity_key}"
         )
 
-    if entity_key == "subject" and maxdepth == 1000:
+    if entity_key == "subject" and maxdepth is None:
         maxdepth = 1
-    if entity_key == "session" and maxdepth == 1000:
+    if entity_key == "session" and maxdepth is None:
         maxdepth = 2
 
     ignore_subjects = _ensure_tuple(ignore_subjects)
@@ -2445,7 +2445,7 @@ def get_entity_vals(
                     filenames.append(dp / f)
                     matched_in_dir = True
             # Beyond maxdepth, stop descending once a match was found here
-            if depth >= maxdepth and matched_in_dir:
+            if maxdepth is not None and depth >= maxdepth and matched_in_dir:
                 dirs[:] = []
 
     for filename in filenames:
