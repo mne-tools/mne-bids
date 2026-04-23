@@ -822,7 +822,6 @@ def template_to_head(info, space, coord_frame="auto", unit="auto", verbose=None)
             in one when they are actually in the other. The only way to tell
             for template coordinate systems, currently, is if it is specified
             in the dataset documentation.
-
     unit : 'm' | 'mm' | 'auto'
         The unit that was used in the coordinate system specification.
         If ``'auto'``, ``'m'`` will be inferred if the montage
@@ -836,7 +835,6 @@ def template_to_head(info, space, coord_frame="auto", unit="auto", verbose=None)
     trans : mne.transforms.Transform
         The data transformation matrix from ``'head'`` to ``'mri'``
         coordinates.
-
     """
     _validate_type(info, mne.Info)
     _check_option("space", space, BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)

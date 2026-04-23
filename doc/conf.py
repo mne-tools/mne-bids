@@ -69,7 +69,7 @@ numpydoc_xref_ignore = {
     "instances",
     "of",
 }
-
+numpydoc_validate = True
 
 # generate autosummary even if no references
 autosummary_generate = True

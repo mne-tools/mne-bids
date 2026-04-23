@@ -157,7 +157,6 @@ def _read_events(events, event_id, raw, bids_path=None):
         the values to the event IDs.
     extras : list[dict] | None
         The extras stored on the annotations, if available.
-
     """
     # retrieve events
     if isinstance(events, np.ndarray):
@@ -636,7 +635,6 @@ def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) 
     >>> events_dict = events_file_to_annotation_kwargs(events_file, verbose=False)
     >>> events_dict
     {'onset': array([0.1, 0.2, 0.3]), 'duration': array([0.1, 0.1, 0.1]), 'description': array(['event1', 'event2', 'event1'], dtype='<U6'), 'event_id': {'event1': 1, 'event2': 2}, 'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}], 'hed_strings': None}
-
     """  # noqa E501
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
@@ -1163,7 +1161,6 @@ def read_raw_bids(
            If ``bids_path`` points to a symbolic link of a ``.fif`` file
            without a ``split`` entity, the link will be resolved before
            reading.
-
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
         Note that the ``exclude`` parameter, which is supported by some
@@ -1184,7 +1181,6 @@ def read_raw_bids(
           channel order in the channels.tsv file.
         * ``'rename'`` will rename the channels in the raw data file to match the
           channel names in the channels.tsv file.
-
     %(verbose)s
 
     Returns
@@ -1201,16 +1197,12 @@ def read_raw_bids(
     RuntimeError
         If multiple recording data types are present in the dataset, but
         ``datatype=None``.
-
     RuntimeError
         If more than one data files exist for the specified recording.
-
     RuntimeError
         If no data file in a supported format can be located.
-
     ValueError
         If the specified ``datatype`` cannot be found in the dataset.
-
     RuntimeError
         If channels.tsv and the raw file have a channel-name mismatch
         and ``on_ch_mismatch`` is 'raise'.
