@@ -3881,10 +3881,10 @@ def test_preload_errors(tmp_path):
     warning_str["emg_coords_missing"],
 )
 @pytest.mark.parametrize(
-    "format,ch_type",
+    "fmt,ch_type",
     (("BrainVision", "eeg"), ("BDF", "emg"), ("EDF", "seeg"), ("BDF", "eeg")),
 )
-def test_preload(_bids_validate, _using_legacy_validator, tmp_path, format, ch_type):
+def test_preload(_bids_validate, _using_legacy_validator, tmp_path, fmt, ch_type):
     """Test writing custom preloaded raw objects."""
     if ch_type == "emg":
         pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
@@ -3902,7 +3902,7 @@ def test_preload(_bids_validate, _using_legacy_validator, tmp_path, format, ch_t
         raw,
         bids_path,
         allow_preload=True,
-        format=format,
+        format=fmt,
         verbose=False,
         overwrite=True,
         **kw,

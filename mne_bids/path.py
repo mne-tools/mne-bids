@@ -258,7 +258,7 @@ class BIDSPath:
         The acquisition session. Corresponds to "ses".
     task : str | None
         The experimental task. Corresponds to "task".
-    acquisition: str | None
+    acquisition : str | None
         The acquisition parameters. Corresponds to "acq".
     run : int | None
         The run number. Corresponds to "run".
@@ -281,6 +281,12 @@ class BIDSPath:
         may be assigned ``description='cleaned'``.
 
         .. versionadded:: 0.11
+    tracking_system : str | None
+        The motion tracking system.
+
+        .. versionadded:: 0.18
+    root : path-like | None
+        The root directory of the BIDS dataset.
     suffix : str | None
         The filename suffix. This is the entity after the
         last ``_`` before the extension. E.g., ``'channels'``.
@@ -288,14 +294,12 @@ class BIDSPath:
         'meg', 'markers', 'eeg', 'ieeg', 'T1w',
         'participants', 'scans', 'electrodes', 'coordsystem',
         'channels', 'events', 'headshape', 'digitizer',
-        'beh', 'physio', 'stim'
+        'beh', 'physio', 'stim'.
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
     datatype : str
         The BIDS data type, e.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
         ``'ieeg'``.
-    root : path-like | None
-        The root directory of the BIDS dataset.
     check : bool
         If ``True``, enforces BIDS conformity. Defaults to ``True``.
 
@@ -319,6 +323,23 @@ class BIDSPath:
         The full file path.
     check : bool
         Whether to enforce BIDS conformity.
+
+    Notes
+    -----
+    BIDS entities are generally separated with a ``"_"`` character, while
+    entity key/value pairs are separated with a ``"-"`` character.
+    There are checks performed to make sure that there are no ``'-'``, ``'_'``,
+    or ``'/'`` characters contained in any entity keys or values.
+
+    To represent a filename such as ``dataset_description.json``,
+    one can set ``check=False``, and pass ``suffix='dataset_description'``
+    and ``extension='.json'``.
+
+    ``BIDSPath`` can also be used to represent file and folder names of data
+    types that are not yet supported through MNE-BIDS, but are recognized by
+    BIDS. For example, one can set ``datatype`` to ``dwi`` or ``func`` and
+    pass ``check=False`` to represent diffusion-weighted imaging and
+    functional MRI paths.
 
     Examples
     --------
@@ -366,23 +387,6 @@ class BIDSPath:
     /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_channels.tsv
     >>> print(new_bids_path.directory.as_posix())
     /bids_dataset/sub-test2/ses-one/ieeg
-
-    Notes
-    -----
-    BIDS entities are generally separated with a ``"_"`` character, while
-    entity key/value pairs are separated with a ``"-"`` character.
-    There are checks performed to make sure that there are no ``'-'``, ``'_'``,
-    or ``'/'`` characters contained in any entity keys or values.
-
-    To represent a filename such as ``dataset_description.json``,
-    one can set ``check=False``, and pass ``suffix='dataset_description'``
-    and ``extension='.json'``.
-
-    ``BIDSPath`` can also be used to represent file and folder names of data
-    types that are not yet supported through MNE-BIDS, but are recognized by
-    BIDS. For example, one can set ``datatype`` to ``dwi`` or ``func`` and
-    pass ``check=False`` to represent diffusion-weighted imaging and
-    functional MRI paths.
     """
 
     def __init__(
@@ -471,7 +475,13 @@ class BIDSPath:
         self.update(**state)
 
     def __hash__(self):
-        """Compute the object hash."""
+        """Compute the object hash.
+
+        Returns
+        -------
+        hash : int
+            The hash of the object.
+        """
         state = self.__getstate__()
         state["__class__"] = "BIDSPath"
         return hash(frozenset(state.items()))
@@ -724,7 +734,6 @@ class BIDSPath:
         Deleting all files of a subject will update the
         ``*_participants.tsv`` file.
 
-
         Parameters
         ----------
         safe_remove : bool
@@ -974,19 +983,20 @@ class BIDSPath:
 
         Also performs error checks on various entities to
         adhere to the BIDS specification. Specifically:
+
         - ``datatype`` should be one of: ``anat``, ``eeg``, ``ieeg``, ``meg``
         - ``extension`` should be one of the accepted file
-        extensions in the file path: ``.con``, ``.sqd``, ``.fif``,
-        ``.pdf``, ``.ds``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``,
-        ``.edf``, ``.set``, ``.mefd``, ``.nwb``
+           extensions in the file path: ``.con``, ``.sqd``, ``.fif``,
+           ``.pdf``, ``.ds``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``,
+           ``.edf``, ``.set``, ``.mefd``, ``.nwb``
         - ``suffix`` should be one of the acceptable file suffixes in: ``meg``,
-        ``markers``, ``eeg``, ``ieeg``, ``T1w``,
-        ``participants``, ``scans``, ``electrodes``, ``channels``,
-        ``coordsystem``, ``events``, ``headshape``, ``digitizer``,
-        ``beh``, ``physio``, ``stim``
+           ``markers``, ``eeg``, ``ieeg``, ``T1w``,
+           ``participants``, ``scans``, ``electrodes``, ``channels``,
+           ``coordsystem``, ``events``, ``headshape``, ``digitizer``,
+           ``beh``, ``physio``, ``stim``
         - Depending on the modality of the data (EEG, MEG, iEEG),
-        ``space`` should be a valid string according to Appendix VIII
-        in the BIDS specification.
+           ``space`` should be a valid string according to Appendix VIII
+           in the BIDS specification.
 
         Parameters
         ----------
@@ -1533,7 +1543,7 @@ def search_folder_for_text(
     Parameters
     ----------
     entry : str
-        The string to search for
+        The string to search for.
     folder : path-like
         The folder in which to search.
     extensions : list | tuple | str
@@ -1684,7 +1694,7 @@ def _infer_datatype_from_path(fname: Path):
 
 
 @verbose
-def get_bids_path_from_fname(fname, check=True, verbose=None):
+def get_bids_path_from_fname(fname, check=True, *, verbose=None):
     """Retrieve a BIDSPath object from a filename.
 
     Parameters
@@ -1801,7 +1811,7 @@ def _suggest_fix_for_segment(segment, known_keys):
 
 
 @verbose
-def get_entities_from_fname(fname, on_error="raise", verbose=None):
+def get_entities_from_fname(fname, on_error="raise", *, verbose=None):
     """Retrieve a dictionary of BIDS entities from a filename.
 
     Entities not present in ``fname`` will be assigned the value of ``None``.
@@ -1947,7 +1957,6 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     sidecar_fname : str | None
         Path to the identified sidecar file, or ``None`` if none could be found
         and ``on_error`` was set to ``'warn'`` or ``'ignore'``.
-
     """
     if on_error not in ("warn", "raise", "ignore"):
         raise ValueError(
@@ -2175,7 +2184,7 @@ def _get_bids_suffix_and_ext(str_suffix):
 
 
 @verbose
-def get_datatypes(root, verbose=None):
+def get_datatypes(root, *, verbose=None):
     """Get list of data types ("modalities") present in a BIDS dataset.
 
     Parameters
@@ -2189,7 +2198,6 @@ def get_datatypes(root, verbose=None):
     modalities : list of str
         List of the data types present in the BIDS dataset pointed to by
         `root`.
-
     """
     datatypes = list()
     for sub_dir in glob.iglob(os.path.join(root, "sub-*/*/"), recursive=True):
@@ -2263,7 +2271,6 @@ def get_entity_vals(
                   performance issues, consider limiting the search to only a
                   subdirectory in the dataset, e.g., to a single subject or
                   session only.
-
     entity_key : str
         The name of the entity key to search for.
     ignore_subjects : str | array-like of str | None
@@ -2293,7 +2300,7 @@ def get_entity_vals(
         Modalities to ignore. If ``None``, include all modalities.
     ignore_datatypes : str | array-like of str | None
         Datatype(s) to ignore. If ``None``, include all datatypes (i.e.
-        ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)
+        ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.).
     ignore_dirs : str | array-like of str | None
         Directories nested directly within ``root`` to ignore. If ``None``,
         include all directories in the search.
@@ -2326,15 +2333,6 @@ def get_entity_vals(
         List of the values associated with an `entity_key` in the BIDS dataset
         pointed to by `root`.
 
-    Examples
-    --------
-    >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
-    >>> entity_key = 'subject'
-    >>> get_entity_vals(root, entity_key)
-    ['01']
-    >>> get_entity_vals(root, entity_key, with_key=True)
-    ['sub-01']
-
     Notes
     -----
     This function will scan the entire ``root``, except for a
@@ -2344,6 +2342,14 @@ def get_entity_vals(
     ----------
     .. [1] https://bids-specification.rtfd.io/en/latest/common-principles.html#entities
 
+    Examples
+    --------
+    >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
+    >>> entity_key = 'subject'
+    >>> get_entity_vals(root, entity_key)
+    ['01']
+    >>> get_entity_vals(root, entity_key, with_key=True)
+    ['sub-01']
     """
     params = inspect.signature(get_entity_vals).parameters  # for debug messages
     root = _check_fname(
@@ -2505,7 +2511,6 @@ def _mkdir_p(path, overwrite=False):
     References
     ----------
     .. [1] stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
-
     """
     if overwrite and op.isdir(path):
         sh.rmtree(path)
@@ -2640,7 +2645,6 @@ def _filter_fnames(
     Returns
     -------
     list of pathlib.Path
-
     """
     subject = _ensure_tuple(subject)
     session = _ensure_tuple(session)
@@ -2751,7 +2755,7 @@ def find_matching_paths(
         The acquisition session. Corresponds to "ses".
     tasks : str | array-like of str | None
         The experimental task. Corresponds to "task".
-    acquisitions: str | array-like of str | None
+    acquisitions : str | array-like of str | None
         The acquisition parameters. Corresponds to "acq".
     runs : str | array-like of str | None
         The run number. Corresponds to "run".
@@ -2775,7 +2779,7 @@ def find_matching_paths(
 
         .. versionadded:: 0.11
     tracking_systems : str | array-like of str | None
-        The tracking system used for digitization.
+        The motion tracking systems used.
 
         .. versionadded:: 0.19
     suffixes : str | array-like of str | None
@@ -2785,7 +2789,7 @@ def find_matching_paths(
         'meg', 'markers', 'eeg', 'ieeg', 'T1w',
         'participants', 'scans', 'electrodes', 'coordsystem',
         'channels', 'events', 'headshape', 'digitizer',
-        'beh', 'physio', 'stim'
+        'beh', 'physio', 'stim'.
     extensions : str | array-like of str | None
         The extension of the filename. E.g., ``'.json'``.
     datatypes : str | array-like of str | None
@@ -2806,7 +2810,6 @@ def find_matching_paths(
     -------
     bids_paths : list of mne_bids.BIDSPath
         The matching paths.
-
     """
     entities_opt = dict()
     if subjects is not None:
@@ -3004,7 +3007,6 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     -------
     bids_paths : list of mne_bids.BIDSPath
         Bids paths.
-
     """
     bids_paths = []
     for fname in fnames:

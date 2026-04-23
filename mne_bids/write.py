@@ -1629,7 +1629,6 @@ def make_dataset_description(
     -----
     The required metadata field ``BIDSVersion`` will be automatically filled in
     by mne_bids.
-
     """
     # Convert potential string input into list of strings
     convert_vars = [authors, funding, references_and_links, ethics_approvals]
@@ -1753,7 +1752,7 @@ def write_raw_bids(
     extra_columns_descriptions=None,
     *,
     anonymize=None,
-    format="auto",
+    format="auto",  # noqa: A002
     physical_range="auto",
     symlink=False,
     empty_room=None,
@@ -1842,7 +1841,6 @@ def write_raw_bids(
            Either, descriptions of all event codes must be specified via the
            ``event_id`` parameter or each event must be accompanied by a
            row in ``event_metadata``.
-
     event_id : dict | None
         Descriptions or names describing the event codes, if you passed
         ``events``. The descriptions will be written to the ``trial_type``
@@ -1879,7 +1877,6 @@ def write_raw_bids(
             Whether to store the name of the ``raw`` input file in the
             ``source`` column of ``scans.tsv``. By default, this information
             is not stored.
-
     format : 'auto' | 'BrainVision' | 'BDF' | 'EDF' | 'FIF' | 'EEGLAB'
         Controls the file format of the data after BIDS conversion. If
         ``'auto'``, MNE-BIDS will attempt to convert the input data to BIDS
@@ -1911,7 +1908,6 @@ def write_raw_bids(
         .. note::
            Symlinks are currently only supported on macOS and Linux. We will
            add support for Windows 10 at a later time.
-
     empty_room : mne.io.Raw | BIDSPath | None
         The empty-room recording to be associated with this file. This is
         only supported for MEG data.
@@ -1966,7 +1962,6 @@ def write_raw_bids(
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
-
     %(verbose)s
 
     Returns
@@ -1978,6 +1973,13 @@ def write_raw_bids(
            If you passed empty-room raw data via ``empty_room``, the
            :class:`~mne_bids.BIDSPath` of the empty-room recording can be
            retrieved via ``bids_path.find_empty_room(use_sidecar_only=True)``.
+
+    See Also
+    --------
+    mne.io.Raw.anonymize
+    mne.find_events
+    mne.Annotations
+    mne.events_from_annotations
 
     Notes
     -----
@@ -2017,14 +2019,6 @@ def write_raw_bids(
 
     When writing EDF or BDF files, all file extensions are forced to be
     lower-case, in compliance with the BIDS specification.
-
-    See Also
-    --------
-    mne.io.Raw.anonymize
-    mne.find_events
-    mne.Annotations
-    mne.events_from_annotations
-
     """
     if not isinstance(raw, BaseRaw):
         raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
