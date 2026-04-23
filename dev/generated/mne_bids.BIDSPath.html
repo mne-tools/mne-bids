@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</title>
+    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=5f147cf4"></script>
+    <script src="../_static/documentation_options.js?v=b04602d9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,7 +81,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev48+g4a83fb2fd" />
+  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
   
 </a></div>
     
@@ -573,7 +573,7 @@ example, electrode location TSV files do not need a “task” field.</p>
 </dd>
 <dt><strong>task</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The experimental task. Corresponds to “task”.</p>
 </dd>
-<dt><strong>acquisition: str | None</strong></dt><dd><p>The acquisition parameters. Corresponds to “acq”.</p>
+<dt><strong>acquisition</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The acquisition parameters. Corresponds to “acq”.</p>
 </dd>
 <dt><strong>run</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The run number. Corresponds to “run”.</p>
 </dd>
@@ -597,20 +597,25 @@ may be assigned <code class="docutils literal notranslate"><span class="pre">des
 <p><span class="versionmodified added">Added in version 0.11.</span></p>
 </div>
 </dd>
+<dt><strong>tracking_system</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The motion tracking system.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.18.</span></p>
+</div>
+</dd>
+<dt><strong>root</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.12)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The root directory of the BIDS dataset.</p>
+</dd>
 <dt><strong>suffix</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The filename suffix. This is the entity after the
 last <code class="docutils literal notranslate"><span class="pre">_</span></code> before the extension. E.g., <code class="docutils literal notranslate"><span class="pre">'channels'</span></code>.
 The following filename suffix’s are accepted:
 ‘meg’, ‘markers’, ‘eeg’, ‘ieeg’, ‘T1w’,
 ‘participants’, ‘scans’, ‘electrodes’, ‘coordsystem’,
 ‘channels’, ‘events’, ‘headshape’, ‘digitizer’,
-‘beh’, ‘physio’, ‘stim’</p>
+‘beh’, ‘physio’, ‘stim’.</p>
 </dd>
 <dt><strong>extension</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The extension of the filename. E.g., <code class="docutils literal notranslate"><span class="pre">'.json'</span></code>.</p>
 </dd>
 <dt><strong>datatype</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The BIDS data type, e.g., <code class="docutils literal notranslate"><span class="pre">'anat'</span></code>, <code class="docutils literal notranslate"><span class="pre">'func'</span></code>, <code class="docutils literal notranslate"><span class="pre">'eeg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>,
 <code class="docutils literal notranslate"><span class="pre">'ieeg'</span></code>.</p>
-</dd>
-<dt><strong>root</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.12)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The root directory of the BIDS dataset.</p>
 </dd>
 <dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enforces BIDS conformity. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
@@ -728,6 +733,14 @@ different properties look like for our object:</p>
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.__hash__">
 <span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.__hash__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.__hash__" title="Link to this definition">#</a></dt>
 <dd><p>Compute the object hash.</p>
+<dl class="field-list">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>hash</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The hash of the object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -1123,20 +1136,31 @@ argument.</p>
 <p><code class="docutils literal notranslate"><span class="pre">run</span></code> and <code class="docutils literal notranslate"><span class="pre">split</span></code> are auto-converted to have two
 digits. For example, if <code class="docutils literal notranslate"><span class="pre">run=1</span></code>, then it will become <code class="docutils literal notranslate"><span class="pre">run='01'</span></code>.</p>
 <p>Also performs error checks on various entities to
-adhere to the BIDS specification. Specifically:
-- <code class="docutils literal notranslate"><span class="pre">datatype</span></code> should be one of: <code class="docutils literal notranslate"><span class="pre">anat</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, <code class="docutils literal notranslate"><span class="pre">meg</span></code>
-- <code class="docutils literal notranslate"><span class="pre">extension</span></code> should be one of the accepted file
-extensions in the file path: <code class="docutils literal notranslate"><span class="pre">.con</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqd</span></code>, <code class="docutils literal notranslate"><span class="pre">.fif</span></code>,
+adhere to the BIDS specification. Specifically:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">datatype</span></code> should be one of: <code class="docutils literal notranslate"><span class="pre">anat</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, <code class="docutils literal notranslate"><span class="pre">meg</span></code></p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">extension</span></code> should be one of the accepted file</dt><dd><p>extensions in the file path: <code class="docutils literal notranslate"><span class="pre">.con</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqd</span></code>, <code class="docutils literal notranslate"><span class="pre">.fif</span></code>,
 <code class="docutils literal notranslate"><span class="pre">.pdf</span></code>, <code class="docutils literal notranslate"><span class="pre">.ds</span></code>, <code class="docutils literal notranslate"><span class="pre">.vhdr</span></code>, <code class="docutils literal notranslate"><span class="pre">.edf</span></code>, <code class="docutils literal notranslate"><span class="pre">.bdf</span></code>, <code class="docutils literal notranslate"><span class="pre">.set</span></code>,
-<code class="docutils literal notranslate"><span class="pre">.edf</span></code>, <code class="docutils literal notranslate"><span class="pre">.set</span></code>, <code class="docutils literal notranslate"><span class="pre">.mefd</span></code>, <code class="docutils literal notranslate"><span class="pre">.nwb</span></code>
-- <code class="docutils literal notranslate"><span class="pre">suffix</span></code> should be one of the acceptable file suffixes in: <code class="docutils literal notranslate"><span class="pre">meg</span></code>,
-<code class="docutils literal notranslate"><span class="pre">markers</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, <code class="docutils literal notranslate"><span class="pre">T1w</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.edf</span></code>, <code class="docutils literal notranslate"><span class="pre">.set</span></code>, <code class="docutils literal notranslate"><span class="pre">.mefd</span></code>, <code class="docutils literal notranslate"><span class="pre">.nwb</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">suffix</span></code> should be one of the acceptable file suffixes in: <code class="docutils literal notranslate"><span class="pre">meg</span></code>,</dt><dd><p><code class="docutils literal notranslate"><span class="pre">markers</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, <code class="docutils literal notranslate"><span class="pre">T1w</span></code>,
 <code class="docutils literal notranslate"><span class="pre">participants</span></code>, <code class="docutils literal notranslate"><span class="pre">scans</span></code>, <code class="docutils literal notranslate"><span class="pre">electrodes</span></code>, <code class="docutils literal notranslate"><span class="pre">channels</span></code>,
 <code class="docutils literal notranslate"><span class="pre">coordsystem</span></code>, <code class="docutils literal notranslate"><span class="pre">events</span></code>, <code class="docutils literal notranslate"><span class="pre">headshape</span></code>, <code class="docutils literal notranslate"><span class="pre">digitizer</span></code>,
-<code class="docutils literal notranslate"><span class="pre">beh</span></code>, <code class="docutils literal notranslate"><span class="pre">physio</span></code>, <code class="docutils literal notranslate"><span class="pre">stim</span></code>
-- Depending on the modality of the data (EEG, MEG, iEEG),
-<code class="docutils literal notranslate"><span class="pre">space</span></code> should be a valid string according to Appendix VIII
+<code class="docutils literal notranslate"><span class="pre">beh</span></code>, <code class="docutils literal notranslate"><span class="pre">physio</span></code>, <code class="docutils literal notranslate"><span class="pre">stim</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Depending on the modality of the data (EEG, MEG, iEEG),</dt><dd><p><code class="docutils literal notranslate"><span class="pre">space</span></code> should be a valid string according to Appendix VIII
 in the BIDS specification.</p>
+</dd>
+</dl>
+</li>
+</ul>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=5f147cf4"></script>
+    <script src="../../_static/documentation_options.js?v=b04602d9"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev48+g4a83fb2fd" />
+  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -147,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
   
 </a></div>
     
@@ -647,7 +647,6 @@
 <span class="sd">        the values to the event IDs.</span>
 <span class="sd">    extras : list[dict] | None</span>
 <span class="sd">        The extras stored on the annotations, if available.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># retrieve events</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -1128,7 +1127,6 @@
 <span class="sd">    &gt;&gt;&gt; events_dict = events_file_to_annotation_kwargs(events_file, verbose=False)</span>
 <span class="sd">    &gt;&gt;&gt; events_dict</span>
 <span class="sd">    {&#39;onset&#39;: array([0.1, 0.2, 0.3]), &#39;duration&#39;: array([0.1, 0.1, 0.1]), &#39;description&#39;: array([&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;], dtype=&#39;&lt;U6&#39;), &#39;event_id&#39;: {&#39;event1&#39;: 1, &#39;event2&#39;: 2}, &#39;extras&#39;: [{&#39;foo&#39;: &#39;a&#39;}, {&#39;foo&#39;: &#39;b&#39;}, {&#39;foo&#39;: &#39;c&#39;}], &#39;hed_strings&#39;: None}</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa E501</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading events from </span><span class="si">{</span><span class="n">events_fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">events_fname</span><span class="p">)</span>
@@ -1658,7 +1656,6 @@
 <span class="sd">           If ``bids_path`` points to a symbolic link of a ``.fif`` file</span>
 <span class="sd">           without a ``split`` entity, the link will be resolved before</span>
 <span class="sd">           reading.</span>
-
 <span class="sd">    extra_params : None | dict</span>
 <span class="sd">        Extra parameters to be passed to MNE read_raw_* functions.</span>
 <span class="sd">        Note that the ``exclude`` parameter, which is supported by some</span>
@@ -1679,7 +1676,6 @@
 <span class="sd">          channel order in the channels.tsv file.</span>
 <span class="sd">        * ``&#39;rename&#39;`` will rename the channels in the raw data file to match the</span>
 <span class="sd">          channel names in the channels.tsv file.</span>
-
 <span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
@@ -1696,16 +1692,12 @@
 <span class="sd">    RuntimeError</span>
 <span class="sd">        If multiple recording data types are present in the dataset, but</span>
 <span class="sd">        ``datatype=None``.</span>
-
 <span class="sd">    RuntimeError</span>
 <span class="sd">        If more than one data files exist for the specified recording.</span>
-
 <span class="sd">    RuntimeError</span>
 <span class="sd">        If no data file in a supported format can be located.</span>
-
 <span class="sd">    ValueError</span>
 <span class="sd">        If the specified ``datatype`` cannot be found in the dataset.</span>
-
 <span class="sd">    RuntimeError</span>
 <span class="sd">        If channels.tsv and the raw file have a channel-name mismatch</span>
 <span class="sd">        and ``on_ch_mismatch`` is &#39;raise&#39;.</span>

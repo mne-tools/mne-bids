@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Read BIDS datasets &#8212; MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</title>
+    <title>Read BIDS datasets &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=5f147cf4"></script>
+    <script src="../_static/documentation_options.js?v=b04602d9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,7 +81,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev48+g4a83fb2fd" />
+  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
   
 </a></div>
     
@@ -607,23 +607,44 @@ Could not read the /home/circleci/.mne/mne-python.json json file during the writ
 
 Overall:   0%|          | 0.00/28.9M [00:00&lt;?, ?B/s]
 
+sub-pd6_ses-on_scans.tsv:   0%|          | 0.00/74.0 [00:00&lt;?, ?B/s]
+Overall:   0%|          | 74.0/28.9M [00:00&lt;23:18:25, 361B/s]
+
+
+
+participants.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
+
+
+
 sub-pd6_ses-on_task-rest_eeg.bdf:   0%|          | 0.00/17.4M [00:00&lt;?, ?B/s]
-Overall:   0%|          | 16.0k/28.9M [00:00&lt;06:15, 80.6kB/s]
+
+
+README:   0%|          | 0.00/4.55k [00:00&lt;?, ?B/s]
+
+
+
+
+
+dataset_description.json:   0%|          | 0.00/354 [00:00&lt;?, ?B/s]
+
+
+
+
+
+sub-pd6_ses-off_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
+
+
+
+Overall:   7%|▋         | 2.16M/28.9M [00:00&lt;00:03, 9.31MB/s]
 
 
 sub-pd6_ses-off_task-rest_eeg.bdf:   0%|          | 0.00/11.5M [00:00&lt;?, ?B/s]
 
-
-
-sub-pd6_ses-on_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
-
+sub-pd6_ses-on_task-rest_eeg.bdf:  19%|█▉        | 3.37M/17.4M [00:00&lt;00:00, 35.3MB/s]
 
 
 
-
-
-
-README:   0%|          | 0.00/4.55k [00:00&lt;?, ?B/s]
+sub-pd6_ses-on_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
 
 
 
@@ -637,66 +658,17 @@ CHANGES:   0%|          | 0.00/379 [00:00&lt;?, ?B/s]
 
 
 
-sub-pd6_ses-on_task-rest_eeg.bdf:  13%|█▎        | 2.28M/17.4M [00:00&lt;00:00, 23.9MB/s]
-Overall:  12%|█▏        | 3.52M/28.9M [00:00&lt;00:01, 15.2MB/s]
 
 
-
-participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s]
-
+sub-pd6_ses-off_task-rest_events.tsv:   0%|          | 0.00/66.0 [00:00&lt;?, ?B/s]
 
 
 
 
-
-sub-pd6_ses-off_task-rest_eeg.bdf:  15%|█▌        | 1.74M/11.5M [00:00&lt;00:00, 18.2MB/s]
-
+Overall:  20%|██        | 5.87M/28.9M [00:00&lt;00:01, 20.2MB/s]
 
 
-sub-pd6_ses-on_scans.tsv:   0%|          | 0.00/74.0 [00:00&lt;?, ?B/s]
-
-
-
-
-
-
-
-sub-pd6_ses-off_scans.tsv:   0%|          | 0.00/75.0 [00:00&lt;?, ?B/s]
-
-
-
-
-Overall:  25%|██▌       | 7.26M/28.9M [00:00&lt;00:00, 24.1MB/s]
-
-
-
-sub-pd6_ses-off_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
-
-
-
-
-
-sub-pd6_ses-on_task-rest_eeg.bdf:  26%|██▋       | 4.57M/17.4M [00:00&lt;00:00, 20.8MB/s]
-
-
-sub-pd6_ses-off_task-rest_eeg.bdf:  32%|███▏      | 3.67M/11.5M [00:00&lt;00:00, 19.3MB/s]
-
-
-
-sub-pd6_ses-on_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
-
-
-
-
-
-
-
-participants.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
-
-
-
-
-Overall:  43%|████▎     | 12.3M/28.9M [00:00&lt;00:00, 34.1MB/s]
+sub-pd6_ses-off_task-rest_eeg.bdf:  16%|█▌        | 1.86M/11.5M [00:00&lt;00:00, 19.4MB/s]
 
 
 
@@ -708,20 +680,37 @@ sub-pd6_ses-on_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
 
 
 
-sub-pd6_ses-off_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
 
 
 
 
 
-sub-pd6_ses-on_task-rest_eeg.bdf:  42%|████▏     | 7.23M/17.4M [00:00&lt;00:00, 23.8MB/s]
 
 
-sub-pd6_ses-off_task-rest_eeg.bdf:  57%|█████▋    | 6.51M/11.5M [00:00&lt;00:00, 24.0MB/s]
+sub-pd6_ses-on_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
 
 
 
-sub-pd6_ses-on_task-rest_events.tsv:   0%|          | 0.00/51.0 [00:00&lt;?, ?B/s]
+
+Overall:  33%|███▎      | 9.57M/28.9M [00:00&lt;00:00, 26.6MB/s]
+
+
+
+sub-pd6_ses-off_scans.tsv:   0%|          | 0.00/75.0 [00:00&lt;?, ?B/s]
+
+
+
+
+
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  32%|███▏      | 3.72M/11.5M [00:00&lt;00:00, 19.1MB/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  39%|███▉      | 6.74M/17.4M [00:00&lt;00:00, 23.3MB/s]
+
+
+
+participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s]
 
 
 
@@ -734,32 +723,16 @@ sub-pd6_ses-off_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
 
 
 
-Overall:  64%|██████▍   | 18.5M/28.9M [00:00&lt;00:00, 44.2MB/s]
+Overall:  46%|████▌     | 13.2M/28.9M [00:00&lt;00:00, 30.4MB/s]
 
 
 
-sub-pd6_ses-off_task-rest_events.tsv:   0%|          | 0.00/66.0 [00:00&lt;?, ?B/s]
-
-
-
-
-
-sub-pd6_ses-on_task-rest_eeg.bdf:  60%|█████▉    | 10.4M/17.4M [00:00&lt;00:00, 27.3MB/s]
-
-
-sub-pd6_ses-off_task-rest_eeg.bdf:  85%|████████▌ | 9.80M/11.5M [00:00&lt;00:00, 28.1MB/s]
-
-
-
-dataset_description.json:   0%|          | 0.00/354 [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
 
 
 
 
 
-
-
-Overall:  88%|████████▊ | 25.4M/28.9M [00:00&lt;00:00, 53.3MB/s]
 
 
 sub-pd6_ses-on_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
@@ -768,15 +741,39 @@ sub-pd6_ses-on_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
 
 
 
-sub-pd6_ses-off_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  48%|████▊     | 5.54M/11.5M [00:00&lt;00:00, 18.9MB/s]
+
+
+
+sub-pd6_ses-on_task-rest_events.tsv:   0%|          | 0.00/51.0 [00:00&lt;?, ?B/s]
 
 
 
 
-sub-pd6_ses-on_task-rest_eeg.bdf:  89%|████████▉ | 15.4M/17.4M [00:00&lt;00:00, 36.2MB/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  53%|█████▎    | 9.18M/17.4M [00:00&lt;00:00, 21.5MB/s]
+Overall:  59%|█████▉    | 17.1M/28.9M [00:00&lt;00:00, 33.7MB/s]
 
 
-Overall: 100%|██████████| 28.9M/28.9M [00:00&lt;00:00, 40.1MB/s]
+sub-pd6_ses-off_task-rest_eeg.bdf:  66%|██████▌   | 7.60M/11.5M [00:00&lt;00:00, 19.9MB/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  65%|██████▌   | 11.3M/17.4M [00:00&lt;00:00, 21.7MB/s]
+Overall:  74%|███████▍  | 21.3M/28.9M [00:00&lt;00:00, 37.0MB/s]
+
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  85%|████████▍ | 9.71M/11.5M [00:00&lt;00:00, 20.7MB/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  78%|███████▊  | 13.5M/17.4M [00:00&lt;00:00, 21.8MB/s]
+Overall:  89%|████████▊ | 25.6M/28.9M [00:00&lt;00:00, 39.4MB/s]
+
+
+
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  98%|█████████▊| 17.0M/17.4M [00:00&lt;00:00, 26.3MB/s]
+
+
+Overall: 100%|██████████| 28.9M/28.9M [00:00&lt;00:00, 30.9MB/s]
 ✅ Finished downloading ds002778.
 
 🧠 Please enjoy your brains.
@@ -839,7 +836,7 @@ consists of 1 participants (comprised of 14 male and 17 female participants;
 comprised of 31 right hand, 0 left hand and 0 ambidextrous; ages ranged from
 47.0 to 82.0 (mean = 63.39, std = 8.69)) and 2 recording sessions: off, and on.
 Data was recorded using an EEG system (Biosemi) sampled at 512.0 Hz with line
-noise at 50, and 60 Hz. There were 2 scans in total. Recording durations ranged
+noise at 60, and 50 Hz. There were 2 scans in total. Recording durations ranged
 from 191.0 to 289.0 seconds (mean = 240.0, std = 49.0), for a total of 480.0
 seconds of data recorded over all scans. For each dataset, there were on average
 41.0 (std = 0.0) recording channels per scan, out of which 41.0 (std = 0.0) were
@@ -1021,7 +1018,7 @@ ignore this warning as it does not affect the data reading process at all.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.965 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.079 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/07841a9269d1816a3add41f32d8a5ed2/read_bids_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">read_bids_datasets.ipynb</span></code></a></p>

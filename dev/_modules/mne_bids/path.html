@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=5f147cf4"></script>
+    <script src="../../_static/documentation_options.js?v=b04602d9"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev48+g4a83fb2fd" />
+  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -147,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
   
 </a></div>
     
@@ -750,7 +750,7 @@
 <span class="sd">        The acquisition session. Corresponds to &quot;ses&quot;.</span>
 <span class="sd">    task : str | None</span>
 <span class="sd">        The experimental task. Corresponds to &quot;task&quot;.</span>
-<span class="sd">    acquisition: str | None</span>
+<span class="sd">    acquisition : str | None</span>
 <span class="sd">        The acquisition parameters. Corresponds to &quot;acq&quot;.</span>
 <span class="sd">    run : int | None</span>
 <span class="sd">        The run number. Corresponds to &quot;run&quot;.</span>
@@ -773,6 +773,12 @@
 <span class="sd">        may be assigned ``description=&#39;cleaned&#39;``.</span>
 
 <span class="sd">        .. versionadded:: 0.11</span>
+<span class="sd">    tracking_system : str | None</span>
+<span class="sd">        The motion tracking system.</span>
+
+<span class="sd">        .. versionadded:: 0.18</span>
+<span class="sd">    root : path-like | None</span>
+<span class="sd">        The root directory of the BIDS dataset.</span>
 <span class="sd">    suffix : str | None</span>
 <span class="sd">        The filename suffix. This is the entity after the</span>
 <span class="sd">        last ``_`` before the extension. E.g., ``&#39;channels&#39;``.</span>
@@ -780,14 +786,12 @@
 <span class="sd">        &#39;meg&#39;, &#39;markers&#39;, &#39;eeg&#39;, &#39;ieeg&#39;, &#39;T1w&#39;,</span>
 <span class="sd">        &#39;participants&#39;, &#39;scans&#39;, &#39;electrodes&#39;, &#39;coordsystem&#39;,</span>
 <span class="sd">        &#39;channels&#39;, &#39;events&#39;, &#39;headshape&#39;, &#39;digitizer&#39;,</span>
-<span class="sd">        &#39;beh&#39;, &#39;physio&#39;, &#39;stim&#39;</span>
+<span class="sd">        &#39;beh&#39;, &#39;physio&#39;, &#39;stim&#39;.</span>
 <span class="sd">    extension : str | None</span>
 <span class="sd">        The extension of the filename. E.g., ``&#39;.json&#39;``.</span>
 <span class="sd">    datatype : str</span>
 <span class="sd">        The BIDS data type, e.g., ``&#39;anat&#39;``, ``&#39;func&#39;``, ``&#39;eeg&#39;``, ``&#39;meg&#39;``,</span>
 <span class="sd">        ``&#39;ieeg&#39;``.</span>
-<span class="sd">    root : path-like | None</span>
-<span class="sd">        The root directory of the BIDS dataset.</span>
 <span class="sd">    check : bool</span>
 <span class="sd">        If ``True``, enforces BIDS conformity. Defaults to ``True``.</span>
 
@@ -811,6 +815,23 @@
 <span class="sd">        The full file path.</span>
 <span class="sd">    check : bool</span>
 <span class="sd">        Whether to enforce BIDS conformity.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    BIDS entities are generally separated with a ``&quot;_&quot;`` character, while</span>
+<span class="sd">    entity key/value pairs are separated with a ``&quot;-&quot;`` character.</span>
+<span class="sd">    There are checks performed to make sure that there are no ``&#39;-&#39;``, ``&#39;_&#39;``,</span>
+<span class="sd">    or ``&#39;/&#39;`` characters contained in any entity keys or values.</span>
+
+<span class="sd">    To represent a filename such as ``dataset_description.json``,</span>
+<span class="sd">    one can set ``check=False``, and pass ``suffix=&#39;dataset_description&#39;``</span>
+<span class="sd">    and ``extension=&#39;.json&#39;``.</span>
+
+<span class="sd">    ``BIDSPath`` can also be used to represent file and folder names of data</span>
+<span class="sd">    types that are not yet supported through MNE-BIDS, but are recognized by</span>
+<span class="sd">    BIDS. For example, one can set ``datatype`` to ``dwi`` or ``func`` and</span>
+<span class="sd">    pass ``check=False`` to represent diffusion-weighted imaging and</span>
+<span class="sd">    functional MRI paths.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -858,23 +879,6 @@
 <span class="sd">    /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_channels.tsv</span>
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path.directory.as_posix())</span>
 <span class="sd">    /bids_dataset/sub-test2/ses-one/ieeg</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    BIDS entities are generally separated with a ``&quot;_&quot;`` character, while</span>
-<span class="sd">    entity key/value pairs are separated with a ``&quot;-&quot;`` character.</span>
-<span class="sd">    There are checks performed to make sure that there are no ``&#39;-&#39;``, ``&#39;_&#39;``,</span>
-<span class="sd">    or ``&#39;/&#39;`` characters contained in any entity keys or values.</span>
-
-<span class="sd">    To represent a filename such as ``dataset_description.json``,</span>
-<span class="sd">    one can set ``check=False``, and pass ``suffix=&#39;dataset_description&#39;``</span>
-<span class="sd">    and ``extension=&#39;.json&#39;``.</span>
-
-<span class="sd">    ``BIDSPath`` can also be used to represent file and folder names of data</span>
-<span class="sd">    types that are not yet supported through MNE-BIDS, but are recognized by</span>
-<span class="sd">    BIDS. For example, one can set ``datatype`` to ``dwi`` or ``func`` and</span>
-<span class="sd">    pass ``check=False`` to represent diffusion-weighted imaging and</span>
-<span class="sd">    functional MRI paths.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -965,7 +969,13 @@
 <div class="viewcode-block" id="BIDSPath.__hash__">
 <a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.__hash__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the object hash.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the object hash.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        hash : int</span>
+<span class="sd">            The hash of the object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getstate__</span><span class="p">()</span>
         <span class="n">state</span><span class="p">[</span><span class="s2">&quot;__class__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;BIDSPath&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span></div>
@@ -1227,7 +1237,6 @@
 <span class="sd">        Deleting all files of a subject will update the</span>
 <span class="sd">        ``*_participants.tsv`` file.</span>
 
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        safe_remove : bool</span>
@@ -1480,19 +1489,20 @@
 
 <span class="sd">        Also performs error checks on various entities to</span>
 <span class="sd">        adhere to the BIDS specification. Specifically:</span>
+
 <span class="sd">        - ``datatype`` should be one of: ``anat``, ``eeg``, ``ieeg``, ``meg``</span>
 <span class="sd">        - ``extension`` should be one of the accepted file</span>
-<span class="sd">        extensions in the file path: ``.con``, ``.sqd``, ``.fif``,</span>
-<span class="sd">        ``.pdf``, ``.ds``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``,</span>
-<span class="sd">        ``.edf``, ``.set``, ``.mefd``, ``.nwb``</span>
+<span class="sd">           extensions in the file path: ``.con``, ``.sqd``, ``.fif``,</span>
+<span class="sd">           ``.pdf``, ``.ds``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``,</span>
+<span class="sd">           ``.edf``, ``.set``, ``.mefd``, ``.nwb``</span>
 <span class="sd">        - ``suffix`` should be one of the acceptable file suffixes in: ``meg``,</span>
-<span class="sd">        ``markers``, ``eeg``, ``ieeg``, ``T1w``,</span>
-<span class="sd">        ``participants``, ``scans``, ``electrodes``, ``channels``,</span>
-<span class="sd">        ``coordsystem``, ``events``, ``headshape``, ``digitizer``,</span>
-<span class="sd">        ``beh``, ``physio``, ``stim``</span>
+<span class="sd">           ``markers``, ``eeg``, ``ieeg``, ``T1w``,</span>
+<span class="sd">           ``participants``, ``scans``, ``electrodes``, ``channels``,</span>
+<span class="sd">           ``coordsystem``, ``events``, ``headshape``, ``digitizer``,</span>
+<span class="sd">           ``beh``, ``physio``, ``stim``</span>
 <span class="sd">        - Depending on the modality of the data (EEG, MEG, iEEG),</span>
-<span class="sd">        ``space`` should be a valid string according to Appendix VIII</span>
-<span class="sd">        in the BIDS specification.</span>
+<span class="sd">           ``space`` should be a valid string according to Appendix VIII</span>
+<span class="sd">           in the BIDS specification.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2055,7 +2065,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    entry : str</span>
-<span class="sd">        The string to search for</span>
+<span class="sd">        The string to search for.</span>
 <span class="sd">    folder : path-like</span>
 <span class="sd">        The folder in which to search.</span>
 <span class="sd">    extensions : list | tuple | str</span>
@@ -2212,7 +2222,7 @@
 <div class="viewcode-block" id="get_bids_path_from_fname">
 <a class="viewcode-back" href="../../generated/mne_bids.get_bids_path_from_fname.html#mne_bids.get_bids_path_from_fname">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_bids_path_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_bids_path_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve a BIDSPath object from a filename.</span>
 
 <span class="sd">    Parameters</span>
@@ -2332,7 +2342,7 @@
 <div class="viewcode-block" id="get_entities_from_fname">
 <a class="viewcode-back" href="../../generated/mne_bids.get_entities_from_fname.html#mne_bids.get_entities_from_fname">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve a dictionary of BIDS entities from a filename.</span>
 
 <span class="sd">    Entities not present in ``fname`` will be assigned the value of ``None``.</span>
@@ -2479,7 +2489,6 @@
 <span class="sd">    sidecar_fname : str | None</span>
 <span class="sd">        Path to the identified sidecar file, or ``None`` if none could be found</span>
 <span class="sd">        and ``on_error`` was set to ``&#39;warn&#39;`` or ``&#39;ignore&#39;``.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">on_error</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -2709,7 +2718,7 @@
 <div class="viewcode-block" id="get_datatypes">
 <a class="viewcode-back" href="../../generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_datatypes</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_datatypes</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get list of data types (&quot;modalities&quot;) present in a BIDS dataset.</span>
 
 <span class="sd">    Parameters</span>
@@ -2723,7 +2732,6 @@
 <span class="sd">    modalities : list of str</span>
 <span class="sd">        List of the data types present in the BIDS dataset pointed to by</span>
 <span class="sd">        `root`.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">datatypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">sub_dir</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;sub-*/*/&quot;</span><span class="p">),</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -2800,7 +2808,6 @@
 <span class="sd">                  performance issues, consider limiting the search to only a</span>
 <span class="sd">                  subdirectory in the dataset, e.g., to a single subject or</span>
 <span class="sd">                  session only.</span>
-
 <span class="sd">    entity_key : str</span>
 <span class="sd">        The name of the entity key to search for.</span>
 <span class="sd">    ignore_subjects : str | array-like of str | None</span>
@@ -2830,7 +2837,7 @@
 <span class="sd">        Modalities to ignore. If ``None``, include all modalities.</span>
 <span class="sd">    ignore_datatypes : str | array-like of str | None</span>
 <span class="sd">        Datatype(s) to ignore. If ``None``, include all datatypes (i.e.</span>
-<span class="sd">        ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)</span>
+<span class="sd">        ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.).</span>
 <span class="sd">    ignore_dirs : str | array-like of str | None</span>
 <span class="sd">        Directories nested directly within ``root`` to ignore. If ``None``,</span>
 <span class="sd">        include all directories in the search.</span>
@@ -2863,15 +2870,6 @@
 <span class="sd">        List of the values associated with an `entity_key` in the BIDS dataset</span>
 <span class="sd">        pointed to by `root`.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; root = Path(&#39;./mne_bids/tests/data/tiny_bids&#39;).absolute()</span>
-<span class="sd">    &gt;&gt;&gt; entity_key = &#39;subject&#39;</span>
-<span class="sd">    &gt;&gt;&gt; get_entity_vals(root, entity_key)</span>
-<span class="sd">    [&#39;01&#39;]</span>
-<span class="sd">    &gt;&gt;&gt; get_entity_vals(root, entity_key, with_key=True)</span>
-<span class="sd">    [&#39;sub-01&#39;]</span>
-
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function will scan the entire ``root``, except for a</span>
@@ -2881,6 +2879,14 @@
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] https://bids-specification.rtfd.io/en/latest/common-principles.html#entities</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; root = Path(&#39;./mne_bids/tests/data/tiny_bids&#39;).absolute()</span>
+<span class="sd">    &gt;&gt;&gt; entity_key = &#39;subject&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_entity_vals(root, entity_key)</span>
+<span class="sd">    [&#39;01&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; get_entity_vals(root, entity_key, with_key=True)</span>
+<span class="sd">    [&#39;sub-01&#39;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">get_entity_vals</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span>  <span class="c1"># for debug messages</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">_check_fname</span><span class="p">(</span>
@@ -3043,7 +3049,6 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] stackoverflow.com/questions/600268/mkdir-p-functionality-in-python</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">op</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -3178,7 +3183,6 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    list of pathlib.Path</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">subject</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
     <span class="n">session</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
@@ -3291,7 +3295,7 @@
 <span class="sd">        The acquisition session. Corresponds to &quot;ses&quot;.</span>
 <span class="sd">    tasks : str | array-like of str | None</span>
 <span class="sd">        The experimental task. Corresponds to &quot;task&quot;.</span>
-<span class="sd">    acquisitions: str | array-like of str | None</span>
+<span class="sd">    acquisitions : str | array-like of str | None</span>
 <span class="sd">        The acquisition parameters. Corresponds to &quot;acq&quot;.</span>
 <span class="sd">    runs : str | array-like of str | None</span>
 <span class="sd">        The run number. Corresponds to &quot;run&quot;.</span>
@@ -3315,7 +3319,7 @@
 
 <span class="sd">        .. versionadded:: 0.11</span>
 <span class="sd">    tracking_systems : str | array-like of str | None</span>
-<span class="sd">        The tracking system used for digitization.</span>
+<span class="sd">        The motion tracking systems used.</span>
 
 <span class="sd">        .. versionadded:: 0.19</span>
 <span class="sd">    suffixes : str | array-like of str | None</span>
@@ -3325,7 +3329,7 @@
 <span class="sd">        &#39;meg&#39;, &#39;markers&#39;, &#39;eeg&#39;, &#39;ieeg&#39;, &#39;T1w&#39;,</span>
 <span class="sd">        &#39;participants&#39;, &#39;scans&#39;, &#39;electrodes&#39;, &#39;coordsystem&#39;,</span>
 <span class="sd">        &#39;channels&#39;, &#39;events&#39;, &#39;headshape&#39;, &#39;digitizer&#39;,</span>
-<span class="sd">        &#39;beh&#39;, &#39;physio&#39;, &#39;stim&#39;</span>
+<span class="sd">        &#39;beh&#39;, &#39;physio&#39;, &#39;stim&#39;.</span>
 <span class="sd">    extensions : str | array-like of str | None</span>
 <span class="sd">        The extension of the filename. E.g., ``&#39;.json&#39;``.</span>
 <span class="sd">    datatypes : str | array-like of str | None</span>
@@ -3346,7 +3350,6 @@
 <span class="sd">    -------</span>
 <span class="sd">    bids_paths : list of mne_bids.BIDSPath</span>
 <span class="sd">        The matching paths.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">entities_opt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">subjects</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -3545,7 +3548,6 @@
 <span class="sd">    -------</span>
 <span class="sd">    bids_paths : list of mne_bids.BIDSPath</span>
 <span class="sd">        Bids paths.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>

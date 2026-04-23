@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.sidecar_updates &#8212; MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</title>
+    <title>mne_bids.sidecar_updates &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=5f147cf4"></script>
+    <script src="../../_static/documentation_options.js?v=b04602d9"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev48+g4a83fb2fd" />
+  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -147,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
   
 </a></div>
     
@@ -517,7 +517,7 @@
 <div class="viewcode-block" id="update_sidecar_json">
 <a class="viewcode-back" href="../../generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Update sidecar files using a dictionary or JSON file.</span>
 
 <span class="sd">    Will update metadata fields inside the path defined by</span>
@@ -548,6 +548,15 @@
 <span class="sd">        sidecar fields and corresponding values to be updated to.</span>
 <span class="sd">    %(verbose)s</span>
 
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If the specified ``bids_path.fpath`` cannot be found</span>
+<span class="sd">        in the dataset.</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If the ``bids_path.fpath`` does not have ``.json``</span>
+<span class="sd">        extension.</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function can only update JSON files.</span>
@@ -561,16 +570,6 @@
 <span class="sd">    the passed in dictionary overwriting any information that was</span>
 <span class="sd">    previously there.</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        If the specified ``bids_path.fpath`` cannot be found</span>
-<span class="sd">        in the dataset.</span>
-
-<span class="sd">    RuntimeError</span>
-<span class="sd">        If the ``bids_path.fpath`` does not have ``.json``</span>
-<span class="sd">        extension.</span>
-
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Update a sidecar JSON file</span>
@@ -582,7 +581,6 @@
 <span class="sd">    ...                      root=root)</span>
 <span class="sd">    &gt;&gt;&gt; entries = {&#39;PowerLineFrequency&#39;: 60}</span>
 <span class="sd">    &gt;&gt;&gt; update_sidecar_json(bids_path, entries, verbose=False)</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># get all matching json files</span>
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>

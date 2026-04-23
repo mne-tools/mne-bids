@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</title>
+    <title>Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=5f147cf4"></script>
+    <script src="../_static/documentation_options.js?v=b04602d9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,7 +81,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev48+g4a83fb2fd" />
+  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
   
 </a></div>
     
@@ -736,7 +736,6 @@ events : path-like | np.ndarray | None
        Either, descriptions of all event codes must be specified via the
        ``event_id`` parameter or each event must be accompanied by a
        row in ``event_metadata``.
-
 event_id : dict | None
     Descriptions or names describing the event codes, if you passed
     ``events``. The descriptions will be written to the ``trial_type``
@@ -773,7 +772,6 @@ anonymize : dict | None
         Whether to store the name of the ``raw`` input file in the
         ``source`` column of ``scans.tsv``. By default, this information
         is not stored.
-
 format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;BDF&#39; | &#39;EDF&#39; | &#39;FIF&#39; | &#39;EEGLAB&#39;
     Controls the file format of the data after BIDS conversion. If
     ``&#39;auto&#39;``, MNE-BIDS will attempt to convert the input data to BIDS
@@ -805,7 +803,6 @@ symlink : bool
     .. note::
        Symlinks are currently only supported on macOS and Linux. We will
        add support for Windows 10 at a later time.
-
 empty_room : mne.io.Raw | BIDSPath | None
     The empty-room recording to be associated with this file. This is
     only supported for MEG data.
@@ -861,7 +858,6 @@ overwrite : bool
     If ``False``, no existing data will be overwritten or
     replaced.
 
-
 verbose : bool | str | int | None
     Control verbosity of the logging output. If ``None``, use the default
     verbosity level. See the :ref:`logging documentation &lt;tut-logging&gt;` and
@@ -877,6 +873,13 @@ bids_path : BIDSPath
        If you passed empty-room raw data via ``empty_room``, the
        :class:`~mne_bids.BIDSPath` of the empty-room recording can be
        retrieved via ``bids_path.find_empty_room(use_sidecar_only=True)``.
+
+See Also
+--------
+mne.io.Raw.anonymize
+mne.find_events
+mne.Annotations
+mne.events_from_annotations
 
 Notes
 -----
@@ -916,13 +919,6 @@ call :func:`mne_bids.make_dataset_description` directly.
 
 When writing EDF or BDF files, all file extensions are forced to be
 lower-case, in compliance with the BIDS specification.
-
-See Also
---------
-mne.io.Raw.anonymize
-mne.find_events
-mne.Annotations
-mne.events_from_annotations
 </pre></div>
 </div>
 <p>Let us initialize some of the necessary data for the subject.</p>
@@ -1473,7 +1469,7 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.845 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.127 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/cf640e6bfa39f55978e620ef4269fd4c/convert_ieeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_ieeg_to_bids.ipynb</span></code></a></p>

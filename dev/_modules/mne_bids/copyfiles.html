@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</title>
+    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=5f147cf4"></script>
+    <script src="../../_static/documentation_options.js?v=b04602d9"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -78,7 +78,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev48+g4a83fb2fd" />
+  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -147,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
   
 </a></div>
     
@@ -552,7 +552,6 @@
 <span class="sd">        Encoding of the .vhdr file to pass it on to open() function</span>
 <span class="sd">        either &#39;UTF-8&#39; (default) or whatever encoding scheme is specified</span>
 <span class="sd">        in the header.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ef</span><span class="p">:</span>
         <span class="n">enc</span> <span class="o">=</span> <span class="n">ef</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -581,7 +580,6 @@
 <span class="sd">    paths : tuple</span>
 <span class="sd">        Paths to the .eeg/.dat file at index 0 and the .vmrk file at index 1 of</span>
 <span class="sd">        the returned tuple.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">:</span>
@@ -654,7 +652,6 @@
 <span class="sd">    copyfile_eeglab</span>
 <span class="sd">    copyfile_kit</span>
 <span class="sd">    copyfile_mef</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
     <span class="c1"># list of file types to rename</span>
@@ -708,7 +705,6 @@
 <span class="sd">    copyfile_edf</span>
 <span class="sd">    copyfile_eeglab</span>
 <span class="sd">    copyfile_kit</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
 
@@ -733,7 +729,7 @@
 <span class="sd">    run : int | None</span>
 <span class="sd">        The run number. Corresponds to &quot;run&quot;.</span>
 <span class="sd">    _init_kwargs : dict</span>
-<span class="sd">        Extract information of marker and headpoints</span>
+<span class="sd">        Extract information of marker and headpoints.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -742,7 +738,6 @@
 <span class="sd">    copyfile_ctf</span>
 <span class="sd">    copyfile_edf</span>
 <span class="sd">    copyfile_eeglab</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># create parent directories in case it does not exist yet</span>
     <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dest</span><span class="p">))</span>
@@ -828,7 +823,7 @@
 <div class="viewcode-block" id="copyfile_brainvision">
 <a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy a BrainVision file triplet to a new location and repair links.</span>
 
 <span class="sd">    The BrainVision file format consists of three files:</span>
@@ -855,12 +850,10 @@
 <span class="sd">            of `daysback` for all subject anonymizations. `daysback` should be</span>
 <span class="sd">            great enough to shift the date prior to 1925 to conform with BIDS</span>
 <span class="sd">            anonymization rules.</span>
-
 <span class="sd">        `keep_his` : bool</span>
 <span class="sd">            By default (False), all subject information next to the recording</span>
 <span class="sd">            date will be overwritten as well. If True, keep subject information</span>
 <span class="sd">            apart from the recording date.</span>
-
 <span class="sd">    %(verbose)s</span>
 
 <span class="sd">    See Also</span>
@@ -871,7 +864,6 @@
 <span class="sd">    copyfile_edf</span>
 <span class="sd">    copyfile_eeglab</span>
 <span class="sd">    copyfile_kit</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get extension of the brainvision file</span>
     <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
@@ -955,7 +947,7 @@
 <div class="viewcode-block" id="copyfile_edf">
 <a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.</span>
 
 <span class="sd">    .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:</span>
@@ -996,12 +988,12 @@
 <span class="sd">            written to the &#39;local recording identification&#39; region of the</span>
 <span class="sd">            file header, which may not be parsed by all EDF/EDF+/BDF reader</span>
 <span class="sd">            software.</span>
-
 <span class="sd">        `keep_his` : bool</span>
 <span class="sd">            By default (False), all subject information next to the recording</span>
 <span class="sd">            date will be overwritten as well. If True, keep subject information</span>
 <span class="sd">            apart from the recording date. Participant names and birthdates</span>
 <span class="sd">            will always be anonymized if present, regardless of this setting.</span>
+<span class="sd">    %(verbose)s</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1011,7 +1003,6 @@
 <span class="sd">    copyfile_ctf</span>
 <span class="sd">    copyfile_eeglab</span>
 <span class="sd">    copyfile_kit</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Ensure source &amp; destination extensions are the same</span>
     <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
@@ -1102,7 +1093,6 @@
 <span class="sd">    copyfile_ctf</span>
 <span class="sd">    copyfile_edf</span>
 <span class="sd">    copyfile_kit</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get extension of the EEGLAB file</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
@@ -1183,7 +1173,6 @@
 <span class="sd">    copyfile_edf</span>
 <span class="sd">    copyfile_eeglab</span>
 <span class="sd">    copyfile_kit</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span>

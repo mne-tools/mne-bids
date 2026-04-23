@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert EEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</title>
+    <title>Convert EEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=5f147cf4"></script>
+    <script src="../_static/documentation_options.js?v=b04602d9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,7 +81,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev48+g4a83fb2fd" />
+  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
   
 </a></div>
     
@@ -762,7 +762,6 @@ events : path-like | np.ndarray | None
        Either, descriptions of all event codes must be specified via the
        ``event_id`` parameter or each event must be accompanied by a
        row in ``event_metadata``.
-
 event_id : dict | None
     Descriptions or names describing the event codes, if you passed
     ``events``. The descriptions will be written to the ``trial_type``
@@ -799,7 +798,6 @@ anonymize : dict | None
         Whether to store the name of the ``raw`` input file in the
         ``source`` column of ``scans.tsv``. By default, this information
         is not stored.
-
 format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;BDF&#39; | &#39;EDF&#39; | &#39;FIF&#39; | &#39;EEGLAB&#39;
     Controls the file format of the data after BIDS conversion. If
     ``&#39;auto&#39;``, MNE-BIDS will attempt to convert the input data to BIDS
@@ -831,7 +829,6 @@ symlink : bool
     .. note::
        Symlinks are currently only supported on macOS and Linux. We will
        add support for Windows 10 at a later time.
-
 empty_room : mne.io.Raw | BIDSPath | None
     The empty-room recording to be associated with this file. This is
     only supported for MEG data.
@@ -887,7 +884,6 @@ overwrite : bool
     If ``False``, no existing data will be overwritten or
     replaced.
 
-
 verbose : bool | str | int | None
     Control verbosity of the logging output. If ``None``, use the default
     verbosity level. See the :ref:`logging documentation &lt;tut-logging&gt;` and
@@ -903,6 +899,13 @@ bids_path : BIDSPath
        If you passed empty-room raw data via ``empty_room``, the
        :class:`~mne_bids.BIDSPath` of the empty-room recording can be
        retrieved via ``bids_path.find_empty_room(use_sidecar_only=True)``.
+
+See Also
+--------
+mne.io.Raw.anonymize
+mne.find_events
+mne.Annotations
+mne.events_from_annotations
 
 Notes
 -----
@@ -942,13 +945,6 @@ call :func:`mne_bids.make_dataset_description` directly.
 
 When writing EDF or BDF files, all file extensions are forced to be
 lower-case, in compliance with the BIDS specification.
-
-See Also
---------
-mne.io.Raw.anonymize
-mne.find_events
-mne.Annotations
-mne.events_from_annotations
 </pre></div>
 </div>
 <p>We loaded <code class="docutils literal notranslate"><span class="pre">S001R02.edf</span></code>, which corresponds to subject 1 in the second run.
@@ -1125,7 +1121,7 @@ searching for “n/a” in the sidecar files.</p>
 directories called the “BIDS-validator”, available as a web version and
 on the command line:</p>
 <p><a class="github reference external" href="https://github.com/bids-standard/bids-validator">bids-standard/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.340 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.342 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/0bc5481d861907f3ba86dd37d953b980/convert_eeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_eeg_to_bids.ipynb</span></code></a></p>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.get_anonymization_daysback &#8212; MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</title>
+    <title>mne_bids.get_anonymization_daysback &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=5f147cf4"></script>
+    <script src="../_static/documentation_options.js?v=b04602d9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,7 +81,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev48+g4a83fb2fd" />
+  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev48+g4a83fb2fd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
   
 </a></div>
     
@@ -552,7 +552,7 @@
 <h1>mne_bids.get_anonymization_daysback<a class="headerlink" href="#mne-bids-get-anonymization-daysback" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.get_anonymization_daysback">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_anonymization_daysback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#get_anonymization_daysback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_anonymization_daysback" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_anonymization_daysback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raws</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#get_anonymization_daysback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_anonymization_daysback" title="Link to this definition">#</a></dt>
 <dd><p>Get the group min and max number of daysback necessary for BIDS specs.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -570,7 +570,7 @@ the most recent measurement date of raw objects.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>Subject raw data or list of raw data from several subjects.</p>
+<dt><strong>raws</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>Subject raw data or list of raw data from several subjects.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
 verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.14)"><span class="xref std std-ref">logging documentation</span></a> and
