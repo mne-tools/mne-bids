@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev50+g671e315df documentation</title>
   
   
   
@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -43,9 +43,10 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=b04602d9"></script>
+    <script src="../../_static/documentation_options.js?v=6f551ec7"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
@@ -78,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
+  <meta name="docsearch:version" content="0.19.0.dev50+g671e315df" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -147,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev50+g671e315df documentation</p>
   
 </a></div>
     
@@ -2107,9 +2108,9 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_max_depth</span><span class="p">(</span><span class="n">max_depth</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that max depth is a proper input.&quot;&quot;&quot;</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;`max_depth` must be a positive integer or None&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;`max_depth` must be a positive integer or None, got </span><span class="si">{</span><span class="n">max_depth</span><span class="si">!r}</span><span class="s2">&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_depth</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">max_depth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">max_depth</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">max_depth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -2784,6 +2785,7 @@
     <span class="n">include_match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">with_key</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">ignore_hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">maxdepth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get list of values associated with an `entity_key` in a BIDS dataset.</span>
@@ -2862,6 +2864,13 @@
 <span class="sd">    ignore_hidden : bool</span>
 <span class="sd">        If ``True``, ignore hidden files and directories (those starting</span>
 <span class="sd">        with a period ``.``).</span>
+<span class="sd">    maxdepth : int | None</span>
+<span class="sd">        The maximum depth into which to descend recursively for searching for</span>
+<span class="sd">        entities. If ``None``, search the entire directory tree under ``root``,</span>
+<span class="sd">        unless the entity is ``subject`` or ``session``, in which case</span>
+<span class="sd">        use ``maxdepth=1`` or ``maxdepth=2``, respectively.</span>
+
+<span class="sd">        .. versionadded:: 0.18</span>
 <span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
@@ -2931,6 +2940,11 @@
             <span class="sa">f</span><span class="s2">&quot;`key` must be one of: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span><span class="si">}</span><span class="s2">. Got: </span><span class="si">{</span><span class="n">entity_key</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">entity_key</span> <span class="o">==</span> <span class="s2">&quot;subject&quot;</span> <span class="ow">and</span> <span class="n">maxdepth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">maxdepth</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">entity_key</span> <span class="o">==</span> <span class="s2">&quot;session&quot;</span> <span class="ow">and</span> <span class="n">maxdepth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">maxdepth</span> <span class="o">=</span> <span class="mi">2</span>
+
     <span class="n">ignore_subjects</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_subjects</span><span class="p">)</span>
     <span class="n">ignore_sessions</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_sessions</span><span class="p">)</span>
     <span class="n">ignore_tasks</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_tasks</span><span class="p">)</span>
@@ -2968,13 +2982,21 @@
         <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">topdown</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="n">dp</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dirpath</span><span class="p">)</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span>
             <span class="c1"># Prevent os.walk from descending into ignored dirs</span>
             <span class="n">dirs</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span> <span class="k">if</span> <span class="n">dp</span> <span class="o">/</span> <span class="n">d</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_dirs_set</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">ignore_hidden</span><span class="p">:</span>
                 <span class="n">dirs</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)]</span>
+            <span class="n">matched_in_dir</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ignore_hidden</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+                    <span class="k">continue</span>
                 <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">entity_abbr</span><span class="si">}</span><span class="s2">-&quot;</span> <span class="ow">in</span> <span class="n">f</span> <span class="ow">and</span> <span class="s2">&quot;_&quot;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span> <span class="o">/</span> <span class="n">f</span><span class="p">)</span>
+                    <span class="n">matched_in_dir</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1"># Beyond maxdepth, stop descending once a match was found here</span>
+            <span class="k">if</span> <span class="n">maxdepth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">depth</span> <span class="o">&gt;=</span> <span class="n">maxdepth</span> <span class="ow">and</span> <span class="n">matched_in_dir</span><span class="p">:</span>
+                <span class="n">dirs</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ignore_suffixes</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
@@ -3609,7 +3631,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-23.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-24.
       <br/>
     
   </p>

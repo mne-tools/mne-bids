@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Read BIDS datasets &#8212; MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</title>
+    <title>Read BIDS datasets &#8212; MNE-BIDS 0.19.0.dev50+g671e315df documentation</title>
   
   
   
@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -44,9 +44,10 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=b04602d9"></script>
+    <script src="../_static/documentation_options.js?v=6f551ec7"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
@@ -81,7 +82,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev49+g8e6f44698" />
+  <meta name="docsearch:version" content="0.19.0.dev50+g671e315df" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -150,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev49+g8e6f44698 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev50+g671e315df documentation</p>
   
 </a></div>
     
@@ -607,19 +608,15 @@ Could not read the /home/circleci/.mne/mne-python.json json file during the writ
 
 Overall:   0%|          | 0.00/28.9M [00:00&lt;?, ?B/s]
 
-sub-pd6_ses-on_scans.tsv:   0%|          | 0.00/74.0 [00:00&lt;?, ?B/s]
-Overall:   0%|          | 74.0/28.9M [00:00&lt;23:18:25, 361B/s]
-
-
-
-participants.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
+CHANGES:   0%|          | 0.00/379 [00:00&lt;?, ?B/s]
+Overall:   0%|          | 379/28.9M [00:00&lt;4:55:15, 1.71kB/s]
 
 
 
 sub-pd6_ses-on_task-rest_eeg.bdf:   0%|          | 0.00/17.4M [00:00&lt;?, ?B/s]
 
 
-README:   0%|          | 0.00/4.55k [00:00&lt;?, ?B/s]
+participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s]
 
 
 
@@ -631,16 +628,7 @@ dataset_description.json:   0%|          | 0.00/354 [00:00&lt;?, ?B/s]
 
 
 
-sub-pd6_ses-off_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
-
-
-
-Overall:   7%|▋         | 2.16M/28.9M [00:00&lt;00:03, 9.31MB/s]
-
-
 sub-pd6_ses-off_task-rest_eeg.bdf:   0%|          | 0.00/11.5M [00:00&lt;?, ?B/s]
-
-sub-pd6_ses-on_task-rest_eeg.bdf:  19%|█▉        | 3.37M/17.4M [00:00&lt;00:00, 35.3MB/s]
 
 
 
@@ -649,10 +637,32 @@ sub-pd6_ses-on_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
 
 
 
+Overall:  10%|█         | 2.96M/28.9M [00:00&lt;00:02, 12.2MB/s]
 
 
 
-CHANGES:   0%|          | 0.00/379 [00:00&lt;?, ?B/s]
+sub-pd6_ses-on_scans.tsv:   0%|          | 0.00/74.0 [00:00&lt;?, ?B/s]
+
+
+
+
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  14%|█▎        | 2.38M/17.4M [00:00&lt;00:00, 24.8MB/s]
+
+
+
+sub-pd6_ses-on_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
+
+
+
+
+
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  15%|█▌        | 1.76M/11.5M [00:00&lt;00:00, 18.5MB/s]
+
+
+
+sub-pd6_ses-off_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
 
 
 
@@ -665,52 +675,13 @@ sub-pd6_ses-off_task-rest_events.tsv:   0%|          | 0.00/66.0 [00:00&lt;?, ?B
 
 
 
-Overall:  20%|██        | 5.87M/28.9M [00:00&lt;00:01, 20.2MB/s]
+Overall:  26%|██▌       | 7.42M/28.9M [00:00&lt;00:00, 24.5MB/s]
 
-
-sub-pd6_ses-off_task-rest_eeg.bdf:  16%|█▌        | 1.86M/11.5M [00:00&lt;00:00, 19.4MB/s]
-
-
-
-sub-pd6_ses-on_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
-
-
-
-
-
-
-
-sub-pd6_ses-off_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
-
-
-
-
+sub-pd6_ses-on_task-rest_eeg.bdf:  28%|██▊       | 4.90M/17.4M [00:00&lt;00:00, 25.7MB/s]
 
 
 
 sub-pd6_ses-on_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
-
-
-
-
-Overall:  33%|███▎      | 9.57M/28.9M [00:00&lt;00:00, 26.6MB/s]
-
-
-
-sub-pd6_ses-off_scans.tsv:   0%|          | 0.00/75.0 [00:00&lt;?, ?B/s]
-
-
-
-
-
-
-sub-pd6_ses-off_task-rest_eeg.bdf:  32%|███▏      | 3.72M/11.5M [00:00&lt;00:00, 19.1MB/s]
-
-sub-pd6_ses-on_task-rest_eeg.bdf:  39%|███▉      | 6.74M/17.4M [00:00&lt;00:00, 23.3MB/s]
-
-
-
-participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s]
 
 
 
@@ -723,15 +694,58 @@ sub-pd6_ses-off_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
 
 
 
-Overall:  46%|████▌     | 13.2M/28.9M [00:00&lt;00:00, 30.4MB/s]
+
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  41%|████      | 4.69M/11.5M [00:00&lt;00:00, 25.6MB/s]
 
 
 
-sub-pd6_ses-off_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
+participants.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
 
 
 
 
+Overall:  47%|████▋     | 13.6M/28.9M [00:00&lt;00:00, 38.0MB/s]
+
+
+
+README:   0%|          | 0.00/4.55k [00:00&lt;?, ?B/s]
+
+
+
+
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  45%|████▌     | 7.85M/17.4M [00:00&lt;00:00, 28.1MB/s]
+
+
+
+sub-pd6_ses-off_scans.tsv:   0%|          | 0.00/75.0 [00:00&lt;?, ?B/s]
+
+
+
+
+
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  67%|██████▋   | 7.74M/11.5M [00:00&lt;00:00, 28.4MB/s]
+
+
+
+sub-pd6_ses-on_task-rest_events.tsv:   0%|          | 0.00/51.0 [00:00&lt;?, ?B/s]
+
+
+
+
+
+
+
+sub-pd6_ses-off_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
+
+
+
+
+Overall:  68%|██████▊   | 19.6M/28.9M [00:00&lt;00:00, 46.4MB/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  64%|██████▎   | 11.0M/17.4M [00:00&lt;00:00, 30.2MB/s]
 
 
 
@@ -742,38 +756,22 @@ sub-pd6_ses-on_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
 
 
 
-sub-pd6_ses-off_task-rest_eeg.bdf:  48%|████▊     | 5.54M/11.5M [00:00&lt;00:00, 18.9MB/s]
-
-
-
-sub-pd6_ses-on_task-rest_events.tsv:   0%|          | 0.00/51.0 [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_task-rest_eeg.bdf:  96%|█████████▌| 11.0M/11.5M [00:00&lt;00:00, 30.8MB/s]
 
 
 
 
 
-sub-pd6_ses-on_task-rest_eeg.bdf:  53%|█████▎    | 9.18M/17.4M [00:00&lt;00:00, 21.5MB/s]
-Overall:  59%|█████▉    | 17.1M/28.9M [00:00&lt;00:00, 33.7MB/s]
-
-
-sub-pd6_ses-off_task-rest_eeg.bdf:  66%|██████▌   | 7.60M/11.5M [00:00&lt;00:00, 19.9MB/s]
-
-sub-pd6_ses-on_task-rest_eeg.bdf:  65%|██████▌   | 11.3M/17.4M [00:00&lt;00:00, 21.7MB/s]
-Overall:  74%|███████▍  | 21.3M/28.9M [00:00&lt;00:00, 37.0MB/s]
-
-
-sub-pd6_ses-off_task-rest_eeg.bdf:  85%|████████▍ | 9.71M/11.5M [00:00&lt;00:00, 20.7MB/s]
-
-sub-pd6_ses-on_task-rest_eeg.bdf:  78%|███████▊  | 13.5M/17.4M [00:00&lt;00:00, 21.8MB/s]
-Overall:  89%|████████▊ | 25.6M/28.9M [00:00&lt;00:00, 39.4MB/s]
+sub-pd6_ses-off_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
 
 
 
+Overall:  91%|█████████▏| 26.4M/28.9M [00:00&lt;00:00, 54.1MB/s]
 
-sub-pd6_ses-on_task-rest_eeg.bdf:  98%|█████████▊| 17.0M/17.4M [00:00&lt;00:00, 26.3MB/s]
+sub-pd6_ses-on_task-rest_eeg.bdf:  92%|█████████▏| 16.0M/17.4M [00:00&lt;00:00, 38.0MB/s]
 
 
-Overall: 100%|██████████| 28.9M/28.9M [00:00&lt;00:00, 30.9MB/s]
+Overall: 100%|██████████| 28.9M/28.9M [00:00&lt;00:00, 40.0MB/s]
 ✅ Finished downloading ds002778.
 
 🧠 Please enjoy your brains.
@@ -1014,11 +1012,12 @@ ignore this warning as it does not affect the data reading process at all.</p>
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_read_bids_datasets_001.png" srcset="../_images/sphx_glr_read_bids_datasets_001.png" alt="read bids datasets" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using matplotlib as 2D backend.
+For automatic theme detection, &quot;darkdetect&quot; has to be installed! You can install it with `pip install darkdetect`
 
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.079 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.778 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/07841a9269d1816a3add41f32d8a5ed2/read_bids_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">read_bids_datasets.ipynb</span></code></a></p>
@@ -1114,7 +1113,7 @@ ignore this warning as it does not affect the data reading process at all.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-23.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-24.
       <br/>
     
   </p>
