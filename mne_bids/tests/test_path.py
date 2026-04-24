@@ -406,7 +406,7 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
 
     # these should be equivalent
     out_1 = mne_bids.get_entity_vals(tmp_bids_root, "session")
-    assert path_counter.count == 818
+    assert path_counter.count == 638
     out_2 = mne_bids.get_entity_vals(tmp_bids_root, "session", include_match="**/")
     assert path_counter.count == 41328
     assert out_1 == out_2
