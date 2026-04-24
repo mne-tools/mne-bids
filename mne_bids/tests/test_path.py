@@ -542,7 +542,7 @@ def test_print_dir_tree(capsys):
     test_dir = op.dirname(__file__)
     with pytest.raises(ValueError, match="must be a positive integer"):
         print_dir_tree(test_dir, max_depth=-1)
-    with pytest.raises(ValueError, match="must be a positive integer"):
+    with pytest.raises(TypeError, match="must be a positive integer"):
         print_dir_tree(test_dir, max_depth="bad")
 
     # Do not limit depth
