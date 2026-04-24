@@ -244,7 +244,7 @@ class BIDSPath:
     the file name.
 
     BIDSPath allows dynamic updating of its entities in place, and operates
-    similar to `pathlib.Path`. In addition, it can query multiple paths
+    similar to :class:`python:pathlib.Path`. In addition, it can query multiple paths
     with matching BIDS entities via the ``match`` method.
 
     Note that not all parameters are applicable to each suffix of data. For
@@ -314,7 +314,7 @@ class BIDSPath:
         The data type, i.e., one of ``'meg'``, ``'eeg'``, ``'ieeg'``,
         ``'anat'``.
     basename : str
-        The basename of the file path. Similar to `os.path.basename(fpath)`.
+        The basename of the file path. Similar to ``os.path.basename(fpath)``.
     root : pathlib.Path
         The root of the BIDS path.
     directory : pathlib.Path
@@ -362,12 +362,12 @@ class BIDSPath:
     >>> print(new_bids_path.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
 
-    Printing a BIDSPath will show a relative path when `root` is not set
+    Printing a BIDSPath will show a relative path when ``root`` is not set
 
     >>> print(new_bids_path)
     sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
 
-    Setting `suffix` without an identifiable datatype will make
+    Setting ``suffix`` without an identifiable datatype will make
     BIDSPath try to guess the datatype
 
     >>> new_bids_path = new_bids_path.update(suffix='channels',
@@ -676,7 +676,7 @@ class BIDSPath:
         return str(self.fpath.as_posix())
 
     def __repr__(self):
-        """Representation in the style of `pathlib.Path`."""
+        """Representation in the style of :class:`python:pathlib.Path`."""
         root = self.root.as_posix() if self.root is not None else None
 
         return (
@@ -1026,7 +1026,7 @@ class BIDSPath:
         ...                      extension='.tsv')
         >>> print(bids_path.basename)
         sub-test_ses-two_task-mytask_channels.tsv
-        >>> # Then, one can update this `BIDSPath` object in place
+        >>> # Then, one can update this ``BIDSPath`` object in place
         >>> bids_path.update(acquisition='test', suffix='ieeg',
         ...                  datatype='ieeg',
         ...                  extension='.vhdr', task=None)
@@ -1112,7 +1112,7 @@ class BIDSPath:
         """Get a list of all matching paths in the root directory.
 
         Performs a recursive search, starting in ``.root`` (if set), based on
-        `BIDSPath.entities` object. Ignores ``.json`` files.
+        ``BIDSPath.entities`` object. Ignores ``.json`` files.
 
         Parameters
         ----------
@@ -1489,7 +1489,7 @@ def _print_lines_with_entry(file, entry, folder, is_tsv, line_numbers, outfile):
     line_numbers : bool
         Whether to include line numbers in the printout.
     outfile : io.StringIO | None
-        The argument to pass to `print` for `file`. If ``None``,
+        The argument to pass to :func:`python:print` for ``file``. If ``None``,
         prints to the console, else a string is printed to.
     """
     entry_lines = list()
@@ -1558,7 +1558,7 @@ def search_folder_for_text(
     Returns
     -------
     str | None
-        If `return_str` is ``True``, the fields are returned as a
+        If ``return_str`` is ``True``, the fields are returned as a
         string. Else, ``None`` is returned and the fields are printed.
     """
     _validate_type(entry, str, "entry")
@@ -1613,7 +1613,7 @@ def print_dir_tree(folder, max_depth=None, return_str=False):
     Returns
     -------
     str | None
-        If `return_str` is ``True``, the directory tree is returned as a
+        If ``return_str`` is ``True``, the directory tree is returned as a
         string. Else, ``None`` is returned and the directory tree is printed.
     """
     folder = _check_fname(
@@ -1700,10 +1700,10 @@ def get_bids_path_from_fname(fname, check=True, *, verbose=None):
     Parameters
     ----------
     fname : path-like
-        The path to parse a `BIDSPath` from.
+        The path to parse a :class:`~mne_bids.BIDSPath` from.
     check : bool
-        Whether to check if the generated `BIDSPath` complies with the BIDS
-        specification, i.e., whether all included entities and the suffix are
+        Whether to check if the generated :class:`~mne_bids.BIDSPath` complies with the
+        BIDS specification, i.e., whether all included entities and the suffix are
         valid.
     %(verbose)s
 
@@ -2197,7 +2197,7 @@ def get_datatypes(root, *, verbose=None):
     -------
     modalities : list of str
         List of the data types present in the BIDS dataset pointed to by
-        `root`.
+        ``root``.
     """
     datatypes = list()
     for sub_dir in glob.iglob(os.path.join(root, "sub-*/*/"), recursive=True):
@@ -2249,7 +2249,7 @@ def get_entity_vals(
     ignore_hidden=True,
     verbose=None,
 ):
-    """Get list of values associated with an `entity_key` in a BIDS dataset.
+    """Get list of values associated with an ``entity_key`` in a BIDS dataset.
 
     BIDS file names are organized by key-value pairs called "entities" [1]_.
     With this function, you can get all values for an entity indexed by its
@@ -2308,7 +2308,7 @@ def get_entity_vals(
         .. versionadded:: 0.9
     ignore_suffixes : str | array-like of str | None
         Suffixes to ignore. If ``None``, include all suffixes. This can be helpful for
-        ignoring non-data sidecars such as `*_scans.tsv` or `*_coordsystem.json`.
+        ignoring non-data sidecars such as ``*_scans.tsv`` or ``*_coordsystem.json``.
 
         .. versionadded:: 0.17
     include_match : str | array-like of str | None
@@ -2330,8 +2330,8 @@ def get_entity_vals(
     Returns
     -------
     entity_vals : list of str
-        List of the values associated with an `entity_key` in the BIDS dataset
-        pointed to by `root`.
+        List of the values associated with an ``entity_key`` in the BIDS dataset
+        pointed to by ``root``.
 
     Notes
     -----
@@ -2525,9 +2525,9 @@ def _find_best_candidates(params, candidate_list):
     """Return the best candidate, based on the number of param matches.
 
     Assign each candidate a score, based on how many entities are shared with
-    the ones supplied in the `params` parameter. The candidate with the highest
+    the ones supplied in the ``params`` parameter. The candidate with the highest
     score wins. Candidates with entities that conflict with the supplied
-    `params` are disqualified.
+    ``params`` are disqualified.
 
     Parameters
     ----------
@@ -2743,7 +2743,7 @@ def find_matching_paths(
     Input can be str or list of str. None matches all found values.
 
     Performs a recursive search, starting in ``.root`` (if set), based on
-    `BIDSPath.entities` object.
+    ``BIDSPath.entities`` object.
 
     Parameters
     ----------
@@ -2878,7 +2878,8 @@ def _return_root_paths(
     Returns
     -------
     paths : list of pathlib.Path
-        All files + .ds paths in `root`, filtered according to the function parameters.
+        All files + .ds paths in ``root``, filtered according to the function
+        parameters.
     """
     root = Path(root)  # if root is str
 

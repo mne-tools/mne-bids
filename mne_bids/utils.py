@@ -40,16 +40,16 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
     Parameters
     ----------
     fro : str
-        Mapping from nomenclature of `fro`. Can be 'mne', 'bids'
+        Mapping from nomenclature of ``fro``. Can be 'mne', 'bids'
     to : str
-        Mapping to nomenclature of `to`. Can be 'mne', 'bids'
+        Mapping to nomenclature of ``to``. Can be 'mne', 'bids'
 
     Returns
     -------
     mapping : dict
         Dictionary mapping from one nomenclature of channel types to another.
         If a key is not present, a default value will be returned that depends
-        on the `fro` and `to` parameters.
+        on the ``fro`` and ``to`` parameters.
 
     Notes
     -----
@@ -136,7 +136,7 @@ def _handle_datatype(raw, datatype):
         Raw object.
     datatype : str | None
         Can be one of either ``'meg'``, ``'eeg'``, ``'emg'`` or ``'ieeg'``. If ``None``,
-        `mne.utils._handle_datatype()` will attempt to infer the datatype from
+        ``mne.utils._handle_datatype()`` will attempt to infer the datatype from
         the ``raw`` object. In case of multiple data types in the ``raw``
         object, ``datatype`` must not be ``None``.
 
@@ -353,7 +353,7 @@ def _check_empty_room_basename(bids_path):
 
 
 def _check_anonymize(anonymize, raw, ext):
-    """Check the `anonymize` dict."""
+    """Check the ``anonymize`` dict."""
     # if info['meas_date'] None, then the dates are not stored
     if raw.info["meas_date"] is None:
         daysback = None
@@ -417,8 +417,8 @@ def get_anonymization_daysback(raws, *, verbose=None):
 
     BIDS requires that anonymized dates be before 1925. In order to
     preserve the longitudinal structure and ensure anonymization, the
-    user is asked to provide the same `daysback` argument to each call
-    of `write_raw_bids`. To determine the minimum number of daysback
+    user is asked to provide the same ``daysback`` argument to each call
+    of :func:`~mne_bids.write_raw_bids`. To determine the minimum number of daysback
     necessary, this function will calculate the minimum number based on
     the most recent measurement date of raw objects.
 
@@ -485,10 +485,6 @@ def _check_datatype(raw, datatype):
         Raw object.
     datatype : str
         Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.
-
-    Returns
-    -------
-    None
     """
     supported_types = ("eeg", "emg", "ieeg", "meg", "nirs")
     if datatype not in supported_types:
