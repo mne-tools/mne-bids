@@ -1584,9 +1584,9 @@ def search_folder_for_text(
 
 def _check_max_depth(max_depth):
     """Check that max depth is a proper input."""
-    msg = "`max_depth` must be a positive integer or None"
+    msg = f"`max_depth` must be a positive integer or None, got {max_depth!r}"
     if not isinstance(max_depth, int | type(None)):
-        raise ValueError(msg)
+        raise TypeError(msg)
     if max_depth is None:
         max_depth = float("inf")
     if max_depth < 0:
@@ -2326,6 +2326,13 @@ def get_entity_vals(
     ignore_hidden : bool
         If ``True``, ignore hidden files and directories (those starting
         with a period ``.``).
+    maxdepth : int | None
+        The maximum depth into which to descend recursively for searching for
+        entities. If ``None``, search the entire directory tree under ``root``,
+        unless the entity is ``subject`` or ``session``, in which case
+        use ``maxdepth=1`` or ``maxdepth=2``, respectively.
+
+        .. versionadded:: 0.18
     %(verbose)s
 
     Returns

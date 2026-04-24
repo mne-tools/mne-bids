@@ -5,6 +5,7 @@
 
 import os
 import sys
+from pathlib import Path
 from datetime import date
 
 from intersphinx_registry import get_intersphinx_mapping
@@ -70,6 +71,15 @@ numpydoc_xref_ignore = {
     "of",
 }
 numpydoc_validate = True
+try:
+    import tomllib
+except Exception:
+    pass
+else:
+    pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
+    pyproject = tomllib.loads(pyproject_path.read_text("utf-8"))
+    numpydoc_validation_checks = set(pyproject["tool"]["numpydoc_validation"]["checks"])
+    numpydoc_validation_exclude = pyproject["tool"]["numpydoc_validation"]["exclude"]
 
 # generate autosummary even if no references
 autosummary_generate = True
