@@ -1584,9 +1584,9 @@ def search_folder_for_text(
 
 def _check_max_depth(max_depth):
     """Check that max depth is a proper input."""
-    msg = "`max_depth` must be a positive integer or None"
+    msg = f"`max_depth` must be a positive integer or None, got {max_depth!r}"
     if not isinstance(max_depth, int | type(None)):
-        raise ValueError(msg)
+        raise TypeError(msg)
     if max_depth is None:
         max_depth = float("inf")
     if max_depth < 0:
@@ -2247,6 +2247,7 @@ def get_entity_vals(
     include_match=None,
     with_key=False,
     ignore_hidden=True,
+    maxdepth=None,
     verbose=None,
 ):
     """Get list of values associated with an ``entity_key`` in a BIDS dataset.
@@ -2325,6 +2326,13 @@ def get_entity_vals(
     ignore_hidden : bool
         If ``True``, ignore hidden files and directories (those starting
         with a period ``.``).
+    maxdepth : int | None
+        The maximum depth into which to descend recursively for searching for
+        entities. If ``None``, search the entire directory tree under ``root``,
+        unless the entity is ``subject`` or ``session``, in which case
+        use ``maxdepth=1`` or ``maxdepth=2``, respectively.
+
+        .. versionadded:: 0.18
     %(verbose)s
 
     Returns
@@ -2394,6 +2402,11 @@ def get_entity_vals(
             f"`key` must be one of: {', '.join(entities)}. Got: {entity_key}"
         )
 
+    if entity_key == "subject" and maxdepth is None:
+        maxdepth = 1
+    if entity_key == "session" and maxdepth is None:
+        maxdepth = 2
+
     ignore_subjects = _ensure_tuple(ignore_subjects)
     ignore_sessions = _ensure_tuple(ignore_sessions)
     ignore_tasks = _ensure_tuple(ignore_tasks)
@@ -2431,13 +2444,21 @@ def get_entity_vals(
         filenames = []
         for dirpath, dirs, files in os.walk(root, topdown=True):
             dp = Path(dirpath)
+            depth = len(dp.relative_to(root).parts)
             # Prevent os.walk from descending into ignored dirs
             dirs[:] = [d for d in dirs if dp / d not in ignore_dirs_set]
             if ignore_hidden:
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
+            matched_in_dir = False
             for f in files:
+                if ignore_hidden and f.startswith("."):
+                    continue
                 if f"{entity_abbr}-" in f and "_" in f:
                     filenames.append(dp / f)
+                    matched_in_dir = True
+            # Beyond maxdepth, stop descending once a match was found here
+            if maxdepth is not None and depth >= maxdepth and matched_in_dir:
+                dirs[:] = []
 
     for filename in filenames:
         if ignore_suffixes and any(
