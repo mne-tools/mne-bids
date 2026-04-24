@@ -37,7 +37,7 @@ def _validator_version():
         return None
 
     out = run_subprocess(cmd, shell=_use_shell())[0]
-    match = re.search(r"\d+\.\d+\.\d+", out)
+    match = re.search(r"\d+\.\d+\.\d+", out)  # MAJOR.MINOR.PATCH
     if match is None:
         return None
     return Version(match.group(0))
@@ -49,7 +49,7 @@ def _get_validator_cmd(validator_args: list[str] | None = None):
         validator_args = []
 
     deno_path = shutil.which("deno")
-    # Fallback for devs who don't have deno but do have the PyPI CLI
+    # Fallback for devs who don't have deno but do have the Python CLI
     validator_cli_path = shutil.which("bids-validator-deno")
 
     requested_version = os.getenv("BIDS_VALIDATOR_VERSION", "stable")

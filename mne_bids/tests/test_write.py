@@ -4483,7 +4483,7 @@ def test_parallel_write_many_subjects(tmp_path):
 
 
 @testing.requires_testing_data
-def test_write_hed_annotations(tmp_path, _bids_validate, _using_legacy_validator):
+def test_write_hed_annotations(tmp_path, _bids_validate):
     """HEDAnnotations write to the events.json sidecar, round-trip, and validate."""
     pytest.importorskip("hed", minversion="1.0.0")
     pytest.importorskip("mne", minversion="1.12")
@@ -4530,9 +4530,8 @@ def test_write_hed_annotations(tmp_path, _bids_validate, _using_legacy_validator
     assert list(raw_rt.annotations.hed_string) == hed_tags
     assert raw_rt.annotations._hed_version == "8.3.0"
 
-    # Structural BIDS validation; legacy validator does not know HED sidecar map.
-    if not _using_legacy_validator:
-        _bids_validate(bids_root)
+    # Structural BIDS validation
+    _bids_validate(bids_root)
 
     # Semantic HED validation against the declared HEDVersion schema.
     issues = BidsDataset(str(bids_root)).validate(check_for_warnings=True)
