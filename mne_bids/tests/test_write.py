@@ -3881,10 +3881,10 @@ def test_preload_errors(tmp_path):
     warning_str["emg_coords_missing"],
 )
 @pytest.mark.parametrize(
-    "format,ch_type",
+    "fmt,ch_type",
     (("BrainVision", "eeg"), ("BDF", "emg"), ("EDF", "seeg"), ("BDF", "eeg")),
 )
-def test_preload(_bids_validate, _using_legacy_validator, tmp_path, format, ch_type):
+def test_preload(_bids_validate, _using_legacy_validator, tmp_path, fmt, ch_type):
     """Test writing custom preloaded raw objects."""
     if ch_type == "emg":
         pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
@@ -3902,7 +3902,7 @@ def test_preload(_bids_validate, _using_legacy_validator, tmp_path, format, ch_t
         raw,
         bids_path,
         allow_preload=True,
-        format=format,
+        format=fmt,
         verbose=False,
         overwrite=True,
         **kw,
@@ -4485,3 +4485,60 @@ def test_parallel_write_many_subjects(tmp_path):
     time.sleep(1)
     # No stale lock files should remain after the parallel writes complete.
     assert not any(bids_root.rglob("*.lock"))
+
+
+@testing.requires_testing_data
+def test_write_hed_annotations(tmp_path, _bids_validate, _using_legacy_validator):
+    """HEDAnnotations write to the events.json sidecar, round-trip, and validate."""
+    pytest.importorskip("hed", minversion="1.0.0")
+    pytest.importorskip("mne", minversion="1.12")
+    from hed.tools.bids.bids_dataset import BidsDataset
+
+    bids_root = tmp_path / "bids"
+    raw = _read_raw_fif(data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif")
+
+    hed_tags = [
+        "Sensory-event, Visual-presentation",
+        "Sensory-event, Auditory-presentation",
+    ]
+    raw.set_annotations(
+        mne.HEDAnnotations(
+            onset=[0.0, 1.0],
+            duration=[0.1, 0.2],
+            description=["visual", "auditory"],
+            hed_string=hed_tags,
+            hed_version="8.3.0",
+        )
+    )
+
+    bids_path = _bids_path_minimal.copy().update(root=bids_root, datatype="meg")
+    write_raw_bids(
+        raw, bids_path=bids_path, overwrite=True, allow_preload=True, format="FIF"
+    )
+
+    events_tsv = _from_tsv(bids_path.copy().update(suffix="events", extension=".tsv"))
+    assert "HED" not in events_tsv
+
+    events_json = json.loads(
+        bids_path.copy().update(suffix="events", extension=".json").fpath.read_text()
+    )
+    assert events_json["trial_type"]["HED"] == {
+        "visual": "Sensory-event, Visual-presentation",
+        "auditory": "Sensory-event, Auditory-presentation",
+    }
+
+    desc = json.loads((bids_root / "dataset_description.json").read_text())
+    assert desc["HEDVersion"] == "8.3.0"
+
+    raw_rt = read_raw_bids(bids_path=bids_path, verbose=False)
+    assert isinstance(raw_rt.annotations, mne.HEDAnnotations)
+    assert list(raw_rt.annotations.hed_string) == hed_tags
+    assert raw_rt.annotations._hed_version == "8.3.0"
+
+    # Structural BIDS validation; legacy validator does not know HED sidecar map.
+    if not _using_legacy_validator:
+        _bids_validate(bids_root)
+
+    # Semantic HED validation against the declared HEDVersion schema.
+    issues = BidsDataset(str(bids_root)).validate(check_for_warnings=True)
+    assert issues == [], issues

@@ -407,7 +407,7 @@ def _get_anonymization_daysback(raw):
 
 
 @verbose
-def get_anonymization_daysback(raws, verbose=None):
+def get_anonymization_daysback(raws, *, verbose=None):
     """Get the group min and max number of daysback necessary for BIDS specs.
 
     .. warning:: It is important that you remember the anonymization
@@ -424,7 +424,7 @@ def get_anonymization_daysback(raws, verbose=None):
 
     Parameters
     ----------
-    raw : mne.io.Raw | list of mne.io.Raw
+    raws : mne.io.Raw | list of mne.io.Raw
         Subject raw data or list of raw data from several subjects.
     %(verbose)s
 

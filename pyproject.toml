@@ -110,6 +110,23 @@ allow-direct-references = true  # allow specifying URLs in our dependencies
 raw-options = {version_scheme = "release-branch-semver"}
 source = "vcs"
 
+[tool.numpydoc_validation]
+checks = [
+  "all",  # report on all checks, except the below
+  "ES01",  # no extended summary
+  "EX01",  # no examples section
+  "EX02",  # examples failed (we test them separately)
+  "GL01",  # docstring should start in the line immediately after the quotes
+  "PR04",  # Parameter "shape (n_channels" has no type
+  "RT02",  # first line of the Returns section should contain only the type
+  "SA01",  # no see also
+  "SA04",  # no description in See Also
+]
+exclude = [
+  # set of regex
+  'mne\.utils\.deprecated',
+]
+
 [tool.pytest.ini_options]
 addopts = """--durations=20 -ra --junit-xml=junit-results.xml --tb=short
     --ignore=doc --ignore=examples --ignore=mne_bids/tests/data"""
@@ -148,8 +165,7 @@ markers = [
 
 [tool.ruff.lint]
 exclude = ["__init__.py"]
-ignore = ["A002", "A005"]
-select = ["A", "D", "E", "F", "I", "UP", "W"]
+select = ["A", "B006", "D", "E", "F", "I", "UP", "UP031", "W"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
