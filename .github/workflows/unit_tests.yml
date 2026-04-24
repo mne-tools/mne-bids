@@ -144,6 +144,7 @@ jobs:
       BIDS_VALIDATOR_VERSION: ${{ matrix.bids-validator-version }}
       TZ: Europe/Berlin
       FORCE_COLOR: true
+      MNE_BIDS_FILELOCK_TIMEOUT: 5  # be more stringent than it would be for end-users
     strategy:
       fail-fast: false
       matrix:
@@ -178,7 +179,7 @@ jobs:
             python-version: "3.13"
             mne-version: mne-stable
             mne-bids-install: full
-            bids-validator-version: stable
+            bids-validator-version: validator-stable
     steps:
     - uses: actions/checkout@v6
       with:
@@ -271,7 +272,7 @@ jobs:
       run: make test
 
     - name: Upload coverage stats to codecov
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       with:
         files: ./coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}

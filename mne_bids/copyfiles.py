@@ -30,7 +30,7 @@ def _copytree(src, dst, **kwargs):
     try:
         sh.copytree(src, dst, **kwargs)
     except sh.Error as error:
-        # `copytree` throws an error if copying to + from NFS even though
+        # ``copytree`` throws an error if copying to + from NFS even though
         # the copy is successful (see https://bugs.python.org/issue24564)
         if "[Errno 22]" not in str(error) or not op.exists(dst):
             raise
@@ -62,7 +62,6 @@ def _get_brainvision_encoding(vhdr_file):
         Encoding of the .vhdr file to pass it on to open() function
         either 'UTF-8' (default) or whatever encoding scheme is specified
         in the header.
-
     """
     with _open_lock(vhdr_file, "rb") as ef:
         enc = ef.read()
@@ -91,7 +90,6 @@ def _get_brainvision_paths(vhdr_path):
     paths : tuple
         Paths to the .eeg/.dat file at index 0 and the .vmrk file at index 1 of
         the returned tuple.
-
     """
     fname, ext = _parse_ext(vhdr_path)
     if ext != ".vhdr":
@@ -162,7 +160,6 @@ def copyfile_ctf(src, dest):
     copyfile_eeglab
     copyfile_kit
     copyfile_mef
-
     """
     _copytree(src, dest)
     # list of file types to rename
@@ -215,7 +212,6 @@ def copyfile_mef(src, dest):
     copyfile_edf
     copyfile_eeglab
     copyfile_kit
-
     """
     _copytree(src, dest)
 
@@ -238,7 +234,7 @@ def copyfile_kit(src, dest, subject_id, session_id, task, run, _init_kwargs):
     run : int | None
         The run number. Corresponds to "run".
     _init_kwargs : dict
-        Extract information of marker and headpoints
+        Extract information of marker and headpoints.
 
     See Also
     --------
@@ -247,7 +243,6 @@ def copyfile_kit(src, dest, subject_id, session_id, task, run, _init_kwargs):
     copyfile_ctf
     copyfile_edf
     copyfile_eeglab
-
     """
     # create parent directories in case it does not exist yet
     _mkdir_p(op.dirname(dest))
@@ -315,7 +310,7 @@ def _replace_file(fname, pattern, replace):
 
 
 def _anonymize_brainvision(vhdr_file, date):
-    """Anonymize vmrk and vhdr files in place using `date` datetime object."""
+    """Anonymize vmrk and vhdr files in place using ``date`` datetime object."""
     _, vmrk_file = _get_brainvision_paths(vhdr_file)
 
     # Go through VMRK
@@ -330,13 +325,13 @@ def _anonymize_brainvision(vhdr_file, date):
 
 
 @verbose
-def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
+def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
     """Copy a BrainVision file triplet to a new location and repair links.
 
     The BrainVision file format consists of three files:
     .vhdr, .eeg/.dat, and .vmrk
     The .eeg/.dat and .vmrk files associated with the .vhdr file will be
-    given names as in `vhdr_dest` with adjusted extensions. Internal file
+    given names as in ``vhdr_dest`` with adjusted extensions. Internal file
     pointers will be fixed.
 
     Parameters
@@ -348,21 +343,19 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     anonymize : dict | None
         If None (default), no anonymization is performed.
         If dict, data will be anonymized depending on the keys provided with
-        the dict: `daysback` is a required key, `keep_his` is an optional key.
+        the dict: ``daysback`` is a required key, ``keep_his`` is an optional key.
 
-        `daysback` : int
+        ``daysback`` : int
             Number of days by which to move back the recording date in time.
             In studies with multiple subjects the relative recording date
             differences between subjects can be kept by using the same number
-            of `daysback` for all subject anonymizations. `daysback` should be
+            of ``daysback`` for all subject anonymizations. ``daysback`` should be
             great enough to shift the date prior to 1925 to conform with BIDS
             anonymization rules.
-
-        `keep_his` : bool
+        ``keep_his`` : bool
             By default (False), all subject information next to the recording
             date will be overwritten as well. If True, keep subject information
             apart from the recording date.
-
     %(verbose)s
 
     See Also
@@ -373,7 +366,6 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     copyfile_edf
     copyfile_eeglab
     copyfile_kit
-
     """
     # Get extension of the brainvision file
     fname_src, ext_src = _parse_ext(vhdr_src)
@@ -454,7 +446,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
 
 
 @verbose
-def copyfile_edf(src, dest, anonymize=None, verbose=None):
+def copyfile_edf(src, dest, anonymize=None, *, verbose=None):
     """Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.
 
     .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:
@@ -481,13 +473,13 @@ def copyfile_edf(src, dest, anonymize=None, verbose=None):
     anonymize : dict | None
         If None (default), no anonymization is performed.
         If dict, data will be anonymized depending on the keys provided with
-        the dict: `daysback` is a required key, `keep_his` is an optional key.
+        the dict: ``daysback`` is a required key, ``keep_his`` is an optional key.
 
-        `daysback` : int
+        ``daysback`` : int
             Number of days by which to move back the recording date in time.
             In studies with multiple subjects the relative recording date
             differences between subjects can be kept by using the same number
-            of `daysback` for all subject anonymizations. `daysback` should be
+            of ``daysback`` for all subject anonymizations. ``daysback`` should be
             great enough to shift the date prior to 1925 to conform with BIDS
             anonymization rules. Due to limitations of the EDF/BDF format, the
             year of the anonymized date will always be set to 1985 in the
@@ -495,12 +487,12 @@ def copyfile_edf(src, dest, anonymize=None, verbose=None):
             written to the 'local recording identification' region of the
             file header, which may not be parsed by all EDF/EDF+/BDF reader
             software.
-
-        `keep_his` : bool
+        ``keep_his`` : bool
             By default (False), all subject information next to the recording
             date will be overwritten as well. If True, keep subject information
             apart from the recording date. Participant names and birthdates
             will always be anonymized if present, regardless of this setting.
+    %(verbose)s
 
     See Also
     --------
@@ -510,7 +502,6 @@ def copyfile_edf(src, dest, anonymize=None, verbose=None):
     copyfile_ctf
     copyfile_eeglab
     copyfile_kit
-
     """
     # Ensure source & destination extensions are the same
     fname_src, ext_src = _parse_ext(src)
@@ -598,7 +589,6 @@ def copyfile_eeglab(src, dest):
     copyfile_ctf
     copyfile_edf
     copyfile_kit
-
     """
     # Get extension of the EEGLAB file
     _, ext_src = _parse_ext(src)
@@ -676,7 +666,6 @@ def copyfile_bti(raw, dest):
     copyfile_edf
     copyfile_eeglab
     copyfile_kit
-
     """
     os.makedirs(dest, exist_ok=True)
     for key, val in (

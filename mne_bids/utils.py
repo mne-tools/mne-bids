@@ -40,16 +40,16 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
     Parameters
     ----------
     fro : str
-        Mapping from nomenclature of `fro`. Can be 'mne', 'bids'
+        Mapping from nomenclature of ``fro``. Can be 'mne', 'bids'
     to : str
-        Mapping to nomenclature of `to`. Can be 'mne', 'bids'
+        Mapping to nomenclature of ``to``. Can be 'mne', 'bids'
 
     Returns
     -------
     mapping : dict
         Dictionary mapping from one nomenclature of channel types to another.
         If a key is not present, a default value will be returned that depends
-        on the `fro` and `to` parameters.
+        on the ``fro`` and ``to`` parameters.
 
     Notes
     -----
@@ -136,7 +136,7 @@ def _handle_datatype(raw, datatype):
         Raw object.
     datatype : str | None
         Can be one of either ``'meg'``, ``'eeg'``, ``'emg'`` or ``'ieeg'``. If ``None``,
-        `mne.utils._handle_datatype()` will attempt to infer the datatype from
+        ``mne.utils._handle_datatype()`` will attempt to infer the datatype from
         the ``raw`` object. In case of multiple data types in the ``raw``
         object, ``datatype`` must not be ``None``.
 
@@ -228,7 +228,7 @@ def _check_types(variables):
             )
 
 
-def _write_json(fname, dictionary, overwrite=False):
+def _write_json(fname, dictionary, *, overwrite=False, lock=True):
     """Write JSON to a file."""
     fname = Path(fname)
     if fname.exists() and not overwrite:
@@ -237,7 +237,7 @@ def _write_json(fname, dictionary, overwrite=False):
         )
 
     json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
-    with _open_lock(fname, "w", encoding="utf-8") as fid:
+    with _open_lock(fname, "w", encoding="utf-8", lock=lock) as fid:
         fid.write(json_output)
         fid.write("\n")
 
@@ -245,14 +245,14 @@ def _write_json(fname, dictionary, overwrite=False):
 
 
 @verbose
-def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
+def _write_tsv(fname, dictionary, *, overwrite=False, lock=True, verbose=None):
     """Write an ordered dictionary to a .tsv file."""
     fname = Path(fname)
     if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    _to_tsv(dictionary, fname)
+    _to_tsv(dictionary, fname, lock=lock)
 
     logger.info(f"Writing '{fname}'...")
 
@@ -353,7 +353,7 @@ def _check_empty_room_basename(bids_path):
 
 
 def _check_anonymize(anonymize, raw, ext):
-    """Check the `anonymize` dict."""
+    """Check the ``anonymize`` dict."""
     # if info['meas_date'] None, then the dates are not stored
     if raw.info["meas_date"] is None:
         daysback = None
@@ -407,7 +407,7 @@ def _get_anonymization_daysback(raw):
 
 
 @verbose
-def get_anonymization_daysback(raws, verbose=None):
+def get_anonymization_daysback(raws, *, verbose=None):
     """Get the group min and max number of daysback necessary for BIDS specs.
 
     .. warning:: It is important that you remember the anonymization
@@ -417,14 +417,14 @@ def get_anonymization_daysback(raws, verbose=None):
 
     BIDS requires that anonymized dates be before 1925. In order to
     preserve the longitudinal structure and ensure anonymization, the
-    user is asked to provide the same `daysback` argument to each call
-    of `write_raw_bids`. To determine the minimum number of daysback
+    user is asked to provide the same ``daysback`` argument to each call
+    of :func:`~mne_bids.write_raw_bids`. To determine the minimum number of daysback
     necessary, this function will calculate the minimum number based on
     the most recent measurement date of raw objects.
 
     Parameters
     ----------
-    raw : mne.io.Raw | list of mne.io.Raw
+    raws : mne.io.Raw | list of mne.io.Raw
         Subject raw data or list of raw data from several subjects.
     %(verbose)s
 
@@ -485,10 +485,6 @@ def _check_datatype(raw, datatype):
         Raw object.
     datatype : str
         Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.
-
-    Returns
-    -------
-    None
     """
     supported_types = ("eeg", "emg", "ieeg", "meg", "nirs")
     if datatype not in supported_types:
@@ -567,3 +563,22 @@ def warn(
 
 # Some of the defaults here will be wrong but it should be close enough
 warn.__doc__ = getattr(_warn, "__doc__", None)
+
+
+def _convert_dt_to_utc(dt, *, local_tz=None):
+    """Convert a naive datetime to UTC.
+
+    Fallsback to the computers *current* tz if needed (e.g. Windows pre-epoch failures).
+
+    This is in a helper in order to make unit testing this behavior easier.
+    The local_tz parameter exists so that tests can make the fallback path deterministic
+    """
+    try:
+        return dt.astimezone(UTC)
+    except OSError as e:
+        # Windows needs an explicit local tz for naive, pre-epoch datetimes.
+        # https://bugs.python.org/issue36759
+        logger.debug("Using the current local tz for %s, due to: %s", dt, e)
+        if local_tz is None:
+            local_tz = datetime.now().astimezone().tzinfo or UTC
+        return dt.replace(tzinfo=local_tz).astimezone(UTC)

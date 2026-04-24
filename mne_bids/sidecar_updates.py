@@ -25,7 +25,7 @@ from mne_bids.utils import _write_json
 
 # TODO: add support for tsv files
 @verbose
-def update_sidecar_json(bids_path, entries, verbose=None):
+def update_sidecar_json(bids_path, entries, *, verbose=None):
     """Update sidecar files using a dictionary or JSON file.
 
     Will update metadata fields inside the path defined by
@@ -56,6 +56,15 @@ def update_sidecar_json(bids_path, entries, verbose=None):
         sidecar fields and corresponding values to be updated to.
     %(verbose)s
 
+    Raises
+    ------
+    RuntimeError
+        If the specified ``bids_path.fpath`` cannot be found
+        in the dataset.
+    RuntimeError
+        If the ``bids_path.fpath`` does not have ``.json``
+        extension.
+
     Notes
     -----
     This function can only update JSON files.
@@ -69,16 +78,6 @@ def update_sidecar_json(bids_path, entries, verbose=None):
     the passed in dictionary overwriting any information that was
     previously there.
 
-    Raises
-    ------
-    RuntimeError
-        If the specified ``bids_path.fpath`` cannot be found
-        in the dataset.
-
-    RuntimeError
-        If the ``bids_path.fpath`` does not have ``.json``
-        extension.
-
     Examples
     --------
     Update a sidecar JSON file
@@ -90,7 +89,6 @@ def update_sidecar_json(bids_path, entries, verbose=None):
     ...                      root=root)
     >>> entries = {'PowerLineFrequency': 60}
     >>> update_sidecar_json(bids_path, entries, verbose=False)
-
     """
     # get all matching json files
     bids_path = bids_path.copy()
