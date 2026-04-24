@@ -85,7 +85,12 @@ else:
 # generate autosummary even if no references
 autosummary_generate = True
 autodoc_default_options = {"inherited-members": None}
-default_role = "autolink"  # XXX silently allows bad syntax, someone should fix
+
+default_role = "py:obj"
+
+rst_prolog = """
+.. currentmodule:: mne_bids
+"""
 
 # configure linkcheck
 # https://sphinx-doc.org/en/master/usage/configuration.html?#options-for-the-linkcheck-builder

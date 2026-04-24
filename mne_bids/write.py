@@ -595,7 +595,7 @@ def _readme(datatype, fname, overwrite=False):
 
     This will write a README file containing an MNE-BIDS citation.
     If a README already exists, the behavior depends on the
-    `overwrite` parameter, as described below.
+    ``overwrite`` parameter, as described below.
 
     Parameters
     ----------
@@ -647,7 +647,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
-        If there is already data for the given `subject_id` and overwrite is
+        If there is already data for the given ``subject_id`` and overwrite is
         False, an error will be raised.
 
     """
@@ -800,7 +800,7 @@ def _participants_json(fname, overwrite=False):
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
-        If there is already data for the given `fname` and overwrite is False,
+        If there is already data for the given ``fname`` and overwrite is False,
         an error will be raised.
 
     """
@@ -894,7 +894,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
-        If there is already data for the given `fname` and overwrite is False,
+        If there is already data for the given ``fname`` and overwrite is False,
         an error will be raised.
 
     """
@@ -1781,7 +1781,7 @@ def write_raw_bids(
     Parameters
     ----------
     raw : mne.io.Raw
-        The raw data. It must be an instance of `mne.io.Raw` that is not
+        The raw data. It must be an instance of :class:`mne:mne.io.Raw` that is not
         already loaded from disk unless ``allow_preload`` is explicitly set
         to ``True``. See warning for the ``allow_preload`` parameter.
     bids_path : BIDSPath
@@ -1856,7 +1856,7 @@ def write_raw_bids(
         A dictionary that maps column names of the ``event_metadata`` to descriptions.
         Each column of ``event_metadata`` must have a corresponding entry in this.
     anonymize : dict | None
-        If `None` (default), no anonymization is performed.
+        If ``None`` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
         keys: ``daysback`` is a required key, ``keep_his`` is optional.
 
@@ -1988,7 +1988,7 @@ def write_raw_bids(
     for the correct computation of each participant's age when creating
     ``*_participants.tsv``.
 
-    This function will convert existing `mne.Annotations` from
+    This function will convert existing :class:`mne:mne.Annotations` from
     ``raw.annotations`` to events. Additionally, any events supplied via
     ``events`` will be written too. To avoid writing of annotations,
     remove them from the raw file via ``raw.set_annotations(None)`` before
@@ -2841,7 +2841,7 @@ def write_anat(
     landmarks : mne.channels.DigMontage | path-like | dict | None
         The montage or path to a montage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
-        from the head model using `mne coreg` GUI, or they can be determined
+        from the head model using :ref:`mne:mne coreg` GUI, or they can be determined
         from the MRI using ``freeview``.  If a dictionary is passed, then the
         values must be instances of :class:`~mne.channels.DigMontage` or
         path-like objects pointing to a :class:`~mne.channels.DigMontage`
@@ -2857,18 +2857,18 @@ def write_anat(
         suffix exist, will use the first ones in the ``landmarks`` dictionary.
         If dict, accepts the following keys:
 
-        - `inset`: how far back in voxels to start defacing
+        - ``inset``: how far back in voxels to start defacing
           relative to the nasion (default 5)
 
-        - `theta`: is the angle of the defacing shear in degrees relative
+        - ``theta``: is the angle of the defacing shear in degrees relative
           to vertical (default 15).
 
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
         If overwrite is True, any existing files with the same BIDS parameters
-        will be overwritten with the exception of the `participants.tsv` and
-        `scans.tsv` files. For these files, parts of pre-existing data that
+        will be overwritten with the exception of the ``participants.tsv`` and
+        ``scans.tsv`` files. For these files, parts of pre-existing data that
         match the current data will be replaced.
         If overwrite is False, no existing data will be overwritten or
         replaced.
@@ -3239,7 +3239,7 @@ def _get_daysback(
         The BIDSPath instances to consider. Will be filtered down in this
         function to reduce run time (only one file run per session).
     rng
-        The RNG to use for selecting a `daysback` from the valid range.
+        The RNG to use for selecting a ``daysback`` from the valid range.
     show_progress_thresh
         After narrowing down the files to query for their measurement date,
         show a progress bar if >= this number of files remain.

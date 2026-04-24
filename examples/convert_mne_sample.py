@@ -41,11 +41,11 @@ from mne_bids import (
 from mne_bids.stats import count_events
 
 # %%
-# Now we can read the MNE sample data. We define an `event_id` based on our
+# Now we can read the MNE sample data. We define an ``event_id`` based on our
 # knowledge of the data, to give meaning to events in the data.
 #
-# With `raw_fname` and `events`, we determine where to get the sample data
-# from. `output_path` determines where we will write the BIDS conversion to.
+# With ``raw_fname`` and ``events``, we determine where to get the sample data
+# from. ``output_path`` determines where we will write the BIDS conversion to.
 
 data_path = sample.data_path()
 event_id = {

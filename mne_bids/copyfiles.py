@@ -30,7 +30,7 @@ def _copytree(src, dst, **kwargs):
     try:
         sh.copytree(src, dst, **kwargs)
     except sh.Error as error:
-        # `copytree` throws an error if copying to + from NFS even though
+        # ``copytree`` throws an error if copying to + from NFS even though
         # the copy is successful (see https://bugs.python.org/issue24564)
         if "[Errno 22]" not in str(error) or not op.exists(dst):
             raise
@@ -310,7 +310,7 @@ def _replace_file(fname, pattern, replace):
 
 
 def _anonymize_brainvision(vhdr_file, date):
-    """Anonymize vmrk and vhdr files in place using `date` datetime object."""
+    """Anonymize vmrk and vhdr files in place using ``date`` datetime object."""
     _, vmrk_file = _get_brainvision_paths(vhdr_file)
 
     # Go through VMRK
@@ -331,7 +331,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
     The BrainVision file format consists of three files:
     .vhdr, .eeg/.dat, and .vmrk
     The .eeg/.dat and .vmrk files associated with the .vhdr file will be
-    given names as in `vhdr_dest` with adjusted extensions. Internal file
+    given names as in ``vhdr_dest`` with adjusted extensions. Internal file
     pointers will be fixed.
 
     Parameters
@@ -343,16 +343,16 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
     anonymize : dict | None
         If None (default), no anonymization is performed.
         If dict, data will be anonymized depending on the keys provided with
-        the dict: `daysback` is a required key, `keep_his` is an optional key.
+        the dict: ``daysback`` is a required key, ``keep_his`` is an optional key.
 
-        `daysback` : int
+        ``daysback`` : int
             Number of days by which to move back the recording date in time.
             In studies with multiple subjects the relative recording date
             differences between subjects can be kept by using the same number
-            of `daysback` for all subject anonymizations. `daysback` should be
+            of ``daysback`` for all subject anonymizations. ``daysback`` should be
             great enough to shift the date prior to 1925 to conform with BIDS
             anonymization rules.
-        `keep_his` : bool
+        ``keep_his`` : bool
             By default (False), all subject information next to the recording
             date will be overwritten as well. If True, keep subject information
             apart from the recording date.
@@ -473,13 +473,13 @@ def copyfile_edf(src, dest, anonymize=None, *, verbose=None):
     anonymize : dict | None
         If None (default), no anonymization is performed.
         If dict, data will be anonymized depending on the keys provided with
-        the dict: `daysback` is a required key, `keep_his` is an optional key.
+        the dict: ``daysback`` is a required key, ``keep_his`` is an optional key.
 
-        `daysback` : int
+        ``daysback`` : int
             Number of days by which to move back the recording date in time.
             In studies with multiple subjects the relative recording date
             differences between subjects can be kept by using the same number
-            of `daysback` for all subject anonymizations. `daysback` should be
+            of ``daysback`` for all subject anonymizations. ``daysback`` should be
             great enough to shift the date prior to 1925 to conform with BIDS
             anonymization rules. Due to limitations of the EDF/BDF format, the
             year of the anonymized date will always be set to 1985 in the
@@ -487,7 +487,7 @@ def copyfile_edf(src, dest, anonymize=None, *, verbose=None):
             written to the 'local recording identification' region of the
             file header, which may not be parsed by all EDF/EDF+/BDF reader
             software.
-        `keep_his` : bool
+        ``keep_his`` : bool
             By default (False), all subject information next to the recording
             date will be overwritten as well. If True, keep subject information
             apart from the recording date. Participant names and birthdates
