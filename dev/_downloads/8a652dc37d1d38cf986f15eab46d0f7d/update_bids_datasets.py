@@ -38,7 +38,7 @@ from mne_bids import (
 # ------------------------------------
 #
 # Download the data if it hasn't been downloaded already, and return the path
-# to the download directory. This directory is the so-called `root` of this
+# to the download directory. This directory is the so-called ``root`` of this
 # BIDS dataset.
 bids_root = somato.data_path()
 

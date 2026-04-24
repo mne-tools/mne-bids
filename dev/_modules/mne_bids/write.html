@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev50+g671e315df documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=6f551ec7"></script>
+    <script src="../../_static/documentation_options.js?v=2669897e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev50+g671e315df" />
+  <meta name="docsearch:version" content="0.19.0.dev51+ge8a8c49f0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev50+g671e315df documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</p>
   
 </a></div>
     
@@ -1086,7 +1086,7 @@
 
 <span class="sd">    This will write a README file containing an MNE-BIDS citation.</span>
 <span class="sd">    If a README already exists, the behavior depends on the</span>
-<span class="sd">    `overwrite` parameter, as described below.</span>
+<span class="sd">    ``overwrite`` parameter, as described below.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1138,7 +1138,7 @@
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file.</span>
 <span class="sd">        Defaults to False.</span>
-<span class="sd">        If there is already data for the given `subject_id` and overwrite is</span>
+<span class="sd">        If there is already data for the given ``subject_id`` and overwrite is</span>
 <span class="sd">        False, an error will be raised.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1291,7 +1291,7 @@
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Defaults to False.</span>
 <span class="sd">        Whether to overwrite the existing data in the file.</span>
-<span class="sd">        If there is already data for the given `fname` and overwrite is False,</span>
+<span class="sd">        If there is already data for the given ``fname`` and overwrite is False,</span>
 <span class="sd">        an error will be raised.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1385,7 +1385,7 @@
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Defaults to False.</span>
 <span class="sd">        Whether to overwrite the existing data in the file.</span>
-<span class="sd">        If there is already data for the given `fname` and overwrite is False,</span>
+<span class="sd">        If there is already data for the given ``fname`` and overwrite is False,</span>
 <span class="sd">        an error will be raised.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2277,7 +2277,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    raw : mne.io.Raw</span>
-<span class="sd">        The raw data. It must be an instance of `mne.io.Raw` that is not</span>
+<span class="sd">        The raw data. It must be an instance of :class:`mne:mne.io.Raw` that is not</span>
 <span class="sd">        already loaded from disk unless ``allow_preload`` is explicitly set</span>
 <span class="sd">        to ``True``. See warning for the ``allow_preload`` parameter.</span>
 <span class="sd">    bids_path : BIDSPath</span>
@@ -2352,7 +2352,7 @@
 <span class="sd">        A dictionary that maps column names of the ``event_metadata`` to descriptions.</span>
 <span class="sd">        Each column of ``event_metadata`` must have a corresponding entry in this.</span>
 <span class="sd">    anonymize : dict | None</span>
-<span class="sd">        If `None` (default), no anonymization is performed.</span>
+<span class="sd">        If ``None`` (default), no anonymization is performed.</span>
 <span class="sd">        If a dictionary, data will be anonymized depending on the dictionary</span>
 <span class="sd">        keys: ``daysback`` is a required key, ``keep_his`` is optional.</span>
 
@@ -2484,7 +2484,7 @@
 <span class="sd">    for the correct computation of each participant&#39;s age when creating</span>
 <span class="sd">    ``*_participants.tsv``.</span>
 
-<span class="sd">    This function will convert existing `mne.Annotations` from</span>
+<span class="sd">    This function will convert existing :class:`mne:mne.Annotations` from</span>
 <span class="sd">    ``raw.annotations`` to events. Additionally, any events supplied via</span>
 <span class="sd">    ``events`` will be written too. To avoid writing of annotations,</span>
 <span class="sd">    remove them from the raw file via ``raw.set_annotations(None)`` before</span>
@@ -3343,7 +3343,7 @@
 <span class="sd">    landmarks : mne.channels.DigMontage | path-like | dict | None</span>
 <span class="sd">        The montage or path to a montage with landmarks that can be</span>
 <span class="sd">        passed to provide information for defacing. Landmarks can be determined</span>
-<span class="sd">        from the head model using `mne coreg` GUI, or they can be determined</span>
+<span class="sd">        from the head model using :ref:`mne:mne coreg` GUI, or they can be determined</span>
 <span class="sd">        from the MRI using ``freeview``.  If a dictionary is passed, then the</span>
 <span class="sd">        values must be instances of :class:`~mne.channels.DigMontage` or</span>
 <span class="sd">        path-like objects pointing to a :class:`~mne.channels.DigMontage`</span>
@@ -3359,18 +3359,18 @@
 <span class="sd">        suffix exist, will use the first ones in the ``landmarks`` dictionary.</span>
 <span class="sd">        If dict, accepts the following keys:</span>
 
-<span class="sd">        - `inset`: how far back in voxels to start defacing</span>
+<span class="sd">        - ``inset``: how far back in voxels to start defacing</span>
 <span class="sd">          relative to the nasion (default 5)</span>
 
-<span class="sd">        - `theta`: is the angle of the defacing shear in degrees relative</span>
+<span class="sd">        - ``theta``: is the angle of the defacing shear in degrees relative</span>
 <span class="sd">          to vertical (default 15).</span>
 
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to False.</span>
 <span class="sd">        If overwrite is True, any existing files with the same BIDS parameters</span>
-<span class="sd">        will be overwritten with the exception of the `participants.tsv` and</span>
-<span class="sd">        `scans.tsv` files. For these files, parts of pre-existing data that</span>
+<span class="sd">        will be overwritten with the exception of the ``participants.tsv`` and</span>
+<span class="sd">        ``scans.tsv`` files. For these files, parts of pre-existing data that</span>
 <span class="sd">        match the current data will be replaced.</span>
 <span class="sd">        If overwrite is False, no existing data will be overwritten or</span>
 <span class="sd">        replaced.</span>
@@ -3751,7 +3751,7 @@
 <span class="sd">        The BIDSPath instances to consider. Will be filtered down in this</span>
 <span class="sd">        function to reduce run time (only one file run per session).</span>
 <span class="sd">    rng</span>
-<span class="sd">        The RNG to use for selecting a `daysback` from the valid range.</span>
+<span class="sd">        The RNG to use for selecting a ``daysback`` from the valid range.</span>
 <span class="sd">    show_progress_thresh</span>
 <span class="sd">        After narrowing down the files to query for their measurement date,</span>
 <span class="sd">        show a progress bar if &gt;= this number of files remain.</span>

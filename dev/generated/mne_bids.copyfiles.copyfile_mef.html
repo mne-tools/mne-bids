@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.search_folder_for_text &#8212; MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</title>
+    <title>mne_bids.copyfiles.copyfile_mef &#8212; MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</title>
   
   
   
@@ -63,7 +63,7 @@
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.search_folder_for_text';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.copyfiles.copyfile_mef';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.17.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
@@ -74,9 +74,9 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_bids.print_dir_tree" href="mne_bids.print_dir_tree.html" />
-    <link rel="prev" title="mne_bids.get_anonymization_daysback" href="mne_bids.get_anonymization_daysback.html" />
-    <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.search_folder_for_text.html" />
+    <link rel="next" title="MNE-BIDS Command Line Interface (CLI)" href="cli.html" />
+    <link rel="prev" title="mne_bids.copyfiles.copyfile_kit" href="mne_bids.copyfiles.copyfile_kit.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.copyfiles.copyfile_mef.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
@@ -450,7 +450,7 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.write_raw_bids.html">mne_bids.write_raw_bids</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.read_raw_bids.html">mne_bids.read_raw_bids</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.write_meg_calibration.html">mne_bids.write_meg_calibration</a></li>
@@ -467,7 +467,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.convert_montage_to_ras.html">mne_bids.convert_montage_to_ras</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.template_to_head.html">mne_bids.template_to_head</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.get_anonymization_daysback.html">mne_bids.get_anonymization_daysback</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_bids.search_folder_for_text</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.search_folder_for_text.html">mne_bids.search_folder_for_text</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.print_dir_tree.html">mne_bids.print_dir_tree</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.get_bids_path_from_fname.html">mne_bids.get_bids_path_from_fname</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.get_entities_from_fname.html">mne_bids.get_entities_from_fname</a></li>
@@ -482,14 +482,14 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.stats.count_events.html">mne_bids.stats.count_events</a></li>
 </ul>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_brainvision.html">mne_bids.copyfiles.copyfile_brainvision</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_edf.html">mne_bids.copyfiles.copyfile_edf</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_eeglab.html">mne_bids.copyfiles.copyfile_eeglab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html">mne_bids.copyfiles.copyfile_ctf</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html">mne_bids.copyfiles.copyfile_bti</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html">mne_bids.copyfiles.copyfile_kit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_mef.html">mne_bids.copyfiles.copyfile_mef</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_bids.copyfiles.copyfile_mef</a></li>
 </ul>
 </div>
 </nav></div>
@@ -533,7 +533,7 @@
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Documentation</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.search_folder_for_text</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.copyfiles.copyfile_mef</span></li>
   </ul>
 </nav>
 </div>
@@ -550,51 +550,39 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="mne-bids-search-folder-for-text">
-<h1>mne_bids.search_folder_for_text<a class="headerlink" href="#mne-bids-search-folder-for-text" title="Link to this heading">#</a></h1>
+  <section id="mne-bids-copyfiles-copyfile-mef">
+<h1>mne_bids.copyfiles.copyfile_mef<a class="headerlink" href="#mne-bids-copyfiles-copyfile-mef" title="Link to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_bids.search_folder_for_text">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">search_folder_for_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('.json',</span> <span class="pre">'.tsv')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_numbers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#search_folder_for_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.search_folder_for_text" title="Link to this definition">#</a></dt>
-<dd><p>Find any particular string entry in the text files of a folder.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This is a search function like <a class="reference external" href="https://man7.org/linux/man-pages/man1/fgrep.1.html">grep</a>
-that is formatted nicely for BIDS datasets.</p>
-</div>
+<dt class="sig sig-object py" id="mne_bids.copyfiles.copyfile_mef">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.copyfiles.</span></span><span class="sig-name descname"><span class="pre">copyfile_mef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/copyfiles.html#copyfile_mef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.copyfiles.copyfile_mef" title="Link to this definition">#</a></dt>
+<dd><p>Copy MEF3 files to a new location.</p>
+<p>MEF3 (Multiscale Electrophysiology Format) data is stored in a directory
+with the <code class="docutils literal notranslate"><span class="pre">.mefd</span></code> extension. This function copies the entire directory
+structure to the destination.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>entry</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The string to search for.</p>
+<dt><strong>src</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.12)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>Path to the source raw .mefd folder.</p>
 </dd>
-<dt><strong>folder</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.12)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The folder in which to search.</p>
-</dd>
-<dt><strong>extensions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The extensions to search through. Default is <code class="docutils literal notranslate"><span class="pre">json</span></code> and
-<code class="docutils literal notranslate"><span class="pre">tsv</span></code> which are the BIDS sidecar file types.</p>
-</dd>
-<dt><strong>line_numbers</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to include line numbers.</p>
-</dd>
-<dt><strong>return_str</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return the fields with “n/a” as a str instead of
-printing them.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">return_str</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the fields are returned as a
-string. Else, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned and the fields are printed.</p>
+<dt><strong>dest</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.12)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>Path to the destination of the new bids folder.</p>
 </dd>
 </dl>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_brainvision</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html#mne_bids.copyfiles.copyfile_bti" title="mne_bids.copyfiles.copyfile_bti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_bti</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html#mne_bids.copyfiles.copyfile_ctf" title="mne_bids.copyfiles.copyfile_ctf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_ctf</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf" title="mne_bids.copyfiles.copyfile_edf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_edf</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab" title="mne_bids.copyfiles.copyfile_eeglab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_eeglab</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html#mne_bids.copyfiles.copyfile_kit" title="mne_bids.copyfiles.copyfile_kit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_kit</span></code></a></dt><dd></dd>
+</dl>
+</div>
 </dd></dl>
 
-<section id="examples-using-mne-bids-search-folder-for-text">
-<span id="sphx-glr-backreferences-mne-bids-search-folder-for-text"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.search_folder_for_text</span></code><a class="headerlink" href="#examples-using-mne-bids-search-folder-for-text" title="Link to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifically, we will follow these steps:"><img alt="" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html"><span class="doc">Convert iEEG data to BIDS format</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Convert iEEG data to BIDS format</div>
-</div></div></section>
-</section>
+<span class="target" id="sphx-glr-backreferences-mne-bids-copyfiles-copyfile-mef"></span></section>
 
 
                 </article>
@@ -607,20 +595,20 @@ string. Else, <code class="docutils literal notranslate"><span class="pre">None<
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mne_bids.get_anonymization_daysback.html"
+       href="mne_bids.copyfiles.copyfile_kit.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">mne_bids.get_anonymization_daysback</p>
+        <p class="prev-next-title">mne_bids.copyfiles.copyfile_kit</p>
       </div>
     </a>
     <a class="right-next"
-       href="mne_bids.print_dir_tree.html"
+       href="cli.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_bids.print_dir_tree</p>
+        <p class="prev-next-title">MNE-BIDS Command Line Interface (CLI)</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -643,8 +631,7 @@ string. Else, <code class="docutils literal notranslate"><span class="pre">None<
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.search_folder_for_text"><code class="docutils literal notranslate"><span class="pre">search_folder_for_text()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-mne-bids-search-folder-for-text">Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.search_folder_for_text</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.copyfiles.copyfile_mef"><code class="docutils literal notranslate"><span class="pre">copyfile_mef()</span></code></a></li>
 </ul>
   </nav></div>
 

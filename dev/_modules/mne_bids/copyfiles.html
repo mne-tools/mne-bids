@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.19.0.dev50+g671e315df documentation</title>
+    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=6f551ec7"></script>
+    <script src="../../_static/documentation_options.js?v=2669897e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev50+g671e315df" />
+  <meta name="docsearch:version" content="0.19.0.dev51+ge8a8c49f0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev50+g671e315df documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</p>
   
 </a></div>
     
@@ -521,7 +521,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-        <span class="c1"># `copytree` throws an error if copying to + from NFS even though</span>
+        <span class="c1"># ``copytree`` throws an error if copying to + from NFS even though</span>
         <span class="c1"># the copy is successful (see https://bugs.python.org/issue24564)</span>
         <span class="k">if</span> <span class="s2">&quot;[Errno 22]&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
             <span class="k">raise</span>
@@ -684,6 +684,8 @@
 
 
 
+<div class="viewcode-block" id="copyfile_mef">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_mef.html#mne_bids.copyfiles.copyfile_mef">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">copyfile_mef</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy MEF3 files to a new location.</span>
 
@@ -707,7 +709,8 @@
 <span class="sd">    copyfile_eeglab</span>
 <span class="sd">    copyfile_kit</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+    <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="copyfile_kit">
@@ -807,7 +810,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_anonymize_brainvision</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Anonymize vmrk and vhdr files in place using `date` datetime object.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Anonymize vmrk and vhdr files in place using ``date`` datetime object.&quot;&quot;&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">vmrk_file</span> <span class="o">=</span> <span class="n">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">)</span>
 
     <span class="c1"># Go through VMRK</span>
@@ -830,7 +833,7 @@
 <span class="sd">    The BrainVision file format consists of three files:</span>
 <span class="sd">    .vhdr, .eeg/.dat, and .vmrk</span>
 <span class="sd">    The .eeg/.dat and .vmrk files associated with the .vhdr file will be</span>
-<span class="sd">    given names as in `vhdr_dest` with adjusted extensions. Internal file</span>
+<span class="sd">    given names as in ``vhdr_dest`` with adjusted extensions. Internal file</span>
 <span class="sd">    pointers will be fixed.</span>
 
 <span class="sd">    Parameters</span>
@@ -842,16 +845,16 @@
 <span class="sd">    anonymize : dict | None</span>
 <span class="sd">        If None (default), no anonymization is performed.</span>
 <span class="sd">        If dict, data will be anonymized depending on the keys provided with</span>
-<span class="sd">        the dict: `daysback` is a required key, `keep_his` is an optional key.</span>
+<span class="sd">        the dict: ``daysback`` is a required key, ``keep_his`` is an optional key.</span>
 
-<span class="sd">        `daysback` : int</span>
+<span class="sd">        ``daysback`` : int</span>
 <span class="sd">            Number of days by which to move back the recording date in time.</span>
 <span class="sd">            In studies with multiple subjects the relative recording date</span>
 <span class="sd">            differences between subjects can be kept by using the same number</span>
-<span class="sd">            of `daysback` for all subject anonymizations. `daysback` should be</span>
+<span class="sd">            of ``daysback`` for all subject anonymizations. ``daysback`` should be</span>
 <span class="sd">            great enough to shift the date prior to 1925 to conform with BIDS</span>
 <span class="sd">            anonymization rules.</span>
-<span class="sd">        `keep_his` : bool</span>
+<span class="sd">        ``keep_his`` : bool</span>
 <span class="sd">            By default (False), all subject information next to the recording</span>
 <span class="sd">            date will be overwritten as well. If True, keep subject information</span>
 <span class="sd">            apart from the recording date.</span>
@@ -975,13 +978,13 @@
 <span class="sd">    anonymize : dict | None</span>
 <span class="sd">        If None (default), no anonymization is performed.</span>
 <span class="sd">        If dict, data will be anonymized depending on the keys provided with</span>
-<span class="sd">        the dict: `daysback` is a required key, `keep_his` is an optional key.</span>
+<span class="sd">        the dict: ``daysback`` is a required key, ``keep_his`` is an optional key.</span>
 
-<span class="sd">        `daysback` : int</span>
+<span class="sd">        ``daysback`` : int</span>
 <span class="sd">            Number of days by which to move back the recording date in time.</span>
 <span class="sd">            In studies with multiple subjects the relative recording date</span>
 <span class="sd">            differences between subjects can be kept by using the same number</span>
-<span class="sd">            of `daysback` for all subject anonymizations. `daysback` should be</span>
+<span class="sd">            of ``daysback`` for all subject anonymizations. ``daysback`` should be</span>
 <span class="sd">            great enough to shift the date prior to 1925 to conform with BIDS</span>
 <span class="sd">            anonymization rules. Due to limitations of the EDF/BDF format, the</span>
 <span class="sd">            year of the anonymized date will always be set to 1985 in the</span>
@@ -989,7 +992,7 @@
 <span class="sd">            written to the &#39;local recording identification&#39; region of the</span>
 <span class="sd">            file header, which may not be parsed by all EDF/EDF+/BDF reader</span>
 <span class="sd">            software.</span>
-<span class="sd">        `keep_his` : bool</span>
+<span class="sd">        ``keep_his`` : bool</span>
 <span class="sd">            By default (False), all subject information next to the recording</span>
 <span class="sd">            date will be overwritten as well. If True, keep subject information</span>
 <span class="sd">            apart from the recording date. Participant names and birthdates</span>

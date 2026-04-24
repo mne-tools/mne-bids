@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.write_anat &#8212; MNE-BIDS 0.19.0.dev50+g671e315df documentation</title>
+    <title>mne_bids.write_anat &#8212; MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=6f551ec7"></script>
+    <script src="../_static/documentation_options.js?v=2669897e"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -82,7 +82,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev50+g671e315df" />
+  <meta name="docsearch:version" content="0.19.0.dev51+ge8a8c49f0" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -151,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev50+g671e315df documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</p>
   
 </a></div>
     
@@ -489,6 +489,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html">mne_bids.copyfiles.copyfile_ctf</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html">mne_bids.copyfiles.copyfile_bti</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html">mne_bids.copyfiles.copyfile_kit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_mef.html">mne_bids.copyfiles.copyfile_mef</a></li>
 </ul>
 </div>
 </nav></div>
@@ -580,7 +581,7 @@ also be <code class="docutils literal notranslate"><span class="pre">'FLASH'</sp
 </dd>
 <dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.12)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage or path to a montage with landmarks that can be
 passed to provide information for defacing. Landmarks can be determined
-from the head model using <em class="xref py py-obj">mne coreg</em> GUI, or they can be determined
+from the head model using <a class="reference external" href="https://mne.tools/stable/generated/commands.html#mne-coreg" title="(in MNE v1.12)"><span>mne coreg</span></a> GUI, or they can be determined
 from the MRI using <code class="docutils literal notranslate"><span class="pre">freeview</span></code>.  If a dictionary is passed, then the
 values must be instances of <a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DigMontage</span></code></a> or
 path-like objects pointing to a <a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DigMontage</span></code></a>
@@ -596,17 +597,17 @@ use the ones with the suffix <code class="docutils literal notranslate"><span cl
 suffix exist, will use the first ones in the <code class="docutils literal notranslate"><span class="pre">landmarks</span></code> dictionary.
 If dict, accepts the following keys:</p>
 <ul class="simple">
-<li><p><em class="xref py py-obj">inset</em>: how far back in voxels to start defacing
+<li><p><code class="docutils literal notranslate"><span class="pre">inset</span></code>: how far back in voxels to start defacing
 relative to the nasion (default 5)</p></li>
-<li><p><em class="xref py py-obj">theta</em>: is the angle of the defacing shear in degrees relative
+<li><p><code class="docutils literal notranslate"><span class="pre">theta</span></code>: is the angle of the defacing shear in degrees relative
 to vertical (default 15).</p></li>
 </ul>
 </dd>
 <dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to False.
 If overwrite is True, any existing files with the same BIDS parameters
-will be overwritten with the exception of the <em class="xref py py-obj">participants.tsv</em> and
-<em class="xref py py-obj">scans.tsv</em> files. For these files, parts of pre-existing data that
+will be overwritten with the exception of the <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code> and
+<code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code> files. For these files, parts of pre-existing data that
 match the current data will be replaced.
 If overwrite is False, no existing data will be overwritten or
 replaced.</p>

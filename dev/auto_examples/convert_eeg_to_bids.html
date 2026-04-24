@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert EEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev50+g671e315df documentation</title>
+    <title>Convert EEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=6f551ec7"></script>
+    <script src="../_static/documentation_options.js?v=2669897e"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -82,7 +82,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev50+g671e315df" />
+  <meta name="docsearch:version" content="0.19.0.dev51+ge8a8c49f0" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -151,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev50+g671e315df documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</p>
   
 </a></div>
     
@@ -703,7 +703,7 @@ which are however optional. The required inputs are:</p>
 Parameters
 ----------
 raw : mne.io.Raw
-    The raw data. It must be an instance of `mne.io.Raw` that is not
+    The raw data. It must be an instance of :class:`mne:mne.io.Raw` that is not
     already loaded from disk unless ``allow_preload`` is explicitly set
     to ``True``. See warning for the ``allow_preload`` parameter.
 bids_path : BIDSPath
@@ -778,7 +778,7 @@ extra_columns_descriptions : dict | None
     A dictionary that maps column names of the ``event_metadata`` to descriptions.
     Each column of ``event_metadata`` must have a corresponding entry in this.
 anonymize : dict | None
-    If `None` (default), no anonymization is performed.
+    If ``None`` (default), no anonymization is performed.
     If a dictionary, data will be anonymized depending on the dictionary
     keys: ``daysback`` is a required key, ``keep_his`` is optional.
 
@@ -915,7 +915,7 @@ You should ensure that ``raw.info[&#39;subject_info&#39;]`` and
 for the correct computation of each participant&#39;s age when creating
 ``*_participants.tsv``.
 
-This function will convert existing `mne.Annotations` from
+This function will convert existing :class:`mne:mne.Annotations` from
 ``raw.annotations`` to events. Additionally, any events supplied via
 ``events`` will be written too. To avoid writing of annotations,
 remove them from the raw file via ``raw.set_annotations(None)`` before
@@ -1122,7 +1122,7 @@ searching for “n/a” in the sidecar files.</p>
 directories called the “BIDS-validator”, available as a web version and
 on the command line:</p>
 <p><a class="github reference external" href="https://github.com/bids-standard/bids-validator">bids-standard/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.344 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.331 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/0bc5481d861907f3ba86dd37d953b980/convert_eeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_eeg_to_bids.ipynb</span></code></a></p>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev50+g671e315df documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=6f551ec7"></script>
+    <script src="../../_static/documentation_options.js?v=2669897e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev50+g671e315df" />
+  <meta name="docsearch:version" content="0.19.0.dev51+ge8a8c49f0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev50+g671e315df documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</p>
   
 </a></div>
     
@@ -737,7 +737,7 @@
 <span class="sd">    the file name.</span>
 
 <span class="sd">    BIDSPath allows dynamic updating of its entities in place, and operates</span>
-<span class="sd">    similar to `pathlib.Path`. In addition, it can query multiple paths</span>
+<span class="sd">    similar to :class:`python:pathlib.Path`. In addition, it can query multiple paths</span>
 <span class="sd">    with matching BIDS entities via the ``match`` method.</span>
 
 <span class="sd">    Note that not all parameters are applicable to each suffix of data. For</span>
@@ -807,7 +807,7 @@
 <span class="sd">        The data type, i.e., one of ``&#39;meg&#39;``, ``&#39;eeg&#39;``, ``&#39;ieeg&#39;``,</span>
 <span class="sd">        ``&#39;anat&#39;``.</span>
 <span class="sd">    basename : str</span>
-<span class="sd">        The basename of the file path. Similar to `os.path.basename(fpath)`.</span>
+<span class="sd">        The basename of the file path. Similar to ``os.path.basename(fpath)``.</span>
 <span class="sd">    root : pathlib.Path</span>
 <span class="sd">        The root of the BIDS path.</span>
 <span class="sd">    directory : pathlib.Path</span>
@@ -855,12 +855,12 @@
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path.basename)</span>
 <span class="sd">    sub-test2_ses-one_task-mytask_ieeg.edf</span>
 
-<span class="sd">    Printing a BIDSPath will show a relative path when `root` is not set</span>
+<span class="sd">    Printing a BIDSPath will show a relative path when ``root`` is not set</span>
 
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path)</span>
 <span class="sd">    sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf</span>
 
-<span class="sd">    Setting `suffix` without an identifiable datatype will make</span>
+<span class="sd">    Setting ``suffix`` without an identifiable datatype will make</span>
 <span class="sd">    BIDSPath try to guess the datatype</span>
 
 <span class="sd">    &gt;&gt;&gt; new_bids_path = new_bids_path.update(suffix=&#39;channels&#39;,</span>
@@ -1172,7 +1172,7 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Representation in the style of `pathlib.Path`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Representation in the style of :class:`python:pathlib.Path`.&quot;&quot;&quot;</span>
         <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="p">(</span>
@@ -1533,7 +1533,7 @@
 <span class="sd">        ...                      extension=&#39;.tsv&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">        sub-test_ses-two_task-mytask_channels.tsv</span>
-<span class="sd">        &gt;&gt;&gt; # Then, one can update this `BIDSPath` object in place</span>
+<span class="sd">        &gt;&gt;&gt; # Then, one can update this ``BIDSPath`` object in place</span>
 <span class="sd">        &gt;&gt;&gt; bids_path.update(acquisition=&#39;test&#39;, suffix=&#39;ieeg&#39;,</span>
 <span class="sd">        ...                  datatype=&#39;ieeg&#39;,</span>
 <span class="sd">        ...                  extension=&#39;.vhdr&#39;, task=None)</span>
@@ -1622,7 +1622,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of all matching paths in the root directory.</span>
 
 <span class="sd">        Performs a recursive search, starting in ``.root`` (if set), based on</span>
-<span class="sd">        `BIDSPath.entities` object. Ignores ``.json`` files.</span>
+<span class="sd">        ``BIDSPath.entities`` object. Ignores ``.json`` files.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2010,7 +2010,7 @@
 <span class="sd">    line_numbers : bool</span>
 <span class="sd">        Whether to include line numbers in the printout.</span>
 <span class="sd">    outfile : io.StringIO | None</span>
-<span class="sd">        The argument to pass to `print` for `file`. If ``None``,</span>
+<span class="sd">        The argument to pass to :func:`python:print` for ``file``. If ``None``,</span>
 <span class="sd">        prints to the console, else a string is printed to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">entry_lines</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
@@ -2081,7 +2081,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    str | None</span>
-<span class="sd">        If `return_str` is ``True``, the fields are returned as a</span>
+<span class="sd">        If ``return_str`` is ``True``, the fields are returned as a</span>
 <span class="sd">        string. Else, ``None`` is returned and the fields are printed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;entry&quot;</span><span class="p">)</span>
@@ -2139,7 +2139,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    str | None</span>
-<span class="sd">        If `return_str` is ``True``, the directory tree is returned as a</span>
+<span class="sd">        If ``return_str`` is ``True``, the directory tree is returned as a</span>
 <span class="sd">        string. Else, ``None`` is returned and the directory tree is printed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">folder</span> <span class="o">=</span> <span class="n">_check_fname</span><span class="p">(</span>
@@ -2229,10 +2229,10 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    fname : path-like</span>
-<span class="sd">        The path to parse a `BIDSPath` from.</span>
+<span class="sd">        The path to parse a :class:`~mne_bids.BIDSPath` from.</span>
 <span class="sd">    check : bool</span>
-<span class="sd">        Whether to check if the generated `BIDSPath` complies with the BIDS</span>
-<span class="sd">        specification, i.e., whether all included entities and the suffix are</span>
+<span class="sd">        Whether to check if the generated :class:`~mne_bids.BIDSPath` complies with the</span>
+<span class="sd">        BIDS specification, i.e., whether all included entities and the suffix are</span>
 <span class="sd">        valid.</span>
 <span class="sd">    %(verbose)s</span>
 
@@ -2732,7 +2732,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    modalities : list of str</span>
 <span class="sd">        List of the data types present in the BIDS dataset pointed to by</span>
-<span class="sd">        `root`.</span>
+<span class="sd">        ``root``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">datatypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">sub_dir</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;sub-*/*/&quot;</span><span class="p">),</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -2788,7 +2788,7 @@
     <span class="n">maxdepth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get list of values associated with an `entity_key` in a BIDS dataset.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get list of values associated with an ``entity_key`` in a BIDS dataset.</span>
 
 <span class="sd">    BIDS file names are organized by key-value pairs called &quot;entities&quot; [1]_.</span>
 <span class="sd">    With this function, you can get all values for an entity indexed by its</span>
@@ -2847,7 +2847,7 @@
 <span class="sd">        .. versionadded:: 0.9</span>
 <span class="sd">    ignore_suffixes : str | array-like of str | None</span>
 <span class="sd">        Suffixes to ignore. If ``None``, include all suffixes. This can be helpful for</span>
-<span class="sd">        ignoring non-data sidecars such as `*_scans.tsv` or `*_coordsystem.json`.</span>
+<span class="sd">        ignoring non-data sidecars such as ``*_scans.tsv`` or ``*_coordsystem.json``.</span>
 
 <span class="sd">        .. versionadded:: 0.17</span>
 <span class="sd">    include_match : str | array-like of str | None</span>
@@ -2876,8 +2876,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    entity_vals : list of str</span>
-<span class="sd">        List of the values associated with an `entity_key` in the BIDS dataset</span>
-<span class="sd">        pointed to by `root`.</span>
+<span class="sd">        List of the values associated with an ``entity_key`` in the BIDS dataset</span>
+<span class="sd">        pointed to by ``root``.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -3085,9 +3085,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the best candidate, based on the number of param matches.</span>
 
 <span class="sd">    Assign each candidate a score, based on how many entities are shared with</span>
-<span class="sd">    the ones supplied in the `params` parameter. The candidate with the highest</span>
+<span class="sd">    the ones supplied in the ``params`` parameter. The candidate with the highest</span>
 <span class="sd">    score wins. Candidates with entities that conflict with the supplied</span>
-<span class="sd">    `params` are disqualified.</span>
+<span class="sd">    ``params`` are disqualified.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -3305,7 +3305,7 @@
 <span class="sd">    Input can be str or list of str. None matches all found values.</span>
 
 <span class="sd">    Performs a recursive search, starting in ``.root`` (if set), based on</span>
-<span class="sd">    `BIDSPath.entities` object.</span>
+<span class="sd">    ``BIDSPath.entities`` object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -3441,7 +3441,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    paths : list of pathlib.Path</span>
-<span class="sd">        All files + .ds paths in `root`, filtered according to the function parameters.</span>
+<span class="sd">        All files + .ds paths in ``root``, filtered according to the function</span>
+<span class="sd">        parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>  <span class="c1"># if root is str</span>
 

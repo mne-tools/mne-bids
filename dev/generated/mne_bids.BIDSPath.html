@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.19.0.dev50+g671e315df documentation</title>
+    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=6f551ec7"></script>
+    <script src="../_static/documentation_options.js?v=2669897e"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -82,7 +82,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev50+g671e315df" />
+  <meta name="docsearch:version" content="0.19.0.dev51+ge8a8c49f0" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -151,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev50+g671e315df documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</p>
   
 </a></div>
     
@@ -489,6 +489,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html">mne_bids.copyfiles.copyfile_ctf</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html">mne_bids.copyfiles.copyfile_bti</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html">mne_bids.copyfiles.copyfile_kit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_mef.html">mne_bids.copyfiles.copyfile_mef</a></li>
 </ul>
 </div>
 </nav></div>
@@ -561,7 +562,7 @@ will generate the <em>prefix</em> for a BIDS filename that can be used with many
 subsequent files, or you may also give a suffix that will then complete
 the file name.</p>
 <p>BIDSPath allows dynamic updating of its entities in place, and operates
-similar to <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>. In addition, it can query multiple paths
+similar to <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>. In addition, it can query multiple paths
 with matching BIDS entities via the <code class="docutils literal notranslate"><span class="pre">match</span></code> method.</p>
 <p>Note that not all parameters are applicable to each suffix of data. For
 example, electrode location TSV files do not need a “task” field.</p>
@@ -704,12 +705,12 @@ functional MRI paths.</p>
 <span class="go">sub-test2_ses-one_task-mytask_ieeg.edf</span>
 </pre></div>
 </div>
-<p>Printing a BIDSPath will show a relative path when <a class="reference internal" href="#mne_bids.BIDSPath.root" title="mne_bids.BIDSPath.root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></a> is not set</p>
+<p>Printing a BIDSPath will show a relative path when <code class="docutils literal notranslate"><span class="pre">root</span></code> is not set</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="p">)</span>
 <span class="go">sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf</span>
 </pre></div>
 </div>
-<p>Setting <a class="reference internal" href="#mne_bids.BIDSPath.suffix" title="mne_bids.BIDSPath.suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suffix</span></code></a> without an identifiable datatype will make
+<p>Setting <code class="docutils literal notranslate"><span class="pre">suffix</span></code> without an identifiable datatype will make
 BIDSPath try to guess the datatype</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_bids_path</span> <span class="o">=</span> <span class="n">new_bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
 <span class="gp">... </span>                                     <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
@@ -915,7 +916,7 @@ contain an “AssociatedEmptyRoom” entry.</p>
 <span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_json</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_nosub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.match" title="Link to this definition">#</a></dt>
 <dd><p>Get a list of all matching paths in the root directory.</p>
 <p>Performs a recursive search, starting in <code class="docutils literal notranslate"><span class="pre">.root</span></code> (if set), based on
-<a class="reference internal" href="#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath.entities</span></code></a> object. Ignores <code class="docutils literal notranslate"><span class="pre">.json</span></code> files.</p>
+<code class="docutils literal notranslate"><span class="pre">BIDSPath.entities</span></code> object. Ignores <code class="docutils literal notranslate"><span class="pre">.json</span></code> files.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
@@ -1192,7 +1193,7 @@ or updates for ‘root’ or ‘datatype’.</p>
 <span class="gp">... </span>                     <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test_ses-two_task-mytask_channels.tsv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Then, one can update this `BIDSPath` object in place</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Then, one can update this ``BIDSPath`` object in place</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span>
 <span class="gp">... </span>                 <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span>
 <span class="gp">... </span>                 <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>

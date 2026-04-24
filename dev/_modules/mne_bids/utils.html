@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.utils &#8212; MNE-BIDS 0.19.0.dev50+g671e315df documentation</title>
+    <title>mne_bids.utils &#8212; MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=6f551ec7"></script>
+    <script src="../../_static/documentation_options.js?v=2669897e"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev50+g671e315df" />
+  <meta name="docsearch:version" content="0.19.0.dev51+ge8a8c49f0" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev50+g671e315df documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev51+ge8a8c49f0 documentation</p>
   
 </a></div>
     
@@ -531,16 +531,16 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    fro : str</span>
-<span class="sd">        Mapping from nomenclature of `fro`. Can be &#39;mne&#39;, &#39;bids&#39;</span>
+<span class="sd">        Mapping from nomenclature of ``fro``. Can be &#39;mne&#39;, &#39;bids&#39;</span>
 <span class="sd">    to : str</span>
-<span class="sd">        Mapping to nomenclature of `to`. Can be &#39;mne&#39;, &#39;bids&#39;</span>
+<span class="sd">        Mapping to nomenclature of ``to``. Can be &#39;mne&#39;, &#39;bids&#39;</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    mapping : dict</span>
 <span class="sd">        Dictionary mapping from one nomenclature of channel types to another.</span>
 <span class="sd">        If a key is not present, a default value will be returned that depends</span>
-<span class="sd">        on the `fro` and `to` parameters.</span>
+<span class="sd">        on the ``fro`` and ``to`` parameters.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -627,7 +627,7 @@
 <span class="sd">        Raw object.</span>
 <span class="sd">    datatype : str | None</span>
 <span class="sd">        Can be one of either ``&#39;meg&#39;``, ``&#39;eeg&#39;``, ``&#39;emg&#39;`` or ``&#39;ieeg&#39;``. If ``None``,</span>
-<span class="sd">        `mne.utils._handle_datatype()` will attempt to infer the datatype from</span>
+<span class="sd">        ``mne.utils._handle_datatype()`` will attempt to infer the datatype from</span>
 <span class="sd">        the ``raw`` object. In case of multiple data types in the ``raw``</span>
 <span class="sd">        object, ``datatype`` must not be ``None``.</span>
 
@@ -844,7 +844,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the `anonymize` dict.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the ``anonymize`` dict.&quot;&quot;&quot;</span>
     <span class="c1"># if info[&#39;meas_date&#39;] None, then the dates are not stored</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">daysback</span> <span class="o">=</span> <span class="kc">None</span>
@@ -910,8 +910,8 @@
 
 <span class="sd">    BIDS requires that anonymized dates be before 1925. In order to</span>
 <span class="sd">    preserve the longitudinal structure and ensure anonymization, the</span>
-<span class="sd">    user is asked to provide the same `daysback` argument to each call</span>
-<span class="sd">    of `write_raw_bids`. To determine the minimum number of daysback</span>
+<span class="sd">    user is asked to provide the same ``daysback`` argument to each call</span>
+<span class="sd">    of :func:`~mne_bids.write_raw_bids`. To determine the minimum number of daysback</span>
 <span class="sd">    necessary, this function will calculate the minimum number based on</span>
 <span class="sd">    the most recent measurement date of raw objects.</span>
 
@@ -979,10 +979,6 @@
 <span class="sd">        Raw object.</span>
 <span class="sd">    datatype : str</span>
 <span class="sd">        Can be one of either ``&#39;meg&#39;``, ``&#39;eeg&#39;``, or ``&#39;ieeg&#39;``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">supported_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;emg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;nirs&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
