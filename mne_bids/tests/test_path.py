@@ -302,7 +302,11 @@ def path_counter(monkeypatch):
         path_counter.calls.append("_find_matching_sidecar")
         path_counter.count = 0
         out = orig_find(*args, **kwargs)
-        path_counter.files.extend(out)
+        func = getattr(
+            path_counter.files, "extend" if isinstance(out, list) else "append"
+        )
+        func(out)
+        path_counter.files.append(out)
         return out
 
     def _path_glob_iglob(root, pattern):
