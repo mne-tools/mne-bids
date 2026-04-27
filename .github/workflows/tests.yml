@@ -320,9 +320,13 @@ jobs:
     - run: |
         ./tools/github_actions_download.sh
         PATH=$(python -c "import mne; print(mne.datasets.testing.data_path(verbose=False))")
+        echo "Testing data path: $PATH"
+        ls /usr/bin/chmod
+        echo $PATH
+        which chmod
         chmod -R a-w "$PATH"
       working-directory: mne-python
-      name: Get testing data and set it read-only
+      name: 'Get testing data and set it read-only'
 
     - name: Run pytest
       run: make test
