@@ -257,41 +257,53 @@ def test_get_entity_vals_ignore_hidden(bids_root):
 @dataclass
 class _PathAccessCounter:
     calls: list[str]
+    files: list[str]
     count: int = 0
 
 
 @pytest.fixture
 def path_counter(monkeypatch):
     """Count number of files traversed using iglob."""
-    out = _PathAccessCounter(calls=list())
+    path_counter = _PathAccessCounter(calls=list(), files=list())
     orig_iglob = glob.iglob
     orig_walk = os.walk
 
     def iglob_count(*args, **kwargs):
+        path_counter.calls.append("iglob")
         for fn in orig_iglob(*args, **kwargs):
-            out.count += 1
+            path_counter.count += 1
+            path_counter.files.append(fn)
             yield fn
 
     def _return_root_paths_count(*args, **kwargs):
-        out.count = 0
-        return _return_root_paths(*args, **kwargs)
+        path_counter.calls.append("_return_root_paths")
+        path_counter.count = 0
+        out = _return_root_paths(*args, **kwargs)
+        path_counter.files.extend(out)
+        return out
 
     def get_entity_vals_count(*args, **kwargs):
-        out.calls.append("get_entity_vals")
-        out.count = 0
-        return get_entity_vals(*args, **kwargs)
+        path_counter.calls.append("get_entity_vals")
+        path_counter.count = 0
+        out = get_entity_vals(*args, **kwargs)
+        path_counter.files.extend(out)
+        return out
 
     def get_datatypes_count(*args, **kwargs):
-        out.calls.append("get_datatypes")
-        out.count = 0
-        return get_datatypes(*args, **kwargs)
+        path_counter.calls.append("get_datatypes")
+        path_counter.count = 0
+        out = get_datatypes(*args, **kwargs)
+        path_counter.files.extend(out)
+        return out
 
     orig_find = mne_bids.path._find_matching_sidecar
 
     def _find_matching_sidecar_count(*args, **kwargs):
-        out.calls.append("_find_matching_sidecar")
-        out.count = 0
-        return orig_find(*args, **kwargs)
+        path_counter.calls.append("_find_matching_sidecar")
+        path_counter.count = 0
+        out = orig_find(*args, **kwargs)
+        path_counter.files.extend(out)
+        return out
 
     def _path_glob_iglob(root, pattern):
         # Reroute Path.glob through iglob to count accesses
@@ -304,10 +316,13 @@ def path_counter(monkeypatch):
         ]
 
     def _os_walk_count(*args, **kwargs):
-        out.count = 0
+        path_counter.count = 0
+        path_counter.calls.append("os.walk")
         for dirpath, dirs, files in orig_walk(*args, **kwargs):
-            out.count += len(files) + len(dirs)
-            yield dirpath, dirs, files
+            path_counter.count += len(files) + len(dirs)
+            out = dirpath, dirs, files
+            path_counter.files.extend(files)
+            yield out
 
     monkeypatch.setattr(glob, "iglob", iglob_count)
     monkeypatch.setattr(mne_bids.path, "_path_glob", _path_glob_iglob)
@@ -319,7 +334,7 @@ def path_counter(monkeypatch):
         mne_bids.path, "_find_matching_sidecar", _find_matching_sidecar_count
     )
     monkeypatch.setattr(os, "walk", _os_walk_count)
-    yield out
+    yield path_counter
 
 
 @dataclass
