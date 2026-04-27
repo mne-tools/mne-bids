@@ -186,6 +186,9 @@ jobs:
       TZ: Europe/Berlin
       FORCE_COLOR: true
       MNE_BIDS_FILELOCK_TIMEOUT: 5  # be more stringent than it would be for end-users
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
     - uses: actions/checkout@v6
       with:
@@ -279,7 +282,6 @@ jobs:
         popd
 
     - name: Display versions and environment information
-      shell: bash
       run: |
         echo $TZ
         date
@@ -307,7 +309,6 @@ jobs:
     # Get testing data
     - run: ./tools/get_testing_version.sh
       working-directory: mne-python
-      shell: bash
       name: 'Get testing version'
 
     - uses: actions/cache@v5
@@ -316,12 +317,14 @@ jobs:
         path: ~/mne_data
       name: 'Cache testing data'
 
-    - run: ./tools/github_actions_download.sh
-      shell: bash
+    - run: |
+        ./tools/github_actions_download.sh
+        PATH=$(python -c "import mne; print(mne.datasets.testing.data_path(verbose=False))")
+        chmod -R a-w "$PATH"
       working-directory: mne-python
+      name: Get testing data and set it read-only
 
     - name: Run pytest
-      shell: bash
       run: make test
 
     - name: Upload coverage stats to codecov

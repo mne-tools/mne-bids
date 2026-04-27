@@ -2036,9 +2036,7 @@ def test_find_emptyroom_ties(tmp_path):
 
     raw = _read_raw_fif(raw_fname)
 
-    er_raw_fname = data_path / "MEG" / "sample" / "ernoise_raw.fif"
-    raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
-    er_raw = _read_raw_fif(er_raw_fname)
+    er_raw = raw.copy().crop(0, 10)
     raw.set_meas_date(meas_date)
     er_raw.set_meas_date(meas_date)
 
@@ -2077,9 +2075,7 @@ def test_find_emptyroom_no_meas_date(tmp_path):
     er_basename = er_bids_path.basename
     raw = _read_raw_fif(raw_fname)
 
-    er_raw_fname = data_path / "MEG" / "sample" / "ernoise_raw.fif"
-    raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
-    er_raw = _read_raw_fif(er_raw_fname)
+    er_raw = raw.copy().crop(0, 10)
     er_raw.set_meas_date(er_meas_date)
     er_raw.save(op.join(er_dir, f"{er_basename}_meg.fif"), overwrite=True)
 
