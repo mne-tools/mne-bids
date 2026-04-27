@@ -269,7 +269,9 @@ def path_counter(monkeypatch):
     orig_walk = os.walk
 
     def iglob_count(*args, **kwargs):
-        path_counter.calls.append("iglob")
+        # We might want this someday... but for now let's just limit "calls"
+        # to the ones that MBP defines...
+        # path_counter.calls.append("iglob")
         for fn in orig_iglob(*args, **kwargs):
             path_counter.count += 1
             path_counter.files.append(fn)
@@ -668,7 +670,7 @@ def test_rm(bids_root, capsys, tmp_path, path_counter, fast_sidecar):
 
     # Delete one run:
     deleted_paths = bids_path.match(ignore_json=False)
-    assert len(path_counter.calls) == 2
+    assert path_counter.calls == ["_return_root_paths"]
     want_path = (
         bids_path.directory
         / f"sub-{bids_path.subject}_ses-{bids_path.session}_scans.tsv"
@@ -683,14 +685,14 @@ def test_rm(bids_root, capsys, tmp_path, path_counter, fast_sidecar):
         )
     ]
     assert updated_paths[0] == want_path
+    assert path_counter.calls == ["_return_root_paths", "_find_matching_sidecar"]
     want_count = 0 if fast_sidecar else 1
-    assert len(path_counter.calls) == want_count
     assert path_counter.count == want_count
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
     expected += [str(p) for p in deleted_paths + updated_paths]
-    assert len(path_counter.calls) == 3
+    assert len(path_counter.calls) == 2
     bids_path.rm(safe_remove=False, verbose="INFO")
-    assert len(path_counter.calls) == 10
+    assert len(path_counter.calls) == 8
     captured = capsys.readouterr().out
     assert set(captured.splitlines()) == set(expected)
 
@@ -707,7 +709,7 @@ def test_rm(bids_root, capsys, tmp_path, path_counter, fast_sidecar):
             subject=bids_path.subject,
         ).directory
     ]
-    assert len(path_counter.calls) == 12
+    assert len(path_counter.calls) == 9
     updated_paths = [
         bids_path.copy()
         .update(datatype=None)
@@ -718,7 +720,7 @@ def test_rm(bids_root, capsys, tmp_path, path_counter, fast_sidecar):
         ),
         bids_path.root / "participants.tsv",
     ]
-    assert len(path_counter.calls) == 13
+    assert len(path_counter.calls) == 10
     assert path_counter.count == want_count
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
     expected += [str(p) for p in deleted_paths + updated_paths]
