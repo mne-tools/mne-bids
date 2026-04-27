@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.19.0.dev53+gd4741e55f documentation</title>
+    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.19.0.dev54+g5cc1958b6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=25726e7e"></script>
+    <script src="../../_static/documentation_options.js?v=e4a6ab47"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev53+gd4741e55f" />
+  <meta name="docsearch:version" content="0.19.0.dev54+g5cc1958b6" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev53+gd4741e55f documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev54+g5cc1958b6 documentation</p>
   
 </a></div>
     
@@ -511,7 +511,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids._fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">_open_lock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids._fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">_chmod_rw_R</span><span class="p">,</span> <span class="n">_open_lock</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_parse_ext</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">warn</span>
 
@@ -525,6 +525,14 @@
         <span class="c1"># the copy is successful (see https://bugs.python.org/issue24564)</span>
         <span class="k">if</span> <span class="s2">&quot;[Errno 22]&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
             <span class="k">raise</span>
+    <span class="c1"># set reasonable perms for new files (writeable by user at least)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_chmod_rw_R</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not set write permissions for </span><span class="si">{</span><span class="n">dst</span><span class="si">}</span><span class="s2"> and its subdirectories, &quot;</span>
+            <span class="s2">&quot;please check the permissions of the copied files.&quot;</span>
+        <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_kit_marker_acq_label</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">acquisition_label</span><span class="p">):</span>
@@ -554,7 +562,7 @@
 <span class="sd">        either &#39;UTF-8&#39; (default) or whatever encoding scheme is specified</span>
 <span class="sd">        in the header.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ef</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ef</span><span class="p">:</span>
         <span class="n">enc</span> <span class="o">=</span> <span class="n">ef</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">enc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Codepage=&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">enc</span> <span class="o">=</span> <span class="n">enc</span><span class="p">[</span><span class="n">enc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Codepage=&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">9</span> <span class="p">:]</span>
@@ -591,7 +599,7 @@
     <span class="n">enc</span> <span class="o">=</span> <span class="n">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
 
     <span class="c1"># ..and read it</span>
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
     <span class="c1"># Try to find data file .eeg/.dat</span>
@@ -680,6 +688,7 @@
     <span class="n">bids_folder_name</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dest</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
         <span class="n">ext</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># ensure it&#39;s writeable before trying to rename it</span>
         <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">fname</span><span class="p">),</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">bids_folder_name</span> <span class="o">+</span> <span class="n">ext</span><span class="p">))</span></div>
 
 
@@ -919,14 +928,14 @@
         <span class="sa">f</span><span class="s2">&quot;MarkerFile=</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.vmrk&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="n">search_lines</span><span class="p">:</span>
                     <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">basename_src</span><span class="p">,</span> <span class="n">basename_dest</span><span class="p">)</span>
                 <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s2">&quot;.vmrk&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="n">search_lines</span><span class="p">:</span>

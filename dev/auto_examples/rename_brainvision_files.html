@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Rename BrainVision EEG data files &#8212; MNE-BIDS 0.19.0.dev53+gd4741e55f documentation</title>
+    <title>Rename BrainVision EEG data files &#8212; MNE-BIDS 0.19.0.dev54+g5cc1958b6 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=25726e7e"></script>
+    <script src="../_static/documentation_options.js?v=e4a6ab47"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -82,7 +82,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev53+gd4741e55f" />
+  <meta name="docsearch:version" content="0.19.0.dev54+g5cc1958b6" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -151,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev53+gd4741e55f documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev54+g5cc1958b6 documentation</p>
   
 </a></div>
     
@@ -560,7 +560,9 @@ for the <a class="reference internal" href="../generated/cli.html#python-cli"><s
 </pre></div>
 </div>
 <p>We are importing everything we need for this example:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.copyfiles</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision" class="sphx-glr-backref-module-mne_bids-copyfiles sphx-glr-backref-type-py-function"><span class="n">copyfile_brainvision</span></a>
 </pre></div>
@@ -595,7 +597,7 @@ with the second argument.</p>
 <p>Here, we rename a test file name:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Rename the file</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">examples_dir</span></a> <span class="o">/</span> <span class="s2">&quot;Analyzer_nV_Export.vhdr&quot;</span>
-<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">examples_dir</span></a> <span class="o">/</span> <span class="s2">&quot;test_renamed.vhdr&quot;</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.cwd" title="pathlib.Path.cwd" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span></a><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;test_renamed.vhdr&quot;</span>
 <a href="../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision" class="sphx-glr-backref-module-mne_bids-copyfiles sphx-glr-backref-type-py-function"><span class="n">copyfile_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Check that MNE-Python can read in both, the original as well as the renamed</span>
@@ -604,12 +606,12 @@ with the second argument.</p>
 <span class="n">raw_renamed</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Created &quot;test_renamed.eeg&quot; in &quot;/home/circleci/mne_data/MNE-testing-data/Brainvision&quot;.
-Created &quot;test_renamed.vhdr&quot; in &quot;/home/circleci/mne_data/MNE-testing-data/Brainvision&quot;.
-Created &quot;test_renamed.vmrk&quot; in &quot;/home/circleci/mne_data/MNE-testing-data/Brainvision&quot;.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Created &quot;test_renamed.eeg&quot; in &quot;/home/circleci/project/examples&quot;.
+Created &quot;test_renamed.vhdr&quot; in &quot;/home/circleci/project/examples&quot;.
+Created &quot;test_renamed.vmrk&quot; in &quot;/home/circleci/project/examples&quot;.
 Extracting parameters from /home/circleci/mne_data/MNE-testing-data/Brainvision/Analyzer_nV_Export.vhdr...
 Setting channel info structure...
-Extracting parameters from /home/circleci/mne_data/MNE-testing-data/Brainvision/test_renamed.vhdr...
+Extracting parameters from /home/circleci/project/examples/test_renamed.vhdr...
 Setting channel info structure...
 </pre></div>
 </div>
@@ -630,7 +632,7 @@ electroencephalography. Sci Data 6, 103 (2019).
 <a class="reference external" href="https://doi.org/10.1038/s41597-019-0104-8">https://doi.org/10.1038/s41597-019-0104-8</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.024 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.025 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-rename-brainvision-files-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fecfce9ee6664349717e6262ae61875d/rename_brainvision_files.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">rename_brainvision_files.ipynb</span></code></a></p>
