@@ -3722,7 +3722,7 @@ def test_write_extension_case_insensitive(_bids_validate, tmp_path, datatype):
     bids_root = tmp_path / "bids1"
     dir_path = Path(bids_root) / "sourcedata"
     sh.copytree(data_path / dir_name, dir_path)
-    _chmod_rw_R(bids_root)
+    _chmod_rw_R(dir_path)
 
     # rename extension to upper-case
     _fname, ext = _parse_ext(fname)
