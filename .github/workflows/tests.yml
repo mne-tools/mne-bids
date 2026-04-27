@@ -180,6 +180,9 @@ jobs:
             mne-version: mne-stable
             mne-bids-install: full
             bids-validator-version: stable
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
     - uses: actions/checkout@v6
       with:
@@ -228,7 +231,6 @@ jobs:
         python -m pip install -e ./mne-python
 
     - name: Display versions and environment information
-      shell: bash
       run: |
         echo $TZ
         date
@@ -254,7 +256,6 @@ jobs:
     # Get testing data
     - run: ./tools/get_testing_version.sh
       working-directory: mne-python
-      shell: bash
       name: 'Get testing version'
 
     - uses: actions/cache@v5
@@ -263,12 +264,15 @@ jobs:
         path: ~/mne_data
       name: 'Cache testing data'
 
-    - run: ./tools/github_actions_download.sh
-      shell: bash
+    - run: |
+        ./tools/github_actions_download.sh
+        TEST_PATH=$(python -c "import mne; print(mne.datasets.testing.data_path(verbose=False))")
+        echo "Testing data path: $TEST_PATH"
+        chmod -R a-w "$TEST_PATH"
       working-directory: mne-python
+      name: 'Get testing data and set it read-only'
 
     - name: Run pytest
-      shell: bash
       run: make test
 
     - name: Upload coverage stats to codecov

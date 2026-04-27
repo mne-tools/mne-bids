@@ -168,3 +168,13 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
                 yield fid
             else:
                 yield None
+
+
+def _chmod_rw_R(path):
+    assert os.path.isdir(path), f"Expected a directory, got {path}"
+    os.chmod(path, os.stat(path).st_mode | 0o770)
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            os.chmod(os.path.join(root, name), 0o660)
+        for name in dirs:
+            os.chmod(os.path.join(root, name), 0o770)

@@ -20,7 +20,7 @@ from mne.io import anonymize_info, read_raw_bdf, read_raw_brainvision, read_raw_
 from mne.utils import logger, verbose
 from scipy.io import loadmat, savemat
 
-from mne_bids._fileio import _open_lock
+from mne_bids._fileio import _chmod_rw_R, _open_lock
 from mne_bids.path import BIDSPath, _mkdir_p, _parse_ext
 from mne_bids.utils import _check_anonymize, _get_mrk_meas_date, warn
 
@@ -34,6 +34,14 @@ def _copytree(src, dst, **kwargs):
         # the copy is successful (see https://bugs.python.org/issue24564)
         if "[Errno 22]" not in str(error) or not op.exists(dst):
             raise
+    # set reasonable perms for new files (writeable by user at least)
+    try:
+        _chmod_rw_R(dst)
+    except Exception:  # pragma: no cover
+        warn(
+            f"Could not set write permissions for {dst} and its subdirectories, "
+            "please check the permissions of the copied files."
+        )
 
 
 def _kit_marker_acq_label(run, acquisition_label):
@@ -63,7 +71,7 @@ def _get_brainvision_encoding(vhdr_file):
         either 'UTF-8' (default) or whatever encoding scheme is specified
         in the header.
     """
-    with _open_lock(vhdr_file, "rb") as ef:
+    with open(vhdr_file, "rb") as ef:
         enc = ef.read()
         if enc.find(b"Codepage=") != -1:
             enc = enc[enc.find(b"Codepage=") + 9 :]
@@ -100,7 +108,7 @@ def _get_brainvision_paths(vhdr_path):
     enc = _get_brainvision_encoding(vhdr_path)
 
     # ..and read it
-    with _open_lock(vhdr_path, encoding=enc) as f:
+    with open(vhdr_path, encoding=enc) as f:
         lines = f.readlines()
 
     # Try to find data file .eeg/.dat
@@ -187,6 +195,7 @@ def copyfile_ctf(src, dest):
     bids_folder_name = op.splitext(op.split(dest)[-1])[0]
     for fname in fnames:
         ext = op.splitext(fname)[-1]
+        # ensure it's writeable before trying to rename it
         os.replace(op.join(dest, fname), op.join(dest, bids_folder_name + ext))
 
 
@@ -417,14 +426,14 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
         f"MarkerFile={basename_src}.vmrk",
     ]
 
-    with _open_lock(vhdr_src, encoding=enc) as fin:
+    with open(vhdr_src, encoding=enc) as fin:
         with _open_lock(vhdr_dest, "w", encoding=enc) as fout:
             for line in fin.readlines():
                 if line.strip() in search_lines:
                     line = line.replace(basename_src, basename_dest)
                 fout.write(line)
 
-    with _open_lock(vmrk_file_path, encoding=enc) as fin:
+    with open(vmrk_file_path, encoding=enc) as fin:
         with _open_lock(fname_dest + ".vmrk", "w", encoding=enc) as fout:
             for line in fin.readlines():
                 if line.strip() in search_lines:
