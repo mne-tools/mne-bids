@@ -64,8 +64,7 @@ full = [
   "defusedxml",  # For reading EGI MFF data and BrainVision montages
   "edfio >= 0.4.10",
   "eeglabio >= 0.1.0",
-  "filelock >= 3.20.4; sys_platform == 'darwin'",
-  "filelock; sys_platform != 'darwin'",
+  "filelock >= 3.20.4",
   "h5py!=3.15.0",  # temporary fix until h5py 3.15.1 is released
   "hedtools",  # For HED (Hierarchical Event Descriptors) annotation support
   "matplotlib >= 3.6",

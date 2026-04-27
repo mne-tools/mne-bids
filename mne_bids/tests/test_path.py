@@ -112,12 +112,16 @@ def test_get_datatypes(bids_root_dense, bids_root, path_counter):
     assert path_counter.count == 108
 
 
+_ROOT_NUM = 9
+_SUB_NUM = 22
+
+
 @pytest.mark.parametrize(
     "entity, expected_vals, kwargs, count",
     [
         pytest.param("bogus", None, None, 0, id="bogus"),
-        pytest.param("subject", [subject_id], None, 9, id="subject"),
-        pytest.param("session", [session_id], None, 9, id="session"),
+        pytest.param("subject", [subject_id], None, _ROOT_NUM, id="subject"),
+        pytest.param("session", [session_id], None, _ROOT_NUM, id="session"),
         pytest.param(
             "session",
             [],
@@ -126,47 +130,63 @@ def test_get_datatypes(bids_root_dense, bids_root, path_counter):
                 ignore_acquisitions=("calibration", "crosstalk"),
                 ignore_suffixes=("scans", "coordsystem"),
             ),
-            9,
+            _ROOT_NUM,
             id="session_ignore_kinds",
         ),
-        pytest.param("run", [run, "02"], None, 22, id="run"),
+        pytest.param("run", [run, "02"], None, _SUB_NUM, id="run"),
         pytest.param(
-            "acquisition", ["calibration", "crosstalk"], None, 22, id="acquisition"
+            "acquisition",
+            ["calibration", "crosstalk"],
+            None,
+            _SUB_NUM,
+            id="acquisition",
         ),
-        pytest.param("task", [task], None, 22, id="task"),
+        pytest.param("task", [task], None, _SUB_NUM, id="task"),
         pytest.param(
-            "subject", [], dict(ignore_subjects=[subject_id]), 9, id="subject_ignore"
+            "subject",
+            [],
+            dict(ignore_subjects=[subject_id]),
+            _ROOT_NUM,
+            id="subject_ignore",
         ),
         pytest.param(
             "subject",
             [],
             dict(ignore_subjects=subject_id),
-            9,
+            _ROOT_NUM,
             id="subject_ignore_single",
         ),
         pytest.param(
             "session",
             [],
             dict(ignore_sessions=[session_id]),
-            9,
+            _ROOT_NUM,
             id="session_ignore_sessions",
         ),
         pytest.param(
             "session",
             [],
             dict(ignore_sessions=session_id),
-            9,
+            _ROOT_NUM,
             id="session_ignore_single",
         ),
-        pytest.param("run", [run], dict(ignore_runs=["02"]), 22, id="run_ignore"),
-        pytest.param("run", [run], dict(ignore_runs="02"), 22, id="run_ignore_single"),
-        pytest.param("task", [], dict(ignore_tasks=[task]), 22, id="task_ignore"),
-        pytest.param("task", [], dict(ignore_tasks=task), 22, id="task_ignore_single"),
+        pytest.param("run", [run], dict(ignore_runs=["02"]), _SUB_NUM, id="run_ignore"),
         pytest.param(
-            "run", [run, "02"], dict(ignore_runs=["bogus"]), 22, id="run_ignore_bogus"
+            "run", [run], dict(ignore_runs="02"), _SUB_NUM, id="run_ignore_single"
+        ),
+        pytest.param("task", [], dict(ignore_tasks=[task]), _SUB_NUM, id="task_ignore"),
+        pytest.param(
+            "task", [], dict(ignore_tasks=task), _SUB_NUM, id="task_ignore_single"
         ),
         pytest.param(
-            "run", [], dict(ignore_datatypes=["meg"]), 22, id="ignore_datatypes"
+            "run",
+            [run, "02"],
+            dict(ignore_runs=["bogus"]),
+            _SUB_NUM,
+            id="run_ignore_bogus",
+        ),
+        pytest.param(
+            "run", [], dict(ignore_datatypes=["meg"]), _SUB_NUM, id="ignore_datatypes"
         ),
     ],
 )
@@ -268,14 +288,8 @@ def path_counter(monkeypatch):
     orig_iglob = glob.iglob
     orig_walk = os.walk
 
-    def iglob_count(*args, **kwargs):
-        # We might want this someday... but for now let's just limit "calls"
-        # to the ones that MBP defines...
-        # path_counter.calls.append("iglob")
-        for fn in orig_iglob(*args, **kwargs):
-            path_counter.count += 1
-            path_counter.files.append(fn)
-            yield fn
+    # Internal MBP functions should set .count=0 and .files=[] and append themselves
+    # to .calls. Builtin Python functions should increment .count and extend .files.
 
     def _return_root_paths_count(*args, **kwargs):
         path_counter.calls.append("_return_root_paths")
@@ -321,9 +335,13 @@ def path_counter(monkeypatch):
             root / f for f in glob.iglob(f"**/{pattern}", root_dir=root, recursive=True)
         ]
 
+    def _iglob_count(*args, **kwargs):
+        for fn in orig_iglob(*args, **kwargs):
+            path_counter.count += 1
+            path_counter.files.append(fn)
+            yield fn
+
     def _os_walk_count(top, **kwargs):
-        path_counter.count = 0
-        path_counter.calls.append("os.walk")
         for dirpath, dirs, files in orig_walk(top, **kwargs):
             path_counter.count += len(files) + len(dirs)
             out = dirpath, dirs, files
@@ -335,7 +353,7 @@ def path_counter(monkeypatch):
             )
             yield out
 
-    monkeypatch.setattr(glob, "iglob", iglob_count)
+    monkeypatch.setattr(glob, "iglob", _iglob_count)
     monkeypatch.setattr(mne_bids.path, "_path_glob", _path_glob_iglob)
     monkeypatch.setattr(mne_bids.path, "_path_rglob", _path_rglob_iglob)
     monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
