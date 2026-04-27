@@ -8,7 +8,6 @@ import glob
 import os
 import os.path as op
 import pickle
-import shutil
 import shutil as sh
 import timeit
 from dataclasses import dataclass
@@ -65,12 +64,12 @@ def test_datatypes_alphabetical():
 
 
 @pytest.fixture(
-    scope="session",
     params=[pytest.param("testing", marks=mne.datasets.testing._pytest_mark())],
 )
-def bids_test_dir(tmp_path_factory):
+def bids_root(tmp_path):
     """Return path to a written test BIDS dir."""
-    bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
+    bids_root = tmp_path / "mnebids_utils_test_bids_ds"
+    bids_root.mkdir()
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     event_id = {
@@ -103,12 +102,12 @@ def bids_test_dir(tmp_path_factory):
     return bids_root
 
 
-def test_get_datatypes(bids_test_dir_dense, bids_test_dir, path_counter):
+def test_get_datatypes(bids_root_dense, bids_root, path_counter):
     """Test getting the datatypes (=modalities) of a dir."""
-    modalities = mne_bids.get_datatypes(bids_test_dir)
+    modalities = mne_bids.get_datatypes(bids_root)
     assert modalities == ["meg"]
     assert path_counter.count == 2
-    modalities = mne_bids.get_datatypes(bids_test_dir_dense.root)
+    modalities = mne_bids.get_datatypes(bids_root_dense.root)
     assert modalities == ["eeg", "meg"]
     assert path_counter.count == 108
 
@@ -143,9 +142,8 @@ def test_get_datatypes(bids_test_dir_dense, bids_test_dir, path_counter):
         ("run", [], dict(ignore_datatypes=["meg"])),
     ],
 )
-def test_get_entity_vals(entity, expected_vals, kwargs, bids_test_dir):
+def test_get_entity_vals(entity, expected_vals, kwargs, bids_root):
     """Test getting a list of entities."""
-    bids_root = bids_test_dir
     # Add some derivative data that should be ignored by get_entity_vals()
     deriv_path = Path(bids_root) / "derivatives"
     deriv_meg_dir = deriv_path / "pipeline" / "sub-deriv" / "ses-deriv" / "meg"
@@ -159,35 +157,32 @@ def test_get_entity_vals(entity, expected_vals, kwargs, bids_test_dir):
     if entity == "bogus":
         with pytest.raises(ValueError, match="`key` must be one of"):
             get_entity_vals(root=bids_root, entity_key=entity, **kwargs)
-    else:
-        vals = get_entity_vals(root=bids_root, entity_key=entity, **kwargs)
-        assert vals == expected_vals
+        return
+    vals = get_entity_vals(root=bids_root, entity_key=entity, **kwargs)
+    assert vals == expected_vals
 
-        # test using ``with_key`` kwarg
-        entities = get_entity_vals(
-            root=bids_root, entity_key=entity, with_key=True, **kwargs
-        )
-        entity_long_to_short = {
-            val: key for key, val in ALLOWED_PATH_ENTITIES_SHORT.items()
-        }
-        assert entities == [
-            f"{entity_long_to_short[entity]}-{val}" for val in expected_vals
-        ]
+    # test using ``with_key`` kwarg
+    entities = get_entity_vals(
+        root=bids_root, entity_key=entity, with_key=True, **kwargs
+    )
+    entity_long_to_short = {
+        val: key for key, val in ALLOWED_PATH_ENTITIES_SHORT.items()
+    }
+    assert entities == [
+        f"{entity_long_to_short[entity]}-{val}" for val in expected_vals
+    ]
 
-        # Test without ignoring the derivatives dir
-        entities = get_entity_vals(
-            root=bids_root, entity_key=entity, **kwargs, ignore_dirs=None
-        )
-        if entity not in ("acquisition", "run"):
-            assert "deriv" in entities
-    # Clean up
-    shutil.rmtree(deriv_path)
+    # Test without ignoring the derivatives dir
+    entities = get_entity_vals(
+        root=bids_root, entity_key=entity, **kwargs, ignore_dirs=None
+    )
+    if entity not in ("acquisition", "run"):
+        assert "deriv" in entities
 
 
 @testing.requires_testing_data
-def test_get_entity_vals_ignore_hidden(bids_test_dir):
+def test_get_entity_vals_ignore_hidden(bids_root):
     """Test hidden directories are skipped by default and included when opted in."""
-    bids_root = bids_test_dir
     hidden_meg_dir = Path(bids_root) / ".hidden_data" / "sub-hid" / "ses-hid" / "meg"
     hidden_meg_dir.mkdir(parents=True)
     (hidden_meg_dir / "sub-hid_ses-hid_task-hid_meg.fif").touch()
@@ -227,9 +222,6 @@ def test_get_entity_vals_ignore_hidden(bids_test_dir):
         ignore_dirs=None,
     )
     assert "hid" in vals_include_hidden
-
-    # Clean up
-    shutil.rmtree(Path(bids_root) / ".hidden_data")
 
 
 @dataclass
@@ -310,9 +302,10 @@ class _BIDSDirDense:
 
 
 @pytest.fixture
-def bids_test_dir_dense(tmp_path_factory):
+def bids_root_dense(tmp_path):
     """Create a dense BIDS directory tree."""
-    tmp_bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
+    tmp_bids_root = tmp_path / "mnebids_utils_test_bids_ds"
+    tmp_bids_root.mkdir()
     out = _BIDSDirDense(root=tmp_bids_root, bids_subdirectories=[])
 
     derivatives = [
@@ -401,7 +394,7 @@ def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
     assert path_counter.count == 621
 
     # while this should be of same order, lets give it some space by a factor of 3
-    target = 3 * timed_all / len(bids_test_dir_dense.bids_subdirectories)
+    target = 3 * timed_all / len(bids_root_dense.bids_subdirectories)
     assert timed_ignored_nosub < target
 
     # these should be equivalent
@@ -605,11 +598,9 @@ def test_make_folders(tmp_path):
     os.chdir(curr_dir)
 
 
-def test_rm(bids_test_dir, capsys, tmp_path, path_counter, fast_sidecar):
+def test_rm(bids_root, capsys, tmp_path, path_counter, fast_sidecar):
     """Test BIDSPath's rm method to remove files."""
     # for some reason, mne's logger can't be captured by caplog....
-    bids_root = tmp_path / "mnebids_utils_test_bids_ds"
-    shutil.copytree(bids_test_dir, bids_root)
 
     # without providing all the entities, ambiguous when trying to use fpath
     bids_path = BIDSPath(
@@ -993,12 +984,8 @@ def test_find_best_candidates(candidate_list, best_candidates):
     assert _find_best_candidates(params, candidate_list) == best_candidates
 
 
-def test_find_matching_sidecar_basic(
-    bids_test_dir, tmp_path, path_counter, fast_sidecar
-):
+def test_find_matching_sidecar_basic(bids_root, tmp_path, path_counter, fast_sidecar):
     """Test finding a sidecar file from a BIDS dir."""
-    bids_root = bids_test_dir
-
     bids_path = _bids_path.copy().update(root=bids_root)
 
     # Now find a sidecar
@@ -1101,7 +1088,7 @@ def fast_sidecar(request, monkeypatch):
 
 @pytest.mark.parametrize("dataset", ("basic", "dense"))
 def test_find_matching_sidecar_fast(
-    bids_test_dir, bids_test_dir_dense, path_counter, fast_sidecar, dataset
+    bids_root, bids_root_dense, path_counter, fast_sidecar, dataset
 ):
     """Test that we can find sidecars with the fast shortcut method."""
     if dataset == "basic":
@@ -1110,7 +1097,7 @@ def test_find_matching_sidecar_fast(
             session="01",
             run="01",
             task="testing",
-            root=bids_test_dir,
+            root=bids_root,
         )
         datatype = "meg"
         call_count = 2
@@ -1119,10 +1106,11 @@ def test_find_matching_sidecar_fast(
             subject="1",
             session="1",
             task="audvis",
-            root=bids_test_dir_dense.root,
+            root=bids_root_dense.root,
         )
         datatype = "eeg"
         call_count = 1
+    del bids_root, bids_root_dense
     path.update(datatype=datatype)
     assert path.fpath.is_file()
 
@@ -1205,10 +1193,8 @@ def test_find_matching_sidecar_at_root(tmp_path, path_counter, fast_sidecar):
     assert path_counter.count == 2
 
 
-def test_bids_path_inference(bids_test_dir):
+def test_bids_path_inference(bids_root):
     """Test usage of BIDSPath object and fpath."""
-    bids_root = bids_test_dir
-
     # without providing all the entities, ambiguous when trying
     # to use fpath
     bids_path = BIDSPath(
@@ -1241,26 +1227,21 @@ def test_bids_path_inference(bids_test_dir):
         / "eeg"
         / f"{channels_fname.basename}.tsv"
     )
-    try:
-        extra_file.parent.mkdir(exist_ok=True, parents=True)
-        # Creates a new file and because of this new file, there is now
-        # ambiguity
-        with open(extra_file, "w", encoding="utf-8"):
-            pass
-        with pytest.raises(RuntimeError, match="Found data of more than one"):
-            channels_fname.fpath
+    extra_file.parent.mkdir(exist_ok=True, parents=True)
+    # Creates a new file and because of this new file, there is now
+    # ambiguity
+    with open(extra_file, "w", encoding="utf-8"):
+        pass
+    with pytest.raises(RuntimeError, match="Found data of more than one"):
+        channels_fname.fpath
 
-        # if you set datatype, now there is no ambiguity
-        channels_fname.update(datatype="eeg")
-        assert str(channels_fname.fpath) == str(extra_file)
-    finally:
-        shutil.rmtree(extra_file.parent)
+    # if you set datatype, now there is no ambiguity
+    channels_fname.update(datatype="eeg")
+    assert str(channels_fname.fpath) == str(extra_file)
 
 
-def test_bids_path(bids_test_dir):
+def test_bids_path(bids_root):
     """Test usage of BIDSPath object."""
-    bids_root = bids_test_dir
-
     bids_path = BIDSPath(
         subject=subject_id,
         session=session_id,
@@ -1588,10 +1569,8 @@ def test_filter_fnames(entities, expected_n_matches):
     assert len(output) == expected_n_matches
 
 
-def test_match_basic(bids_test_dir):
+def test_match_basic(bids_root):
     """Test retrieval of matching basenames."""
-    bids_root = bids_test_dir
-
     bids_path_01 = BIDSPath(root=bids_root)
     paths = bids_path_01.match()
     assert len(paths) == 9
@@ -1703,13 +1682,11 @@ def test_match_advanced(tmp_path):
     assert len(matches) == len(fnames), path
 
 
-def test_find_matching_paths(bids_test_dir):
+def test_find_matching_paths(bids_root):
     """We test by yielding the same results as BIDSPath.match().
 
     BIDSPath.match() is extensively tested above.
     """
-    bids_root = bids_test_dir
-
     # Check a few exemplary entities
     bids_path_01 = BIDSPath(root=bids_root)
     paths_match = bids_path_01.match(ignore_json=False)
@@ -1826,7 +1803,7 @@ def test_return_root_paths_entity_aware(tmp_path):
 
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
-def test_find_empty_room_basic(bids_test_dir, tmp_path):
+def test_find_empty_room_basic(tmp_path):
     """Test reading of empty room data."""
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     bids_root = tmp_path / "bids"
@@ -2111,10 +2088,8 @@ def test_bids_path_label_vs_index_entity():
     BIDSPath(subject="01", split=1)  # ok as <index> entity
 
 
-def test_meg_calibration_fpath(bids_test_dir, tmp_path):
+def test_meg_calibration_fpath(bids_root, tmp_path):
     """Test BIDSPath.meg_calibration_fpath."""
-    bids_root = bids_test_dir
-
     # File exists, so BIDSPath.meg_calibration_fpath should return a non-None
     # value.
     bids_path_ = _bids_path.copy().update(subject="01", root=bids_root)
@@ -2145,10 +2120,8 @@ def test_meg_calibration_fpath(bids_test_dir, tmp_path):
     assert bids_path_.meg_calibration_fpath is not None
 
 
-def test_meg_crosstalk_fpath(bids_test_dir, tmp_path):
+def test_meg_crosstalk_fpath(bids_root, tmp_path):
     """Test BIDSPath.meg_crosstalk_fpath."""
-    bids_root = bids_test_dir
-
     # File exists, so BIDSPath.crosstalk_fpath should return a non-None
     # value.
     bids_path = _bids_path.copy().update(subject="01", root=bids_root)
@@ -2179,39 +2152,39 @@ def test_meg_crosstalk_fpath(bids_test_dir, tmp_path):
     assert bids_path.meg_crosstalk_fpath is not None
 
 
-def test_datasetdescription_with_bidspath(bids_test_dir):
+def test_datasetdescription_with_bidspath(bids_root):
     """Test a BIDSPath can generate a valid path to dataset_description.json."""
     with pytest.raises(ValueError, match="Unallowed"):
         bids_path = BIDSPath(
-            root=bids_test_dir, suffix="dataset_description", extension=".json"
+            root=bids_root, suffix="dataset_description", extension=".json"
         )
 
     # initialization should work
     bids_path = BIDSPath(
-        root=bids_test_dir,
+        root=bids_root,
         suffix="dataset_description",
         extension=".json",
         check=False,
     )
     assert (
         bids_path.fpath.as_posix()
-        == Path(f"{bids_test_dir}/dataset_description.json").as_posix()
+        == Path(f"{bids_root}/dataset_description.json").as_posix()
     )
 
     # setting it via update should work
-    bids_path = BIDSPath(root=bids_test_dir, extension=".json", check=True)
+    bids_path = BIDSPath(root=bids_root, extension=".json", check=True)
     bids_path.update(suffix="dataset_description", check=False)
     assert (
         bids_path.fpath.as_posix()
-        == Path(f"{bids_test_dir}/dataset_description.json").as_posix()
+        == Path(f"{bids_root}/dataset_description.json").as_posix()
     )
 
 
-def test_update_check(bids_test_dir):
+def test_update_check(bids_root):
     """Test check argument is passed BIDSPath properly."""
-    bids_path = BIDSPath(root=bids_test_dir, check=False)
+    bids_path = BIDSPath(root=bids_root, check=False)
     bids_path.update(datatype="eyetrack")
-    assert bids_path.fpath.as_posix() == (bids_test_dir / "eyetrack").as_posix()
+    assert bids_path.fpath.as_posix() == (bids_root / "eyetrack").as_posix()
 
 
 def test_update_fail_check_no_change():
