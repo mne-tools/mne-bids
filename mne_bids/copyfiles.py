@@ -22,13 +22,13 @@ from scipy.io import loadmat, savemat
 
 from mne_bids._fileio import _open_lock
 from mne_bids.path import BIDSPath, _mkdir_p, _parse_ext
-from mne_bids.utils import _check_anonymize, _get_mrk_meas_date, warn
+from mne_bids.utils import _check_anonymize, _chmod_rw_R, _get_mrk_meas_date, warn
 
 
 def _copytree(src, dst, **kwargs):
     """See: https://github.com/jupyterlab/jupyterlab/pull/5150."""
     try:
-        sh.copytree(src, dst, copy_function=sh.copy, **kwargs)
+        sh.copytree(src, dst, **kwargs)
     except sh.Error as error:
         # ``copytree`` throws an error if copying to + from NFS even though
         # the copy is successful (see https://bugs.python.org/issue24564)
@@ -36,11 +36,7 @@ def _copytree(src, dst, **kwargs):
             raise
     # set reasonable perms for new files (writeable by user at least)
     try:
-        os.chmod(dst, os.stat(dst).st_mode | 0o700)
-        for root, dirs, _ in os.walk(dst):
-            for name in dirs:
-                dir_path = os.path.join(root, name)
-                os.chmod(dir_path, os.stat(dir_path).st_mode | 0o700)
+        _chmod_rw_R(dst)
     except Exception:  # pragma: no cover
         warn(
             f"Could not set write permissions for {dst} and its subdirectories, "
