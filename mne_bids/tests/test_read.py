@@ -977,7 +977,7 @@ def test_handle_scans_reading_brainvision(tmp_path):
     for test_scan in [test_scan_eeg, test_scan_vmrk]:
         _handle_scans_reading(tmp_path / test_scan["filename"][0], raw, bids_path)
 
-    with pytest.raises(ValueError, match="is not in list"):
+    with pytest.raises(ValueError, match="not in list"):
         _handle_scans_reading(tmp_path / test_scan_edf["filename"][0], raw, bids_path)
 
 
