@@ -65,7 +65,10 @@ def _get_lock_context(path, *, timeout=None, lock=True):
     canonical_path = _canonical_lock_path(path)
 
     filelock = _soft_import(
-        "filelock", purpose="parallel file I/O locking", strict=False
+        "filelock",
+        purpose="parallel file I/O locking",
+        strict=False,
+        min_version="3.20.4",
     )
 
     lock_path = canonical_path.with_name(f"{canonical_path.name}.lock")
