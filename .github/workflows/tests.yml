@@ -179,8 +179,7 @@ jobs:
             python-version: "3.13"
             mne-version: mne-stable
             mne-bids-install: full
-            bids-validator-version: validator-stable
-
+            bids-validator-version: stable
     defaults:
       run:
         shell: bash -el {0}
