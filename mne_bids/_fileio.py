@@ -165,3 +165,11 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
                 yield fid
             else:
                 yield None
+
+
+def _chmod_rw_R(path):
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            os.chmod(os.path.join(root, name), 0o660)
+        for name in dirs:
+            os.chmod(os.path.join(root, name), 0o770)
