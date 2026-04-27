@@ -45,6 +45,7 @@ from mne_bids import (
     write_meg_crosstalk,
     write_raw_bids,
 )
+from mne_bids._fileio import _chmod_rw_R
 from mne_bids.config import (
     BIDS_COORD_FRAME_DESCRIPTIONS,
     CURRYREADER_VERSION,
@@ -3719,18 +3720,17 @@ def test_write_extension_case_insensitive(_bids_validate, tmp_path, datatype):
     dir_name, fname, reader = "EDF", "test_reduced.edf", _read_raw_edf
 
     bids_root = tmp_path / "bids1"
-    source_path = Path(bids_root) / "sourcedata"
-    dir_path = data_path / dir_name
-    sh.copytree(dir_path, source_path)
-    dir_path = source_path
+    dir_path = Path(bids_root) / "sourcedata"
+    sh.copytree(data_path / dir_name, dir_path)
+    _chmod_rw_R(bids_root)
 
     # rename extension to upper-case
     _fname, ext = _parse_ext(fname)
     new_fname = _fname + ext.upper()
 
     # rename the file's extension
-    raw_fname = op.join(dir_path, fname)
-    new_raw_fname = op.join(dir_path, new_fname)
+    raw_fname = dir_path / fname
+    new_raw_fname = dir_path / new_fname
     os.rename(raw_fname, new_raw_fname)
 
     # the BIDSPath for test datasets to get written to
