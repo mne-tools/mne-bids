@@ -133,13 +133,18 @@ jobs:
     # 3.13 / mne-stable / full / validator-stable
     #
     # 4 additional checks with alternative MNE-Python and BIDS validator versions:
-    # ubuntu / 3.13 / mne-main / full / validator-main -->  to test cutting edge of everything
-    # ubuntu / 3.11 / mne-prev / full / validator-stable --> to test last supported of everything
+    # ubuntu / 3.13 / mne-main / full / validator-dev -->  to test cutting edge of everything
+    # ubuntu / 3.11 / mne-prev / full / validator-stable --> to test last supported mne
     # ubuntu / 3.13 / mne-stable / minimal / validator-stable --> to test a minimal installation
-    # ubuntu / 3.13 / mne-stable / full / validator-main-schema --> to test next-gen BIDS validator
     # macos-15-intel / 3.13 / mne-stable / full / validator-stable --> to test macos x86_64
+    name: test (${{ matrix.os }}, ${{ matrix.python-version }}, ${{ matrix.mne-version }}, ${{ matrix.mne-bids-install }}, validator-${{ matrix.bids-validator-version }})
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
+    env:
+      BIDS_VALIDATOR_VERSION: ${{ matrix.bids-validator-version }}
+      TZ: Europe/Berlin
+      FORCE_COLOR: true
+      MNE_BIDS_FILELOCK_TIMEOUT: 5  # be more stringent than it would be for end-users
     strategy:
       fail-fast: false
       matrix:
@@ -147,7 +152,7 @@ jobs:
         python-version: ["3.11", "3.13"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         mne-bids-install: [full]
-        bids-validator-version: [validator-stable]
+        bids-validator-version: [stable]
 
         include:
           # special test runs running only on single CI systems to save resources
@@ -156,53 +161,35 @@ jobs:
             python-version: "3.13"
             mne-version: mne-main
             mne-bids-install: full
-            bids-validator-version: validator-main
+            bids-validator-version: dev
           # Test previous MNE stable version
           - os: ubuntu-latest
             python-version: "3.11"
             mne-version: mne-prev-stable
             mne-bids-install: full
-            bids-validator-version: validator-stable
+            bids-validator-version: stable
           # Test minimal mne-bids install
           - os: ubuntu-latest
             python-version: "3.13"
             mne-version: mne-stable
             mne-bids-install: minimal
-            bids-validator-version: validator-stable
-          # Test next gen BIDS schema validator
-          - os: ubuntu-latest
-            python-version: "3.13"
-            mne-version: mne-stable
-            mne-bids-install: full
-            bids-validator-version: validator-main-schema
+            bids-validator-version: stable
           # Test macos on x86_64 architecture
           - os: macos-15-intel
             python-version: "3.13"
             mne-version: mne-stable
             mne-bids-install: full
-            bids-validator-version: validator-stable
-
-    env:
-      TZ: Europe/Berlin
-      FORCE_COLOR: true
-      MNE_BIDS_FILELOCK_TIMEOUT: 5  # be more stringent than it would be for end-users
+            bids-validator-version: stable
     steps:
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
 
-    - name: Set up Node.js (validator-stable and validator-main)
-      if: matrix.bids-validator-version == 'validator-stable' || matrix.bids-validator-version == 'validator-main'
-      uses: actions/setup-node@v6
-      with:
-        node-version: 20
-
-    - name: Set up deno (validator-main-schema)
-      if: matrix.bids-validator-version == 'validator-main-schema'
+    - name: Set up deno
       uses: denoland/setup-deno@v2
       with:
-        deno-version: v1.x
+        deno-version: lts
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
@@ -240,53 +227,13 @@ jobs:
         git clone --single-branch --branch main https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python
 
-    - name: Install BIDS validator (stable)
-      if: matrix.bids-validator-version == 'validator-stable'
-      run: |
-        npm install -g bids-validator
-
-    - name: Install BIDS validator (main-schema)
-      if: matrix.bids-validator-version == 'validator-main-schema'
-      # Follow documentation here:
-      #  - https://github.com/bids-standard/bids-validator/tree/master/bids-validator/src
-      #  - https://github.com/bids-standard/bids-examples/blob/7c18d6840982518a0251cfeb59fe5c4610099ea1/.github/workflows/validate_datasets.yml#L69-L75
-      #
-      # Note: in the future, we may want to make it easy to use:
-      #  - a different version of the validator (stable, main)
-      #  - a different version of the schema (stable, main)
-      run: |
-        deno install -Agf https://github.com/bids-standard/bids-validator/raw/deno-build/bids-validator.js
-
-    - name: Download BIDS validator (main)
-      if: matrix.bids-validator-version == 'validator-main'
-      run: |
-        pushd ..
-        git clone --depth 1 https://github.com/bids-standard/legacy-validator
-        popd
-
-    - name: Install BIDS validator (main)
-      if: matrix.bids-validator-version == 'validator-main'
-      run: |
-        pushd ../legacy-validator
-        # Generate the full development node_modules
-        npm install
-        # Build & bundle the bids-validator CLI package
-        npm -w bids-validator run build
-        # Generate a package to install globally
-        npm -w bids-validator pack
-        # Install the package globally
-        npm install -g bids-validator-*.tgz
-        popd
-
     - name: Display versions and environment information
       shell: bash
       run: |
         echo $TZ
         date
-        echo "(npm version)"; npm --version
-        echo "node"; node --version
         echo "(deno version)"; deno --version || echo ""
-        echo "(bids-validator version)"; bids-validator --version
+        echo "(Requested bids-validator version)"; echo "$BIDS_VALIDATOR_VERSION"
         echo "(python version)"; python --version
         echo "(which python)"; which python
         mne sys_info
