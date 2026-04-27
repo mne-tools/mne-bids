@@ -189,8 +189,6 @@ def test_get_entity_vals(entity, expected_vals, kwargs, count, bids_root, path_c
     assert path_counter.count == 0
     vals = get_entity_vals(root=bids_root, entity_key=entity, **kwargs)
     assert path_counter.count == count
-    if entity == "subject":
-        1 / 0
     assert vals == expected_vals
 
     # test using ``with_key`` kwarg
