@@ -113,12 +113,12 @@ def test_get_datatypes(bids_root_dense, bids_root, path_counter):
 
 
 @pytest.mark.parametrize(
-    "entity, expected_vals, kwargs",
+    "entity, expected_vals, kwargs, count",
     [
-        ("bogus", None, None),
-        ("subject", [subject_id], None),
-        ("session", [session_id], None),
-        (
+        pytest.param("bogus", None, None, 0, id="bogus"),
+        pytest.param("subject", [subject_id], None, 9, id="subject"),
+        pytest.param("session", [session_id], None, 9, id="session"),
+        pytest.param(
             "session",
             [],
             dict(
@@ -126,23 +126,51 @@ def test_get_datatypes(bids_root_dense, bids_root, path_counter):
                 ignore_acquisitions=("calibration", "crosstalk"),
                 ignore_suffixes=("scans", "coordsystem"),
             ),
+            9,
+            id="session_ignore_kinds",
         ),
-        ("run", [run, "02"], None),
-        ("acquisition", ["calibration", "crosstalk"], None),
-        ("task", [task], None),
-        ("subject", [], dict(ignore_subjects=[subject_id])),
-        ("subject", [], dict(ignore_subjects=subject_id)),
-        ("session", [], dict(ignore_sessions=[session_id])),
-        ("session", [], dict(ignore_sessions=session_id)),
-        ("run", [run], dict(ignore_runs=["02"])),
-        ("run", [run], dict(ignore_runs="02")),
-        ("task", [], dict(ignore_tasks=[task])),
-        ("task", [], dict(ignore_tasks=task)),
-        ("run", [run, "02"], dict(ignore_runs=["bogus"])),
-        ("run", [], dict(ignore_datatypes=["meg"])),
+        pytest.param("run", [run, "02"], None, 22, id="run"),
+        pytest.param(
+            "acquisition", ["calibration", "crosstalk"], None, 22, id="acquisition"
+        ),
+        pytest.param("task", [task], None, 22, id="task"),
+        pytest.param(
+            "subject", [], dict(ignore_subjects=[subject_id]), 9, id="subject_ignore"
+        ),
+        pytest.param(
+            "subject",
+            [],
+            dict(ignore_subjects=subject_id),
+            9,
+            id="subject_ignore_single",
+        ),
+        pytest.param(
+            "session",
+            [],
+            dict(ignore_sessions=[session_id]),
+            9,
+            id="session_ignore_sessions",
+        ),
+        pytest.param(
+            "session",
+            [],
+            dict(ignore_sessions=session_id),
+            9,
+            id="session_ignore_single",
+        ),
+        pytest.param("run", [run], dict(ignore_runs=["02"]), 22, id="run_ignore"),
+        pytest.param("run", [run], dict(ignore_runs="02"), 22, id="run_ignore_single"),
+        pytest.param("task", [], dict(ignore_tasks=[task]), 22, id="task_ignore"),
+        pytest.param("task", [], dict(ignore_tasks=task), 22, id="task_ignore_single"),
+        pytest.param(
+            "run", [run, "02"], dict(ignore_runs=["bogus"]), 22, id="run_ignore_bogus"
+        ),
+        pytest.param(
+            "run", [], dict(ignore_datatypes=["meg"]), 22, id="ignore_datatypes"
+        ),
     ],
 )
-def test_get_entity_vals(entity, expected_vals, kwargs, bids_root):
+def test_get_entity_vals(entity, expected_vals, kwargs, count, bids_root, path_counter):
     """Test getting a list of entities."""
     # Add some derivative data that should be ignored by get_entity_vals()
     deriv_path = Path(bids_root) / "derivatives"
@@ -158,7 +186,9 @@ def test_get_entity_vals(entity, expected_vals, kwargs, bids_root):
         with pytest.raises(ValueError, match="`key` must be one of"):
             get_entity_vals(root=bids_root, entity_key=entity, **kwargs)
         return
+    assert path_counter.count == 0
     vals = get_entity_vals(root=bids_root, entity_key=entity, **kwargs)
+    assert path_counter.count == count
     assert vals == expected_vals
 
     # test using ``with_key`` kwarg
