@@ -20,9 +20,9 @@ from mne.io import anonymize_info, read_raw_bdf, read_raw_brainvision, read_raw_
 from mne.utils import logger, verbose
 from scipy.io import loadmat, savemat
 
-from mne_bids._fileio import _open_lock
+from mne_bids._fileio import _chmod_rw_R, _open_lock
 from mne_bids.path import BIDSPath, _mkdir_p, _parse_ext
-from mne_bids.utils import _check_anonymize, _chmod_rw_R, _get_mrk_meas_date, warn
+from mne_bids.utils import _check_anonymize, _get_mrk_meas_date, warn
 
 
 def _copytree(src, dst, **kwargs):
