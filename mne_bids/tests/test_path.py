@@ -189,6 +189,8 @@ def test_get_entity_vals(entity, expected_vals, kwargs, count, bids_root, path_c
     assert path_counter.count == 0
     vals = get_entity_vals(root=bids_root, entity_key=entity, **kwargs)
     assert path_counter.count == count
+    if entity == "subject":
+        1 / 0
     assert vals == expected_vals
 
     # test using ``with_key`` kwarg
@@ -315,13 +317,18 @@ def path_counter(monkeypatch):
             root / f for f in glob.iglob(f"**/{pattern}", root_dir=root, recursive=True)
         ]
 
-    def _os_walk_count(*args, **kwargs):
+    def _os_walk_count(top, **kwargs):
         path_counter.count = 0
         path_counter.calls.append("os.walk")
-        for dirpath, dirs, files in orig_walk(*args, **kwargs):
+        for dirpath, dirs, files in orig_walk(top, **kwargs):
             path_counter.count += len(files) + len(dirs)
             out = dirpath, dirs, files
-            path_counter.files.extend(files)
+            path_counter.files.extend(
+                os.path.join(os.path.relpath(dirpath, top), d) for d in dirs
+            )
+            path_counter.files.extend(
+                os.path.join(os.path.relpath(dirpath, top), f) for f in files
+            )
             yield out
 
     monkeypatch.setattr(glob, "iglob", iglob_count)
