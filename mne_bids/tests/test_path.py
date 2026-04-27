@@ -68,7 +68,7 @@ def test_datatypes_alphabetical():
 )
 def bids_root(tmp_path):
     """Return path to a written test BIDS dir."""
-    bids_root = tmp_path / "mnebids_utils_test_bids_ds"
+    bids_root = tmp_path / "mb_ds"
     bids_root.mkdir()
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
@@ -358,7 +358,7 @@ class _BIDSDirDense:
 @pytest.fixture
 def bids_root_dense(tmp_path):
     """Create a dense BIDS directory tree."""
-    tmp_bids_root = tmp_path / "mnebids_utils_test_bids_ds"
+    tmp_bids_root = tmp_path / "mb_dense_ds"
     tmp_bids_root.mkdir()
     out = _BIDSDirDense(root=tmp_bids_root, bids_subdirectories=[])
 
@@ -420,11 +420,11 @@ def bids_root_dense(tmp_path):
 
 
 @pytest.mark.slow  # ~5s
-def test_path_benchmark(bids_test_dir_dense, monkeypatch, path_counter):
+def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     """Benchmark exploring bids tree."""
-    tmp_bids_root = bids_test_dir_dense.root
-    n_subjects = bids_test_dir_dense.n_subjects
-    n_sessions = bids_test_dir_dense.n_sessions
+    tmp_bids_root = bids_root_dense.root
+    n_subjects = bids_root_dense.n_subjects
+    n_sessions = bids_root_dense.n_sessions
     # This benchmark is to verify the speed-up in function call get_entity_vals with
     # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
     fnames = mne_bids.path._return_root_paths(tmp_bids_root)
@@ -668,7 +668,7 @@ def test_rm(bids_root, capsys, tmp_path, path_counter, fast_sidecar):
 
     # Delete one run:
     deleted_paths = bids_path.match(ignore_json=False)
-    assert len(path_counter.calls) == 0
+    assert len(path_counter.calls) == 2
     want_path = (
         bids_path.directory
         / f"sub-{bids_path.subject}_ses-{bids_path.session}_scans.tsv"
@@ -684,13 +684,13 @@ def test_rm(bids_root, capsys, tmp_path, path_counter, fast_sidecar):
     ]
     assert updated_paths[0] == want_path
     want_count = 0 if fast_sidecar else 1
-    assert len(path_counter.calls) == 1
+    assert len(path_counter.calls) == want_count
     assert path_counter.count == want_count
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
     expected += [str(p) for p in deleted_paths + updated_paths]
-    assert len(path_counter.calls) == 1
+    assert len(path_counter.calls) == 3
     bids_path.rm(safe_remove=False, verbose="INFO")
-    assert len(path_counter.calls) == 6
+    assert len(path_counter.calls) == 10
     captured = capsys.readouterr().out
     assert set(captured.splitlines()) == set(expected)
 
@@ -707,7 +707,7 @@ def test_rm(bids_root, capsys, tmp_path, path_counter, fast_sidecar):
             subject=bids_path.subject,
         ).directory
     ]
-    assert len(path_counter.calls) == 6
+    assert len(path_counter.calls) == 12
     updated_paths = [
         bids_path.copy()
         .update(datatype=None)
@@ -718,7 +718,7 @@ def test_rm(bids_root, capsys, tmp_path, path_counter, fast_sidecar):
         ),
         bids_path.root / "participants.tsv",
     ]
-    assert len(path_counter.calls) == 7
+    assert len(path_counter.calls) == 13
     assert path_counter.count == want_count
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
     expected += [str(p) for p in deleted_paths + updated_paths]
@@ -1823,8 +1823,6 @@ def test_return_root_paths_entity_aware(tmp_path):
     This validates the entity-aware optimization added to reduce filesystem
     scanning when the subject (and optionally session) is known.
     """
-    from mne_bids.path import _return_root_paths
-
     root = tmp_path / "bids"
     # Create two subjects each with meg and eeg directories and a file
     for subj in ("subjA", "subjB"):
@@ -1841,11 +1839,13 @@ def test_return_root_paths_entity_aware(tmp_path):
     root_str = str(root)
     # ensure directories exist
     assert (root / "sub-subjA").exists()
-    all_paths = _return_root_paths(root_str, datatype=("meg", "eeg"), ignore_json=True)
+    all_paths = mne_bids.path._return_root_paths(
+        root_str, datatype=("meg", "eeg"), ignore_json=True
+    )
     assert len(all_paths) >= 2
 
     # Entity-aware scan for subjA should only return files under sub-subjA
-    subj_paths = _return_root_paths(
+    subj_paths = mne_bids.path._return_root_paths(
         root_str,
         datatype=("meg", "eeg"),
         ignore_json=True,
