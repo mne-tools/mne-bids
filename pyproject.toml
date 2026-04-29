@@ -128,8 +128,11 @@ exclude = [
 ]
 
 [tool.pytest.ini_options]
-addopts = """--durations=20 -ra --junit-xml=junit-results.xml --tb=short
-    --ignore=doc --ignore=examples --ignore=mne_bids/tests/data"""
+addopts = """
+  --durations=20 -ra --junit-xml=junit-results.xml --tb=short
+  --ignore=doc --ignore=examples --ignore=mne_bids/tests/data
+  --doctest-modules --cov=mne_bids --cov-report=xml --cov-config=pyproject.toml
+"""
 filterwarnings = [
   "error",
   # Python 3.10+ and NumPy 1.22 (and maybe also newer NumPy versions?)

@@ -27,27 +27,7 @@ inplace:
 	@python -m pip install -e ".[dev]"
 
 test:
-	@echo "Running tests"
-	@python -m pytest . \
-	--doctest-modules \
-	--cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ \
-	--cov-report=xml \
-	--cov-config=pyproject.toml \
-	--verbose \
-	--ignore mne-python \
-	--ignore examples
-
-ruff-format:
-	@echo "Running ruff format"
-	@ruff format mne_bids/
-	@ruff format examples/
-
-ruff-check:
-	@echo "Running ruff check"
-	@ruff check mne_bids/
-	@ruff check examples/ --ignore=D103,D400,D205
-
-pep: ruff-check ruff-format
+	@python -m pytest mne_bids -v
 
 build-doc:
 	@echo "Building documentation"
