@@ -37,21 +37,20 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-    - uses: astral-sh/setup-uv@v8.1.0
-      with:
-        python-version: ${{ matrix.python-version }}
-        activate-environment: true
-        save-cache: false  # just reuse one if available (and it should be)
-        cache-dependency-glob: |
-          ./pyproject.toml
-
-    - run: uv pip install build twine
-    - run: python -m build --help
-
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
+    - uses: astral-sh/setup-uv@v8.1.0
+      with:
+        python-version: ${{ matrix.python-version }}
+        activate-environment: true
+        venv-path: '${{ github.workspace }}/../../.venv'
+        save-cache: false  # just reuse one if available (and it should be)
+        cache-dependency-glob: |
+          ./pyproject.toml
+    - run: uv pip install build twine
+
     - run: python -m build --sdist
     - run: twine check --strict dist/*
     - run: uv pip install ./dist/mne_bids-*
