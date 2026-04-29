@@ -7,25 +7,22 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = mne_bids
 PAPER         =
 SOURCEDIR     = .
-BUILDDIR      = _build/html
+BUILDDIR      = _build
 
 # Put it first so that "make" without argument is like "make help".
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@$(SPHINXBUILD) -M help $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)"
 
 .PHONY: help Makefile view
 
 # Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
+# "make mode" option.
 %: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(O)
-
-html:
-	@$(SPHINXBUILD) $(SPHINXOPTS) $(SOURCEDIR) $(BUILDDIR)
+	$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
 
 # Build without executing the example gallery (faster)
 html-noplot:
-	@$(SPHINXBUILD) $(SPHINXOPTS) -D plot_gallery=0 $(SOURCEDIR) $(BUILDDIR)
+	$(SPHINXBUILD) -M html $(SOURCEDIR) $(BUILDDIR) $(SPHINXOPTS) -D plot_gallery=0
 
 # View the built documentation
 # If we build the example gallery, the index file is at _build/html/index.html
