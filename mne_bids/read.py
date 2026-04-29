@@ -660,9 +660,8 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
         The filtered events dict (n/a rows dropped), suitable for reuse
         by ``_assemble_hed_from_sidecar``.
     """
-    # drop events where onset is n/a; we can't annotate them and thus don't need entries
-    # for them in event_id either
-    events_dict = _drop(events_dict, "n/a", "onset")
+    # drop events with invalid onsets so float() doesn't choke (#1547)
+    events_dict = _drop(events_dict, ["n/a", "nan", "NaN", ""], "onset")
 
     # Get event descriptions. Use `trial_type` column if available.
     if "trial_type" in events_dict:
@@ -682,6 +681,16 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
         trial_type_col_name = None
         descrs = np.full(len(events_dict["onset"]), "n/a")
         event_id = {descrs[0]: 1}
+
+    # trial_type all "n/a" but value has codes -> fall back to value (#947)
+    if (
+        trial_type_col_name in ("trial_type", "stim_type")
+        and "value" in events_dict
+        and all(v == "n/a" for v in events_dict[trial_type_col_name])
+        and any(v != "n/a" for v in events_dict["value"])
+    ):
+        logger.info(f'"{trial_type_col_name}" all "n/a"; using "value" instead.')
+        trial_type_col_name = "value"
 
     if trial_type_col_name is not None:
         # Drop events unrelated to a trial type
