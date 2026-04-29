@@ -20,6 +20,9 @@ help:
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(O)
 
+html:
+	@$(SPHINXBUILD) $(SPHINXOPTS) $(SOURCEDIR) $(BUILDDIR)
+
 # Build without executing the example gallery (faster)
 html-noplot:
 	@$(SPHINXBUILD) $(SPHINXOPTS) -D plot_gallery=0 $(SOURCEDIR) $(BUILDDIR)

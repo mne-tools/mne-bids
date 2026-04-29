@@ -130,10 +130,8 @@ release = version
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ["auto_examples/index.rst", "_build", "Thumbs.db", ".DS_Store"]
 
-nitpick_ignore_regex = [
-    # TODO can be removed when min. Sphinx version is 8.2
-    ("py:class", r".*pathlib\._local\.Path"),
-]
+nitpicky = True
+show_warning_types = True
 
 # HTML options (e.g., theme)
 html_show_sourcelink = False
