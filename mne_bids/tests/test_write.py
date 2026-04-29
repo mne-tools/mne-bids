@@ -2437,30 +2437,80 @@ def _ensure_list(x):
         return list(x)
 
 
+# Each of the non-failure ones is ~5s on macOS Intel CI, so mark most slow
 @pytest.mark.parametrize(
     "ch_names, descriptions, drop_status_col, drop_description_col, "
     "existing_ch_names, existing_descriptions",
     [
-        # Only mark channels, do not set descriptions.
-        (["MEG 0112", "MEG 0131", "EEG 053"], None, False, False, [], []),
-        ("MEG 0112", None, False, False, [], []),
-        ("nonsense", None, False, False, [], []),
-        # Now also set descriptions.
-        (
+        pytest.param(
+            ["MEG 0112", "MEG 0131", "EEG 053"],
+            None,
+            False,
+            False,
+            [],
+            [],
+            id="Only channels, no descriptions",
+            marks=pytest.mark.slow,
+        ),
+        pytest.param(
+            "MEG 0112",
+            None,
+            False,
+            False,
+            [],
+            [],
+            id="Only one channel, no description",
+            marks=pytest.mark.slow,
+        ),
+        pytest.param("nonsense", None, False, False, [], [], id="Unknown channel"),
+        pytest.param(
             ["MEG 0112", "MEG 0131"],
             ["Really bad!", "Even worse."],
             False,
             False,
             [],
             [],
+            id="Channels with descriptions",
         ),
-        ("MEG 0112", "Really bad!", False, False, [], []),
-        # Should raise.
-        (["MEG 0112", "MEG 0131"], ["Really bad!"], False, False, [], []),
-        # `datatype='meg`
-        (["MEG 0112"], ["Really bad!"], False, False, [], []),
-        # Enure we create missing columns.
-        ("MEG 0112", "Really bad!", True, True, [], []),
+        pytest.param(
+            "MEG 0112",
+            "Really bad!",
+            False,
+            False,
+            [],
+            [],
+            id="One channel with description",
+            marks=pytest.mark.slow,
+        ),
+        pytest.param(
+            ["MEG 0112", "MEG 0131"],
+            ["Really bad!"],
+            False,
+            False,
+            [],
+            [],
+            id="Should raise on mismatch",
+        ),
+        pytest.param(
+            ["MEG 0112"],
+            ["Really bad!"],
+            False,
+            False,
+            [],
+            [],
+            id="Single MEG channel with description",
+            marks=pytest.mark.slow,
+        ),
+        pytest.param(
+            "MEG 0112",
+            "Really bad!",
+            True,
+            True,
+            [],
+            [],
+            id="Create missing columns",
+            marks=pytest.mark.slow,
+        ),
     ],
 )
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
@@ -2495,9 +2545,15 @@ def test_mark_channels(
     events = events[events[:, 2] != 0]
 
     raw = _read_raw_fif(raw_fname, verbose=False)
+    raw.pick(["MEG 0111", "MEG 0112", "MEG 0131", "EEG 053"]).load_data()
     raw.info["bads"] = []
     write_raw_bids(
-        raw, bids_path=bids_path, events=events, event_id=event_id, verbose=False
+        raw,
+        bids_path=bids_path,
+        events=events,
+        event_id=event_id,
+        allow_preload=True,
+        format="FIF",
     )
 
     channels_fname = _find_matching_sidecar(
