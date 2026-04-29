@@ -162,7 +162,7 @@ jobs:
             mne-version: mne-stable
             mne-bids-install: full
             bids-validator-version: stable
-            test-mode: "-m \"not slow\""
+            test-mode: "-m 'not slow'"
     defaults:
       run:
         shell: bash -el {0}
