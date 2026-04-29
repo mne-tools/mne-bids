@@ -1464,9 +1464,8 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     # function to pybv that maximizes the resolution parameter while
     # ensuring that int16 can represent the data in original units.
     if raw.orig_format != "single":
-        warn(
-            f'Encountered data in "{raw.orig_format}" format. Converting to float32.',
-            RuntimeWarning,
+        logger.debug(
+            f'Encountered data in "{raw.orig_format}" format. Converting to float32.'
         )
 
     # Writing to float32 µV with 0.1 resolution are the pybv defaults,
@@ -2600,15 +2599,15 @@ def write_raw_bids(
                 ),
             )
         elif write_format in ("BDF", "EDF"):
-            warn(f"Converting data files to {write_format} format")
+            logger.info(f"Converting data files to {write_format} format")
             _write_raw_edf_bdf(
                 raw, bids_path.fpath, physical_range=physical_range, overwrite=overwrite
             )
         elif write_format == "EEGLAB":
-            warn("Converting data files to EEGLAB format")
+            logger.info("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
         else:  # BrainVision
-            warn("Converting data files to BrainVision format")
+            logger.info("Converting data files to BrainVision format")
             bids_path.update(suffix=bids_path.datatype)
             # XXX Should we write durations here too?
             _write_raw_brainvision(

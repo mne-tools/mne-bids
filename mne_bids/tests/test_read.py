@@ -2019,8 +2019,7 @@ def test_channel_units_from_tsv(tmp_path):
     bids_path = _bids_path.copy().update(
         root=bids_root, datatype="eeg", suffix="eeg", extension=".edf"
     )
-    with pytest.warns(RuntimeWarning, match="Converting data files to EDF format"):
-        write_raw_bids(raw, bids_path, overwrite=True, allow_preload=True, format="EDF")
+    write_raw_bids(raw, bids_path, overwrite=True, allow_preload=True, format="EDF")
 
     # Check that channels.tsv contains "rad" for the misc channel
     channels_fname = _find_matching_sidecar(
