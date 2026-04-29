@@ -127,7 +127,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: ["3.14"]  # Newest supported version
         mne-version: [mne-stable]
         mne-bids-install: [full]
@@ -163,6 +163,13 @@ jobs:
             mne-bids-install: full
             bids-validator-version: stable
             test-mode: "-m 'not slow'"
+          # Test on Windows
+          - os: windows-latest
+            python-version: "3.14"
+            mne-version: mne-stable
+            mne-bids-install: full
+            bids-validator-version: stable
+            test-mode: "-m 'not (slow_windows or slow)'"
     defaults:
       run:
         shell: bash -el {0}

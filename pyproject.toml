@@ -165,6 +165,7 @@ filterwarnings = [
 ]
 markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "slow_windows: marks tests as slow on Windows (deselect with '-m \"not slow_windows\"')",
 ]
 
 [tool.ruff.lint]
