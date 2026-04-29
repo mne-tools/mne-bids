@@ -180,6 +180,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: true
+        prune-cache: false
         cache-dependency-glob: |
           **/uv.lock
 
