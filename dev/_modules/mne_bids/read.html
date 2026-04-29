@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev55+g1d33aa0bd documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev56+g8de579b0f documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=5c7200ae"></script>
+    <script src="../../_static/documentation_options.js?v=9d71cb96"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev55+g1d33aa0bd" />
+  <meta name="docsearch:version" content="0.19.0.dev56+g8de579b0f" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev55+g1d33aa0bd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev56+g8de579b0f documentation</p>
   
 </a></div>
     
@@ -1154,9 +1154,8 @@
 <span class="sd">        The filtered events dict (n/a rows dropped), suitable for reuse</span>
 <span class="sd">        by ``_assemble_hed_from_sidecar``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># drop events where onset is n/a; we can&#39;t annotate them and thus don&#39;t need entries</span>
-    <span class="c1"># for them in event_id either</span>
-    <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">)</span>
+    <span class="c1"># drop events with invalid onsets so float() doesn&#39;t choke (#1547)</span>
+    <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="s2">&quot;nan&quot;</span><span class="p">,</span> <span class="s2">&quot;NaN&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">],</span> <span class="s2">&quot;onset&quot;</span><span class="p">)</span>
 
     <span class="c1"># Get event descriptions. Use `trial_type` column if available.</span>
     <span class="k">if</span> <span class="s2">&quot;trial_type&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
@@ -1176,6 +1175,16 @@
         <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">descrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">]),</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
         <span class="n">event_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">descrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="mi">1</span><span class="p">}</span>
+
+    <span class="c1"># trial_type all &quot;n/a&quot; but value has codes -&gt; fall back to value (#947)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">trial_type_col_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;trial_type&quot;</span><span class="p">,</span> <span class="s2">&quot;stim_type&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="s2">&quot;value&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span>
+        <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">v</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="n">trial_type_col_name</span><span class="p">])</span>
+        <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">v</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+    <span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">trial_type_col_name</span><span class="si">}</span><span class="s1">&quot; all &quot;n/a&quot;; using &quot;value&quot; instead.&#39;</span><span class="p">)</span>
+        <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span>
 
     <span class="k">if</span> <span class="n">trial_type_col_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Drop events unrelated to a trial type</span>
@@ -2208,7 +2217,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-27.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-29.
       <br/>
     
   </p>
