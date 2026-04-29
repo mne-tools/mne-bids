@@ -2133,6 +2133,40 @@ def test_events_file_to_annotation_kwargs(tmp_path):
         assert "HED" not in extra
 
 
+@pytest.mark.parametrize("marker", ["n/a", "nan", "NaN", ""])
+def test_events_file_to_annotation_kwargs_invalid_onsets(tmp_path, marker):
+    """Rows with invalid onset markers are dropped (#1547)."""
+    events = {
+        "onset": ["0.1", marker, "0.3"],
+        "duration": ["0.0"] * 3,
+        "trial_type": ["a", "drop", "b"],
+    }
+    events_fname = tmp_path / "events.tsv"
+    _to_tsv(events, events_fname)
+
+    ev = events_file_to_annotation_kwargs(events_fname=events_fname)
+
+    np.testing.assert_array_equal(ev["onset"], [0.1, 0.3])
+    np.testing.assert_array_equal(ev["description"], ["a", "b"])
+
+
+def test_events_file_to_annotation_kwargs_trial_type_fallback_to_value(tmp_path):
+    """All-n/a ``trial_type`` falls back to ``value`` for descriptions (#947)."""
+    events = {
+        "onset": ["0.1", "0.2", "0.3"],
+        "duration": ["0.0"] * 3,
+        "trial_type": ["n/a"] * 3,
+        "value": ["1040", "2049", "1040"],
+    }
+    events_fname = tmp_path / "events.tsv"
+    _to_tsv(events, events_fname)
+
+    ev = events_file_to_annotation_kwargs(events_fname=events_fname)
+
+    np.testing.assert_array_equal(ev["description"], ["1040", "2049", "1040"])
+    assert ev["event_id"] == {"1040": 1040, "2049": 2049}
+
+
 @pytest.fixture
 def _hed_tiny_bids(tmp_path):
     """Copy the tiny_bids fixture and return paths + a fresh Raw for HED tests."""
