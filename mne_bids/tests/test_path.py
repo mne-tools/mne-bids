@@ -1162,7 +1162,7 @@ def fast_sidecar(request, monkeypatch):
     return fast
 
 
-@pytest.mark.slow_windows  # ~45s on Windows CI
+@pytest.mark.slow  # ~45s on Windows CI, 5s on macOS Intel CI
 @pytest.mark.parametrize("dataset", ("basic", "dense"))
 def test_find_matching_sidecar_fast(
     bids_root, bids_root_dense, path_counter, fast_sidecar, dataset

@@ -114,7 +114,7 @@ jobs:
     # ubuntu / 3.14 / mne-main / full / validator-dev -->  to test cutting edge of everything
     # ubuntu / 3.11 / mne-prev / full / validator-stable --> to test last supported mne
     # ubuntu / 3.14 / mne-stable / minimal / validator-stable --> to test a minimal installation
-    # macos-15-intel / 3.14 / mne-stable / full / validator-stable --> to test macos x86_64
+    # macos-15-intel / 3.14 / mne-stable / minimal / validator-stable --> to test macos x86_64
     name: test (${{ matrix.os }}, ${{ matrix.python-version }}, ${{ matrix.mne-version }}, ${{ matrix.mne-bids-install }}, validator-${{ matrix.bids-validator-version }})
     timeout-minutes: 60
     needs: style  # just to avoid CI overuse
@@ -193,7 +193,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         activate-environment: true
         prune-cache: false
-        save-cache: ${{ matrix.mne-bids-install == 'full' }}
+        save-cache: ${{ matrix.mne-bids-install == 'full' || matrix.os == 'macos-15-intel' }}
         cache-dependency-glob: |
           ./pyproject.toml
 

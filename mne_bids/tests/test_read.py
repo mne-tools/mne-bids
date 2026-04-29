@@ -319,6 +319,7 @@ def test_parallel_participants_multiprocess(tmp_path):
     sh.rmtree(bids_root, ignore_errors=True)
 
 
+@pytest.mark.slow  # ~20s on macOS Intel CI
 @pytest.mark.filterwarnings(
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",
