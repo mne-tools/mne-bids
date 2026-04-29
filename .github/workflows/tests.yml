@@ -181,9 +181,7 @@ jobs:
 
     - name: Workaround for macOS behavior on login shells
       if: startsWith(matrix.os, 'macos')
-      run: |
-        echo "export PATH=\"${{ github.workspace }}/.venv/bin:$PATH\"" | tee -a ~/.bash_profile
-        echo "PATH=\"${{ github.workspace }}/.venv/bin:$PATH\"" | tee -a $GITHUB_ENV
+      run: echo "export PATH=\"${{ github.workspace }}/.venv/bin:$PATH\"" | tee -a ~/.bash_profile
 
     - name: Install MNE
       run: |
@@ -221,9 +219,9 @@ jobs:
         echo "(deno version)"; deno --version || echo ""
         echo "(Requested bids-validator version)"; echo "$BIDS_VALIDATOR_VERSION"
         echo "(python version)"; python --version
+        echo "(echo \$PATH)"; tr ':' '\n' <<< "$PATH"
         echo "(which python)"; which python
         echo "(which pytest)"; which pytest
-        echo "(echo \$PATH)"; tr ':' '\n' <<< "$PATH"
         if [[ "$(which python)" != *'/.venv/'* ]]; then
           echo "Python is NOT running from a virtual environment"
           exit 1
