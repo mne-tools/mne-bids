@@ -520,6 +520,7 @@ def _scan_targeted_meg(root, entities=None):
     )
 
 
+@pytest.mark.slow_windows  # ~56s on Windows CI
 def test_entity_targeted_scan_speed(tmp_path_factory):
     """Ensure entity-aware root scan is significantly faster."""
     bids_root = Path(tmp_path_factory.mktemp("mnebids_entity_scan"))
