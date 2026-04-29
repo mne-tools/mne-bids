@@ -198,10 +198,17 @@ jobs:
       if: startsWith(matrix.os, 'macos')
       run: echo "export PATH=\"${{ github.workspace }}/.venv/bin:$PATH\"" | tee -a ~/.bash_profile
 
-    - name: Install MNE
+    - name: Clone mne-python
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+        repository: mne-tools/mne-python
+        path: mne-python
+
+    - name: Install MNE-Python
+      working-directory: mne-python
       run: |
-        git clone https://github.com/mne-tools/mne-python.git
-        cd mne-python
         if [[ "${{ matrix.mne-version }}" == 'mne-stable' ]]; then
           git checkout -b maint/1.11 origin/maint/1.11
         elif [[ "${{ matrix.mne-version }}" == 'mne-prev-stable' ]]; then
