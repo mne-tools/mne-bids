@@ -179,12 +179,6 @@ jobs:
         cache-dependency-glob: |
           **/pyproject.toml
 
-    - name: Install Python dependencies using pip
-      run: |
-        uv pip install --upgrade pip
-        pip check
-        uv pip install -e .[test]
-
     - name: Install MNE
       run: |
         git clone https://github.com/mne-tools/mne-python.git
@@ -198,7 +192,20 @@ jobs:
           exit 1
         fi
         git status
-        pip install -e .  # no need for UV because it's a dev version
+        uv pip install -e .  # no need for UV because it's a dev version
+
+    - name: Install MNE-BIDS
+      run: |
+        if [[ "${{ matrix.mne-bids-install }}" == 'minimal' ]]; then
+          KIND="[test]"
+        elif [[ "${{ matrix.mne-bids-install }}" == 'full' ]]; then
+          KIND="[full,test]"
+        else
+          echo "Unknown mne-bids-install: ${{ matrix.mne-bids-install }}"
+          exit 1
+        fi
+        set -x
+        uv pip install -e ".${KIND}"
 
     - name: Display versions and environment information
       run: |
@@ -211,19 +218,6 @@ jobs:
         which pytest
         which python
         mne sys_info
-
-    - name: Install MNE-BIDS
-      run: |
-        if [[ "${{ matrix.mne-bids-install }}" == 'minimal' ]]; then
-          KIND=""
-        elif [[ "${{ matrix.mne-bids-install }}" == 'full' ]]; then
-          KIND="[full]"
-        else
-          echo "Unknown mne-bids-install: ${{ matrix.mne-bids-install }}"
-          exit 1
-        fi
-        set -x
-        uv pip install -e .${KIND}
 
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
