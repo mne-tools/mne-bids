@@ -14,22 +14,24 @@ on:
     - cron: "0 4 * * *"
 
 jobs:
-  style:
+  style:  # takes ~10s
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
     - uses: actions/checkout@v6
     - uses: actions/setup-python@v6
       with:
-        python-version: '3.13'
+        python-version: '3.14'
     - uses: pre-commit/action@v3.0.1
 
   build:
     runs-on: ${{ matrix.os }}
+    needs: style  # just to avoid CI overuse
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.11", "3.13"]  # Oldest and newest supported versions
+        python-version: ["3.11", "3.14"]  # Oldest and newest supported versions
     defaults:
       run:
         shell: bash -el {0}
@@ -53,7 +55,7 @@ jobs:
     - name: Check sdist
       run: twine check --strict dist/*
     - name: Install sdist
-      run: uv pip install ./dist/mne_bids-*
+      run: pip install ./dist/mne_bids-*
     - name: Clean up working directory
       run: rm -rf ./*
     - name: Try importing mne_bids
@@ -97,15 +99,16 @@ jobs:
     # 8 checks:
     # for each machine type (ubuntu, macos, windows):
     # 3.11 / mne-stable / full / validator-stable
-    # 3.13 / mne-stable / full / validator-stable
+    # 3.14 / mne-stable / full / validator-stable
     #
     # 4 additional checks with alternative MNE-Python and BIDS validator versions:
-    # ubuntu / 3.13 / mne-main / full / validator-dev -->  to test cutting edge of everything
+    # ubuntu / 3.14 / mne-main / full / validator-dev -->  to test cutting edge of everything
     # ubuntu / 3.11 / mne-prev / full / validator-stable --> to test last supported mne
-    # ubuntu / 3.13 / mne-stable / minimal / validator-stable --> to test a minimal installation
-    # macos-15-intel / 3.13 / mne-stable / full / validator-stable --> to test macos x86_64
+    # ubuntu / 3.14 / mne-stable / minimal / validator-stable --> to test a minimal installation
+    # macos-15-intel / 3.14 / mne-stable / full / validator-stable --> to test macos x86_64
     name: test (${{ matrix.os }}, ${{ matrix.python-version }}, ${{ matrix.mne-version }}, ${{ matrix.mne-bids-install }}, validator-${{ matrix.bids-validator-version }})
     timeout-minutes: 60
+    needs: style  # just to avoid CI overuse
     runs-on: ${{ matrix.os }}
     env:
       BIDS_VALIDATOR_VERSION: ${{ matrix.bids-validator-version }}
@@ -116,7 +119,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.11", "3.13"]  # Oldest and newest supported versions
+        python-version: ["3.11", "3.14"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         mne-bids-install: [full]
         bids-validator-version: [stable]
@@ -125,7 +128,7 @@ jobs:
           # special test runs running only on single CI systems to save resources
           # Test development versions
           - os: ubuntu-latest
-            python-version: "3.13"
+            python-version: "3.14"
             mne-version: mne-main
             mne-bids-install: full
             bids-validator-version: dev
@@ -137,13 +140,13 @@ jobs:
             bids-validator-version: stable
           # Test minimal mne-bids install
           - os: ubuntu-latest
-            python-version: "3.13"
+            python-version: "3.14"
             mne-version: mne-stable
             mne-bids-install: minimal
             bids-validator-version: stable
           # Test macos on x86_64 architecture
           - os: macos-15-intel
-            python-version: "3.13"
+            python-version: "3.14"
             mne-version: mne-stable
             mne-bids-install: full
             bids-validator-version: stable
@@ -216,7 +219,7 @@ jobs:
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
       run: make test
-      if: ${{ matrix.python-version == '3.13' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
+      if: ${{ matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
 
     # Get testing data
     - run: ./tools/get_testing_version.sh
@@ -254,7 +257,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.13"]
+        python-version: ["3.14"]
     steps:
     - uses: actions/checkout@v6
       with:
