@@ -65,6 +65,7 @@ Detailed list of changes
 - Fix :func:`mne_bids.read_raw_bids` and related read paths failing with ``PermissionError`` on datalad/git-annex datasets by keeping the file lock next to the symlink instead of its (read-only) target, and gracefully continuing without a lock when one cannot be created, by `Bruno Aristimunha`_ (:gh:`1569`)
 - Avoid modifying calibration files by making :func:`mne_bids.write_meg_calibration` copy instead of parsing and rewriting, by `Marijn van Vliet`_ (:gh:`1576`)
 - Fix bug with :meth:`mne_bids.BIDSPath.find_matching_sidecar` not searching parent directories properly, by `Eric Larson`_ (:gh:`1565`)
+- TSV reading now detects the file encoding (UTF-8 with/without BOM, UTF-16, or latin-1) before parsing instead of assuming UTF-8. This fixes ``UnicodeDecodeError`` on real-world OpenNeuro datasets that contain non-ASCII characters such as ``µ`` (micro-sign) in ``channels.tsv``, by `Bruno Aristimunha`_
 - Fix :func:`mne_bids.events_file_to_annotation_kwargs` to drop rows with invalid ``onset`` values (``n/a``, ``nan``, ``NaN``, empty string) before float conversion. This makes reading real-world OpenNeuro datasets (e.g. ``ds004841``, ``ds004842``, ``ds004843``) succeed instead of either raising or returning ``NaN`` onsets, by `Bruno Aristimunha`_ (:gh:`1547`)
 - Fix :func:`mne_bids.events_file_to_annotation_kwargs` to fall back to the ``value`` column when ``trial_type`` is entirely ``n/a`` but ``value`` contains trigger codes, instead of dropping all events, by `Bruno Aristimunha`_ (:gh:`947`)
 

@@ -3,12 +3,28 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import codecs
 from collections import OrderedDict
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
 
 from mne_bids._fileio import _open_lock
+
+
+def _detect_tsv_encoding(fname):
+    """Deterministically detect the encoding of a TSV file."""
+    raw = Path(fname).read_bytes()
+    if raw.startswith(codecs.BOM_UTF8):
+        return "utf-8-sig"
+    if raw.startswith((codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)):
+        return "utf-16"
+    try:
+        raw.decode("utf-8")
+        return "utf-8"
+    except UnicodeDecodeError:
+        return "latin-1"
 
 
 def _combine_rows(data1, data2, drop_column=None):
@@ -147,8 +163,11 @@ def _from_tsv(fname, dtypes=None):
     """
     from .utils import warn  # avoid circular import
 
+    encoding = _detect_tsv_encoding(fname)
+    if encoding == "latin-1":
+        warn(f"TSV file is not UTF-8 encoded, reading as latin-1: '{fname}'")
     data = np.loadtxt(
-        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding="utf-8-sig"
+        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
     )
     # Handle empty files - data may be empty or only have a header
     if data.size == 0:
