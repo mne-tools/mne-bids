@@ -1025,10 +1025,11 @@ def test_handle_scans_reading_filename_not_listed(tmp_path):
     """Recording absent from ``scans.tsv`` warns and leaves ``meas_date`` unchanged."""
     raw, bids_path, scans_path = _scans_setup(tmp_path)
     initial = raw.info["meas_date"]
+    fake_fname = Path("eeg/sub-foo_task-bar_eeg.fif")
     _to_tsv(
         OrderedDict(
             [
-                ("filename", [Path("eeg/sub-99_task-test_eeg.fif")]),
+                ("filename", [fake_fname]),
                 ("acq_time", ["2024-02-04T17:47:18.000000Z"]),
             ]
         ),
