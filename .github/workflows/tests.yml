@@ -266,8 +266,14 @@ jobs:
 
     - run: |
         ./tools/github_actions_download.sh
+        # Trim some large files we don't need (speeds up caching)
         TEST_PATH=$(python -c "import mne; print(mne.datasets.testing.data_path(verbose=False))")
         echo "Testing data path: $TEST_PATH"
+        chmod +w $TEST_PATH/MEG/sample/ $TEST_PATH/SSS/
+        for end in "MEG/sample/*oct*" "SSS/*_sss.fif" "SSS/*hpi*"; do
+          chmod +w "$TEST_PATH"/$end
+          rm -Rf "$TEST_PATH"/$end
+        done
         chmod -R a-w "$TEST_PATH"
       working-directory: mne-python
       name: 'Get testing data and set it read-only'
