@@ -30,6 +30,9 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.11", "3.13"]  # Oldest and newest supported versions
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
@@ -38,9 +41,9 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv pip install --upgrade pip
+        pip install --upgrade pip
         pip check
-        uv pip install build twine
+        pip install build twine
 
     - uses: actions/checkout@v6
       with:
@@ -166,7 +169,7 @@ jobs:
       with:
         deno-version: lts
 
-    - uses: astral-sh/setup-uv@v8
+    - uses: astral-sh/setup-uv@v8.1.0
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: true
@@ -266,7 +269,7 @@ jobs:
       with:
         fetch-depth: 0
         fetch-tags: true
-    - uses: astral-sh/setup-uv@v8
+    - uses: astral-sh/setup-uv@v8.1.0
       with:
         python-version: '${{ matrix.python-version }}'
         activate-environment: true
