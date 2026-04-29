@@ -984,46 +984,11 @@ def test_handle_scans_reading_brainvision(tmp_path):
     assert out is raw
 
 
-@pytest.mark.parametrize(
-    "filename, acq_time, warn_match, expected",
-    [
-        # Malformed acq_time → warn, meas_date unchanged.
-        ("eeg/sub-01_task-test_eeg.fif", "not-a-date", "invalid acq_time", None),
-        ("eeg/sub-01_task-test_eeg.fif", "NaN", "invalid acq_time", None),
-        ("eeg/sub-01_task-test_eeg.fif", "", "invalid acq_time", None),
-        # Recording not in scans.tsv → warn, meas_date unchanged.
-        (
-            "eeg/sub-99_task-test_eeg.fif",
-            "2024-02-04T17:47:18.000000Z",
-            "is not listed in",
-            None,
-        ),
-        # Header-only scans.tsv → upstream warn, meas_date unchanged.
-        (None, None, "TSV file is empty", None),
-        # Generous parser succeeds → no warn, meas_date set.
-        (
-            "eeg/sub-01_task-test_eeg.fif",
-            "2024-02-04 17:47:18",
-            None,
-            datetime(2024, 2, 4, 17, 47, 18).astimezone(UTC),
-        ),
-        (
-            "eeg/sub-01_task-test_eeg.fif",
-            "2024-02-04T17:47:18+02:00",
-            None,
-            datetime(2024, 2, 4, 15, 47, 18, tzinfo=UTC),
-        ),
-    ],
-)
-def test_handle_scans_reading_tolerant(
-    tmp_path, filename, acq_time, warn_match, expected
-):
-    """Warn-and-skip on bad inputs; accept generous ISO 8601 variants."""
+def _scans_setup(tmp_path):
     raw = mne.io.RawArray(
         np.zeros((1, 10)), mne.create_info(["EEG001"], sfreq=100, ch_types="eeg")
     )
-    initial = datetime(2020, 1, 1, tzinfo=UTC)
-    raw.set_meas_date(initial)
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
     bids_path = BIDSPath(
         subject="01",
         task="test",
@@ -1032,22 +997,84 @@ def test_handle_scans_reading_tolerant(
         extension=".fif",
         root=tmp_path,
     )
-    scans_path = tmp_path / "sub-01_scans.tsv"
-    rows = OrderedDict(
-        [
-            ("filename", [Path(filename)] if filename else []),
-            ("acq_time", [acq_time] if acq_time is not None else []),
-        ]
-    )
-    _to_tsv(rows, scans_path)
+    return raw, bids_path, tmp_path / "sub-01_scans.tsv"
 
-    ctx = (
-        pytest.warns(RuntimeWarning, match=warn_match) if warn_match else nullcontext()
+
+@pytest.mark.parametrize("acq_time", ["not-a-date", "NaN", ""])
+def test_handle_scans_reading_invalid_acq_time(tmp_path, acq_time):
+    """Malformed ``acq_time`` warns and leaves ``meas_date`` unchanged."""
+    raw, bids_path, scans_path = _scans_setup(tmp_path)
+    initial = raw.info["meas_date"]
+    _to_tsv(
+        OrderedDict(
+            [
+                ("filename", [Path("eeg/sub-01_task-test_eeg.fif")]),
+                ("acq_time", [acq_time]),
+            ]
+        ),
+        scans_path,
     )
-    with ctx:
+
+    with pytest.warns(RuntimeWarning, match="invalid acq_time"):
         out = _handle_scans_reading(scans_path, raw, bids_path)
     assert out is raw
-    assert raw.info["meas_date"] == (expected or initial)
+    assert raw.info["meas_date"] == initial
+
+
+def test_handle_scans_reading_filename_not_listed(tmp_path):
+    """Recording absent from ``scans.tsv`` warns and leaves ``meas_date`` unchanged."""
+    raw, bids_path, scans_path = _scans_setup(tmp_path)
+    initial = raw.info["meas_date"]
+    _to_tsv(
+        OrderedDict(
+            [
+                ("filename", [Path("eeg/sub-99_task-test_eeg.fif")]),
+                ("acq_time", ["2024-02-04T17:47:18.000000Z"]),
+            ]
+        ),
+        scans_path,
+    )
+
+    with pytest.warns(RuntimeWarning, match="is not listed in"):
+        out = _handle_scans_reading(scans_path, raw, bids_path)
+    assert out is raw
+    assert raw.info["meas_date"] == initial
+
+
+def test_handle_scans_reading_empty(tmp_path):
+    """Header-only ``scans.tsv`` does not crash on the BrainVision suffix block."""
+    raw, bids_path, scans_path = _scans_setup(tmp_path)
+    initial = raw.info["meas_date"]
+    _to_tsv(OrderedDict([("filename", []), ("acq_time", [])]), scans_path)
+
+    with pytest.warns(RuntimeWarning, match="TSV file is empty"):
+        out = _handle_scans_reading(scans_path, raw, bids_path)
+    assert out is raw
+    assert raw.info["meas_date"] == initial
+
+
+@pytest.mark.parametrize(
+    "acq_time, expected",
+    [
+        ("2024-02-04 17:47:18", datetime(2024, 2, 4, 17, 47, 18).astimezone(UTC)),
+        ("2024-02-04T17:47:18+02:00", datetime(2024, 2, 4, 15, 47, 18, tzinfo=UTC)),
+    ],
+)
+def test_handle_scans_reading_iso8601_variants(tmp_path, acq_time, expected):
+    """``fromisoformat`` accepts space separator and explicit UTC offsets."""
+    raw, bids_path, scans_path = _scans_setup(tmp_path)
+    _to_tsv(
+        OrderedDict(
+            [
+                ("filename", [Path("eeg/sub-01_task-test_eeg.fif")]),
+                ("acq_time", [acq_time]),
+            ]
+        ),
+        scans_path,
+    )
+
+    out = _handle_scans_reading(scans_path, raw, bids_path)
+    assert out.info["meas_date"] == expected
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
