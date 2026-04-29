@@ -179,6 +179,10 @@ jobs:
         cache-dependency-glob: |
           **/pyproject.toml
 
+    # Fix PATH on macOS for UV when using a login shell
+    - run: echo "source ${{ github.workspace }}/.venv/bin/activate" | tee -a ~/.bash_profile
+      if: startsWith(matrix.os, 'macos')
+
     - name: Install MNE
       run: |
         git clone https://github.com/mne-tools/mne-python.git
@@ -215,9 +219,8 @@ jobs:
         echo "(Requested bids-validator version)"; echo "$BIDS_VALIDATOR_VERSION"
         echo "(python version)"; python --version
         echo "(which python)"; which python
-        which pytest
-        which python
-        mne sys_info
+        echo "(which pytest)"; which pytest
+        mne sys_info -dp
 
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
