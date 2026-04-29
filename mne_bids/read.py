@@ -398,19 +398,21 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         ext = fnames[0].suffix
         data_fname = Path(data_fname).with_suffix(ext)
     try:
-        row_ind = _verbose_list_index(fnames, data_fname)
-    except ValueError as exc:
+        row_ind = fnames.index(data_fname)
+    except ValueError:
         row_ind = None
         if fname.endswith(".pdf"):
             alt_fname = Path(bids_path.datatype) / Path(fname).with_suffix("")
             try:
-                row_ind = _verbose_list_index(fnames, alt_fname)
+                row_ind = fnames.index(alt_fname)
                 data_fname = alt_fname
             except ValueError:
                 pass
         if row_ind is None:
+            matches = get_close_matches(str(data_fname), [str(f) for f in fnames])
+            hint = f" Did you mean one of {matches}?" if matches else ""
             warn(
-                f"{data_fname} is not listed in {scans_fname.name} ({exc}). "
+                f"{data_fname} is not listed in {scans_fname.name}.{hint} "
                 "Leaving raw.info['meas_date'] unchanged."
             )
             return raw

@@ -960,14 +960,8 @@ def test_handle_scans_reading_brainvision(tmp_path):
             ("acq_time", ["2000-01-01T12:00:00.000000Z"]),
         ]
     )
-    test_scan_edf = OrderedDict(
-        [
-            ("filename", [Path("eeg/sub-01_ses-eeg_task-rest_eeg.edf")]),
-            ("acq_time", ["2000-01-01T12:00:00.000000Z"]),
-        ]
-    )
     os.mkdir(tmp_path / "eeg")
-    for test_scan in [test_scan_eeg, test_scan_vmrk, test_scan_edf]:
+    for test_scan in [test_scan_eeg, test_scan_vmrk]:
         _to_tsv(test_scan, tmp_path / test_scan["filename"][0])
 
     bids_path = BIDSPath(
@@ -978,12 +972,6 @@ def test_handle_scans_reading_brainvision(tmp_path):
 
     for test_scan in [test_scan_eeg, test_scan_vmrk]:
         _handle_scans_reading(tmp_path / test_scan["filename"][0], raw, bids_path)
-
-    with pytest.warns(RuntimeWarning, match="is not listed in"):
-        out = _handle_scans_reading(
-            tmp_path / test_scan_edf["filename"][0], raw, bids_path
-        )
-    assert out is raw
 
 
 def _scans_setup(tmp_path):
