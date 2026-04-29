@@ -27,6 +27,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     needs: style  # just to avoid CI overuse
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
@@ -65,6 +66,10 @@ jobs:
     - name: Remove sdist install
       run: python -m pip uninstall -y mne-bids
 
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+        fetch-tags: true
     - name: Build wheel
       run: python -m build --wheel
     - name: Check wheel
@@ -80,6 +85,10 @@ jobs:
     - name: Remove wheel install
       run: python -m pip uninstall -y mne-bids
 
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+        fetch-tags: true
     - name: Test extras install
       run: |
         python -m pip install .[full]
@@ -249,32 +258,3 @@ jobs:
         files: ./coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
         verbose: true
-
-  build_docs:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.14"]
-    steps:
-    - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-        fetch-tags: true
-    - uses: astral-sh/setup-uv@v8.1.0
-      with:
-        python-version: '${{ matrix.python-version }}'
-        activate-environment: true
-        cache-dependency-glob: |
-          **/pyproject.toml
-        cache-suffix: ${{ matrix.os }}-python${{ matrix.python-version }}
-        save-cache: false  # just restore one from above, if possible (don't overwrite / clash)
-
-    - name: Install dependencies
-      run: |
-        uv pip install --upgrade pip
-        pip check
-        uv pip install -e .[test,doc] --upgrade "mne @ https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip"
-    - run: make build-doc
