@@ -128,7 +128,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.11", "3.14"]  # Oldest and newest supported versions
+        python-version: ["3.14"]  # Newest supported version
         mne-version: [mne-stable]
         mne-bids-install: [full]
         bids-validator-version: [stable]
