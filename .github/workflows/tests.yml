@@ -181,6 +181,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         activate-environment: true
         prune-cache: false
+        save-cache: ${{ matrix.mne-bids-install == 'full' }}
         cache-dependency-glob: |
           ./pyproject.toml
 
