@@ -47,7 +47,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- None yet
+- Expected format conversions notices are now logged at ``info`` instead of ``warn`` level, by `Bruno Aristimunha`_ (:gh:`1589`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
