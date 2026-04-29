@@ -102,6 +102,7 @@ def bids_root(tmp_path):
     return bids_root
 
 
+@pytest.mark.slow_windows  # ~1m on Windows CI
 def test_get_datatypes(bids_root_dense, bids_root, path_counter):
     """Test getting the datatypes (=modalities) of a dir."""
     modalities = mne_bids.get_datatypes(bids_root)
@@ -439,7 +440,7 @@ def bids_root_dense(tmp_path):
     return out
 
 
-@pytest.mark.slow  # ~5s
+@pytest.mark.slow  # ~15s on macOS Intel CI
 def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     """Benchmark exploring bids tree."""
     tmp_bids_root = bids_root_dense.root
@@ -519,6 +520,7 @@ def _scan_targeted_meg(root, entities=None):
     )
 
 
+@pytest.mark.slow_windows  # ~56s on Windows CI
 def test_entity_targeted_scan_speed(tmp_path_factory):
     """Ensure entity-aware root scan is significantly faster."""
     bids_root = Path(tmp_path_factory.mktemp("mnebids_entity_scan"))
@@ -1160,6 +1162,7 @@ def fast_sidecar(request, monkeypatch):
     return fast
 
 
+@pytest.mark.slow  # ~45s on Windows CI, 5s on macOS Intel CI
 @pytest.mark.parametrize("dataset", ("basic", "dense"))
 def test_find_matching_sidecar_fast(
     bids_root, bids_root_dense, path_counter, fast_sidecar, dataset

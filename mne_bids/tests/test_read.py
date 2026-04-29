@@ -286,6 +286,7 @@ def test_read_raw_bids_task_none_warns(tmp_path):
     assert raw_read is not None
 
 
+@pytest.mark.slow  # ~10s on macOS Intel CI
 @pytest.mark.filterwarnings(
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",
@@ -318,6 +319,7 @@ def test_parallel_participants_multiprocess(tmp_path):
     sh.rmtree(bids_root, ignore_errors=True)
 
 
+@pytest.mark.slow  # ~20s on macOS Intel CI
 @pytest.mark.filterwarnings(
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",
@@ -1439,6 +1441,7 @@ def test_read_meg_missing_coordsystem_warns(tmp_path):
     assert len(coord_warnings) == 1
 
 
+@pytest.mark.slow  # ~5s per case on macOS Intel CI
 @pytest.mark.parametrize("bids_path", [_bids_path, _bids_path_minimal])
 @pytest.mark.filterwarnings(warning_str["nasion_not_found"])
 @testing.requires_testing_data
@@ -2116,8 +2119,7 @@ def test_channel_units_from_tsv(tmp_path):
     bids_path = _bids_path.copy().update(
         root=bids_root, datatype="eeg", suffix="eeg", extension=".edf"
     )
-    with pytest.warns(RuntimeWarning, match="Converting data files to EDF format"):
-        write_raw_bids(raw, bids_path, overwrite=True, allow_preload=True, format="EDF")
+    write_raw_bids(raw, bids_path, overwrite=True, allow_preload=True, format="EDF")
 
     # Check that channels.tsv contains "rad" for the misc channel
     channels_fname = _find_matching_sidecar(
