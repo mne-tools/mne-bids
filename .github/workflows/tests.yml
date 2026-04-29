@@ -180,7 +180,7 @@ jobs:
           **/pyproject.toml
 
     # Fix PATH on macOS for UV when using a login shell
-    - run: echo "source ${{ github.workspace }}/.venv/bin/activate" | tee -a ~/.bash_profile
+    - run: echo "PATH=${{ github.workspace }}/.venv/bin:${PATH}" | tee -a $GITHUB_ENV
       if: startsWith(matrix.os, 'macos')
 
     - name: Install MNE
