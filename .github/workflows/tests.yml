@@ -179,10 +179,6 @@ jobs:
         cache-dependency-glob: |
           **/pyproject.toml
 
-    # Fix PATH on macOS for UV when using a login shell
-    - run: echo "PATH=${{ github.workspace }}/.venv/bin:${PATH}" | tee -a $GITHUB_ENV
-      if: startsWith(matrix.os, 'macos')
-
     - name: Install MNE
       run: |
         git clone https://github.com/mne-tools/mne-python.git
@@ -213,6 +209,7 @@ jobs:
 
     - name: Display versions and environment information
       run: |
+        echo "::group::Environment information"
         echo $TZ
         date
         echo "(deno version)"; deno --version || echo ""
@@ -220,7 +217,18 @@ jobs:
         echo "(python version)"; python --version
         echo "(which python)"; which python
         echo "(which pytest)"; which pytest
+        echo "(echo $PATH)"; echo $PATH
+        if [[ "$(which python)" == *'/.venv/bin/'* ]]; then
+          echo "Python is running from a virtual environment"
+        else
+          echo "Python is NOT running from a virtual environment"
+          exit 1
+        fi
+        test $(which python) = *'.venv'*
+        echo "::endgroup::"
+        echo "::group::MNE-Python information"
         mne sys_info -dp
+        echo "::endgroup::"
 
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
