@@ -178,7 +178,6 @@ jobs:
         activate-environment: true
         cache-dependency-glob: |
           **/pyproject.toml
-        cache-suffix: ${{ matrix.os }}-python${{ matrix.python-version }}
 
     - name: Install Python dependencies using pip
       run: |
