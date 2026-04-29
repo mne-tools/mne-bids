@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev57+ge92e3142f documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.19.0.dev58+g1157d639a documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=ddf30ef3"></script>
+    <script src="../../_static/documentation_options.js?v=2614dcb8"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev57+ge92e3142f" />
+  <meta name="docsearch:version" content="0.19.0.dev58+g1157d639a" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev57+ge92e3142f documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev58+g1157d639a documentation</p>
   
 </a></div>
     
@@ -1955,9 +1955,8 @@
     <span class="c1"># function to pybv that maximizes the resolution parameter while</span>
     <span class="c1"># ensuring that int16 can represent the data in original units.</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span> <span class="o">!=</span> <span class="s2">&quot;single&quot;</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Encountered data in &quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="si">}</span><span class="s1">&quot; format. Converting to float32.&#39;</span><span class="p">,</span>
-            <span class="ne">RuntimeWarning</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Encountered data in &quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="si">}</span><span class="s1">&quot; format. Converting to float32.&#39;</span>
         <span class="p">)</span>
 
     <span class="c1"># Writing to float32 µV with 0.1 resolution are the pybv defaults,</span>
@@ -3096,15 +3095,15 @@
                 <span class="p">),</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">write_format</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;BDF&quot;</span><span class="p">,</span> <span class="s2">&quot;EDF&quot;</span><span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converting data files to </span><span class="si">{</span><span class="n">write_format</span><span class="si">}</span><span class="s2"> format&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converting data files to </span><span class="si">{</span><span class="n">write_format</span><span class="si">}</span><span class="s2"> format&quot;</span><span class="p">)</span>
             <span class="n">_write_raw_edf_bdf</span><span class="p">(</span>
                 <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">physical_range</span><span class="o">=</span><span class="n">physical_range</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">write_format</span> <span class="o">==</span> <span class="s2">&quot;EEGLAB&quot;</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to EEGLAB format&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Converting data files to EEGLAB format&quot;</span><span class="p">)</span>
             <span class="n">_write_raw_eeglab</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># BrainVision</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Converting data files to BrainVision format&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Converting data files to BrainVision format&quot;</span><span class="p">)</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
             <span class="c1"># XXX Should we write durations here too?</span>
             <span class="n">_write_raw_brainvision</span><span class="p">(</span>
