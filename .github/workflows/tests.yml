@@ -46,6 +46,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         activate-environment: true
         venv-path: '${{ github.workspace }}/../../.venv'
+        prune-cache: false
         save-cache: false  # just reuse one if available (and it should be)
         cache-dependency-glob: |
           ./pyproject.toml
