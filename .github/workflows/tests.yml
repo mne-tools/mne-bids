@@ -182,7 +182,7 @@ jobs:
         activate-environment: true
         prune-cache: false
         cache-dependency-glob: |
-          **/uv.lock
+          ./pyproject.toml
 
     - name: Workaround for macOS behavior on login shells
       if: startsWith(matrix.os, 'macos')
