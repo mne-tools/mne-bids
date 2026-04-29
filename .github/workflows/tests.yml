@@ -179,6 +179,10 @@ jobs:
         cache-dependency-glob: |
           **/pyproject.toml
 
+    - name: Workaround for macOS behavior on login shells
+      if: startsWith(matrix.os, 'macos')
+      run: echo "export PATH=\"${{ github.workspace }}/.venv/bin:$PATH\"" | tee -a ~/.profile
+
     - name: Install MNE
       run: |
         git clone https://github.com/mne-tools/mne-python.git
@@ -217,14 +221,11 @@ jobs:
         echo "(python version)"; python --version
         echo "(which python)"; which python
         echo "(which pytest)"; which pytest
-        echo "(echo $PATH)"; echo $PATH
-        if [[ "$(which python)" == *'/.venv/bin/'* ]]; then
-          echo "Python is running from a virtual environment"
-        else
+        echo "(echo \$PATH)"; tr ':' '\n' <<< "$PATH"
+        if [[ "$(which python)" != *'/.venv/'* ]]; then
           echo "Python is NOT running from a virtual environment"
           exit 1
         fi
-        test $(which python) = *'.venv'*
         echo "::endgroup::"
         echo "::group::MNE-Python information"
         mne sys_info -dp
