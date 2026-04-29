@@ -27,7 +27,7 @@ inplace:
 	@python -m pip install -e ".[dev]"
 
 test:
-	@python -m pytest mne_bids -v
+	pytest mne_bids -v
 
 build-doc:
 	@echo "Building documentation"

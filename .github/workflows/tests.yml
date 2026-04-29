@@ -11,7 +11,7 @@ on:
   pull_request:
     branches: ['**']
   schedule:
-    - cron: "0 4 * * *"
+    - cron: "0 4 * * 1"  # every Monday at 4:00 UTC
 
 jobs:
   style:  # takes ~10s
@@ -181,7 +181,6 @@ jobs:
         cache-suffix: ${{ matrix.os }}-python${{ matrix.python-version }}
 
     - name: Install Python dependencies using pip
-      # This would be nicer once this feature is implemented: https://github.com/pypa/pip/issues/11440
       run: |
         uv pip install --upgrade pip
         pip check
@@ -210,6 +209,8 @@ jobs:
         echo "(Requested bids-validator version)"; echo "$BIDS_VALIDATOR_VERSION"
         echo "(python version)"; python --version
         echo "(which python)"; which python
+        which pytest
+        which python
         mne sys_info
 
     - name: Install MNE-BIDS

@@ -3920,7 +3920,7 @@ def test_write_raw_special_paths(tmp_path, dir_name):
 
 
 @testing.requires_testing_data
-def test_anonymize_dataset(_bids_validate, tmpdir):
+def test_anonymize_dataset_basic(_bids_validate, tmpdir):
     """Test creating an anonymized copy of a dataset."""
     pytest.importorskip("nibabel")
     # Create a non-anonymized dataset
@@ -3940,7 +3940,6 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     )
 
     raw_path = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
-    raw_er_path = data_path / "MEG" / "sample" / "ernoise_raw.fif"
     fine_cal_path = data_path / "SSS" / "sss_cal_mgh.dat"
     crosstalk_path = data_path / "SSS" / "ct_sparse_mgh.fif"
     t1w_path = data_path / "subjects" / "sample" / "mri" / "T1.mgz"
@@ -3962,9 +3961,9 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     }
 
     raw = _read_raw_fif(raw_path, verbose=False)
-    raw_er = _read_raw_fif(raw_er_path, verbose=False)
+    raw_er = raw.copy().crop(0, 10).load_data()
 
-    write_raw_bids(raw_er, bids_path=bids_path_er)
+    write_raw_bids(raw_er, bids_path=bids_path_er, allow_preload=True, format="FIF")
     write_raw_bids(
         raw,
         bids_path=bids_path,
