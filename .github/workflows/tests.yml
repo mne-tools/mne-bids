@@ -181,7 +181,9 @@ jobs:
 
     - name: Workaround for macOS behavior on login shells
       if: startsWith(matrix.os, 'macos')
-      run: echo "export PATH=\"${{ github.workspace }}/.venv/bin:$PATH\"" | tee -a ~/.profile
+      run: |
+        echo "export PATH=\"${{ github.workspace }}/.venv/bin:$PATH\"" | tee -a ~/.bash_profile
+        echo "PATH=\"${{ github.workspace }}/.venv/bin:$PATH\"" | tee -a $GITHUB_ENV
 
     - name: Install MNE
       run: |
