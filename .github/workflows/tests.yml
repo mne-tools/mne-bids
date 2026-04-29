@@ -132,6 +132,7 @@ jobs:
         mne-version: [mne-stable]
         mne-bids-install: [full]
         bids-validator-version: [stable]
+        test-with-no-testing-data: [false]
 
         include:
           # special test runs running only on single CI systems to save resources
@@ -141,6 +142,7 @@ jobs:
             mne-version: mne-main
             mne-bids-install: full
             bids-validator-version: dev
+            test-with-no-testing-data: true
           # Test previous MNE stable version
           - os: ubuntu-latest
             python-version: "3.11"
@@ -234,7 +236,7 @@ jobs:
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
       run: make test
-      if: ${{ matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
+      if: ${{ matrix.test-with-no-testing-data }}
 
     # Get testing data
     - run: ./tools/get_testing_version.sh
