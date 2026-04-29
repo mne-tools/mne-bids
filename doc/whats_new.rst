@@ -48,6 +48,8 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Expected format conversions notices are now logged at ``info`` instead of ``warn`` level, by `Bruno Aristimunha`_ (:gh:`1589`)
+- Add ``readme`` parameter to :func:`mne_bids.write_raw_bids`; pass ``readme=False`` to leave any existing ``README`` untouched and skip creating one, by `Bruno Aristimunha`_ (:gh:`1550`)
+- :func:`mne_bids.make_dataset_description` preserves BIDS-spec keys it does not model when merging with an existing ``dataset_description.json``, by `Bruno Aristimunha`_ (:gh:`1548`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^

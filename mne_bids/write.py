@@ -91,7 +91,6 @@ from mne_bids.utils import (
     _infer_eeg_placement_scheme,
     _stamp_to_dt,
     _write_json,
-    _write_text,
     _write_tsv,
     warn,
 )
@@ -610,24 +609,33 @@ def _readme(datatype, fname, overwrite=False):
         MNE-BIDS citation to the existing README, unless it
         already contains that citation.
     """
-    if fname.is_file() and not overwrite:
-        with _open_lock(fname, encoding="utf-8-sig") as fid:
-            orig_data = fid.read()
-        mne_bids_ref = REFERENCES["mne-bids"] in orig_data
-        datatype_ref = REFERENCES[datatype] in orig_data
-        if mne_bids_ref and datatype_ref:
-            return
-        text = "{}References\n----------\n{}{}".format(
-            orig_data + "\n\n",
-            "" if mne_bids_ref else REFERENCES["mne-bids"] + "\n\n",
-            "" if datatype_ref else REFERENCES[datatype] + "\n",
-        )
-    else:
-        text = "References\n----------\n{}{}".format(
-            REFERENCES["mne-bids"] + "\n\n", REFERENCES[datatype] + "\n"
-        )
+    # Hold the lock across read and write so concurrent writers cannot
+    # observe a partially written file.
+    with _open_lock(fname):
+        if fname.is_file() and not overwrite:
+            with open(fname, encoding="utf-8-sig") as fid:
+                orig_data = fid.read()
+            mne_bids_ref = REFERENCES["mne-bids"] in orig_data
+            datatype_ref = REFERENCES[datatype] in orig_data
+            if mne_bids_ref and datatype_ref:
+                return
+            text = "{}References\n----------\n{}{}".format(
+                orig_data + "\n\n",
+                "" if mne_bids_ref else REFERENCES["mne-bids"] + "\n\n",
+                "" if datatype_ref else REFERENCES[datatype] + "\n",
+            )
+        else:
+            text = "References\n----------\n{}{}".format(
+                REFERENCES["mne-bids"] + "\n\n", REFERENCES[datatype] + "\n"
+            )
 
-    _write_text(fname, text, overwrite=True)
+        # Write inline (don't call _write_text — it would acquire the
+        # same lock again, which is not re-entrant across FileLock
+        # instances).
+        with open(fname, "w", encoding="utf-8-sig") as fid:
+            fid.write(text)
+            fid.write("\n")
+        logger.info(f"Writing '{fname}'...")
 
 
 def _participants_tsv(raw, subject_id, fname, overwrite=False):
@@ -1707,6 +1715,7 @@ def make_dataset_description(
 
     # Handle potentially existing file contents
     with _open_lock(fname):
+        orig_cols = {}
         if op.isfile(fname):
             try:
                 with open(fname, encoding="utf-8-sig") as fin:
@@ -1738,6 +1747,16 @@ def make_dataset_description(
         pop_keys = [key for key, val in description.items() if val is None]
         for key in pop_keys:
             description.pop(key)
+
+        # Preserve any extra keys present in the existing file that this
+        # function does not model (e.g. user-added BIDS-spec fields like
+        # "Description"), so that calling write_raw_bids does not silently
+        # drop enriched metadata.
+        # https://github.com/mne-tools/mne-bids/issues/1548
+        for key, val in orig_cols.items():
+            if key not in description:
+                description[key] = val
+
         _write_json(fname, description, overwrite=True, lock=False)
 
 
@@ -1761,6 +1780,7 @@ def write_raw_bids(
     electrodes_tsv_task=False,
     emg_placement=None,
     overwrite=False,
+    readme=True,
     verbose=None,
 ):
     """Save raw data to a BIDS-compliant folder structure.
@@ -1961,6 +1981,12 @@ def write_raw_bids(
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
+    readme : bool
+        Whether to write or update the dataset-level ``README``.
+        Defaults to ``True``: if no ``README`` exists, write a stub
+        containing the MNE-BIDS citation; if one already exists,
+        append the citation when missing. Pass ``False`` to leave
+        any existing ``README`` untouched and to skip creating one.
     %(verbose)s
 
     Returns
@@ -2345,7 +2371,8 @@ def write_raw_bids(
     # save readme file unless it already exists
     # XXX: can include README overwrite in future if using a template API
     # XXX: see https://github.com/mne-tools/mne-bids/issues/551
-    _readme(bids_path.datatype, readme_fname, False)
+    if readme:
+        _readme(bids_path.datatype, readme_fname, False)
 
     # save all participants meta data
     _participants_tsv(
