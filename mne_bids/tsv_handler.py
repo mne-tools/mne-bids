@@ -13,15 +13,15 @@ import numpy as np
 from mne_bids._fileio import _open_lock
 
 
-def _detect_tsv_encoding(fname):
-    """Deterministically detect the encoding of a TSV file."""
-    raw = Path(fname).read_bytes()
-    if raw.startswith(codecs.BOM_UTF8):
+def _detect_file_encoding(fname):
+    """Deterministically detect the text encoding of a file."""
+    byte_content = Path(fname).read_bytes()
+    if byte_content.startswith(codecs.BOM_UTF8):
         return "utf-8-sig"
-    if raw.startswith((codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)):
+    if byte_content.startswith((codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)):
         return "utf-16"
     try:
-        raw.decode("utf-8")
+        byte_content.decode("utf-8")
         return "utf-8"
     except UnicodeDecodeError:
         return "latin-1"
@@ -163,7 +163,7 @@ def _from_tsv(fname, dtypes=None):
     """
     from .utils import warn  # avoid circular import
 
-    encoding = _detect_tsv_encoding(fname)
+    encoding = _detect_file_encoding(fname)
     if encoding == "latin-1":
         warn(f"TSV file is not UTF-8 encoded, reading as latin-1: '{fname}'")
     data = np.loadtxt(

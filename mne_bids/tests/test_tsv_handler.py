@@ -12,7 +12,7 @@ import mne_bids._fileio as _fileio
 from mne_bids.tsv_handler import (
     _combine_rows,
     _contains_row,
-    _detect_tsv_encoding,
+    _detect_file_encoding,
     _drop,
     _from_tsv,
     _to_tsv,
@@ -118,11 +118,11 @@ def test_contains_row_different_types():
     ],
     ids=["ascii", "utf8", "utf8-bom", "utf16", "latin1"],
 )
-def test_detect_tsv_encoding(tmp_path, payload, expected):
+def test_detect_file_encoding(tmp_path, payload, expected):
     """Encoding is detected deterministically from BOM and UTF-8 validity."""
-    tsv = tmp_path / "test.tsv"
-    tsv.write_bytes(payload)
-    assert _detect_tsv_encoding(tsv) == expected
+    fpath = tmp_path / "test.tsv"
+    fpath.write_bytes(payload)
+    assert _detect_file_encoding(fpath) == expected
 
 
 def test_from_tsv_latin1_warns(tmp_path):
