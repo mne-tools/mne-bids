@@ -960,14 +960,8 @@ def test_handle_scans_reading_brainvision(tmp_path):
             ("acq_time", ["2000-01-01T12:00:00.000000Z"]),
         ]
     )
-    test_scan_edf = OrderedDict(
-        [
-            ("filename", [Path("eeg/sub-01_ses-eeg_task-rest_eeg.edf")]),
-            ("acq_time", ["2000-01-01T12:00:00.000000Z"]),
-        ]
-    )
     os.mkdir(tmp_path / "eeg")
-    for test_scan in [test_scan_eeg, test_scan_vmrk, test_scan_edf]:
+    for test_scan in [test_scan_eeg, test_scan_vmrk]:
         _to_tsv(test_scan, tmp_path / test_scan["filename"][0])
 
     bids_path = BIDSPath(
@@ -979,8 +973,99 @@ def test_handle_scans_reading_brainvision(tmp_path):
     for test_scan in [test_scan_eeg, test_scan_vmrk]:
         _handle_scans_reading(tmp_path / test_scan["filename"][0], raw, bids_path)
 
-    with pytest.raises(ValueError, match="not in list"):
-        _handle_scans_reading(tmp_path / test_scan_edf["filename"][0], raw, bids_path)
+
+def _scans_setup(tmp_path):
+    raw = mne.io.RawArray(
+        np.zeros((1, 10)), mne.create_info(["EEG001"], sfreq=100, ch_types="eeg")
+    )
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
+    bids_path = BIDSPath(
+        subject="01",
+        task="test",
+        datatype="eeg",
+        suffix="eeg",
+        extension=".fif",
+        root=tmp_path,
+    )
+    return raw, bids_path, tmp_path / "sub-01_scans.tsv"
+
+
+@pytest.mark.parametrize("acq_time", ["not-a-date", "NaN", ""])
+def test_handle_scans_reading_invalid_acq_time(tmp_path, acq_time):
+    """Malformed ``acq_time`` warns and leaves ``meas_date`` unchanged."""
+    raw, bids_path, scans_path = _scans_setup(tmp_path)
+    initial = raw.info["meas_date"]
+    _to_tsv(
+        OrderedDict(
+            [
+                ("filename", [Path("eeg/sub-01_task-test_eeg.fif")]),
+                ("acq_time", [acq_time]),
+            ]
+        ),
+        scans_path,
+    )
+
+    with pytest.warns(RuntimeWarning, match="invalid acq_time"):
+        out = _handle_scans_reading(scans_path, raw, bids_path)
+    assert out is raw
+    assert raw.info["meas_date"] == initial
+
+
+def test_handle_scans_reading_filename_not_listed(tmp_path):
+    """Recording absent from ``scans.tsv`` warns and leaves ``meas_date`` unchanged."""
+    raw, bids_path, scans_path = _scans_setup(tmp_path)
+    initial = raw.info["meas_date"]
+    fake_fname = Path("eeg/sub-foo_task-bar_eeg.fif")
+    _to_tsv(
+        OrderedDict(
+            [
+                ("filename", [fake_fname]),
+                ("acq_time", ["2024-02-04T17:47:18.000000Z"]),
+            ]
+        ),
+        scans_path,
+    )
+
+    with pytest.warns(RuntimeWarning, match="is not listed in"):
+        out = _handle_scans_reading(scans_path, raw, bids_path)
+    assert out is raw
+    assert raw.info["meas_date"] == initial
+
+
+def test_handle_scans_reading_empty(tmp_path):
+    """Header-only ``scans.tsv`` does not crash on the BrainVision suffix block."""
+    raw, bids_path, scans_path = _scans_setup(tmp_path)
+    initial = raw.info["meas_date"]
+    _to_tsv(OrderedDict([("filename", []), ("acq_time", [])]), scans_path)
+
+    with pytest.warns(RuntimeWarning, match="TSV file is empty"):
+        out = _handle_scans_reading(scans_path, raw, bids_path)
+    assert out is raw
+    assert raw.info["meas_date"] == initial
+
+
+@pytest.mark.parametrize(
+    "acq_time, expected",
+    [
+        ("2024-02-04 17:47:18", datetime(2024, 2, 4, 17, 47, 18).astimezone(UTC)),
+        ("2024-02-04T17:47:18+02:00", datetime(2024, 2, 4, 15, 47, 18, tzinfo=UTC)),
+    ],
+)
+def test_handle_scans_reading_iso8601_variants(tmp_path, acq_time, expected):
+    """``fromisoformat`` accepts space separator and explicit UTC offsets."""
+    raw, bids_path, scans_path = _scans_setup(tmp_path)
+    _to_tsv(
+        OrderedDict(
+            [
+                ("filename", [Path("eeg/sub-01_task-test_eeg.fif")]),
+                ("acq_time", [acq_time]),
+            ]
+        ),
+        scans_path,
+    )
+
+    out = _handle_scans_reading(scans_path, raw, bids_path)
+    assert out.info["meas_date"] == expected
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])

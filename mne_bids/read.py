@@ -381,6 +381,8 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     data_fname = Path(bids_path.datatype) / fname
     fnames = scans_tsv["filename"]
     fnames = [Path(fname) for fname in fnames]
+    if not fnames:  # header-only scans.tsv
+        return raw
     if "acq_time" in scans_tsv:
         acq_times = scans_tsv["acq_time"]
     else:
@@ -396,14 +398,24 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         ext = fnames[0].suffix
         data_fname = Path(data_fname).with_suffix(ext)
     try:
-        row_ind = _verbose_list_index(fnames, data_fname)
-    except ValueError as exc:
+        row_ind = fnames.index(data_fname)
+    except ValueError:
+        row_ind = None
         if fname.endswith(".pdf"):
             alt_fname = Path(bids_path.datatype) / Path(fname).with_suffix("")
-            row_ind = _verbose_list_index(fnames, alt_fname)
-            data_fname = alt_fname
-        else:
-            raise exc
+            try:
+                row_ind = fnames.index(alt_fname)
+                data_fname = alt_fname
+            except ValueError:
+                pass
+        if row_ind is None:
+            matches = get_close_matches(str(data_fname), [str(f) for f in fnames])
+            hint = f" Did you mean one of {matches}?" if matches else ""
+            warn(
+                f"{data_fname} is not listed in {scans_fname.name}.{hint} "
+                "Leaving raw.info['meas_date'] unchanged."
+            )
+            return raw
 
     # check whether all split files have the same acq_time
     # and throw an error if they don't
@@ -432,26 +444,26 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         # time is represented as "local" time. We have no way to know what the local
         # time zone is at the *acquisition* site; so we simply assume the same time zone
         # as the user's current system (this is what the spec demands anyway).
-        acq_time_is_utc = acq_time.endswith("Z")
+        s = acq_time.strip()
+        parsed = None
+        if s and s.lower() != "nan":
+            try:
+                parsed = datetime.fromisoformat(
+                    s.replace("Z", "+00:00") if s.endswith("Z") else s
+                )
+            except ValueError:
+                pass
+        if parsed is None:
+            warn(
+                f"The scans.tsv file {scans_fname} contains an invalid acq_time "
+                f"value: {acq_time!r}. Leaving raw.info['meas_date'] unchanged."
+            )
+            return raw
 
-        # microseconds part in the acquisition time is optional; add it if missing
-        if "." not in acq_time:
-            if acq_time_is_utc:
-                acq_time = acq_time.replace("Z", ".0Z")
-            else:
-                acq_time += ".0"
-
-        date_format = "%Y-%m-%dT%H:%M:%S.%f"
-        if acq_time_is_utc:
-            date_format += "Z"
-
-        acq_time = datetime.strptime(acq_time, date_format)
-
-        if acq_time_is_utc:
-            # Enforce setting timezone to UTC without additonal conversion
-            acq_time = acq_time.replace(tzinfo=UTC)
+        if parsed.tzinfo is not None:
+            acq_time = parsed.astimezone(UTC)
         else:
-            acq_time = _convert_dt_to_utc(acq_time)
+            acq_time = _convert_dt_to_utc(parsed)
 
         logger.debug(f"Loaded {scans_fname} scans file to set acq_time as {acq_time}.")
         # First set measurement date to None and then call call anonymize() to
