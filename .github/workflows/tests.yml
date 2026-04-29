@@ -50,44 +50,32 @@ jobs:
         uv pip install --upgrade pip
         uv pip check
         uv pip install build twine
+        which pip
+        which python
 
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
-    - name: Build sdist
-      run: python -m build --sdist
-    - name: Check sdist
-      run: twine check --strict dist/*
-    - name: Install sdist
-      run: uv pip install ./dist/mne_bids-*
-    - name: Clean up working directory
-      run: rm -rf ./*
-    - name: Try importing mne_bids
-      run: python -c 'import mne_bids; print(mne_bids.__version__)'
-    - name: Try cli mne_bids
-      run: mne_bids --version
-    - name: Remove sdist install
-      run: uv pip uninstall -y mne-bids
+    - run: python -m build --sdist
+    - run: twine check --strict dist/*
+    - run: uv pip install ./dist/mne_bids-*
+    - run: rm -rf ./*
+    - run: python -c 'import mne_bids; print(mne_bids.__version__)'  # ensure import
+    - run: mne_bids --version  # try CLI
+    - run: uv pip uninstall -y mne-bids  # uninstall
 
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         fetch-tags: true
-    - name: Build wheel
-      run: python -m build --wheel
-    - name: Check wheel
-      run: twine check --strict dist/*
-    - name: Install wheel
-      run: uv pip install ./dist/mne_bids-*.whl
-    - name: Clean up working directory
-      run: rm -rf ./*
-    - name: Try importing mne_bids
-      run: python -c 'import mne_bids; print(mne_bids.__version__)'
-    - name: Try cli mne_bids
-      run: mne_bids --version
-    - name: Remove wheel install
-      run: uv pip uninstall -y mne-bids
+    - run: python -m build --wheel
+    - run: twine check --strict dist/*
+    - run: uv pip install ./dist/mne_bids-*.whl
+    - run: rm -rf ./*
+    - run: python -c 'import mne_bids; print(mne_bids.__version__)'
+    - run: mne_bids --version
+    - run: uv pip uninstall -y mne-bids
 
     - uses: actions/checkout@v6
       with:
@@ -279,7 +267,7 @@ jobs:
         echo "Testing data path: $TEST_PATH"
         chmod +w $TEST_PATH/MEG/sample/ $TEST_PATH/SSS/
         for end in "MEG/sample/*oct*" "SSS/*_sss.fif" "SSS/*hpi*"; do
-          chmod +w "$TEST_PATH"/$end
+          chmod +w "$TEST_PATH"/$end || true
           rm -Rf "$TEST_PATH"/$end
         done
         chmod -R a-w "$TEST_PATH"
