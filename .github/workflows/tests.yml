@@ -40,7 +40,6 @@ jobs:
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
-        fetch-tags: true
     - uses: astral-sh/setup-uv@v8.1.0
       with:
         python-version: ${{ matrix.python-version }}
@@ -161,7 +160,6 @@ jobs:
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
-        fetch-tags: true
 
     - uses: denoland/setup-deno@v2
       with:
@@ -184,7 +182,6 @@ jobs:
       uses: actions/checkout@v6
       with:
         fetch-depth: 0
-        fetch-tags: true
         repository: mne-tools/mne-python
         path: mne-python
 
