@@ -103,17 +103,6 @@ jobs:
         python -c 'import pymatreader; print(pymatreader.__version__)'
 
   test:
-    # For GitHub "required" CI checks, add in branch protection:
-    #
-    # 8 checks:
-    # for each machine type (ubuntu, macos, windows):
-    # 3.14 / mne-stable / full / validator-stable
-    #
-    # 4 additional checks with alternative MNE-Python and BIDS validator versions:
-    # ubuntu / 3.14 / mne-main / full / validator-dev -->  to test cutting edge of everything
-    # ubuntu / 3.11 / mne-prev / full / validator-stable --> to test last supported mne
-    # ubuntu / 3.14 / mne-stable / minimal / validator-stable --> to test a minimal installation
-    # macos-15-intel / 3.14 / mne-stable / minimal / validator-stable --> to test macos x86_64
     name: test (${{ matrix.os }}, ${{ matrix.python-version }}, ${{ matrix.mne-version }}, ${{ matrix.mne-bids-install }}, validator-${{ matrix.bids-validator-version }})
     timeout-minutes: 60
     needs: style  # just to avoid CI overuse
@@ -126,16 +115,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: ["3.14"]  # Newest supported version
-        mne-version: [mne-stable]
-        mne-bids-install: [full]
-        bids-validator-version: [stable]
-        test-mode: [""]
-        test-with-no-testing-data: [false]
-
         include:
-          # special test runs running only on single CI systems to save resources
+          # Test on linux
+          - os: ubuntu-latest
+            python-version: "3.14"
+            mne-version: mne-stable
+            mne-bids-install: full
+            bids-validator-version: stable
+            test-mode: ""
+            test-with-no-testing-data: false
           # Test development versions
           - os: ubuntu-latest
             python-version: "3.14"
@@ -150,6 +138,7 @@ jobs:
             mne-version: mne-prev-stable
             mne-bids-install: full
             bids-validator-version: stable
+            test-mode: ""
             test-with-no-testing-data: false
           # Test minimal mne-bids install
           - os: ubuntu-latest
@@ -157,8 +146,17 @@ jobs:
             mne-version: mne-stable
             mne-bids-install: minimal
             bids-validator-version: stable
+            test-mode: ""
             test-with-no-testing-data: false
-          # Test macos on x86_64 architecture
+          # Test on macOS arm64
+          - os: macos-latest
+            python-version: "3.14"
+            mne-version: mne-stable
+            mne-bids-install: full
+            bids-validator-version: stable
+            test-mode: ""
+            test-with-no-testing-data: false
+          # Test on macOS x86_64
           - os: macos-15-intel
             python-version: "3.14"
             mne-version: mne-stable
