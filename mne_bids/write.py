@@ -91,7 +91,6 @@ from mne_bids.utils import (
     _infer_eeg_placement_scheme,
     _stamp_to_dt,
     _write_json,
-    _write_text,
     _write_tsv,
     warn,
 )
@@ -606,43 +605,37 @@ def _readme(datatype, fname, overwrite=False):
     overwrite : bool
         Whether to overwrite the existing file (defaults to False).
         If overwrite is True, create a new README containing an
-        MNE-BIDS citation. If overwrite is False, the existing
-        README is preserved as-is when it appears to contain
-        user-authored content; otherwise the auto-generated
-        references are written or completed.
+        MNE-BIDS citation. If overwrite is False, append an
+        MNE-BIDS citation to the existing README, unless it
+        already contains that citation.
     """
-    if fname.is_file() and not overwrite:
-        with _open_lock(fname, encoding="utf-8-sig") as fid:
-            orig_data = fid.read()
-        mne_bids_ref = REFERENCES["mne-bids"] in orig_data
-        datatype_ref = REFERENCES[datatype] in orig_data
-        if mne_bids_ref and datatype_ref:
-            return
-        # Detect user-authored content: a non-empty file that does not
-        # look like the auto-generated references-only README we write
-        # for new datasets. Preserve such content untouched instead of
-        # appending citations to it.
-        # https://github.com/mne-tools/mne-bids/issues/1550
-        if orig_data.strip() and not orig_data.lstrip().startswith(
-            "References\n----------"
-        ):
-            logger.info(
-                f"README at {fname} contains user-authored content; "
-                "leaving it unchanged. Add the MNE-BIDS citation "
-                "manually if you want it included."
+    # Hold the lock across read and write so concurrent writers cannot
+    # observe a partially written file.
+    with _open_lock(fname):
+        if fname.is_file() and not overwrite:
+            with open(fname, encoding="utf-8-sig") as fid:
+                orig_data = fid.read()
+            mne_bids_ref = REFERENCES["mne-bids"] in orig_data
+            datatype_ref = REFERENCES[datatype] in orig_data
+            if mne_bids_ref and datatype_ref:
+                return
+            text = "{}References\n----------\n{}{}".format(
+                orig_data + "\n\n",
+                "" if mne_bids_ref else REFERENCES["mne-bids"] + "\n\n",
+                "" if datatype_ref else REFERENCES[datatype] + "\n",
             )
-            return
-        text = "{}References\n----------\n{}{}".format(
-            orig_data + "\n\n" if orig_data.strip() else "",
-            "" if mne_bids_ref else REFERENCES["mne-bids"] + "\n\n",
-            "" if datatype_ref else REFERENCES[datatype] + "\n",
-        )
-    else:
-        text = "References\n----------\n{}{}".format(
-            REFERENCES["mne-bids"] + "\n\n", REFERENCES[datatype] + "\n"
-        )
+        else:
+            text = "References\n----------\n{}{}".format(
+                REFERENCES["mne-bids"] + "\n\n", REFERENCES[datatype] + "\n"
+            )
 
-    _write_text(fname, text, overwrite=True)
+        # Write inline (don't call _write_text — it would acquire the
+        # same lock again, which is not re-entrant across FileLock
+        # instances).
+        with open(fname, "w", encoding="utf-8-sig") as fid:
+            fid.write(text)
+            fid.write("\n")
+        logger.info(f"Writing '{fname}'...")
 
 
 def _participants_tsv(raw, subject_id, fname, overwrite=False):
@@ -1787,6 +1780,7 @@ def write_raw_bids(
     electrodes_tsv_task=False,
     emg_placement=None,
     overwrite=False,
+    readme=True,
     verbose=None,
 ):
     """Save raw data to a BIDS-compliant folder structure.
@@ -1987,6 +1981,12 @@ def write_raw_bids(
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
+    readme : bool
+        Whether to write or update the dataset-level ``README``.
+        Defaults to ``True``: if no ``README`` exists, write a stub
+        containing the MNE-BIDS citation; if one already exists,
+        append the citation when missing. Pass ``False`` to leave
+        any existing ``README`` untouched and to skip creating one.
     %(verbose)s
 
     Returns
@@ -2038,15 +2038,9 @@ def write_raw_bids(
     ``write_raw_bids`` will generate a ``dataset_description.json`` file
     if it does not already exist. Minimal metadata will be written there.
     If one sets ``overwrite`` to ``True`` here, it will not overwrite an
-    existing ``dataset_description.json`` file. Existing fields, including
-    BIDS-spec keys not modeled by :func:`mne_bids.make_dataset_description`
-    (e.g. ``Description``, ``DatasetLinks``), are preserved.
+    existing ``dataset_description.json`` file.
     If you need to add more data there, or overwrite it, then you should
     call :func:`mne_bids.make_dataset_description` directly.
-
-    A ``README`` file is written only if one does not already exist or the
-    existing one is empty. User-authored README content is preserved
-    untouched; the MNE-BIDS citation is no longer appended in that case.
 
     When writing EDF or BDF files, all file extensions are forced to be
     lower-case, in compliance with the BIDS specification.
@@ -2377,7 +2371,8 @@ def write_raw_bids(
     # save readme file unless it already exists
     # XXX: can include README overwrite in future if using a template API
     # XXX: see https://github.com/mne-tools/mne-bids/issues/551
-    _readme(bids_path.datatype, readme_fname, False)
+    if readme:
+        _readme(bids_path.datatype, readme_fname, False)
 
     # save all participants meta data
     _participants_tsv(

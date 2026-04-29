@@ -64,7 +64,7 @@ from mne_bids.utils import (
     _write_json,
     get_anonymization_daysback,
 )
-from mne_bids.write import _get_fid_coords, _readme
+from mne_bids.write import _get_fid_coords
 
 base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
@@ -516,33 +516,6 @@ def test_make_dataset_description_preserves_unknown_keys(tmp_path):
     assert final["Name"] == "enriched"
 
 
-def test_readme_preserves_user_authored_content(tmp_path):
-    """User-authored READMEs are not modified across write_raw_bids.
-
-    Regression test for https://github.com/mne-tools/mne-bids/issues/1550 — the
-    helper used to append MNE-BIDS citations to existing user content.
-    """
-    fname = tmp_path / "README"
-    user_text = "My Project\n==========\n\nUser-authored description.\n"
-    fname.write_text(user_text)
-    _readme("meg", fname, overwrite=False)
-    # _write_text adds a UTF-8 BOM, so read with utf-8-sig to compare semantics.
-    assert fname.read_text(encoding="utf-8-sig") == user_text
-
-    # Empty file falls through to writing the boilerplate references.
-    fname.write_text("")
-    _readme("meg", fname, overwrite=False)
-    written = fname.read_text(encoding="utf-8-sig")
-    assert written.startswith("References\n----------")
-    assert REFERENCES["mne-bids"] in written
-    assert REFERENCES["meg"] in written
-
-    # Re-running on a boilerplate-only file is a no-op.
-    snapshot = fname.read_bytes()
-    _readme("meg", fname, overwrite=False)
-    assert fname.read_bytes() == snapshot
-
-
 def test_stamp_to_dt():
     """Test conversions of meas_date to datetime objects."""
     meas_date = (1346981585, 835782)
@@ -843,23 +816,35 @@ def test_fif(_bids_validate, tmp_path):
             raw, bids_path2, events=events, event_id=event_id, overwrite=False
         )
 
-    # User-authored README content is preserved as-is and citations are
-    # not appended. https://github.com/mne-tools/mne-bids/issues/1550
+    # assert README has references in it
     with open(readme, encoding="utf-8-sig") as fid:
         text = fid.read()
         assert "Welcome to my dataset\n" in text
-        assert REFERENCES["mne-bids"] not in text
-        assert REFERENCES["meg"] not in text
+        assert REFERENCES["mne-bids"] in text
+        assert REFERENCES["meg"] in text
+        assert REFERENCES["eeg"] not in text
+        assert REFERENCES["ieeg"] not in text
 
-    # now force the overwrite — README still preserved (write_raw_bids does
-    # not propagate overwrite=True to the README writer).
+    # now force the overwrite
     write_raw_bids(raw, bids_path2, events=events, event_id=event_id, overwrite=True)
 
     with open(readme, encoding="utf-8-sig") as fid:
         text = fid.read()
         assert "Welcome to my dataset\n" in text
-        assert REFERENCES["mne-bids"] not in text
-        assert REFERENCES["meg"] not in text
+        assert REFERENCES["mne-bids"] in text
+        assert REFERENCES["meg"] in text
+
+    # readme=False leaves the existing README untouched.
+    snapshot = Path(readme).read_bytes()
+    write_raw_bids(
+        raw,
+        bids_path2,
+        events=events,
+        event_id=event_id,
+        overwrite=True,
+        readme=False,
+    )
+    assert Path(readme).read_bytes() == snapshot
 
     with pytest.raises(ValueError, match="raw_file must be"):
         write_raw_bids("blah", bids_path)
