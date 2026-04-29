@@ -286,6 +286,7 @@ def test_read_raw_bids_task_none_warns(tmp_path):
     assert raw_read is not None
 
 
+@pytest.mark.slow  # ~10s on macOS Intel CI
 @pytest.mark.filterwarnings(
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",

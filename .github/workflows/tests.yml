@@ -133,6 +133,7 @@ jobs:
         mne-bids-install: [full]
         bids-validator-version: [stable]
         test-with-no-testing-data: [false]
+        test-mode: [""]
 
         include:
           # special test runs running only on single CI systems to save resources
@@ -161,6 +162,7 @@ jobs:
             mne-version: mne-stable
             mne-bids-install: full
             bids-validator-version: stable
+            test-mode: "-m \"not slow\""
     defaults:
       run:
         shell: bash -el {0}
@@ -258,7 +260,7 @@ jobs:
       name: 'Get testing data and set it read-only'
 
     - name: Run pytest
-      run: make test
+      run: make test ARGS="${{ matrix.test-mode }}"
 
     - name: Upload coverage stats to codecov
       uses: codecov/codecov-action@v6

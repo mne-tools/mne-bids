@@ -439,7 +439,7 @@ def bids_root_dense(tmp_path):
     return out
 
 
-@pytest.mark.slow  # ~5s
+@pytest.mark.slow  # ~15s on macOS Intel CI
 def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     """Benchmark exploring bids tree."""
     tmp_bids_root = bids_root_dense.root

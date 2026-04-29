@@ -1,3 +1,5 @@
+ARGS=
+
 .PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e clean inplace test ruff-check ruff-format pep build-doc dist-build
 
 all: clean inplace pep test build-doc dist-build
@@ -27,7 +29,7 @@ inplace:
 	@python -m pip install -e ".[dev]"
 
 test:
-	pytest mne_bids -v
+	pytest mne_bids -v ${ARGS}
 
 build-doc:
 	@echo "Building documentation"

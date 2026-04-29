@@ -1444,6 +1444,7 @@ def test_vhdr(_bids_validate, tmp_path):
     )
 
 
+@pytest.mark.slow  # 7-10s per case on macOS Intel CI
 @pytest.mark.parametrize("dir_name, fname, reader", test_eegieeg_data)
 @pytest.mark.filterwarnings(
     warning_str["nasion_not_found"],
@@ -2127,6 +2128,7 @@ def test_get_anat_landmarks():
     np.testing.assert_array_almost_equal(mri_voxel_landmarks, landmarks, decimal=5)
 
 
+@pytest.mark.slow  # ~25s on macOS Intel CI
 @testing.requires_testing_data
 def test_write_anat(_bids_validate, tmp_path):
     """Test writing anatomical data."""
@@ -3919,6 +3921,7 @@ def test_write_raw_special_paths(tmp_path, dir_name):
     write_raw_bids(raw=raw, bids_path=bids_path)
 
 
+@pytest.mark.slow  # ~15s on macOS Intel CI
 @testing.requires_testing_data
 def test_anonymize_dataset_basic(_bids_validate, tmpdir):
     """Test creating an anonymized copy of a dataset."""
@@ -4437,6 +4440,7 @@ def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
     write_raw_bids(raw, bids_path=bids_path)
 
 
+@pytest.mark.slow  # ~17s on macOS Intel CI
 @pytest.mark.filterwarnings(
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",
