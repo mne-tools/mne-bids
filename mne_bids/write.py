@@ -606,9 +606,10 @@ def _readme(datatype, fname, overwrite=False):
     overwrite : bool
         Whether to overwrite the existing file (defaults to False).
         If overwrite is True, create a new README containing an
-        MNE-BIDS citation. If overwrite is False, append an
-        MNE-BIDS citation to the existing README, unless it
-        already contains that citation.
+        MNE-BIDS citation. If overwrite is False, the existing
+        README is preserved as-is when it appears to contain
+        user-authored content; otherwise the auto-generated
+        references are written or completed.
     """
     if fname.is_file() and not overwrite:
         with _open_lock(fname, encoding="utf-8-sig") as fid:
@@ -617,8 +618,22 @@ def _readme(datatype, fname, overwrite=False):
         datatype_ref = REFERENCES[datatype] in orig_data
         if mne_bids_ref and datatype_ref:
             return
+        # Detect user-authored content: a non-empty file that does not
+        # look like the auto-generated references-only README we write
+        # for new datasets. Preserve such content untouched instead of
+        # appending citations to it.
+        # https://github.com/mne-tools/mne-bids/issues/1550
+        if orig_data.strip() and not orig_data.lstrip().startswith(
+            "References\n----------"
+        ):
+            logger.info(
+                f"README at {fname} contains user-authored content; "
+                "leaving it unchanged. Add the MNE-BIDS citation "
+                "manually if you want it included."
+            )
+            return
         text = "{}References\n----------\n{}{}".format(
-            orig_data + "\n\n",
+            orig_data + "\n\n" if orig_data.strip() else "",
             "" if mne_bids_ref else REFERENCES["mne-bids"] + "\n\n",
             "" if datatype_ref else REFERENCES[datatype] + "\n",
         )
@@ -1708,6 +1723,7 @@ def make_dataset_description(
 
     # Handle potentially existing file contents
     with _open_lock(fname):
+        orig_cols = {}
         if op.isfile(fname):
             try:
                 with open(fname, encoding="utf-8-sig") as fin:
@@ -1739,6 +1755,16 @@ def make_dataset_description(
         pop_keys = [key for key, val in description.items() if val is None]
         for key in pop_keys:
             description.pop(key)
+
+        # Preserve any extra keys present in the existing file that this
+        # function does not model (e.g. user-added BIDS-spec fields like
+        # "Description"), so that calling write_raw_bids does not silently
+        # drop enriched metadata.
+        # https://github.com/mne-tools/mne-bids/issues/1548
+        for key, val in orig_cols.items():
+            if key not in description:
+                description[key] = val
+
         _write_json(fname, description, overwrite=True, lock=False)
 
 
@@ -2013,9 +2039,15 @@ def write_raw_bids(
     ``write_raw_bids`` will generate a ``dataset_description.json`` file
     if it does not already exist. Minimal metadata will be written there.
     If one sets ``overwrite`` to ``True`` here, it will not overwrite an
-    existing ``dataset_description.json`` file.
+    existing ``dataset_description.json`` file. Existing fields, including
+    BIDS-spec keys not modeled by :func:`mne_bids.make_dataset_description`
+    (e.g. ``Description``, ``DatasetLinks``), are preserved.
     If you need to add more data there, or overwrite it, then you should
     call :func:`mne_bids.make_dataset_description` directly.
+
+    A ``README`` file is written only if one does not already exist or the
+    existing one is empty. User-authored README content is preserved
+    untouched; the MNE-BIDS citation is no longer appended in that case.
 
     When writing EDF or BDF files, all file extensions are forced to be
     lower-case, in compliance with the BIDS specification.

@@ -64,7 +64,7 @@ from mne_bids.utils import (
     _write_json,
     get_anonymization_daysback,
 )
-from mne_bids.write import _get_fid_coords
+from mne_bids.write import _get_fid_coords, _readme
 
 base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
@@ -484,6 +484,65 @@ def test_make_dataset_description(tmp_path, monkeypatch):
         make_dataset_description(path=tmp_path, name="tst")
 
 
+def test_make_dataset_description_preserves_unknown_keys(tmp_path):
+    """Custom BIDS-spec fields not modeled by make_dataset_description survive merges.
+
+    Regression test for https://github.com/mne-tools/mne-bids/issues/1548 — calling
+    write_raw_bids (which invokes make_dataset_description with overwrite=False)
+    used to silently drop any keys the OrderedDict didn't model, e.g. the
+    free-form "Description" field.
+    """
+    fname = tmp_path / "dataset_description.json"
+    make_dataset_description(
+        path=tmp_path,
+        name="enriched",
+        authors=["Alice", "Bob"],
+        funding=["NIH grant 12345"],
+        overwrite=True,
+    )
+    desc = json.loads(fname.read_text())
+    desc["Description"] = "Free-form custom field"
+    desc["DatasetLinks"] = {"derivative": "../derivatives"}
+    fname.write_text(json.dumps(desc, indent=2))
+
+    # Subsequent call (mirrors the one inside write_raw_bids).
+    make_dataset_description(path=tmp_path, name="[Unspecified]", overwrite=False)
+
+    final = json.loads(fname.read_text())
+    assert final["Description"] == "Free-form custom field"
+    assert final["DatasetLinks"] == {"derivative": "../derivatives"}
+    assert final["Authors"] == ["Alice", "Bob"]
+    assert final["Funding"] == ["NIH grant 12345"]
+    assert final["Name"] == "enriched"
+
+
+def test_readme_preserves_user_authored_content(tmp_path):
+    """User-authored READMEs are not modified across write_raw_bids.
+
+    Regression test for https://github.com/mne-tools/mne-bids/issues/1550 — the
+    helper used to append MNE-BIDS citations to existing user content.
+    """
+    fname = tmp_path / "README"
+    user_text = "My Project\n==========\n\nUser-authored description.\n"
+    fname.write_text(user_text)
+    _readme("meg", fname, overwrite=False)
+    # _write_text adds a UTF-8 BOM, so read with utf-8-sig to compare semantics.
+    assert fname.read_text(encoding="utf-8-sig") == user_text
+
+    # Empty file falls through to writing the boilerplate references.
+    fname.write_text("")
+    _readme("meg", fname, overwrite=False)
+    written = fname.read_text(encoding="utf-8-sig")
+    assert written.startswith("References\n----------")
+    assert REFERENCES["mne-bids"] in written
+    assert REFERENCES["meg"] in written
+
+    # Re-running on a boilerplate-only file is a no-op.
+    snapshot = fname.read_bytes()
+    _readme("meg", fname, overwrite=False)
+    assert fname.read_bytes() == snapshot
+
+
 def test_stamp_to_dt():
     """Test conversions of meas_date to datetime objects."""
     meas_date = (1346981585, 835782)
@@ -787,23 +846,23 @@ def test_fif(_bids_validate, tmp_path):
             raw, bids_path2, events=events, event_id=event_id, overwrite=False
         )
 
-    # assert README has references in it
+    # User-authored README content is preserved as-is and citations are
+    # not appended. https://github.com/mne-tools/mne-bids/issues/1550
     with open(readme, encoding="utf-8-sig") as fid:
         text = fid.read()
         assert "Welcome to my dataset\n" in text
-        assert REFERENCES["mne-bids"] in text
-        assert REFERENCES["meg"] in text
-        assert REFERENCES["eeg"] not in text
-        assert REFERENCES["ieeg"] not in text
+        assert REFERENCES["mne-bids"] not in text
+        assert REFERENCES["meg"] not in text
 
-    # now force the overwrite
+    # now force the overwrite — README still preserved (write_raw_bids does
+    # not propagate overwrite=True to the README writer).
     write_raw_bids(raw, bids_path2, events=events, event_id=event_id, overwrite=True)
 
     with open(readme, encoding="utf-8-sig") as fid:
         text = fid.read()
         assert "Welcome to my dataset\n" in text
-        assert REFERENCES["mne-bids"] in text
-        assert REFERENCES["meg"] in text
+        assert REFERENCES["mne-bids"] not in text
+        assert REFERENCES["meg"] not in text
 
     with pytest.raises(ValueError, match="raw_file must be"):
         write_raw_bids("blah", bids_path)

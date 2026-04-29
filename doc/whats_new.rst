@@ -47,7 +47,8 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- None yet
+- :func:`mne_bids.write_raw_bids` no longer appends MNE-BIDS citations to a user-authored ``README``. If the file exists with content other than the auto-generated references section it is preserved unchanged; add the citation manually if you want it included. Boilerplate references are still written when the ``README`` is absent or empty, by `Bruno Aristimunha`_ (:gh:`1550`)
+- :func:`mne_bids.make_dataset_description` (and therefore :func:`mne_bids.write_raw_bids`) now preserves BIDS-spec keys it does not model (e.g. ``Description``, ``DatasetLinks``) when merging with an existing ``dataset_description.json``, by `Bruno Aristimunha`_ (:gh:`1548`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
