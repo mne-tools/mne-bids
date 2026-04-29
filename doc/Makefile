@@ -7,7 +7,7 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = mne_bids
 PAPER         =
 SOURCEDIR     = .
-BUILDDIR      = _build
+BUILDDIR      = _build/html
 
 # Put it first so that "make" without argument is like "make help".
 help:
