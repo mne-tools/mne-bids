@@ -64,7 +64,11 @@ jobs:
     # wheel (with extras)
     - run: python -m build --wheel
     - run: twine check --strict dist/*
-    - run: uv pip install ./dist/mne_bids-*.whl[full]
+    - name: Install wheel with extras
+      run: |
+        WHEEL_PATH=$(ls ./dist/mne_bids-*.whl)
+        set -x
+        uv pip install "file://$WHEEL_PATH[full]"
     - run: mkdir tmp
     - run: python -c 'import mne_bids; print(mne_bids.__version__)'
       working-directory: tmp
