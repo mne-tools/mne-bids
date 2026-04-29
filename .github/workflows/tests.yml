@@ -11,134 +11,79 @@ on:
   pull_request:
     branches: ['**']
   schedule:
-    - cron: "0 4 * * *"
+    - cron: "0 4 * * 1"  # every Monday at 4:00 UTC
 
 jobs:
-  style:
+  style:  # takes ~10s
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.13"]
+    timeout-minutes: 2
     steps:
     - uses: actions/checkout@v6
+    - uses: actions/setup-python@v6
       with:
-        fetch-depth: 0
-        fetch-tags: true
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v5
-      with:
-        path: ${{ env.pythonLocation }}
-        key: style-2-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip check
-        python -m pip install ruff
-    - name: Display versions and environment information
-      run: |
-        python --version
-        which python
-    - name: Run style & documentation tests
-      run: make pep
+        python-version: '3.14'
+    - uses: pre-commit/action@v3.0.1
 
   build:
     runs-on: ${{ matrix.os }}
+    needs: style  # just to avoid CI overuse
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.11", "3.13"]  # Oldest and newest supported versions
+        python-version: ["3.11", "3.14"]  # Oldest and newest supported versions
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+    - uses: astral-sh/setup-uv@v8.1.0
       with:
         python-version: ${{ matrix.python-version }}
-
-    - uses: actions/cache@v5
-      with:
-        path: ${{ env.pythonLocation }}
-        key: build-3-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip check
-        python -m pip install build twine
-
-    - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-        fetch-tags: true
-    - name: Build sdist
-      run: python -m build --sdist
-    - name: Check sdist
-      run: twine check --strict dist/*
-    - name: Install sdist
-      run: python -m pip install ./dist/mne_bids-*
-    - name: Clean up working directory
-      run: rm -rf ./*
-    - name: Try importing mne_bids
-      run: python -c 'import mne_bids; print(mne_bids.__version__)'
-    - name: Try cli mne_bids
-      run: mne_bids --version
-    - name: Remove sdist install
-      run: python -m pip uninstall -y mne-bids
-
-    - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-        fetch-tags: true
-    - name: Build wheel
-      run: python -m build --wheel
-    - name: Check wheel
-      run: twine check --strict dist/*
-    - name: Install wheel
-      run: python -m pip install ./dist/mne_bids-*.whl
-    - name: Clean up working directory
-      run: rm -rf ./*
-    - name: Try importing mne_bids
-      run: python -c 'import mne_bids; print(mne_bids.__version__)'
-    - name: Try cli mne_bids
-      run: mne_bids --version
-    - name: Remove wheel install
-      run: python -m pip uninstall -y mne-bids
-
-    - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-        fetch-tags: true
+        activate-environment: true
+        venv-path: '${{ github.workspace }}/../../.venv'
+        prune-cache: false
+        save-cache: false  # just reuse one if available (and it should be)
+        cache-dependency-glob: |
+          ./pyproject.toml
+    - run: uv pip install build twine
+    # sdist
+    - run: python -m build --sdist
+    - run: twine check --strict dist/*
+    - run: uv pip install ./dist/mne_bids-*
+    - run: mkdir tmp
+    - run: python -c 'import mne_bids; print(f"{mne_bids.__version__=}")'  # ensure import
+      working-directory: tmp
+    - run: mne_bids --version  # try CLI
+      working-directory: tmp
+    - run: uv pip uninstall mne-bids
+    - run: git clean -xdf
+    # wheel (with extras)
+    - run: python -m build --wheel
+    - run: twine check --strict dist/*
+    - run: uv pip install "file://$(ls ./dist/mne_bids-*.whl)[full]"
+    - run: rm -Rf ./*
+    - run: python -c 'import mne_bids; print(mne_bids.__version__)'
+    - run: mne_bids --version
     - name: Test extras install
       run: |
-        python -m pip install .[full]
-        python -c 'import mne_bids; print(mne_bids.__version__)'
-        python -c 'import defusedxml; print(defusedxml.__version__)'
-        python -c 'import edfio; print(edfio.__version__)'
-        python -c 'import eeglabio; print(eeglabio.__version__)'
-        python -c 'import matplotlib; print(matplotlib.__version__)'
-        python -c 'import nibabel; print(nibabel.__version__)'
-        python -c 'import pandas; print(pandas.__version__)'
-        python -c 'import pybv; print(pybv.__version__)'
-        python -c 'import pymatreader; print(pymatreader.__version__)'
+        python -c 'import mne_bids; print(f"{mne_bids.__version__=}")'
+        python -c 'import defusedxml; print(f"{defusedxml.__version__=}")'
+        python -c 'import edfio; print(f"{edfio.__version__=}")'
+        python -c 'import eeglabio; print(f"{eeglabio.__version__=}")'
+        python -c 'import matplotlib; print(f"{matplotlib.__version__=}")'
+        python -c 'import nibabel; print(f"{nibabel.__version__=}")'
+        python -c 'import pandas; print(f"{pandas.__version__=}")'
+        python -c 'import pybv; print(f"{pybv.__version__=}")'
+        python -c 'import pymatreader; print(f"{pymatreader.__version__=}")'
 
   test:
-    # For GitHub "required" CI checks, add in branch protection:
-    #
-    # 8 checks:
-    # for each machine type (ubuntu, macos, windows):
-    # 3.11 / mne-stable / full / validator-stable
-    # 3.13 / mne-stable / full / validator-stable
-    #
-    # 4 additional checks with alternative MNE-Python and BIDS validator versions:
-    # ubuntu / 3.13 / mne-main / full / validator-dev -->  to test cutting edge of everything
-    # ubuntu / 3.11 / mne-prev / full / validator-stable --> to test last supported mne
-    # ubuntu / 3.13 / mne-stable / minimal / validator-stable --> to test a minimal installation
-    # macos-15-intel / 3.13 / mne-stable / full / validator-stable --> to test macos x86_64
     name: test (${{ matrix.os }}, ${{ matrix.python-version }}, ${{ matrix.mne-version }}, ${{ matrix.mne-bids-install }}, validator-${{ matrix.bids-validator-version }})
     timeout-minutes: 60
+    needs: style  # just to avoid CI overuse
     runs-on: ${{ matrix.os }}
     env:
       BIDS_VALIDATOR_VERSION: ${{ matrix.bids-validator-version }}
@@ -148,38 +93,63 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.11", "3.13"]  # Oldest and newest supported versions
-        mne-version: [mne-stable]
-        mne-bids-install: [full]
-        bids-validator-version: [stable]
-
         include:
-          # special test runs running only on single CI systems to save resources
+          # Test on linux
+          - os: ubuntu-latest
+            python-version: "3.14"
+            mne-version: mne-stable
+            mne-bids-install: full
+            bids-validator-version: stable
+            test-mode: ""
+            test-with-no-testing-data: false
           # Test development versions
           - os: ubuntu-latest
-            python-version: "3.13"
+            python-version: "3.14"
             mne-version: mne-main
             mne-bids-install: full
             bids-validator-version: dev
+            test-mode: ""
+            test-with-no-testing-data: true
           # Test previous MNE stable version
           - os: ubuntu-latest
             python-version: "3.11"
             mne-version: mne-prev-stable
             mne-bids-install: full
             bids-validator-version: stable
+            test-mode: ""
+            test-with-no-testing-data: false
           # Test minimal mne-bids install
           - os: ubuntu-latest
-            python-version: "3.13"
+            python-version: "3.14"
             mne-version: mne-stable
             mne-bids-install: minimal
             bids-validator-version: stable
-          # Test macos on x86_64 architecture
-          - os: macos-15-intel
-            python-version: "3.13"
+            test-mode: ""
+            test-with-no-testing-data: false
+          # Test on macOS arm64
+          - os: macos-latest
+            python-version: "3.14"
             mne-version: mne-stable
             mne-bids-install: full
             bids-validator-version: stable
+            test-mode: ""
+            test-with-no-testing-data: false
+          # Test on macOS x86_64
+          - os: macos-15-intel
+            python-version: "3.14"
+            mne-version: mne-stable
+            mne-bids-install: minimal  # make it faster
+            bids-validator-version: stable
+            test-mode: "-m 'not slow'"
+            test-with-no-testing-data: false
+          # Test on Windows
+          - os: windows-latest
+            python-version: "3.14"
+            mne-version: mne-stable
+            mne-bids-install: full
+            bids-validator-version: stable
+            test-mode: "-m 'not (slow_windows or slow)'"
+            test-with-no-testing-data: false
     defaults:
       run:
         shell: bash -el {0}
@@ -187,132 +157,111 @@ jobs:
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
-        fetch-tags: true
 
-    - name: Set up deno
-      uses: denoland/setup-deno@v2
+    - uses: denoland/setup-deno@v2
       with:
         deno-version: lts
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+    - uses: astral-sh/setup-uv@v8.1.0
       with:
         python-version: ${{ matrix.python-version }}
+        activate-environment: true
+        prune-cache: false
+        save-cache: ${{ matrix.mne-bids-install == 'full' || matrix.os == 'macos-15-intel' }}
+        cache-dependency-glob: |
+          ./pyproject.toml
 
-    - name: Restore cache
-      uses: actions/cache@v5
+    - name: Workaround for macOS behavior on login shells
+      if: startsWith(matrix.os, 'macos')
+      run: echo "export PATH=\"${{ github.workspace }}/.venv/bin:$PATH\"" | tee -a ~/.bash_profile
+
+    - name: Clone mne-python
+      uses: actions/checkout@v6
       with:
-        path: ${{ env.pythonLocation }}
-        key: test-2-${{ env.pythonLocation }}-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.mne-version }}-${{ hashFiles('pyproject.toml') }}
+        fetch-depth: 0
+        repository: mne-tools/mne-python
+        path: mne-python
 
-    - name: Install Python dependencies using pip
-      # This would be nicer once this feature is implemented: https://github.com/pypa/pip/issues/11440
+    - name: Install MNE-Python
+      working-directory: mne-python
       run: |
-        python -m pip install --upgrade pip
-        pip check
-        python -m pip install -e .[test]
+        if [[ "${{ matrix.mne-version }}" == 'mne-stable' ]]; then
+          git checkout -b maint/1.11 origin/maint/1.11
+        elif [[ "${{ matrix.mne-version }}" == 'mne-prev-stable' ]]; then
+          git checkout -b maint/1.10 origin/maint/1.10
+        elif [[ "${{ matrix.mne-version }}" != 'mne-main' ]]; then
+          echo "Unknown MNE version: ${{ matrix.mne-version }}"
+          exit 1
+        fi
+        git status
+        uv pip install -e .
 
-    - name: Install MNE (stable)
-      if: matrix.mne-version == 'mne-stable'
+    - name: Install MNE-BIDS
       run: |
-        git clone --single-branch --branch maint/1.11 https://github.com/mne-tools/mne-python.git
-        python -m pip install -e ./mne-python
-
-    - name: Install MNE (previous stable)
-      if: matrix.mne-version == 'mne-prev-stable'
-      run: |
-        git clone --single-branch --branch maint/1.10 https://github.com/mne-tools/mne-python.git
-        python -m pip install -e ./mne-python
-
-    - name: Install MNE (main)
-      if: matrix.mne-version == 'mne-main'
-      run: |
-        git clone --single-branch --branch main https://github.com/mne-tools/mne-python.git
-        python -m pip install -e ./mne-python
+        if [[ "${{ matrix.mne-bids-install }}" == 'minimal' ]]; then
+          KIND="[test]"
+        elif [[ "${{ matrix.mne-bids-install }}" == 'full' ]]; then
+          KIND="[full,test]"
+        else
+          echo "Unknown mne-bids-install: ${{ matrix.mne-bids-install }}"
+          exit 1
+        fi
+        set -x
+        uv pip install -e ".${KIND}"
 
     - name: Display versions and environment information
       run: |
+        echo "::group::Environment information"
         echo $TZ
         date
         echo "(deno version)"; deno --version || echo ""
         echo "(Requested bids-validator version)"; echo "$BIDS_VALIDATOR_VERSION"
         echo "(python version)"; python --version
+        echo "(echo \$PATH)"; tr ':' '\n' <<< "$PATH"
         echo "(which python)"; which python
-        mne sys_info
-
-    - name: Install MNE-BIDS (minimal)
-      if: matrix.mne-bids-install == 'minimal'
-      run: python -m pip install -e .
-
-    - name: Install MNE-BIDS (full)
-      if: matrix.mne-bids-install == 'full'
-      run: python -m pip install -e .[full]
+        echo "(which pytest)"; which pytest
+        if [[ "$(which python)" != *'/.venv/'* ]]; then
+          echo "Python is NOT running from a virtual environment"
+          exit 1
+        fi
+        echo "::endgroup::"
+        echo "::group::MNE-Python information"
+        mne sys_info -dp
+        echo "::endgroup::"
 
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
       run: make test
-      if: ${{ matrix.python-version == '3.13' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
+      if: ${{ matrix.test-with-no-testing-data }}
 
     # Get testing data
     - run: ./tools/get_testing_version.sh
       working-directory: mne-python
-      name: 'Get testing version'
 
     - uses: actions/cache@v5
       with:
-        key: testing_data-1-${{ env.TESTING_VERSION }}-${{ matrix.mne-version }}
+        key: testing_data-${{ env.TESTING_VERSION }}
         path: ~/mne_data
       name: 'Cache testing data'
 
     - run: |
         ./tools/github_actions_download.sh
+        # Trim some large files we don't need (speeds up caching)
         TEST_PATH=$(python -c "import mne; print(mne.datasets.testing.data_path(verbose=False))")
         echo "Testing data path: $TEST_PATH"
+        chmod +w $TEST_PATH/MEG/sample/ $TEST_PATH/SSS/
+        for end in "MEG/sample/*oct*" "SSS/*_sss.fif" "SSS/*hpi*"; do
+          chmod +w "$TEST_PATH"/$end || true
+          rm -Rf "$TEST_PATH"/$end
+        done
         chmod -R a-w "$TEST_PATH"
       working-directory: mne-python
       name: 'Get testing data and set it read-only'
 
-    - name: Run pytest
-      run: make test
+    - run: make test ARGS="${{ matrix.test-mode }}"
 
-    - name: Upload coverage stats to codecov
-      uses: codecov/codecov-action@v6
+    - uses: codecov/codecov-action@v6
       with:
         files: ./coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
         verbose: true
-
-  build_docs:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.13"]
-    steps:
-    - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-        fetch-tags: true
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v5
-      with:
-        path: ${{ env.pythonLocation }}
-        key: build_docs-3-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip check
-        python -m pip install --upgrade https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip
-        python -m pip install -e .[test,doc]
-    - name: Build the documentation
-      run: |
-        make build-doc
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v7
-      with:
-        name: documentation
-        path: doc/_build/html
-        include-hidden-files: true

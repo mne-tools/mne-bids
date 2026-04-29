@@ -1444,6 +1444,7 @@ def test_vhdr(_bids_validate, tmp_path):
     )
 
 
+@pytest.mark.slow  # 7-10s per case on macOS Intel CI
 @pytest.mark.parametrize("dir_name, fname, reader", test_eegieeg_data)
 @pytest.mark.filterwarnings(
     warning_str["nasion_not_found"],
@@ -2127,6 +2128,7 @@ def test_get_anat_landmarks():
     np.testing.assert_array_almost_equal(mri_voxel_landmarks, landmarks, decimal=5)
 
 
+@pytest.mark.slow  # ~25s on macOS Intel CI
 @testing.requires_testing_data
 def test_write_anat(_bids_validate, tmp_path):
     """Test writing anatomical data."""
@@ -2435,30 +2437,80 @@ def _ensure_list(x):
         return list(x)
 
 
+# Each of the non-failure ones is ~5s on macOS Intel CI, so mark most slow
 @pytest.mark.parametrize(
     "ch_names, descriptions, drop_status_col, drop_description_col, "
     "existing_ch_names, existing_descriptions",
     [
-        # Only mark channels, do not set descriptions.
-        (["MEG 0112", "MEG 0131", "EEG 053"], None, False, False, [], []),
-        ("MEG 0112", None, False, False, [], []),
-        ("nonsense", None, False, False, [], []),
-        # Now also set descriptions.
-        (
+        pytest.param(
+            ["MEG 0112", "MEG 0131", "EEG 053"],
+            None,
+            False,
+            False,
+            [],
+            [],
+            id="Only channels, no descriptions",
+            marks=pytest.mark.slow,
+        ),
+        pytest.param(
+            "MEG 0112",
+            None,
+            False,
+            False,
+            [],
+            [],
+            id="Only one channel, no description",
+            marks=pytest.mark.slow,
+        ),
+        pytest.param("nonsense", None, False, False, [], [], id="Unknown channel"),
+        pytest.param(
             ["MEG 0112", "MEG 0131"],
             ["Really bad!", "Even worse."],
             False,
             False,
             [],
             [],
+            id="Channels with descriptions",
         ),
-        ("MEG 0112", "Really bad!", False, False, [], []),
-        # Should raise.
-        (["MEG 0112", "MEG 0131"], ["Really bad!"], False, False, [], []),
-        # `datatype='meg`
-        (["MEG 0112"], ["Really bad!"], False, False, [], []),
-        # Enure we create missing columns.
-        ("MEG 0112", "Really bad!", True, True, [], []),
+        pytest.param(
+            "MEG 0112",
+            "Really bad!",
+            False,
+            False,
+            [],
+            [],
+            id="One channel with description",
+            marks=pytest.mark.slow,
+        ),
+        pytest.param(
+            ["MEG 0112", "MEG 0131"],
+            ["Really bad!"],
+            False,
+            False,
+            [],
+            [],
+            id="Should raise on mismatch",
+        ),
+        pytest.param(
+            ["MEG 0112"],
+            ["Really bad!"],
+            False,
+            False,
+            [],
+            [],
+            id="Single MEG channel with description",
+            marks=pytest.mark.slow,
+        ),
+        pytest.param(
+            "MEG 0112",
+            "Really bad!",
+            True,
+            True,
+            [],
+            [],
+            id="Create missing columns",
+            marks=pytest.mark.slow,
+        ),
     ],
 )
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
@@ -2493,9 +2545,15 @@ def test_mark_channels(
     events = events[events[:, 2] != 0]
 
     raw = _read_raw_fif(raw_fname, verbose=False)
+    raw.pick(["MEG 0111", "MEG 0112", "MEG 0131", "EEG 053"]).load_data()
     raw.info["bads"] = []
     write_raw_bids(
-        raw, bids_path=bids_path, events=events, event_id=event_id, verbose=False
+        raw,
+        bids_path=bids_path,
+        events=events,
+        event_id=event_id,
+        allow_preload=True,
+        format="FIF",
     )
 
     channels_fname = _find_matching_sidecar(
@@ -3919,8 +3977,9 @@ def test_write_raw_special_paths(tmp_path, dir_name):
     write_raw_bids(raw=raw, bids_path=bids_path)
 
 
+@pytest.mark.slow  # ~15s on macOS Intel CI
 @testing.requires_testing_data
-def test_anonymize_dataset(_bids_validate, tmpdir):
+def test_anonymize_dataset_basic(_bids_validate, tmpdir):
     """Test creating an anonymized copy of a dataset."""
     pytest.importorskip("nibabel")
     # Create a non-anonymized dataset
@@ -3940,7 +3999,6 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     )
 
     raw_path = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
-    raw_er_path = data_path / "MEG" / "sample" / "ernoise_raw.fif"
     fine_cal_path = data_path / "SSS" / "sss_cal_mgh.dat"
     crosstalk_path = data_path / "SSS" / "ct_sparse_mgh.fif"
     t1w_path = data_path / "subjects" / "sample" / "mri" / "T1.mgz"
@@ -3962,9 +4020,9 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     }
 
     raw = _read_raw_fif(raw_path, verbose=False)
-    raw_er = _read_raw_fif(raw_er_path, verbose=False)
+    raw_er = raw.copy().crop(0, 10).load_data()
 
-    write_raw_bids(raw_er, bids_path=bids_path_er)
+    write_raw_bids(raw_er, bids_path=bids_path_er, allow_preload=True, format="FIF")
     write_raw_bids(
         raw,
         bids_path=bids_path,
@@ -4438,6 +4496,7 @@ def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
     write_raw_bids(raw, bids_path=bids_path)
 
 
+@pytest.mark.slow  # ~17s on macOS Intel CI
 @pytest.mark.filterwarnings(
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",
