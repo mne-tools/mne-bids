@@ -47,7 +47,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Format-conversion notices in :func:`mne_bids.write_raw_bids` no longer emit ``RuntimeWarning``\s when conversion is expected. ``Converting data files to <FORMAT> format`` is now logged at INFO level, and the internal ``Encountered data in "<FMT>" format`` notice is logged at DEBUG level. Adjust visibility with :func:`mne.set_log_level`, by `Bruno Aristimunha`_ (:gh:`1589`)
+- Format-conversion notices in :func:`mne_bids.write_raw_bids` no longer emit ``RuntimeWarning``\s when conversion is expected. Both ``Converting data files to <FORMAT> format`` and ``Encountered data in "<FMT>" format`` are now logged at INFO level. Adjust visibility with :func:`mne.set_log_level`, by `Bruno Aristimunha`_ (:gh:`1589`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^

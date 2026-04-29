@@ -1464,7 +1464,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     # function to pybv that maximizes the resolution parameter while
     # ensuring that int16 can represent the data in original units.
     if raw.orig_format != "single":
-        logger.debug(
+        logger.info(
             f'Encountered data in "{raw.orig_format}" format. Converting to float32.'
         )
 

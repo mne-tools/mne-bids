@@ -1466,17 +1466,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     events, _ = mne.events_from_annotations(raw, event_id=None)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
 
-    warning_to_catch = {
-        "EDF": None,
-        "curry": None,
-        "NihonKohden": None,
-        "CNT": None,
-        "EGI": None,
-        "Persyst": None,
-    }
-
-    if warning_to_catch[dir_name] is None:
-        bids_output_path = write_raw_bids(**kwargs)
+    bids_output_path = write_raw_bids(**kwargs)
 
     with pytest.raises(ValueError, match="You passed events, but no event_id "):
         write_raw_bids(raw, bids_path, events=events)
@@ -1501,8 +1491,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # Test we can overwrite dataset_description.json
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if warning_to_catch[dir_name] is None:
-        bids_output_path = write_raw_bids(**kwargs)
+    bids_output_path = write_raw_bids(**kwargs)
 
     make_dataset_description(
         path=bids_root,
@@ -1520,8 +1509,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     # After writing the entire dataset again, dataset_description.json should
     # contain the default values.
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if warning_to_catch[dir_name] is None:
-        bids_output_path = write_raw_bids(**kwargs)
+    bids_output_path = write_raw_bids(**kwargs)
 
     # dataset_description.json files should not be overwritten inside
     # write_raw_bids calls
@@ -1579,8 +1567,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     )
     raw.set_montage(eeg_montage)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if warning_to_catch[dir_name] is None:
-        bids_output_path = write_raw_bids(**kwargs)
+    bids_output_path = write_raw_bids(**kwargs)
 
     electrodes_fpath = _find_matching_sidecar(
         bids_path, suffix="electrodes", extension=".tsv"
@@ -1633,7 +1620,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
             with pytest.warns(RuntimeWarning, match=match):
                 write_raw_bids(**kwargs)
-        elif warning_to_catch[dir_name] is None:
+        else:
             bids_output_path = write_raw_bids(**kwargs)
 
         data = _from_tsv(scans_tsv)
@@ -1655,8 +1642,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     bids_root = tmp_path / "bids2"
     bids_path.update(root=bids_root, datatype="ieeg")
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
-    if warning_to_catch[dir_name] is None:
-        bids_output_path = write_raw_bids(**kwargs)
+    bids_output_path = write_raw_bids(**kwargs)
 
     _bids_validate(bids_root)
 
@@ -1684,8 +1670,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     bids_root = tmp_path / "bids3"
     bids_path.update(root=bids_root, datatype="ieeg")
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
-    if warning_to_catch[dir_name] is None:
-        bids_output_path = write_raw_bids(**kwargs)
+    bids_output_path = write_raw_bids(**kwargs)
 
     _bids_validate(bids_root)
 
@@ -1737,8 +1722,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     bids_path.update(root=bids_root, datatype="ieeg")
     # test works if ACPC-aligned is specified
     kwargs.update(montage=ecog_montage, acpc_aligned=True)
-    if warning_to_catch[dir_name] is None:
-        bids_output_path = write_raw_bids(**kwargs)
+    bids_output_path = write_raw_bids(**kwargs)
 
     _bids_validate(bids_root)
 
