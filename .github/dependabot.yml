@@ -10,3 +10,17 @@ updates:
           - "*"
     commit-message:
       prefix: "[dependabot]"
+  - package-ecosystem: "uv"
+    directory: "/"
+    allow:
+      - dependency-type: "all"
+    groups:
+      deps:
+        patterns:
+          - "*"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependabot"
+    commit-message:
+      prefix: "[dependabot]"

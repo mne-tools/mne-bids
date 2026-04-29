@@ -243,7 +243,6 @@ jobs:
     # Get testing data
     - run: ./tools/get_testing_version.sh
       working-directory: mne-python
-      name: 'Get testing version'
 
     - uses: actions/cache@v5
       with:
@@ -259,11 +258,9 @@ jobs:
       working-directory: mne-python
       name: 'Get testing data and set it read-only'
 
-    - name: Run pytest
-      run: make test ARGS="${{ matrix.test-mode }}"
+    - run: make test ARGS="${{ matrix.test-mode }}"
 
-    - name: Upload coverage stats to codecov
-      uses: codecov/codecov-action@v6
+    - uses: codecov/codecov-action@v6
       with:
         files: ./coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
