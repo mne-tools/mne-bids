@@ -96,6 +96,7 @@ def _get_sidecar_json_update_file(_get_bids_test_dir):
     return sidecar_fpath
 
 
+@pytest.mark.slow  # ~15s on macOS Intel CI
 @testing.requires_testing_data
 def test_update_sidecar_jsons(
     _get_bids_test_dir, _bids_validate, _get_sidecar_json_update_file

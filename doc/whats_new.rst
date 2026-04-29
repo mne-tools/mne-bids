@@ -47,8 +47,9 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- :func:`mne_bids.write_raw_bids` no longer appends MNE-BIDS citations to a user-authored ``README``. If the file exists with content other than the auto-generated references section it is preserved unchanged; add the citation manually if you want it included. Boilerplate references are still written when the ``README`` is absent or empty, by `Bruno Aristimunha`_ (:gh:`1550`)
-- :func:`mne_bids.make_dataset_description` (and therefore :func:`mne_bids.write_raw_bids`) now preserves BIDS-spec keys it does not model (e.g. ``Description``, ``DatasetLinks``) when merging with an existing ``dataset_description.json``, by `Bruno Aristimunha`_ (:gh:`1548`)
+- Expected format conversions notices are now logged at ``info`` instead of ``warn`` level, by `Bruno Aristimunha`_ (:gh:`1589`)
+- :func:`mne_bids.write_raw_bids` no longer appends MNE-BIDS citations to user-authored ``README`` files; existing content is preserved unchanged, by `Bruno Aristimunha`_ (:gh:`1550`)
+- :func:`mne_bids.make_dataset_description` preserves BIDS-spec keys it does not model when merging with an existing ``dataset_description.json``, by `Bruno Aristimunha`_ (:gh:`1548`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -67,7 +68,7 @@ Detailed list of changes
 - Avoid modifying calibration files by making :func:`mne_bids.write_meg_calibration` copy instead of parsing and rewriting, by `Marijn van Vliet`_ (:gh:`1576`)
 - Fix bug with :meth:`mne_bids.BIDSPath.find_matching_sidecar` not searching parent directories properly, by `Eric Larson`_ (:gh:`1565`)
 - Fix :func:`mne_bids.events_file_to_annotation_kwargs` to drop rows with invalid ``onset`` values (``n/a``, ``nan``, ``NaN``, empty string) before float conversion. This makes reading real-world OpenNeuro datasets (e.g. ``ds004841``, ``ds004842``, ``ds004843``) succeed instead of either raising or returning ``NaN`` onsets, by `Bruno Aristimunha`_ (:gh:`1547`)
-- Fix :func:`mne_bids.read.events_file_to_annotation_kwargs` to fall back to the ``value`` column when ``trial_type`` is entirely ``n/a`` but ``value`` contains trigger codes, instead of dropping all events, by `Bruno Aristimunha`_ (:gh:`947`)
+- Fix :func:`mne_bids.events_file_to_annotation_kwargs` to fall back to the ``value`` column when ``trial_type`` is entirely ``n/a`` but ``value`` contains trigger codes, instead of dropping all events, by `Bruno Aristimunha`_ (:gh:`947`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
