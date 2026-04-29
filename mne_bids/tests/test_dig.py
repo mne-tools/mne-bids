@@ -135,6 +135,7 @@ def test_dig_pixels(tmp_path):
     )
 
 
+@pytest.mark.slow  # ~17s on macOS Intel CI
 @pytest.mark.filterwarnings("ignore:The unit for chann*.:RuntimeWarning:mne")
 @testing.requires_testing_data
 def test_dig_template(tmp_path):
