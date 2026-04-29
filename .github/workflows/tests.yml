@@ -65,13 +65,10 @@ jobs:
     - run: python -m build --wheel
     - run: twine check --strict dist/*
     - run: uv pip install "file://$(ls ./dist/mne_bids-*.whl)[full]"
-    - run: mkdir tmp
+    - run: rm -Rf ./*
     - run: python -c 'import mne_bids; print(mne_bids.__version__)'
-      working-directory: tmp
     - run: mne_bids --version
-      working-directory: tmp
     - name: Test extras install
-      working-directory: tmp
       run: |
         python -c 'import mne_bids; print(f"{mne_bids.__version__=}")'
         python -c 'import defusedxml; print(f"{defusedxml.__version__=}")'
