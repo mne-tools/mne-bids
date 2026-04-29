@@ -45,12 +45,8 @@ jobs:
         cache-dependency-glob: |
           ./pyproject.toml
 
-    - name: Install dependencies
-      run: |
-        uv pip install build twine
-        which pip
-        which python
-        python -m build --help
+    - run: uv pip install build twine
+    - run: python -m build --help
 
     - uses: actions/checkout@v6
       with:
