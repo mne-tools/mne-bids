@@ -230,8 +230,8 @@ def test_read_correct_inputs():
         read_raw_bids(bids_path)
 
 
-def test_read_raw_bids_split_fif_missing_warns(tmp_path, monkeypatch):
-    """Missing later FIF splits warn instead of crashing read_raw_bids (#19)."""
+def test_read_raw_bids_split_fif_missing(tmp_path, monkeypatch):
+    """Missing later FIF splits raise by default; opt in via extra_params."""
     # Force a very small split_size so write_raw_bids produces split-01 + split-02
     # for a small synthetic recording.
     monkeypatch.setattr(mne_bids.write, "_FIFF_SPLIT_SIZE", "5MB")
@@ -262,8 +262,18 @@ def test_read_raw_bids_split_fif_missing_warns(tmp_path, monkeypatch):
         datatype="meg",
         root=tmp_path,
     )
+
+    # Default behavior preserved: raise on a missing split.
+    with pytest.raises(ValueError, match="Split raw file detected"):
+        read_raw_bids(bids_path_partial, verbose=False)
+
+    # Opt-in via extra_params lets the user load what's available.
     with pytest.warns(RuntimeWarning, match="Split raw file detected"):
-        raw_read = read_raw_bids(bids_path_partial, verbose=False)
+        raw_read = read_raw_bids(
+            bids_path_partial,
+            extra_params=dict(on_split_missing="warn"),
+            verbose=False,
+        )
     assert raw_read.n_times > 0
 
 

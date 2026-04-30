@@ -925,8 +925,8 @@ class BIDSPath:
                 # get matching BIDSPaths inside the bids root
                 matching_paths = _get_matching_bidspaths_from_filesystem(self)
 
-                # NOTE: split FIFF data is handled by ``read_raw_bids`` passing
-                # ``on_split_missing="warn"`` to MNE so partial reads succeed.
+                # FIXME This will break
+                # FIXME e.g. with FIFF data split across multiple files.
                 # if extension is not specified and no unique file path
                 # return filepath of the actual dataset for MEG/EEG/iEEG data
                 if self.suffix is None or self.suffix in ALLOWED_DATATYPES:

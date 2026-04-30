@@ -1175,6 +1175,12 @@ def read_raw_bids(
         Note that the ``exclude`` parameter, which is supported by some
         MNE-Python readers, is not supported; instead, you need to subset
         your channels **after** reading.
+
+        For split FIF recordings whose later splits are missing on disk
+        (e.g. partial downloads, tiered storage), pass
+        ``extra_params=dict(on_split_missing="warn")`` (or ``"ignore"``) to
+        load what is available instead of raising. The default behavior of
+        :func:`mne.io.read_raw_fif` (``"raise"``) is preserved.
     return_event_dict : bool
         Whether to return a dictionary that maps annotation descriptions to integer
         event IDs, in addition to the :class:`~mne.io.Raw` object. If a ``value`` column
@@ -1328,13 +1334,8 @@ def read_raw_bids(
         del extra_params["exclude"]
         logger.info('"exclude" parameter is not supported by read_raw_bids')
 
-    if raw_path.suffix == ".fif":
-        if "allow_maxshield" not in extra_params:
-            extra_params["allow_maxshield"] = True
-        # Tolerate datasets where later FIF splits are absent (partial download,
-        # tiered storage, etc.) — load what's available and warn (#19).
-        if "on_split_missing" not in extra_params:
-            extra_params["on_split_missing"] = "warn"
+    if raw_path.suffix == ".fif" and "allow_maxshield" not in extra_params:
+        extra_params["allow_maxshield"] = True
     raw = _read_raw(
         raw_path,
         electrode=None,
