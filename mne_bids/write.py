@@ -607,23 +607,20 @@ def _readme(datatype, fname):
     # Hold the lock across read and write so concurrent writers cannot
     # observe a partially written file.
     with _open_lock(fname):
+        orig_data = ""
         if fname.is_file():
             with open(fname, encoding="utf-8-sig") as fid:
                 orig_data = fid.read()
-            mne_bids_ref = REFERENCES["mne-bids"] in orig_data
-            datatype_ref = REFERENCES[datatype] in orig_data
-            if mne_bids_ref and datatype_ref:
-                return
-            text = "{}References\n----------\n{}{}".format(
-                orig_data + "\n\n",
-                "" if mne_bids_ref else REFERENCES["mne-bids"] + "\n\n",
-                "" if datatype_ref else REFERENCES[datatype] + "\n",
-            )
-        else:
-            text = "References\n----------\n{}{}".format(
-                REFERENCES["mne-bids"] + "\n\n", REFERENCES[datatype] + "\n"
-            )
-
+        mne_bids_ref = REFERENCES["mne-bids"] in orig_data
+        datatype_ref = REFERENCES[datatype] in orig_data
+        if mne_bids_ref and datatype_ref:
+            return
+        prefix = f"{orig_data}\n\n" if orig_data else ""
+        text = "{}References\n----------\n{}{}".format(
+            prefix,
+            "" if mne_bids_ref else REFERENCES["mne-bids"] + "\n\n",
+            "" if datatype_ref else REFERENCES[datatype] + "\n",
+        )
         _write_text(fname, text, overwrite=True, lock=False)
 
 
