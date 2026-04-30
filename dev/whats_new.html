@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev58+g1157d639a documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev59+gcc9e94525 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="_static/documentation_options.js?v=2614dcb8"></script>
+    <script src="_static/documentation_options.js?v=14cdaa07"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -82,7 +82,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev58+g1157d639a" />
+  <meta name="docsearch:version" content="0.19.0.dev59+gcc9e94525" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -151,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev58+g1157d639a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev59+gcc9e94525 documentation</p>
   
 </a></div>
     
@@ -564,6 +564,7 @@
 <li><p>Fix bug with <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_matching_sidecar" title="mne_bids.BIDSPath.find_matching_sidecar"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.find_matching_sidecar()</span></code></a> not searching parent directories properly, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1565">#1565</a>)</p></li>
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.events_file_to_annotation_kwargs.html#mne_bids.events_file_to_annotation_kwargs" title="mne_bids.events_file_to_annotation_kwargs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.events_file_to_annotation_kwargs()</span></code></a> to drop rows with invalid <code class="docutils literal notranslate"><span class="pre">onset</span></code> values (<code class="docutils literal notranslate"><span class="pre">n/a</span></code>, <code class="docutils literal notranslate"><span class="pre">nan</span></code>, <code class="docutils literal notranslate"><span class="pre">NaN</span></code>, empty string) before float conversion. This makes reading real-world OpenNeuro datasets (e.g. <code class="docutils literal notranslate"><span class="pre">ds004841</span></code>, <code class="docutils literal notranslate"><span class="pre">ds004842</span></code>, <code class="docutils literal notranslate"><span class="pre">ds004843</span></code>) succeed instead of either raising or returning <code class="docutils literal notranslate"><span class="pre">NaN</span></code> onsets, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1547">#1547</a>)</p></li>
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.events_file_to_annotation_kwargs.html#mne_bids.events_file_to_annotation_kwargs" title="mne_bids.events_file_to_annotation_kwargs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.events_file_to_annotation_kwargs()</span></code></a> to fall back to the <code class="docutils literal notranslate"><span class="pre">value</span></code> column when <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> is entirely <code class="docutils literal notranslate"><span class="pre">n/a</span></code> but <code class="docutils literal notranslate"><span class="pre">value</span></code> contains trigger codes, instead of dropping all events, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/947">#947</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now tolerates malformed <code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code> entries and ISO 8601 <code class="docutils literal notranslate"><span class="pre">acq_time</span></code> variants, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1591">#1591</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">
@@ -664,7 +665,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-29.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-04-30.
       <br/>
     
   </p>
