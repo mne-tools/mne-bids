@@ -590,12 +590,12 @@ def _events_json(
     _write_json(fname, new_data, overwrite=overwrite)
 
 
-def _readme(datatype, fname, overwrite=False):
+def _readme(datatype, fname):
     """Create a README file and save it.
 
-    This will write a README file containing an MNE-BIDS citation.
-    If a README already exists, the behavior depends on the
-    ``overwrite`` parameter, as described below.
+    If a README already exists, append an MNE-BIDS citation to it
+    unless one is already present. Otherwise, create a new README
+    containing an MNE-BIDS citation.
 
     Parameters
     ----------
@@ -603,17 +603,11 @@ def _readme(datatype, fname, overwrite=False):
         The type of data contained in the raw file ('meg', 'eeg', 'ieeg')
     fname : str | mne_bids.BIDSPath
         Filename to save the README to.
-    overwrite : bool
-        Whether to overwrite the existing file (defaults to False).
-        If overwrite is True, create a new README containing an
-        MNE-BIDS citation. If overwrite is False, append an
-        MNE-BIDS citation to the existing README, unless it
-        already contains that citation.
     """
     # Hold the lock across read and write so concurrent writers cannot
     # observe a partially written file.
     with _open_lock(fname):
-        if fname.is_file() and not overwrite:
+        if fname.is_file():
             with open(fname, encoding="utf-8-sig") as fid:
                 orig_data = fid.read()
             mne_bids_ref = REFERENCES["mne-bids"] in orig_data
@@ -2359,7 +2353,7 @@ def write_raw_bids(
     # XXX: can include README overwrite in future if using a template API
     # XXX: see https://github.com/mne-tools/mne-bids/issues/551
     if readme:
-        _readme(bids_path.datatype, readme_fname, False)
+        _readme(bids_path.datatype, readme_fname)
 
     # save all participants meta data
     _participants_tsv(
