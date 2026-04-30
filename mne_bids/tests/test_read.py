@@ -230,6 +230,43 @@ def test_read_correct_inputs():
         read_raw_bids(bids_path)
 
 
+def test_read_raw_bids_split_fif_missing_warns(tmp_path, monkeypatch):
+    """Missing later FIF splits warn instead of crashing read_raw_bids (#19)."""
+    # Force a very small split_size so write_raw_bids produces split-01 + split-02
+    # for a small synthetic recording.
+    monkeypatch.setattr(mne_bids.write, "_FIFF_SPLIT_SIZE", "5MB")
+    info = mne.create_info(["MEG0113"], 1000.0, ch_types="mag")
+    raw = mne.io.RawArray(np.zeros((1, 2_000_000)), info)  # ~16 MB → splits at 5 MB
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
+    raw.info["line_freq"] = 60
+
+    bids_path = BIDSPath(
+        subject="01",
+        task="rest",
+        datatype="meg",
+        suffix="meg",
+        extension=".fif",
+        root=tmp_path,
+    )
+    write_raw_bids(raw, bids_path, allow_preload=True, format="FIF", verbose=False)
+
+    meg_dir = tmp_path / "sub-01" / "meg"
+    splits = sorted(meg_dir.glob("*split-*_meg.fif"))
+    assert len(splits) >= 2, f"expected >=2 splits, got {[p.name for p in splits]}"
+    splits[-1].unlink()  # simulate a missing later split
+
+    # User-facing scenario: BIDSPath without explicit split= entity.
+    bids_path_partial = BIDSPath(
+        subject="01",
+        task="rest",
+        datatype="meg",
+        root=tmp_path,
+    )
+    with pytest.warns(RuntimeWarning, match="Split raw file detected"):
+        raw_read = read_raw_bids(bids_path_partial, verbose=False)
+    assert raw_read.n_times > 0
+
+
 def test_read_raw_bids_task_none_warns(tmp_path):
     """Test that write rejects task=None and read warns when reading legacy paths."""
     raw = _make_parallel_raw("01")
