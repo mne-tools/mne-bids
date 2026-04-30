@@ -257,13 +257,13 @@ def _write_tsv(fname, dictionary, *, overwrite=False, lock=True, verbose=None):
     logger.info(f"Writing '{fname}'...")
 
 
-def _write_text(fname, text, overwrite=False):
+def _write_text(fname, text, overwrite=False, lock=True):
     """Write text to a file."""
     if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    with _open_lock(fname, "w", encoding="utf-8-sig") as fid:
+    with _open_lock(fname, "w", encoding="utf-8-sig", lock=lock) as fid:
         fid.write(text)
         fid.write("\n")
 
