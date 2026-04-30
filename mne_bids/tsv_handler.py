@@ -6,22 +6,29 @@
 import codecs
 from collections import OrderedDict
 from copy import deepcopy
-from pathlib import Path
 
 import numpy as np
 
 from mne_bids._fileio import _open_lock
 
 
-def _detect_file_encoding(fname):
-    """Deterministically detect the text encoding of a file."""
-    byte_content = Path(fname).read_bytes()
-    if byte_content.startswith(codecs.BOM_UTF8):
+def _detect_file_encoding(fname, chunk_size=65536):
+    """Detect the text encoding of a file from its first chunk.
+
+    Checks for a BOM and otherwise tests UTF-8 validity on a single chunk
+    (default 64 KiB), falling back to ``latin-1``. Avoids reading the full
+    file: enough to catch non-UTF-8 bytes in typical BIDS TSV files (e.g.
+    ``µV`` in ``channels.tsv``).
+    """
+    with open(fname, "rb") as f:
+        chunk = f.read(chunk_size)
+    if chunk.startswith(codecs.BOM_UTF8):
         return "utf-8-sig"
-    if byte_content.startswith((codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)):
+    if chunk.startswith((codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)):
         return "utf-16"
+    decoder = codecs.getincrementaldecoder("utf-8")()
     try:
-        byte_content.decode("utf-8")
+        decoder.decode(chunk, final=False)
         return "utf-8"
     except UnicodeDecodeError:
         return "latin-1"
