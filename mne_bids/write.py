@@ -1701,13 +1701,14 @@ def make_dataset_description(
 
     # Handle potentially existing file contents
     with _open_lock(fname):
+        orig_cols = {}
         if op.isfile(fname):
             try:
                 with open(fname, encoding="utf-8-sig") as fin:
                     orig_cols = json.load(fin)
             except (json.JSONDecodeError, OSError):
                 # File is empty, corrupted, or being written to by another process
-                orig_cols = {}
+                pass
             if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
                 warnings.warn(
                     "Conflicting BIDSVersion found in dataset_description.json! "
@@ -1733,10 +1734,9 @@ def make_dataset_description(
         for key in pop_keys:
             description.pop(key)
 
-        # Preserve unmodeled keys from existing file (gh:1548).
-        if op.isfile(fname):
-            for key, val in orig_cols.items():
-                description.setdefault(key, val)
+        # Preserve BIDS-spec keys we do not model (e.g. Description, DatasetLinks).
+        for key, val in orig_cols.items():
+            description.setdefault(key, val)
 
         _write_json(fname, description, overwrite=True, lock=False)
 
