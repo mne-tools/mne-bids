@@ -91,6 +91,7 @@ from mne_bids.utils import (
     _infer_eeg_placement_scheme,
     _stamp_to_dt,
     _write_json,
+    _write_text,
     _write_tsv,
     warn,
 )
@@ -629,13 +630,7 @@ def _readme(datatype, fname, overwrite=False):
                 REFERENCES["mne-bids"] + "\n\n", REFERENCES[datatype] + "\n"
             )
 
-        # Write inline (don't call _write_text — it would acquire the
-        # same lock again, which is not re-entrant across FileLock
-        # instances).
-        with open(fname, "w", encoding="utf-8-sig") as fid:
-            fid.write(text)
-            fid.write("\n")
-        logger.info(f"Writing '{fname}'...")
+        _write_text(fname, text, overwrite=True, lock=False)
 
 
 def _participants_tsv(raw, subject_id, fname, overwrite=False):
@@ -1715,7 +1710,6 @@ def make_dataset_description(
 
     # Handle potentially existing file contents
     with _open_lock(fname):
-        orig_cols = {}
         if op.isfile(fname):
             try:
                 with open(fname, encoding="utf-8-sig") as fin:
@@ -1748,14 +1742,10 @@ def make_dataset_description(
         for key in pop_keys:
             description.pop(key)
 
-        # Preserve any extra keys present in the existing file that this
-        # function does not model (e.g. user-added BIDS-spec fields like
-        # "Description"), so that calling write_raw_bids does not silently
-        # drop enriched metadata.
-        # https://github.com/mne-tools/mne-bids/issues/1548
-        for key, val in orig_cols.items():
-            if key not in description:
-                description[key] = val
+        # Preserve unmodeled keys from existing file (gh:1548).
+        if op.isfile(fname):
+            for key, val in orig_cols.items():
+                description.setdefault(key, val)
 
         _write_json(fname, description, overwrite=True, lock=False)
 
@@ -1982,11 +1972,8 @@ def write_raw_bids(
         If ``False``, no existing data will be overwritten or
         replaced.
     readme : bool
-        Whether to write or update the dataset-level ``README``.
-        Defaults to ``True``: if no ``README`` exists, write a stub
-        containing the MNE-BIDS citation; if one already exists,
-        append the citation when missing. Pass ``False`` to leave
-        any existing ``README`` untouched and to skip creating one.
+        If ``False``, leave any existing ``README`` untouched and do
+        not create one. Defaults to ``True``.
     %(verbose)s
 
     Returns

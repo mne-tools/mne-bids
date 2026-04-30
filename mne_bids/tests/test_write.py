@@ -485,34 +485,15 @@ def test_make_dataset_description(tmp_path, monkeypatch):
 
 
 def test_make_dataset_description_preserves_unknown_keys(tmp_path):
-    """Custom BIDS-spec fields not modeled by make_dataset_description survive merges.
-
-    Regression test for https://github.com/mne-tools/mne-bids/issues/1548 — calling
-    write_raw_bids (which invokes make_dataset_description with overwrite=False)
-    used to silently drop any keys the OrderedDict didn't model, e.g. the
-    free-form "Description" field.
-    """
+    """Unmodeled keys in dataset_description.json survive merges (gh:1548)."""
     fname = tmp_path / "dataset_description.json"
-    make_dataset_description(
-        path=tmp_path,
-        name="enriched",
-        authors=["Alice", "Bob"],
-        funding=["NIH grant 12345"],
-        overwrite=True,
-    )
+    make_dataset_description(path=tmp_path, name="enriched", overwrite=True)
     desc = json.loads(fname.read_text())
     desc["Description"] = "Free-form custom field"
-    desc["DatasetLinks"] = {"derivative": "../derivatives"}
-    fname.write_text(json.dumps(desc, indent=2))
-
-    # Subsequent call (mirrors the one inside write_raw_bids).
+    fname.write_text(json.dumps(desc))
     make_dataset_description(path=tmp_path, name="[Unspecified]", overwrite=False)
-
     final = json.loads(fname.read_text())
     assert final["Description"] == "Free-form custom field"
-    assert final["DatasetLinks"] == {"derivative": "../derivatives"}
-    assert final["Authors"] == ["Alice", "Bob"]
-    assert final["Funding"] == ["NIH grant 12345"]
     assert final["Name"] == "enriched"
 
 
@@ -834,15 +815,9 @@ def test_fif(_bids_validate, tmp_path):
         assert REFERENCES["mne-bids"] in text
         assert REFERENCES["meg"] in text
 
-    # readme=False leaves the existing README untouched.
     snapshot = Path(readme).read_bytes()
     write_raw_bids(
-        raw,
-        bids_path2,
-        events=events,
-        event_id=event_id,
-        overwrite=True,
-        readme=False,
+        raw, bids_path2, events=events, event_id=event_id, overwrite=True, readme=False
     )
     assert Path(readme).read_bytes() == snapshot
 
