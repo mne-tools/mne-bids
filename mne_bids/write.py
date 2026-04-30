@@ -1965,6 +1965,8 @@ def write_raw_bids(
     readme : bool
         If ``False``, leave any existing ``README`` untouched and do
         not create one. Defaults to ``True``.
+
+        .. versionadded:: 0.19
     %(verbose)s
 
     Returns
