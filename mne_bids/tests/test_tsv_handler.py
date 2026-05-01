@@ -7,6 +7,7 @@ import codecs
 from collections import OrderedDict as odict
 
 import pytest
+from mne.utils import catch_logging
 
 import mne_bids._fileio as _fileio
 from mne_bids.tsv_handler import (
@@ -125,13 +126,14 @@ def test_detect_file_encoding(tmp_path, payload, expected):
     assert _detect_file_encoding(fpath) == expected
 
 
-def test_from_tsv_latin1_warns(tmp_path):
-    """``_from_tsv`` reads non-UTF-8 TSV files as latin-1 with a warning."""
+def test_from_tsv_latin1_logs_info(tmp_path):
+    """``_from_tsv`` reads non-UTF-8 TSV files and emits a soft info message."""
     tsv = tmp_path / "channels.tsv"
     tsv.write_bytes(b"name\tunit\nEEG\t\xb5V\n")  # 'µV' in latin-1
-    with pytest.warns(RuntimeWarning, match="not UTF-8"):
+    with catch_logging(verbose="info") as log:
         d = _from_tsv(tsv)
     assert d["unit"] == ["µV"]
+    assert "non-UTF-8" in log.getvalue()
 
 
 def test_drop_different_types():

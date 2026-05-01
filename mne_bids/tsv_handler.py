@@ -8,6 +8,7 @@ from collections import OrderedDict
 from copy import deepcopy
 
 import numpy as np
+from mne.utils import logger
 
 from mne_bids._fileio import _open_lock
 
@@ -172,7 +173,7 @@ def _from_tsv(fname, dtypes=None):
 
     encoding = _detect_file_encoding(fname)
     if not encoding.startswith("utf-8"):
-        warn(f"TSV file is not UTF-8 encoded, reading as latin-1: '{fname}'")
+        logger.info(f"Reading non-UTF-8 TSV as {encoding}: '{fname}'")
     data = np.loadtxt(
         fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
     )
