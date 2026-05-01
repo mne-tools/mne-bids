@@ -171,7 +171,7 @@ def _from_tsv(fname, dtypes=None):
     from .utils import warn  # avoid circular import
 
     encoding = _detect_file_encoding(fname)
-    if encoding == "latin-1":
+    if not encoding.startswith("utf-8"):
         warn(f"TSV file is not UTF-8 encoded, reading as latin-1: '{fname}'")
     data = np.loadtxt(
         fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
