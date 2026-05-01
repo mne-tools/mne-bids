@@ -25,11 +25,13 @@ from mne_bids.config import (
     ALLOWED_SPACES,
     BIDS_COORD_FRAME_DESCRIPTIONS,
     BIDS_COORDINATE_UNITS,
+    BIDS_IEEG_COORDINATE_FRAMES,
     BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
     BIDS_TO_MNE_FRAMES,
     MNE_FRAME_TO_STR,
     MNE_STR_TO_FRAME,
     MNE_TO_BIDS_FRAMES,
+    coordsys_standard_template_deprecated,
 )
 from mne_bids.path import BIDSPath
 from mne_bids.tsv_handler import _from_tsv
@@ -484,6 +486,47 @@ def _write_coordsystem_json(
     _write_json(fname, fid_json, overwrite=True)
 
 
+def _write_electrodes_json(fname, *, spatial_reference, overwrite=False):
+    """Write the ``*_electrodes.json`` sidecar (#1545)."""
+    fid_json = {"SpatialReference": spatial_reference}
+    if Path(fname).exists() and not overwrite:
+        with _open_lock(fname, encoding="utf-8-sig") as fin:
+            existing = json.load(fin)
+        if fid_json != existing:
+            raise RuntimeError(
+                f"Trying to write electrodes.json, but it already exists at "
+                f"{fname} and the contents do not match. You must "
+                f"differentiate this electrodes.json file from the existing "
+                f'one, or set "overwrite" to True.'
+            )
+    _write_json(fname, fid_json, overwrite=True)
+
+
+def _infer_spatial_reference(bids_path, coord_frame):
+    """Infer SpatialReference for the ``*_electrodes.json`` sidecar (#1545)."""
+    if coord_frame in (
+        BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS
+        + coordsys_standard_template_deprecated
+    ):
+        return coord_frame
+    if coord_frame in BIDS_IEEG_COORDINATE_FRAMES:
+        query = bids_path.copy().update(
+            datatype="anat",
+            suffix="T1w",
+            task=None,
+            space=None,
+            acquisition=None,
+            run=None,
+            processing=None,
+        )
+        for ext in (".nii.gz", ".nii"):
+            cand = query.copy().update(extension=ext).fpath
+            if cand.exists():
+                return f"bids::{cand.relative_to(bids_path.root).as_posix()}"
+        logger.info(f"No T1w found for sub-{bids_path.subject}; using 'n/a'.")
+    return "n/a"
+
+
 def _write_empty_ieeg_positions(
     bids_path,
     raw,
@@ -530,6 +573,12 @@ def _write_empty_ieeg_positions(
         fname=coordsystem_path,
         datatype=bids_path.datatype,
         overwrite=overwrite,
+    )
+    electrodes_json_path = BIDSPath(
+        **electrode_entities, suffix="electrodes", extension=".json"
+    )
+    _write_electrodes_json(
+        electrodes_json_path, spatial_reference="n/a", overwrite=overwrite
     )
 
 
@@ -688,6 +737,15 @@ def _write_dig_bids(
         datatype=bids_path.datatype,
         overwrite=overwrite,
     )
+    if bids_path.datatype != "nirs":
+        electrodes_json_path = BIDSPath(
+            **electrode_file_entities, suffix="electrodes", extension=".json"
+        )
+        _write_electrodes_json(
+            electrodes_json_path,
+            spatial_reference=_infer_spatial_reference(bids_path, coord_frame),
+            overwrite=overwrite,
+        )
 
 
 def _read_dig_bids(electrodes_fpath, coordsystem_fpath, datatype, raw):
