@@ -3,12 +3,36 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import codecs
 from collections import OrderedDict
 from copy import deepcopy
 
 import numpy as np
+from mne.utils import logger
 
 from mne_bids._fileio import _open_lock
+
+
+def _detect_file_encoding(fname, chunk_size=65536):
+    """Detect the text encoding of a file from its first chunk.
+
+    Checks for a BOM and otherwise tests UTF-8 validity on a single chunk
+    (default 64 KiB), falling back to ``latin-1``. Avoids reading the full
+    file: enough to catch non-UTF-8 bytes in typical BIDS TSV files (e.g.
+    ``µV`` in ``channels.tsv``).
+    """
+    with open(fname, "rb") as f:
+        chunk = f.read(chunk_size)
+    if chunk.startswith(codecs.BOM_UTF8):
+        return "utf-8-sig"
+    if chunk.startswith((codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)):
+        return "utf-16"
+    decoder = codecs.getincrementaldecoder("utf-8")()
+    try:
+        decoder.decode(chunk, final=False)
+        return "utf-8"
+    except UnicodeDecodeError:
+        return "latin-1"
 
 
 def _combine_rows(data1, data2, drop_column=None):
@@ -147,8 +171,11 @@ def _from_tsv(fname, dtypes=None):
     """
     from .utils import warn  # avoid circular import
 
+    encoding = _detect_file_encoding(fname)
+    if not encoding.startswith("utf-8"):
+        logger.info(f"Reading non-UTF-8 TSV as {encoding}: '{fname}'")
     data = np.loadtxt(
-        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding="utf-8-sig"
+        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
     )
     # Handle empty files - data may be empty or only have a header
     if data.size == 0:

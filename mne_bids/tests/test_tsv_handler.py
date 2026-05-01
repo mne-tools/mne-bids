@@ -3,14 +3,17 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import codecs
 from collections import OrderedDict as odict
 
 import pytest
+from mne.utils import catch_logging
 
 import mne_bids._fileio as _fileio
 from mne_bids.tsv_handler import (
     _combine_rows,
     _contains_row,
+    _detect_file_encoding,
     _drop,
     _from_tsv,
     _to_tsv,
@@ -103,6 +106,34 @@ def test_contains_row_different_types():
     data = odict(age=[20, 30, 40, "n/a"])  # string
     row = dict(age=60)  # int
     _contains_row(data, row)
+
+
+@pytest.mark.parametrize(
+    "payload,expected",
+    [
+        (b"name\tunit\nEEG\tuV\n", "utf-8"),
+        ("name\tunit\nEEG\tµV\n".encode(), "utf-8"),
+        (codecs.BOM_UTF8 + b"name\tunit\nEEG\tuV\n", "utf-8-sig"),
+        ("name\tunit\nEEG\tµV\n".encode("utf-16"), "utf-16"),
+        (b"name\tunit\nEEG\t\xb5V\n", "latin-1"),
+    ],
+    ids=["ascii", "utf8", "utf8-bom", "utf16", "latin1"],
+)
+def test_detect_file_encoding(tmp_path, payload, expected):
+    """Encoding is detected deterministically from BOM and UTF-8 validity."""
+    fpath = tmp_path / "test.tsv"
+    fpath.write_bytes(payload)
+    assert _detect_file_encoding(fpath) == expected
+
+
+def test_from_tsv_latin1_logs_info(tmp_path):
+    """``_from_tsv`` reads non-UTF-8 TSV files and emits a soft info message."""
+    tsv = tmp_path / "channels.tsv"
+    tsv.write_bytes(b"name\tunit\nEEG\t\xb5V\n")  # 'µV' in latin-1
+    with catch_logging(verbose="info") as log:
+        d = _from_tsv(tsv)
+    assert d["unit"] == ["µV"]
+    assert "non-UTF-8" in log.getvalue()
 
 
 def test_drop_different_types():
