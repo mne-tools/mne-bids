@@ -1066,7 +1066,7 @@ class BIDSPath:
             else:
                 assert ENTITY_VALUE_TYPE[key] == "index"
                 _validate_type(val, types=(int, str, None), item_name=key)
-                if isinstance(val, str) and not val.isdigit():
+                if isinstance(val, str) and not val.isdigit() and self.check:
                     raise ValueError(f"{key} is not an index (Got {val})")
                 elif isinstance(val, int):
                     kwargs[key] = f"{val}"
