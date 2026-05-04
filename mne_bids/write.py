@@ -1602,6 +1602,8 @@ def make_dataset_description(
         List of keywords describing the dataset (BIDS ``Keywords`` field).
         Must be a list of str (e.g., ``['eeg', 'motor-imagery']``) or a single
         comma-separated str (e.g., ``'eeg, motor-imagery'``).
+
+        .. versionadded:: 0.19
     doi : str | None
         The Digital Object Identifier of the dataset (not the corresponding
         paper). Must be of the form ``doi:<insert_doi>`` (e.g.,
