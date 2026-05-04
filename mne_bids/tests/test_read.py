@@ -28,7 +28,7 @@ from numpy.testing import assert_almost_equal
 
 import mne_bids.utils
 import mne_bids.write
-from mne_bids import BIDSPath
+from mne_bids import BIDSPath, read_epochs_bids
 from mne_bids.config import (
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
@@ -2458,3 +2458,53 @@ def test_read_hed_version_returns_none(tmp_path, bids_root):
     """_read_hed_version returns None for absent root / missing file."""
     root = None if bids_root is None else tmp_path / bids_root
     assert _read_hed_version(root) is None
+
+
+@testing.requires_testing_data
+@pytest.mark.filterwarnings(
+    "ignore:At least one epoch has multiple events.*:RuntimeWarning",
+    "ignore:Data file name in EEG.data .* is incorrect.*:RuntimeWarning",
+)
+def test_read_epochs_bids_eeglab(tmp_path):
+    """read_epochs_bids loads EEGLAB epoched data; read_raw_bids refuses it."""
+    src = data_path / "EEGLAB" / "test_epochs.set"
+    bids_root = tmp_path / "ds"
+    (bids_root / "sub-01" / "eeg").mkdir(parents=True)
+    bp = BIDSPath(
+        subject="01",
+        task="t",
+        datatype="eeg",
+        suffix="eeg",
+        extension=".set",
+        root=bids_root,
+    )
+    sh.copy(src, bp.fpath)
+    sh.copy(src.with_suffix(".fdt"), bp.fpath.with_suffix(".fdt"))
+
+    expected = mne.io.read_epochs_eeglab(src, verbose=False)
+    bp.copy().update(extension=".json").fpath.write_text(
+        json.dumps(
+            {
+                "TaskName": "t",
+                "PowerLineFrequency": 60,
+                "SamplingFrequency": float(expected.info["sfreq"]),
+                "RecordingType": "epoched",
+            }
+        )
+    )
+    bp.copy().update(suffix="channels", extension=".tsv").fpath.write_text(
+        "name\ttype\tunits\n" + "".join(f"{ch}\tEEG\tµV\n" for ch in expected.ch_names),
+        encoding="utf-8",
+    )
+    (bids_root / "dataset_description.json").write_text(
+        json.dumps({"Name": "x", "BIDSVersion": "1.8.0"})
+    )
+    (bids_root / "participants.tsv").write_text("participant_id\nsub-01\n")
+
+    epochs = read_epochs_bids(bp)
+    assert isinstance(epochs, mne.BaseEpochs)
+    assert epochs.ch_names == expected.ch_names
+    assert epochs.info["line_freq"] == 60
+    assert_almost_equal(epochs.get_data(copy=False), expected.get_data(copy=False))
+    with pytest.raises(RuntimeError, match="read_epochs_bids"):
+        read_raw_bids(bp)
