@@ -2083,6 +2083,16 @@ def test_channel_mismatch_invalid_option(tmp_path):
         _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
 
 
+def test_channel_mismatch_warn_default(tmp_path):
+    """Channel-name mismatch warns by default and leaves raw channel names intact."""
+    raw, ch_order_snirf, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(
+        tmp_path
+    )
+    with pytest.warns(RuntimeWarning, match="Channel mismatch"):
+        out = _handle_channels_reading(channels_fname, raw.copy())
+    assert out.ch_names == ch_order_snirf
+
+
 @pytest.mark.filterwarnings("ignore:.*loadtxt:UserWarning")
 @pytest.mark.filterwarnings("ignore:TSV file is empty:RuntimeWarning")
 @pytest.mark.parametrize(

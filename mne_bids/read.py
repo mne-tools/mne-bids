@@ -1004,13 +1004,19 @@ def _get_bads_from_tsv_data(tsv_data):
 
 
 def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
-    """Handle mismatch between channels.tsv and raw channel names."""
+    """Handle mismatch. Returns True if caller should skip channels.tsv metadata."""
     if on_ch_mismatch == "raise":
         raise RuntimeError(
             f"Channel mismatch between {channels_fname} and the raw data file detected."
             f"Either align channel names in channels.tsv with the raw file, or call "
-            f"read_raw_bids(on_ch_mismatch='reorder'|'rename') to proceed."
+            f"read_raw_bids(on_ch_mismatch='reorder'|'rename'|'warn') to proceed."
         )
+    if on_ch_mismatch == "warn":
+        warn(
+            f"Channel mismatch between {channels_fname} and the raw data file. "
+            "Skipping channels.tsv-derived channel metadata."
+        )
+        return True
     logger.info(
         "Channel mismatch between "
         f"{channels_fname} and the raw data file detected. "
@@ -1021,10 +1027,12 @@ def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
     elif on_ch_mismatch == "rename":
         raw.rename_channels(dict(zip(raw.ch_names, ch_names_tsv)))
     else:
-        raise ValueError("on_ch_mismatch must be one of {'reorder','raise','rename'}")
+        raise ValueError(
+            "on_ch_mismatch must be one of {'reorder','raise','rename','warn'}"
+        )
 
 
-def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
+def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="warn"):
     """Read associated channels.tsv and populate raw.
 
     Updates status (bad) and types of channels.
@@ -1116,8 +1124,10 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
         )
     else:
         orig_names = list(raw.ch_names)
-        if orig_names != ch_names_tsv:
-            _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname)
+        if orig_names != ch_names_tsv and _handle_channel_mismatch(
+            raw, on_ch_mismatch, ch_names_tsv, channels_fname
+        ):
+            return raw
 
     # Set the channel types in the raw data according to channels.tsv
     channel_type_bids_mne_map_available_channels = {
@@ -1170,7 +1180,7 @@ def read_raw_bids(
     extra_params=None,
     *,
     return_event_dict=False,
-    on_ch_mismatch="raise",
+    on_ch_mismatch="warn",
     verbose=None,
 ):
     """Read BIDS compatible data.
@@ -1204,8 +1214,11 @@ def read_raw_bids(
     on_ch_mismatch : str
         How to handle a mismatch between channel names in channels.tsv file
         and channel names in the raw data file.
-        Must be one of ``'raise'``, ``'reorder'``, ``'rename'`` (default ``'raise'``).
+        Must be one of ``'warn'``, ``'raise'``, ``'reorder'``, ``'rename'``
+        (default ``'warn'``).
 
+        * ``'warn'`` will emit a warning and leave the raw data unchanged,
+          skipping channels.tsv-derived channel metadata.
         * ``'raise'`` will raise a RuntimeError if there is a channel mismatch.
         * ``'reorder'`` will reorder the channels in the raw data file to match the
           channel order in the channels.tsv file.
