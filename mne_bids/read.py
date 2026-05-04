@@ -13,6 +13,7 @@ from pathlib import Path
 import mne
 import numpy as np
 from mne import events_from_annotations, io, pick_channels_regexp, read_events
+from mne._fiff.meas_info import _unique_channel_names
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 from mne.utils import check_version, get_subjects_dir, logger
@@ -1038,22 +1039,7 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
         return raw
     ch_names_tsv = channels_dict["name"]
     if len(set(ch_names_tsv)) != len(ch_names_tsv):
-        from collections import Counter
-
-        totals = Counter(ch_names_tsv)
-        seen = {}
-        deduped = []
-        for n in ch_names_tsv:
-            if totals[n] == 1:
-                deduped.append(n)
-            else:
-                deduped.append(f"{n}-{seen.get(n, 0)}")
-                seen[n] = seen.get(n, 0) + 1
-        warn(
-            f"Duplicate channel names in {channels_fname}; "
-            "appending -0/-1/... suffixes to ensure uniqueness."
-        )
-        channels_dict["name"] = ch_names_tsv = deduped
+        _unique_channel_names(ch_names_tsv)
 
     # Now we can do some work.
     # The "type" column is mandatory in BIDS. We can use it to set channel

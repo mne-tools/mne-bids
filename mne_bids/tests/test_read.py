@@ -2107,7 +2107,7 @@ def test_channels_tsv_duplicate_names(tmp_path):
     n_ch = len(raw.ch_names)
     rows = "\n".join(["EEG\tNIRSCWAMPLITUDE"] * n_ch)
     channels_fname.write_text(f"name\ttype\n{rows}\n", encoding="utf-8")
-    with pytest.warns(RuntimeWarning, match="Duplicate channel names"):
+    with pytest.warns(RuntimeWarning, match="Channel names are not unique"):
         out = _handle_channels_reading(
             channels_fname, raw.copy(), on_ch_mismatch="rename"
         )
