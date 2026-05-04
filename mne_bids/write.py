@@ -1550,7 +1550,7 @@ def make_dataset_description(
     funding=None,
     ethics_approvals=None,
     references_and_links=None,
-    keywords=(),
+    keywords=None,
     doi=None,
     generated_by=None,
     source_datasets=None,
