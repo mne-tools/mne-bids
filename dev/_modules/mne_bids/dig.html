@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.dig &#8212; MNE-BIDS 0.19.0.dev62+g9f1e63537 documentation</title>
+    <title>mne_bids.dig &#8212; MNE-BIDS 0.19.0.dev63+g313cabe21 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=3c7980bc"></script>
+    <script src="../../_static/documentation_options.js?v=2927cc21"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev62+g9f1e63537" />
+  <meta name="docsearch:version" content="0.19.0.dev63+g313cabe21" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev62+g9f1e63537 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev63+g313cabe21 documentation</p>
   
 </a></div>
     
@@ -516,11 +516,13 @@
     <span class="n">ALLOWED_SPACES</span><span class="p">,</span>
     <span class="n">BIDS_COORD_FRAME_DESCRIPTIONS</span><span class="p">,</span>
     <span class="n">BIDS_COORDINATE_UNITS</span><span class="p">,</span>
+    <span class="n">BIDS_IEEG_COORDINATE_FRAMES</span><span class="p">,</span>
     <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span><span class="p">,</span>
     <span class="n">BIDS_TO_MNE_FRAMES</span><span class="p">,</span>
     <span class="n">MNE_FRAME_TO_STR</span><span class="p">,</span>
     <span class="n">MNE_STR_TO_FRAME</span><span class="p">,</span>
     <span class="n">MNE_TO_BIDS_FRAMES</span><span class="p">,</span>
+    <span class="n">coordsys_standard_template_deprecated</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSPath</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.tsv_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">_from_tsv</span>
@@ -975,6 +977,47 @@
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">fid_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_electrodes_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">spatial_reference</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the ``*_electrodes.json`` sidecar (#1545).&quot;&quot;&quot;</span>
+    <span class="n">fid_json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;SpatialReference&quot;</span><span class="p">:</span> <span class="n">spatial_reference</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">existing</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fid_json</span> <span class="o">!=</span> <span class="n">existing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Trying to write electrodes.json, but it already exists at &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2"> and the contents do not match. You must &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;differentiate this electrodes.json file from the existing &quot;</span>
+                <span class="sa">f</span><span class="s1">&#39;one, or set &quot;overwrite&quot; to True.&#39;</span>
+            <span class="p">)</span>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">fid_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_spatial_reference</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Infer SpatialReference for the ``*_electrodes.json`` sidecar (#1545).&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span>
+        <span class="o">+</span> <span class="n">coordsys_standard_template_deprecated</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">coord_frame</span>
+    <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">in</span> <span class="n">BIDS_IEEG_COORDINATE_FRAMES</span><span class="p">:</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;anat&quot;</span><span class="p">,</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;T1w&quot;</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.nii.gz&quot;</span><span class="p">,</span> <span class="s2">&quot;.nii&quot;</span><span class="p">):</span>
+            <span class="n">cand</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
+            <span class="k">if</span> <span class="n">cand</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;bids::</span><span class="si">{</span><span class="n">cand</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No T1w found for sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s2">; using &#39;n/a&#39;.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;n/a&quot;</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_empty_ieeg_positions</span><span class="p">(</span>
     <span class="n">bids_path</span><span class="p">,</span>
     <span class="n">raw</span><span class="p">,</span>
@@ -1021,6 +1064,12 @@
         <span class="n">fname</span><span class="o">=</span><span class="n">coordsystem_path</span><span class="p">,</span>
         <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">electrodes_json_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
+        <span class="o">**</span><span class="n">electrode_entities</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;electrodes&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span>
+    <span class="p">)</span>
+    <span class="n">_write_electrodes_json</span><span class="p">(</span>
+        <span class="n">electrodes_json_path</span><span class="p">,</span> <span class="n">spatial_reference</span><span class="o">=</span><span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span>
     <span class="p">)</span>
 
 
@@ -1179,6 +1228,19 @@
         <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">!=</span> <span class="s2">&quot;nirs&quot;</span><span class="p">:</span>
+        <span class="c1"># NIRS uses *_optodes.{tsv,json}; for EEG/iEEG the BIDS spec defines</span>
+        <span class="c1"># a *_electrodes.json sidecar whose SpatialReference field the</span>
+        <span class="c1"># validator requires for derivative datasets (see #1545):</span>
+        <span class="c1"># https://bids-specification.readthedocs.io/en/stable/modality-specific-files/electroencephalography.html#electrodes-description-_electrodestsv</span>
+        <span class="n">electrodes_json_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">electrode_file_entities</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;electrodes&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span>
+        <span class="p">)</span>
+        <span class="n">_write_electrodes_json</span><span class="p">(</span>
+            <span class="n">electrodes_json_path</span><span class="p">,</span>
+            <span class="n">spatial_reference</span><span class="o">=</span><span class="n">_infer_spatial_reference</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">),</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+        <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_read_dig_bids</span><span class="p">(</span><span class="n">electrodes_fpath</span><span class="p">,</span> <span class="n">coordsystem_fpath</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
