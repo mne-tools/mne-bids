@@ -1440,6 +1440,13 @@ def test_bids_path(bids_root):
     with pytest.raises(ValueError, match="datatype .* is not valid"):
         bids_path.copy().update(check=True, datatype=error_kind)
 
+    # does not error check on datatype in BIDSPath if check=False
+    # (e.g. a non-spec ``fnirs/`` directory used in some real-world datasets)
+    with pytest.raises(ValueError, match="datatype .* is not valid"):
+        BIDSPath(subject=subject_id, datatype="fnirs")
+    bp_fnirs = BIDSPath(subject=subject_id, datatype="fnirs", check=False)
+    assert bp_fnirs.datatype == "fnirs"
+
     # does not error check on space if check=False ...
     BIDSPath(subject=subject_id, space="foo", suffix="eeg", check=False)
 
@@ -1598,6 +1605,13 @@ def test_make_filenames():
         basename.basename
         == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_recording-seven_ieeg.h5"
     )
+
+    # non-numeric run is rejected by default but accepted with check=False
+    with pytest.raises(ValueError, match="run is not an index"):
+        BIDSPath(subject="01", run="5H")
+    bp = BIDSPath(subject="01", run="5H", check=False)
+    assert bp.run == "5H"
+    assert "run-5H" in bp.basename
 
     # what happens with scans.tsv file
     with pytest.raises(ValueError, match="scans.tsv file name can only contain"):
