@@ -1478,29 +1478,25 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
 def read_epochs_bids(
     bids_path, extra_params=None, *, on_ch_mismatch="raise", verbose=None
 ):
-    """Read pre-epoched BIDS data into an :class:`mne.Epochs` object.
+    """Read pre-epoched BIDS data (RecordingType="epoched") as :class:`mne.Epochs`.
 
-    Use this for datasets whose sidecar JSON declares
-    ``"RecordingType": "epoched"``. The same channels, electrodes,
-    coordsystem, scans and participants sidecars used by
-    :func:`read_raw_bids` are applied to the returned object. Currently
-    supports EEGLAB ``.set`` files.
+    EEGLAB ``.set`` only for now. The same sidecars as
+    :func:`read_raw_bids` are applied (channels, electrodes, coordsystem,
+    scans, participants).
 
     Parameters
     ----------
     bids_path : BIDSPath
-        The file to read. Same semantics as :func:`read_raw_bids`.
+        Same semantics as :func:`read_raw_bids`.
     extra_params : None | dict
-        Extra parameters forwarded to the underlying MNE epochs reader.
+        Forwarded to the underlying MNE epochs reader.
     on_ch_mismatch : str
-        How to handle a mismatch between channel names in channels.tsv and
-        the data file. One of ``'raise'``, ``'reorder'``, ``'rename'``.
+        See :func:`read_raw_bids`.
     %(verbose)s
 
     Returns
     -------
     epochs : mne.Epochs
-        The data as an MNE-Python :class:`~mne.Epochs` object.
     """
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object.')
