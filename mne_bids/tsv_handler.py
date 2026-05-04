@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import codecs
+import re
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -11,6 +12,21 @@ import numpy as np
 from mne.utils import logger
 
 from mne_bids._fileio import _open_lock
+
+# Match digit,digit not adjacent to other word chars; rewrites
+# European-locale decimal commas (e.g. "0,5") to "0.5" without touching
+# strings like "EEG, channel 1" or "10,000" inside non-numeric cells.
+_DECIMAL_COMMA_RE = re.compile(r"(?<!\w)(\d+),(\d+)(?!\w)")
+
+
+def _normalize_tsv_cell(value):
+    """Strip whitespace and normalize decimal commas in a TSV cell."""
+    if not isinstance(value, str):
+        return value
+    stripped = value.strip()
+    if "," not in stripped:
+        return stripped
+    return _DECIMAL_COMMA_RE.sub(r"\1.\2", stripped)
 
 
 def _detect_file_encoding(fname, chunk_size=65536):
@@ -199,7 +215,8 @@ def _from_tsv(fname, dtypes=None):
         )
     empty_cols = 0
     for i, name in enumerate(column_names):
-        values = info[:, i].astype(dtypes[i]).tolist()
+        cells = np.array([_normalize_tsv_cell(v) for v in info[:, i].tolist()])
+        values = cells.astype(dtypes[i]).tolist()
         data_dict[name] = values
         if len(values) == 0:
             empty_cols += 1

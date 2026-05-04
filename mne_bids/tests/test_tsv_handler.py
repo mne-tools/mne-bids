@@ -136,6 +136,22 @@ def test_from_tsv_latin1_logs_info(tmp_path):
     assert "non-UTF-8" in log.getvalue()
 
 
+def test_from_tsv_strips_whitespace_and_normalizes_decimal_commas(tmp_path):
+    """``_from_tsv`` tolerates padded ``n/a`` cells and European decimal commas."""
+    tsv = tmp_path / "events.tsv"
+    tsv.write_text(
+        "onset\tduration\ttrial_type\n"
+        "0,5\t1,25\tstim\n"  # European decimals
+        "n/a    \t  n/a\tstim\n"  # whitespace-padded n/a
+        "1.0\t1\trest, eyes-open\n",  # untouched: dot decimal, comma in string
+        encoding="utf-8",
+    )
+    d = _from_tsv(tsv)
+    assert d["onset"] == ["0.5", "n/a", "1.0"]
+    assert d["duration"] == ["1.25", "n/a", "1"]
+    assert d["trial_type"] == ["stim", "stim", "rest, eyes-open"]
+
+
 def test_drop_different_types():
     """Test that _drop() can handle different dtypes without warning.
 
