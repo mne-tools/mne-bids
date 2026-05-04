@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev64+g72864570e documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev65+gae9708cd6 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="_static/documentation_options.js?v=453fe128"></script>
+    <script src="_static/documentation_options.js?v=f593129c"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -82,7 +82,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev64+g72864570e" />
+  <meta name="docsearch:version" content="0.19.0.dev65+gae9708cd6" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -151,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev64+g72864570e documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev65+gae9708cd6 documentation</p>
   
 </a></div>
     
@@ -537,6 +537,7 @@
 <li><p>Speed up <a class="reference internal" href="generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes" title="mne_bids.get_datatypes"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_datatypes()</span></code></a> by restricting filesystem traversal to <code class="docutils literal notranslate"><span class="pre">bids_root/sub-*/(ses-*/)&lt;datatype&gt;</span></code> directories, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1563">#1563</a>)</p></li>
 <li><p>Speed up <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_matching_sidecar" title="mne_bids.BIDSPath.find_matching_sidecar"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.find_matching_sidecar()</span></code></a> by searching most likely file locations first, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1565">#1565</a>)</p></li>
 <li><p>Add support for CHPI channels and gracefully handle incorrect channel definition <code class="docutils literal notranslate"><span class="pre">MEGGRAD</span></code>, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1578">#1578</a>)</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">keywords</span></code> parameter to <a class="reference internal" href="generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_dataset_description()</span></code></a> for the BIDS <code class="docutils literal notranslate"><span class="pre">Keywords</span></code> field, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1602">#1602</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
