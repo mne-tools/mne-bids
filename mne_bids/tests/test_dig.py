@@ -6,6 +6,7 @@ For each supported coordinate frame, implement a test.
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import json
 import warnings
 from pathlib import Path
 
@@ -25,6 +26,7 @@ from mne_bids.config import (
 from mne_bids.dig import (
     _ensure_fiducials_ctf_head,
     _infer_coord_unit,
+    _infer_spatial_reference,
     _read_dig_bids,
     _write_dig_bids,
     convert_montage_to_mri,
@@ -559,3 +561,62 @@ def test_ensure_fiducials_ctf_head():
     montage_head = mne.channels.make_dig_montage(ch_pos=ch_pos, coord_frame="head")
     _ensure_fiducials_ctf_head(montage_head)
     assert montage_head.get_positions()["nasion"] is None
+
+
+@pytest.mark.parametrize(
+    "coord_frame, expected",
+    [
+        # head-based EEG frames (defined by landmarks, no image)
+        ("CapTrak", "n/a"),
+        ("EEGLAB", "n/a"),
+        ("EEGLAB-HJ", "n/a"),
+        # head-based MEG frames (would be n/a if they ever reached the helper)
+        ("CTF", "n/a"),
+        ("ElektaNeuromag", "n/a"),
+        # standard templates -> template name
+        ("fsaverage", "fsaverage"),
+        ("MNI152NLin2009cAsym", "MNI152NLin2009cAsym"),
+        ("Talairach", "Talairach"),
+        # deprecated templates -> template name
+        ("fsaverage5", "fsaverage5"),
+        # wildcard / arbitrary EMG -> n/a
+        ("Other", "n/a"),
+        ("MyCustomEmgSpace", "n/a"),
+    ],
+)
+def test_infer_spatial_reference_branches(tmp_path, coord_frame, expected):
+    """All non-iEEG-MRI BIDS coord frames map to the right SpatialReference (#1545)."""
+    bp = BIDSPath(subject="01", root=tmp_path)
+    assert _infer_spatial_reference(bp, coord_frame) == expected
+
+
+@pytest.mark.parametrize("coord_frame", ["ACPC", "ScanRAS", "Pixels"])
+def test_infer_spatial_reference_subject_mri(tmp_path, coord_frame):
+    """IEEG subject-MRI frames link to the subject T1w when present (#1545)."""
+    bp = BIDSPath(subject="01", session="01", root=tmp_path)
+    assert _infer_spatial_reference(bp, coord_frame) == "n/a"
+    anat_dir = tmp_path / "sub-01" / "ses-01" / "anat"
+    anat_dir.mkdir(parents=True)
+    (anat_dir / "sub-01_ses-01_T1w.nii.gz").touch()
+    assert _infer_spatial_reference(bp, coord_frame) == (
+        "bids::sub-01/ses-01/anat/sub-01_ses-01_T1w.nii.gz"
+    )
+
+
+@testing.requires_testing_data
+def test_electrodes_json_written(tmp_path):
+    """``write_raw_bids`` writes ``*_electrodes.json`` with SpatialReference (#1545)."""
+    bids_root = tmp_path / "bids"
+    (bids_root / "sub-01" / "ses-01" / "eeg").mkdir(parents=True)
+    raw = _load_raw()
+    raw.pick(["eeg"])
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="eeg")
+    _write_dig_bids(bids_path, raw, raw.get_montage(), acpc_aligned=True)
+    elec_json = bids_path.copy().update(
+        task=None,
+        run=None,
+        space="CapTrak",
+        suffix="electrodes",
+        extension=".json",
+    )
+    assert json.loads(elec_json.fpath.read_text())["SpatialReference"] == "n/a"

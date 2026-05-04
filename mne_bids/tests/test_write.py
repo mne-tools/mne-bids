@@ -3131,13 +3131,28 @@ def test_coordsystem_json_compliance(
         )
         elecs_tsv = _from_tsv(electrodes_fname)
 
+        # electrodes.json mismatch on rewrite (#1545)
+        electrodes_json_fname = _find_matching_sidecar(
+            bids_output_path, suffix="electrodes", extension=".json"
+        )
+        with open(electrodes_json_fname, encoding="utf-8") as fin:
+            original_electrodes_json = json.load(fin)
+        _write_json(electrodes_json_fname, {"SpatialReference": "blah"}, overwrite=True)
+        kwargs.update(bids_path=bids_path.copy().update(run="04"))
+        with pytest.raises(
+            RuntimeError,
+            match="Trying to write electrodes.json, but it already exists",
+        ):
+            write_raw_bids(**kwargs)
+        _write_json(electrodes_json_fname, original_electrodes_json, overwrite=True)
+
         # electrodes.tsv file, then an error will occur.
         # upon changing electrodes contents, and overwrite not True
         # this will fail
         new_elecs_tsv = elecs_tsv.copy()
         new_elecs_tsv["name"][0] = "blah"
         _to_tsv(new_elecs_tsv, electrodes_fname)
-        kwargs.update(bids_path=bids_path.copy().update(run="04"))
+        kwargs.update(bids_path=bids_path.copy().update(run="05"))
         with pytest.raises(
             RuntimeError,
             match="Trying to write electrodes.tsv, but it already exists",
