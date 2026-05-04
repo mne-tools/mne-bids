@@ -1403,8 +1403,6 @@ def read_raw_bids(
                     f"Please add coordsystem.json for {bids_path.basename} and "
                     "re-run the BIDS validator."
                 )
-                if datatype == "ieeg":
-                    raise RuntimeError(msg)
                 warn(msg + " Skipping reading electrode locations.")
             elif datatype in ("meg", "eeg", "ieeg"):
                 _read_dig_bids(
