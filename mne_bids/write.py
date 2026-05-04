@@ -1598,9 +1598,10 @@ def make_dataset_description(
         List of references to publication that contain information on the
         dataset, or links.  Must be a list of str (e.g., ['a', 'b', 'c'])
         or a single comma-separated str (e.g., 'a, b, c').
-    keywords : list
+    keywords : list | str | None
         List of keywords describing the dataset (BIDS ``Keywords`` field).
-        Must be a list of str (e.g., ``['eeg', 'motor-imagery']``).
+        Must be a list of str (e.g., ``['eeg', 'motor-imagery']``) or a single
+        comma-separated str (e.g., ``'eeg, motor-imagery'``).
     doi : str | None
         The Digital Object Identifier of the dataset (not the corresponding
         paper). Must be of the form ``doi:<insert_doi>`` (e.g.,
