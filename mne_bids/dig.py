@@ -738,6 +738,10 @@ def _write_dig_bids(
         overwrite=overwrite,
     )
     if bids_path.datatype != "nirs":
+        # NIRS uses *_optodes.{tsv,json}; for EEG/iEEG the BIDS spec defines
+        # a *_electrodes.json sidecar whose SpatialReference field the
+        # validator requires for derivative datasets (see #1545):
+        # https://bids-specification.readthedocs.io/en/stable/modality-specific-files/electroencephalography.html#electrodes-description-_electrodestsv
         electrodes_json_path = BIDSPath(
             **electrode_file_entities, suffix="electrodes", extension=".json"
         )
