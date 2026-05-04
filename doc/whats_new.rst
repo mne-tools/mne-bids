@@ -67,10 +67,12 @@ Detailed list of changes
 - Fix :func:`mne_bids.read_raw_bids` and related read paths failing with ``PermissionError`` on datalad/git-annex datasets by keeping the file lock next to the symlink instead of its (read-only) target, and gracefully continuing without a lock when one cannot be created, by `Bruno Aristimunha`_ (:gh:`1569`)
 - Avoid modifying calibration files by making :func:`mne_bids.write_meg_calibration` copy instead of parsing and rewriting, by `Marijn van Vliet`_ (:gh:`1576`)
 - Fix bug with :meth:`mne_bids.BIDSPath.find_matching_sidecar` not searching parent directories properly, by `Eric Larson`_ (:gh:`1565`)
+- Detect TSV file encoding before reading, fixing ``UnicodeDecodeError`` on non-UTF-8 sidecars (e.g. ``channels.tsv`` with ``µV`` in latin-1), by `Bruno Aristimunha`_ (:gh:`1593`)
 - Fix :func:`mne_bids.events_file_to_annotation_kwargs` to drop rows with invalid ``onset`` values (``n/a``, ``nan``, ``NaN``, empty string) before float conversion. This makes reading real-world OpenNeuro datasets (e.g. ``ds004841``, ``ds004842``, ``ds004843``) succeed instead of either raising or returning ``NaN`` onsets, by `Bruno Aristimunha`_ (:gh:`1547`)
 - Fix :func:`mne_bids.events_file_to_annotation_kwargs` to fall back to the ``value`` column when ``trial_type`` is entirely ``n/a`` but ``value`` contains trigger codes, instead of dropping all events, by `Bruno Aristimunha`_ (:gh:`947`)
 - :func:`mne_bids.read_raw_bids` now tolerates malformed ``scans.tsv`` entries and ISO 8601 ``acq_time`` variants, by `Bruno Aristimunha`_ (:gh:`1591`)
 - :func:`mne_bids.write_raw_bids` now writes an ``*_electrodes.json`` sidecar so derivative datasets pass the BIDS validator, by `Bruno Aristimunha`_ (:gh:`1545`)
+- :func:`mne_bids.read_raw_bids` now strips whitespace-padded ``n/a`` cells and normalizes European-locale decimal commas in TSV sidecars, by `Bruno Aristimunha`_ (:gh:`1599`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
