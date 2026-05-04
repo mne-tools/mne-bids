@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev65+gae9708cd6 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev66+g29a04fb47 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=f593129c"></script>
+    <script src="../../_static/documentation_options.js?v=17e88d3b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev65+gae9708cd6" />
+  <meta name="docsearch:version" content="0.19.0.dev66+g29a04fb47" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev65+gae9708cd6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev66+g29a04fb47 documentation</p>
   
 </a></div>
     
@@ -788,6 +788,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
     <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">)</span>
     <span class="n">subjects</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Subject </span><span class="si">{</span><span class="n">subject</span><span class="si">!r}</span><span class="s2"> is not listed in </span><span class="si">{</span><span class="n">participants_fname</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">raw</span>
     <span class="n">row_ind</span> <span class="o">=</span> <span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">subjects</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">allow_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># start from scratch</span>
 
