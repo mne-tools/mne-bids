@@ -154,6 +154,9 @@ if hasattr(io, "read_raw_mef"):
     reader[".mefd"] = io.read_raw_mef
 
 
+epoch_reader = {".set": io.read_epochs_eeglab}
+
+
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
 # MANUFACTURERS dictionary only includes the extension of the input filename
 # that mne-python accepts (e.g. BrainVision has three files, but the reader

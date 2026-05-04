@@ -24,6 +24,7 @@ from mne_bids.config import (
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
     _map_options,
+    epoch_reader,
     reader,
 )
 from mne_bids.dig import _read_dig_bids
@@ -1270,6 +1271,17 @@ def read_raw_bids(
     if suffix is None:
         bids_path.update(suffix=datatype)
 
+    sidecar_json_fname = _find_matching_sidecar(
+        bids_path, suffix=datatype, extension=".json", on_error="ignore"
+    )
+    if sidecar_json_fname is not None:
+        with _open_lock(sidecar_json_fname, encoding="utf-8-sig") as fin:
+            if json.load(fin).get("RecordingType") == "epoched":
+                raise RuntimeError(
+                    'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
+                    "instead of read_raw_bids()."
+                )
+
     if bids_path.extension == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
         if not bids_raw_folder.exists():
@@ -1373,6 +1385,19 @@ def read_raw_bids(
             events_json_fname=events_json_fname,
         )
 
+    raw = _attach_sidecars(raw, bids_path, on_ch_mismatch=on_ch_mismatch)
+
+    assert raw.annotations.orig_time == raw.info["meas_date"]
+    if return_event_dict:
+        return raw, event_id
+    return raw
+
+
+def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
+    """Apply BIDS sidecars to a Raw or Epochs object."""
+    datatype = bids_path.datatype
+    bids_root = bids_path.root
+
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
     channels_fname = _find_matching_sidecar(
@@ -1431,7 +1456,8 @@ def read_raw_bids(
         root=bids_path.root,
     ).fpath
 
-    if scans_fname.exists():
+    # Epochs without annotations crash in set_meas_date; skip the scans path.
+    if scans_fname.exists() and getattr(raw, "annotations", None) is not None:
         raw = _handle_scans_reading(scans_fname, raw, bids_path)
 
     # read in associated subject info from participants.tsv
@@ -1442,13 +1468,60 @@ def read_raw_bids(
             participants_fname=participants_tsv_path, raw=raw, subject=subject
         )
     else:
-        warn(f"participants.tsv file not found for {raw_path}")
+        warn(f"participants.tsv file not found for {bids_path.fpath}")
         raw.info["subject_info"] = dict()
 
-    assert raw.annotations.orig_time == raw.info["meas_date"]
-    if return_event_dict:
-        return raw, event_id
     return raw
+
+
+@verbose
+def read_epochs_bids(
+    bids_path, extra_params=None, *, on_ch_mismatch="raise", verbose=None
+):
+    """Read pre-epoched BIDS data into an :class:`mne.Epochs` object.
+
+    Use this for datasets whose sidecar JSON declares
+    ``"RecordingType": "epoched"``. The same channels, electrodes,
+    coordsystem, scans and participants sidecars used by
+    :func:`read_raw_bids` are applied to the returned object. Currently
+    supports EEGLAB ``.set`` files.
+
+    Parameters
+    ----------
+    bids_path : BIDSPath
+        The file to read. Same semantics as :func:`read_raw_bids`.
+    extra_params : None | dict
+        Extra parameters forwarded to the underlying MNE epochs reader.
+    on_ch_mismatch : str
+        How to handle a mismatch between channel names in channels.tsv and
+        the data file. One of ``'raise'``, ``'reorder'``, ``'rename'``.
+    %(verbose)s
+
+    Returns
+    -------
+    epochs : mne.Epochs
+        The data as an MNE-Python :class:`~mne.Epochs` object.
+    """
+    if not isinstance(bids_path, BIDSPath):
+        raise RuntimeError('"bids_path" must be a BIDSPath object.')
+    bids_path = bids_path.copy()
+    if bids_path.datatype is None:
+        bids_path.update(
+            datatype=_infer_datatype(
+                root=bids_path.root, sub=bids_path.subject, ses=bids_path.session
+            )
+        )
+    if bids_path.suffix is None:
+        bids_path.update(suffix=bids_path.datatype)
+
+    ext = bids_path.fpath.suffix
+    if ext not in epoch_reader:
+        raise RuntimeError(
+            f"read_epochs_bids does not support {ext!r} epoched files; "
+            f"supported: {sorted(epoch_reader)}."
+        )
+    epochs = epoch_reader[ext](bids_path.fpath, verbose=verbose, **(extra_params or {}))
+    return _attach_sidecars(epochs, bids_path, on_ch_mismatch=on_ch_mismatch)
 
 
 @verbose
