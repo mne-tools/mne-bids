@@ -73,6 +73,7 @@ Detailed list of changes
 - :func:`mne_bids.read_raw_bids` now tolerates malformed ``scans.tsv`` entries and ISO 8601 ``acq_time`` variants, by `Bruno Aristimunha`_ (:gh:`1591`)
 - :func:`mne_bids.write_raw_bids` now writes an ``*_electrodes.json`` sidecar so derivative datasets pass the BIDS validator, by `Bruno Aristimunha`_ (:gh:`1545`)
 - :func:`mne_bids.read_raw_bids` now strips whitespace-padded ``n/a`` cells and normalizes European-locale decimal commas in TSV sidecars, by `Bruno Aristimunha`_ (:gh:`1599`)
+- :func:`mne_bids.read_raw_bids` now skips channel metadata with a warning when ``channels.tsv`` is empty or has no ``name`` column, and deduplicates duplicate channel names with ``-0/-1/...`` suffixes, by `Bruno Aristimunha`_
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

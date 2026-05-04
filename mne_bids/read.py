@@ -1030,7 +1030,30 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     """
     logger.info(f"Reading channel info from {channels_fname}.")
     channels_dict = _from_tsv(channels_fname)
+    if not channels_dict.get("name"):
+        warn(
+            f"{channels_fname} is empty or has no 'name' column; "
+            "skipping channel metadata."
+        )
+        return raw
     ch_names_tsv = channels_dict["name"]
+    if len(set(ch_names_tsv)) != len(ch_names_tsv):
+        from collections import Counter
+
+        totals = Counter(ch_names_tsv)
+        seen = {}
+        deduped = []
+        for n in ch_names_tsv:
+            if totals[n] == 1:
+                deduped.append(n)
+            else:
+                deduped.append(f"{n}-{seen.get(n, 0)}")
+                seen[n] = seen.get(n, 0) + 1
+        warn(
+            f"Duplicate channel names in {channels_fname}; "
+            "appending -0/-1/... suffixes to ensure uniqueness."
+        )
+        channels_dict["name"] = ch_names_tsv = deduped
 
     # Now we can do some work.
     # The "type" column is mandatory in BIDS. We can use it to set channel
