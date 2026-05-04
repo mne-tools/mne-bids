@@ -1497,6 +1497,7 @@ def read_epochs_bids(
     Returns
     -------
     epochs : mne.Epochs
+        The epoched data with BIDS sidecar metadata applied.
     """
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object.')
