@@ -70,7 +70,7 @@ Detailed list of changes
 - Fix :func:`mne_bids.events_file_to_annotation_kwargs` to drop rows with invalid ``onset`` values (``n/a``, ``nan``, ``NaN``, empty string) before float conversion. This makes reading real-world OpenNeuro datasets (e.g. ``ds004841``, ``ds004842``, ``ds004843``) succeed instead of either raising or returning ``NaN`` onsets, by `Bruno Aristimunha`_ (:gh:`1547`)
 - Fix :func:`mne_bids.events_file_to_annotation_kwargs` to fall back to the ``value`` column when ``trial_type`` is entirely ``n/a`` but ``value`` contains trigger codes, instead of dropping all events, by `Bruno Aristimunha`_ (:gh:`947`)
 - :func:`mne_bids.read_raw_bids` now tolerates malformed ``scans.tsv`` entries and ISO 8601 ``acq_time`` variants, by `Bruno Aristimunha`_ (:gh:`1591`)
-- :func:`mne_bids.read_raw_bids` now skips channel metadata with a warning when ``channels.tsv`` is empty or has no ``name`` column, and deduplicates duplicate channel names with ``-0/-1/...`` suffixes, by `Bruno Aristimunha`_
+- :func:`mne_bids.read_raw_bids` now skips channel metadata with a warning when ``channels.tsv`` is empty or has no ``name`` column, and deduplicates duplicate channel names with ``-0/-1/...`` suffixes, by `Bruno Aristimunha`_ (:gh:`1603`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
