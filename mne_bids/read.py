@@ -1276,11 +1276,12 @@ def read_raw_bids(
     )
     if sidecar_json_fname is not None:
         with _open_lock(sidecar_json_fname, encoding="utf-8-sig") as fin:
-            if json.load(fin).get("RecordingType") == "epoched":
-                raise RuntimeError(
-                    'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
-                    "instead of read_raw_bids()."
-                )
+            recording_type = json.load(fin).get("RecordingType")
+        if recording_type == "epoched" and bids_path.fpath.suffix in epoch_reader:
+            raise RuntimeError(
+                'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
+                "instead of read_raw_bids()."
+            )
 
     if bids_path.extension == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
@@ -1482,14 +1483,16 @@ def read_epochs_bids(
 
     EEGLAB ``.set`` only for now. The same sidecars as
     :func:`read_raw_bids` are applied (channels, electrodes, coordsystem,
-    scans, participants).
+    scans, participants). For continuous formats flagged ``"epoched"`` in
+    the sidecar (``.edf`` / ``.bdf`` / ``.vhdr``), :func:`read_raw_bids`
+    will load them as :class:`mne.io.Raw`; segment them yourself.
 
     Parameters
     ----------
     bids_path : BIDSPath
         Same semantics as :func:`read_raw_bids`.
     extra_params : None | dict
-        Forwarded to the underlying MNE epochs reader.
+        Forwarded to the underlying MNE reader.
     on_ch_mismatch : str
         See :func:`read_raw_bids`.
     %(verbose)s
