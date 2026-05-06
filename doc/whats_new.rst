@@ -75,6 +75,7 @@ Detailed list of changes
 - Allow non-numeric ``run`` entities (e.g. ``run-5H``) in :class:`mne_bids.BIDSPath` when ``check=False``, by `Bruno Aristimunha`_ (:gh:`1601`)
 - :func:`mne_bids.write_raw_bids` now writes an ``*_electrodes.json`` sidecar so derivative datasets pass the BIDS validator, by `Bruno Aristimunha`_ (:gh:`1545`)
 - :func:`mne_bids.read_raw_bids` now strips whitespace-padded ``n/a`` cells and normalizes European-locale decimal commas in TSV sidecars, by `Bruno Aristimunha`_ (:gh:`1599`)
+- :func:`mne_bids.read_raw_bids` now warns (instead of raising ``ValueError``) when ``participants.tsv`` exists but does not list the requested subject, leaving ``raw.info["subject_info"]`` empty. This unifies behavior with the existing missing-``participants.tsv`` path, by `Bruno Aristimunha`_ (:gh:`1606`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

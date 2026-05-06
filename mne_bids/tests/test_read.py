@@ -414,6 +414,16 @@ def test_read_participants_data(tmp_path):
 
     assert raw.info["subject_info"] == dict()
 
+    # test reading if subject row is missing from participants.tsv
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv["participant_id"][0] = "sub-doesnotexist"
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    with pytest.warns(RuntimeWarning, match="not listed in participants.tsv"):
+        raw = read_raw_bids(bids_path=bids_path)
+    assert raw.info["subject_info"] == dict()
+
 
 @pytest.mark.parametrize(
     ("hand_bids", "hand_mne", "sex_bids", "sex_mne"),
