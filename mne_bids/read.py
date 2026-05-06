@@ -1486,10 +1486,9 @@ def read_epochs_bids(
 
     EEGLAB ``.set`` files are read with the dedicated MNE epochs reader.
     Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``"epoched"``
-    in the sidecar are tiled into trials of length ``EpochLength`` (taken from
-    the sidecar). When ``events.tsv`` is present, its row count and per-trial
-    onsets are cross-checked against this tiling and a warning is emitted on
-    any disagreement.
+    in the sidecar are tiled into trials of length ``EpochLength``; if
+    ``events.tsv`` is present, its onsets are cross-checked against this
+    tiling and a warning is emitted on disagreement.
 
     Parameters
     ----------
@@ -1551,8 +1550,8 @@ def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
             duration = float(json.load(fp)["EpochLength"])
         except KeyError:
             raise RuntimeError(
-                f"{bids_path.fpath.name}: sidecar is missing 'EpochLength'; "
-                "cannot slice an 'epoched' continuous file without it."
+                f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
+                "required to slice an 'epoched' continuous file."
             ) from None
     raw = _continuous_epoched_reader[bids_path.fpath.suffix](
         bids_path.fpath, preload=False, verbose=verbose, **(extra_params or {})
@@ -1564,40 +1563,26 @@ def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
         bids_path, suffix="events", extension=".tsv", on_error="ignore"
     )
     if events_fname is not None:
-        _check_continuous_events_uniform(
-            events_fname, len(epochs), duration, raw.info["sfreq"]
-        )
+        rows = _from_tsv(events_fname)
+        if rows.get("sample"):
+            actual = np.asarray(rows["sample"], dtype=np.int64)
+        elif rows.get("onset"):
+            sfreq = raw.info["sfreq"]
+            actual = np.round(np.asarray(rows["onset"], dtype=float) * sfreq).astype(
+                np.int64
+            )
+        else:
+            return epochs
+        step = int(round(duration * raw.info["sfreq"]))
+        expected = np.arange(len(epochs), dtype=np.int64) * step
+        if not np.array_equal(actual, expected):
+            warn(
+                f"{Path(events_fname).name}: {len(actual)} trial onsets "
+                f"disagree with uniform EpochLength={duration}s tiling "
+                f"({len(epochs)} epochs); file may be truncated, sidecar "
+                "wrong, or epochs misaligned."
+            )
     return epochs
-
-
-def _check_continuous_events_uniform(events_fname, n_epochs, duration, sfreq):
-    """Warn if events.tsv contradicts uniform ``EpochLength`` tiling."""
-    name = Path(events_fname).name
-    rows = _from_tsv(events_fname)
-    n_rows = len(next(iter(rows.values()))) if rows else 0
-    if n_rows == 0:
-        return
-    if n_rows != n_epochs:
-        warn(
-            f"{name} has {n_rows} rows but uniform tiling with "
-            f"EpochLength={duration}s produced {n_epochs} epochs; the file "
-            "may be truncated or the sidecar wrong."
-        )
-        return
-    if "sample" in rows:
-        actual = np.asarray(rows["sample"], dtype=np.int64)
-    elif "onset" in rows:
-        actual = np.round(np.asarray(rows["onset"], dtype=float) * sfreq).astype(
-            np.int64
-        )
-    else:
-        return
-    expected = np.arange(n_epochs, dtype=np.int64) * int(round(duration * sfreq))
-    if not np.array_equal(actual, expected):
-        warn(
-            f"{name}: trial onsets are not uniformly spaced at "
-            f"EpochLength={duration}s; epochs may be misaligned."
-        )
 
 
 @verbose

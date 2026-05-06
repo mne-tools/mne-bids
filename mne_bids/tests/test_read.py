@@ -2518,21 +2518,13 @@ def test_read_epochs_bids_continuous(tmp_path, ext, fmt, writer_pkg):
 
     # When events.tsv disagrees with EpochLength tiling, we warn but still slice.
     events_tsv = bp.copy().update(suffix="events", extension=".tsv").fpath
-    _to_tsv(
-        OrderedDict(
-            onset=[str(i * n_per / sfreq) for i in range(n_ep + 1)],
-            duration=[str(n_per / sfreq)] * (n_ep + 1),
-        ),
-        events_tsv,
-    )
-    with pytest.warns(RuntimeWarning, match=r"events\.tsv has \d+ rows"):
-        read_epochs_bids(bp_read)
-    _to_tsv(
-        OrderedDict(
-            onset=[str((i * n_per + (i > 0)) / sfreq) for i in range(n_ep)],
-            duration=[str(n_per / sfreq)] * n_ep,
-        ),
-        events_tsv,
-    )
-    with pytest.warns(RuntimeWarning, match="not uniformly spaced"):
-        read_epochs_bids(bp_read)
+    for onsets in (  # row-count mismatch, then jittered onsets
+        [i * n_per / sfreq for i in range(n_ep + 1)],
+        [(i * n_per + (i > 0)) / sfreq for i in range(n_ep)],
+    ):
+        _to_tsv(
+            OrderedDict(onset=[str(o) for o in onsets], duration=["0"] * len(onsets)),
+            events_tsv,
+        )
+        with pytest.warns(RuntimeWarning, match="disagree with uniform"):
+            read_epochs_bids(bp_read)
