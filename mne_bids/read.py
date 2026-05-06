@@ -1481,9 +1481,10 @@ def read_epochs_bids(
 ):
     """Read pre-epoched BIDS data (RecordingType="epoched") as :class:`mne.Epochs`.
 
-    Currently, only EEGLAB ``.set`` files are supported.  For continuous formats flagged ``"epoched"`` in
-    the sidecar (``.edf`` / ``.bdf`` / ``.vhdr``), please use :func:`read_raw_bids`
-    to load them as :class:`mne.io.Raw` and. then segment them yourself.
+    Currently, only EEGLAB ``.set`` files are supported.  For continuous formats
+    flagged ``"epoched"`` in the sidecar (``.edf`` / ``.bdf`` / ``.vhdr``), please
+    use :func:`read_raw_bids` to load them as :class:`mne.io.Raw` and then segment
+    them yourself.
 
     Parameters
     ----------
@@ -1499,12 +1500,13 @@ def read_epochs_bids(
     -------
     epochs : mne.Epochs
         The epoched data with BIDS sidecar metadata applied.
-    """
 
     Notes
-    ------
-    This function will apply the same sidecars as :func:`read_raw_bids` (``channels.tsv``, ``electrodes.tsv``, ``coordsystem.json``,
+    -----
+    This function will apply the same sidecars as :func:`read_raw_bids`
+    (``channels.tsv``, ``electrodes.tsv``, ``coordsystem.json``,
     ``scans.tsv``, ``participants.tsv``).
+    """
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object.')
     bids_path = bids_path.copy()
