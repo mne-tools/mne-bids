@@ -2093,28 +2093,32 @@ def test_channel_mismatch_invalid_option(tmp_path):
         _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
 
 
-def test_channel_mismatch_warn_default(tmp_path):
-    """Channel-name mismatch warns by default and leaves raw channel names intact."""
+def test_channel_mismatch_warn(tmp_path):
+    """``on_ch_mismatch='warn'`` warns and leaves raw channel names intact."""
     raw, ch_order_snirf, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(
         tmp_path
     )
     with pytest.warns(RuntimeWarning, match="Channel mismatch"):
-        out = _handle_channels_reading(channels_fname, raw.copy())
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="warn"
+        )
     assert out.ch_names == ch_order_snirf
 
 
 @pytest.mark.filterwarnings("ignore:.*loadtxt:UserWarning")
-@pytest.mark.filterwarnings("ignore:TSV file is empty:RuntimeWarning")
 @pytest.mark.parametrize(
-    "content",
-    ["", "channel_name\ttype\nA\tEEG\nB\tEEG\n"],
+    "content,match",
+    [
+        ("", "TSV file is empty"),
+        ("channel_name\ttype\nA\tEEG\nB\tEEG\n", "has no 'name' column"),
+    ],
     ids=["empty", "wrong-header"],
 )
-def test_channels_tsv_empty_or_missing_name(tmp_path, content):
+def test_channels_tsv_empty_or_missing_name(tmp_path, content, match):
     """Empty channels.tsv or one without a 'name' column is skipped, not a crash."""
     raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
     channels_fname.write_text(content, encoding="utf-8")
-    with pytest.warns(RuntimeWarning, match="empty or has no 'name' column"):
+    with pytest.warns(RuntimeWarning, match=match):
         out = _handle_channels_reading(
             channels_fname, raw.copy(), on_ch_mismatch="rename"
         )
