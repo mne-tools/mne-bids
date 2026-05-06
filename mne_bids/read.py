@@ -1263,6 +1263,11 @@ def read_raw_bids(
           channel order in the channels.tsv file.
         * ``'rename'`` will rename the channels in the raw data file to match the
           channel names in the channels.tsv file.
+
+        Duplicate channel names in channels.tsv are treated as a sub-type of
+        mismatch and obey the same setting: ``'rename'`` deduplicates the names
+        with ``-0/-1/...`` suffixes, ``'warn'`` skips channels.tsv metadata,
+        and ``'raise'``/``'reorder'`` raise.
     %(verbose)s
 
     Returns
