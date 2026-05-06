@@ -19,11 +19,14 @@ from mne.utils import check_version, get_subjects_dir, logger
 
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
+    _EPOCHED_EXTS,
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
+    _continuous_epoched_reader,
     _map_options,
+    epoch_reader,
     reader,
 )
 from mne_bids.dig import _read_dig_bids
@@ -1274,6 +1277,18 @@ def read_raw_bids(
     if suffix is None:
         bids_path.update(suffix=datatype)
 
+    sidecar_json_fname = _find_matching_sidecar(
+        bids_path, suffix=datatype, extension=".json", on_error="ignore"
+    )
+    if sidecar_json_fname is not None:
+        with _open_lock(sidecar_json_fname, encoding="utf-8-sig") as fin:
+            recording_type = json.load(fin).get("RecordingType")
+        if recording_type == "epoched" and bids_path.fpath.suffix in _EPOCHED_EXTS:
+            raise RuntimeError(
+                'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
+                "instead of read_raw_bids()."
+            )
+
     if bids_path.extension == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
         if not bids_raw_folder.exists():
@@ -1377,6 +1392,19 @@ def read_raw_bids(
             events_json_fname=events_json_fname,
         )
 
+    raw = _attach_sidecars(raw, bids_path, on_ch_mismatch=on_ch_mismatch)
+
+    assert raw.annotations.orig_time == raw.info["meas_date"]
+    if return_event_dict:
+        return raw, event_id
+    return raw
+
+
+def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
+    """Apply BIDS sidecars to a Raw or Epochs object."""
+    datatype = bids_path.datatype
+    bids_root = bids_path.root
+
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
     channels_fname = _find_matching_sidecar(
@@ -1433,7 +1461,8 @@ def read_raw_bids(
         root=bids_path.root,
     ).fpath
 
-    if scans_fname.exists():
+    # Epochs without annotations crash in set_meas_date; skip the scans path.
+    if scans_fname.exists() and getattr(raw, "annotations", None) is not None:
         raw = _handle_scans_reading(scans_fname, raw, bids_path)
 
     # read in associated subject info from participants.tsv
@@ -1444,13 +1473,133 @@ def read_raw_bids(
             participants_fname=participants_tsv_path, raw=raw, subject=subject
         )
     else:
-        warn(f"participants.tsv file not found for {raw_path}")
+        warn(f"participants.tsv file not found for {bids_path.fpath}")
         raw.info["subject_info"] = dict()
 
-    assert raw.annotations.orig_time == raw.info["meas_date"]
-    if return_event_dict:
-        return raw, event_id
     return raw
+
+
+@verbose
+def read_epochs_bids(
+    bids_path, extra_params=None, *, on_ch_mismatch="raise", verbose=None
+):
+    """Read pre-epoched BIDS data (RecordingType="epoched") as :class:`mne.Epochs`.
+
+    EEGLAB ``.set`` files are read with the dedicated MNE epochs reader.
+    Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``"epoched"``
+    in the sidecar are sliced into trials of length ``EpochLength`` (from the
+    sidecar). When ``events.tsv`` is present its onsets give the trial starts
+    (``sample`` / ``begSample`` / ``onset`` columns are tried in that order;
+    trials extending past the recording are dropped with a warning); when
+    absent, the file is uniformly tiled.
+
+    Parameters
+    ----------
+    bids_path : BIDSPath
+        Same semantics as :func:`read_raw_bids`.
+    extra_params : None | dict
+        Forwarded to the underlying MNE reader.
+    on_ch_mismatch : str
+        See :func:`read_raw_bids`.
+    %(verbose)s
+
+    Returns
+    -------
+    epochs : mne.Epochs
+        The epoched data with BIDS sidecar metadata applied.
+
+    Notes
+    -----
+    This function applies the same sidecars as :func:`read_raw_bids`
+    (``channels.tsv``, ``electrodes.tsv``, ``coordsystem.json``,
+    ``scans.tsv``, ``participants.tsv``).
+    """
+    if not isinstance(bids_path, BIDSPath):
+        raise RuntimeError('"bids_path" must be a BIDSPath object.')
+    bids_path = bids_path.copy()
+    if bids_path.datatype is None:
+        bids_path.update(
+            datatype=_infer_datatype(
+                root=bids_path.root, sub=bids_path.subject, ses=bids_path.session
+            )
+        )
+    if bids_path.suffix is None:
+        bids_path.update(suffix=bids_path.datatype)
+
+    ext = bids_path.fpath.suffix
+    if ext in epoch_reader:
+        epochs = epoch_reader[ext](
+            bids_path.fpath, verbose=verbose, **(extra_params or {})
+        )
+    elif ext in _continuous_epoched_reader:
+        epochs = _read_epochs_from_continuous(
+            bids_path, extra_params=extra_params, verbose=verbose
+        )
+    else:
+        raise RuntimeError(
+            f"read_epochs_bids does not support {ext!r} epoched files; "
+            f"supported: {sorted(_EPOCHED_EXTS)}."
+        )
+    return _attach_sidecars(epochs, bids_path, on_ch_mismatch=on_ch_mismatch)
+
+
+def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
+    """Slice a continuous file flagged ``RecordingType="epoched"`` into Epochs."""
+    sidecar_fname = _find_matching_sidecar(
+        bids_path, suffix=bids_path.datatype, extension=".json"
+    )
+    with _open_lock(sidecar_fname, encoding="utf-8-sig") as fp:
+        try:
+            duration = float(json.load(fp)["EpochLength"])
+        except KeyError:
+            raise RuntimeError(
+                f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
+                "required to slice an 'epoched' continuous file."
+            ) from None
+    raw = _continuous_epoched_reader[bids_path.fpath.suffix](
+        bids_path.fpath, preload=False, verbose=verbose, **(extra_params or {})
+    )
+    events_fname = _find_matching_sidecar(
+        bids_path, suffix="events", extension=".tsv", on_error="ignore"
+    )
+    if events_fname is None:
+        return mne.make_fixed_length_epochs(
+            raw, duration=duration, preload=True, verbose=verbose
+        )
+
+    # Delegate to mne-bids' events.tsv parser for descriptions/event_id (handles
+    # n/a, trial_type/stim_type/value, hierarchical event names); place onsets
+    # precisely from sample/begSample when available, else from onset (seconds).
+    info, rows = _make_annotation_kwargs(_from_tsv(events_fname), events_fname)
+    sfreq = raw.info["sfreq"]
+    if rows.get("sample"):
+        onsets = np.asarray(rows["sample"], dtype=np.int64)
+    elif rows.get("begSample"):  # 1-indexed inclusive (non-BIDS, observed)
+        onsets = np.asarray(rows["begSample"], dtype=np.int64) - 1
+    else:
+        onsets = np.round(info["onset"] * sfreq).astype(np.int64)
+    event_id = info["event_id"]
+    ids = np.array([event_id[d] for d in info["description"]], dtype=np.int64)
+
+    n_per = int(round(duration * sfreq))
+    fits = (onsets >= 0) & (onsets + n_per <= raw.n_times)
+    if not fits.all():
+        warn(
+            f"{Path(events_fname).name}: {(~fits).sum()} of {len(onsets)} "
+            "trials extend beyond the recording and will be dropped."
+        )
+        onsets, ids = onsets[fits], ids[fits]
+    events = np.column_stack([onsets, np.zeros_like(onsets), ids])
+    return mne.Epochs(
+        raw,
+        events=events,
+        event_id=event_id,
+        tmin=0.0,
+        tmax=duration - 1.0 / sfreq,
+        baseline=None,
+        preload=True,
+        verbose=verbose,
+    )
 
 
 @verbose

@@ -154,6 +154,18 @@ if hasattr(io, "read_raw_mef"):
     reader[".mefd"] = io.read_raw_mef
 
 
+epoch_reader = {".set": io.read_epochs_eeglab}
+
+# Continuous-format files where each "trial" is a fixed-length segment of the
+# file. Trial duration is read from the sidecar's ``EpochLength`` field.
+_continuous_epoched_reader = {
+    ".edf": io.read_raw_edf,
+    ".bdf": io.read_raw_bdf,
+    ".vhdr": io.read_raw_brainvision,
+}
+_EPOCHED_EXTS = frozenset(epoch_reader) | frozenset(_continuous_epoched_reader)
+
+
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
 # MANUFACTURERS dictionary only includes the extension of the input filename
 # that mne-python accepts (e.g. BrainVision has three files, but the reader
