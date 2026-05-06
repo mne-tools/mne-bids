@@ -163,6 +163,7 @@ _continuous_epoched_reader = {
     ".bdf": io.read_raw_bdf,
     ".vhdr": io.read_raw_brainvision,
 }
+_EPOCHED_EXTS = frozenset(epoch_reader) | frozenset(_continuous_epoched_reader)
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way

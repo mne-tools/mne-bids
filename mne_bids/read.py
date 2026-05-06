@@ -19,6 +19,7 @@ from mne.utils import check_version, get_subjects_dir, logger
 
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
+    _EPOCHED_EXTS,
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
     EPHY_ALLOWED_DATATYPES,
@@ -44,8 +45,6 @@ from mne_bids.utils import (
     verbose,
     warn,
 )
-
-_EPOCHED_EXTS = frozenset(epoch_reader) | frozenset(_continuous_epoched_reader)
 
 
 @verbose
