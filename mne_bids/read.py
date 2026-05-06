@@ -1044,10 +1044,11 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="warn"):
     logger.info(f"Reading channel info from {channels_fname}.")
     channels_dict = _from_tsv(channels_fname)
     if not channels_dict.get("name"):
-        warn(
-            f"{channels_fname} is empty or has no 'name' column; "
-            "skipping channel metadata."
-        )
+        if len(channels_dict):
+            warn(
+                f"{channels_fname} has no 'name' column; "
+                "skipping channel metadata."
+            )
         return raw
     ch_names_tsv = channels_dict["name"]
     if len(set(ch_names_tsv)) != len(ch_names_tsv):
