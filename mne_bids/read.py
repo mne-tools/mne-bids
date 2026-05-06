@@ -23,6 +23,7 @@ from mne_bids.config import (
     ANNOTATIONS_TO_KEEP,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
+    _continuous_epoched_reader,
     _map_options,
     epoch_reader,
     reader,
@@ -43,6 +44,8 @@ from mne_bids.utils import (
     verbose,
     warn,
 )
+
+_EPOCHED_EXTS = frozenset(epoch_reader) | frozenset(_continuous_epoched_reader)
 
 
 @verbose
@@ -1277,7 +1280,7 @@ def read_raw_bids(
     if sidecar_json_fname is not None:
         with _open_lock(sidecar_json_fname, encoding="utf-8-sig") as fin:
             recording_type = json.load(fin).get("RecordingType")
-        if recording_type == "epoched" and bids_path.fpath.suffix in epoch_reader:
+        if recording_type == "epoched" and bids_path.fpath.suffix in _EPOCHED_EXTS:
             raise RuntimeError(
                 'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
                 "instead of read_raw_bids()."
@@ -1481,10 +1484,12 @@ def read_epochs_bids(
 ):
     """Read pre-epoched BIDS data (RecordingType="epoched") as :class:`mne.Epochs`.
 
-    Currently, only EEGLAB ``.set`` files are supported.  For continuous formats
-    flagged ``"epoched"`` in the sidecar (``.edf`` / ``.bdf`` / ``.vhdr``), please
-    use :func:`read_raw_bids` to load them as :class:`mne.io.Raw` and then segment
-    them yourself.
+    EEGLAB ``.set`` files are read with the dedicated MNE epochs reader.
+    Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``"epoched"``
+    in the sidecar are tiled into trials of length ``EpochLength`` (taken from
+    the sidecar). When ``events.tsv`` is present, its row count and per-trial
+    onsets are cross-checked against this tiling and a warning is emitted on
+    any disagreement.
 
     Parameters
     ----------
@@ -1503,7 +1508,7 @@ def read_epochs_bids(
 
     Notes
     -----
-    This function will apply the same sidecars as :func:`read_raw_bids`
+    This function applies the same sidecars as :func:`read_raw_bids`
     (``channels.tsv``, ``electrodes.tsv``, ``coordsystem.json``,
     ``scans.tsv``, ``participants.tsv``).
     """
@@ -1520,13 +1525,79 @@ def read_epochs_bids(
         bids_path.update(suffix=bids_path.datatype)
 
     ext = bids_path.fpath.suffix
-    if ext not in epoch_reader:
+    if ext in epoch_reader:
+        epochs = epoch_reader[ext](
+            bids_path.fpath, verbose=verbose, **(extra_params or {})
+        )
+    elif ext in _continuous_epoched_reader:
+        epochs = _read_epochs_from_continuous(
+            bids_path, extra_params=extra_params, verbose=verbose
+        )
+    else:
         raise RuntimeError(
             f"read_epochs_bids does not support {ext!r} epoched files; "
-            f"supported: {sorted(epoch_reader)}."
+            f"supported: {sorted(_EPOCHED_EXTS)}."
         )
-    epochs = epoch_reader[ext](bids_path.fpath, verbose=verbose, **(extra_params or {}))
     return _attach_sidecars(epochs, bids_path, on_ch_mismatch=on_ch_mismatch)
+
+
+def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
+    """Slice a continuous file flagged ``RecordingType="epoched"`` into Epochs."""
+    sidecar_fname = _find_matching_sidecar(
+        bids_path, suffix=bids_path.datatype, extension=".json"
+    )
+    with _open_lock(sidecar_fname, encoding="utf-8-sig") as fp:
+        try:
+            duration = float(json.load(fp)["EpochLength"])
+        except KeyError:
+            raise RuntimeError(
+                f"{bids_path.fpath.name}: sidecar is missing 'EpochLength'; "
+                "cannot slice an 'epoched' continuous file without it."
+            ) from None
+    raw = _continuous_epoched_reader[bids_path.fpath.suffix](
+        bids_path.fpath, preload=False, verbose=verbose, **(extra_params or {})
+    )
+    epochs = mne.make_fixed_length_epochs(
+        raw, duration=duration, preload=True, verbose=verbose
+    )
+    events_fname = _find_matching_sidecar(
+        bids_path, suffix="events", extension=".tsv", on_error="ignore"
+    )
+    if events_fname is not None:
+        _check_continuous_events_uniform(
+            events_fname, len(epochs), duration, raw.info["sfreq"]
+        )
+    return epochs
+
+
+def _check_continuous_events_uniform(events_fname, n_epochs, duration, sfreq):
+    """Warn if events.tsv contradicts uniform ``EpochLength`` tiling."""
+    name = Path(events_fname).name
+    rows = _from_tsv(events_fname)
+    n_rows = len(next(iter(rows.values()))) if rows else 0
+    if n_rows == 0:
+        return
+    if n_rows != n_epochs:
+        warn(
+            f"{name} has {n_rows} rows but uniform tiling with "
+            f"EpochLength={duration}s produced {n_epochs} epochs; the file "
+            "may be truncated or the sidecar wrong."
+        )
+        return
+    if "sample" in rows:
+        actual = np.asarray(rows["sample"], dtype=np.int64)
+    elif "onset" in rows:
+        actual = np.round(np.asarray(rows["onset"], dtype=float) * sfreq).astype(
+            np.int64
+        )
+    else:
+        return
+    expected = np.arange(n_epochs, dtype=np.int64) * int(round(duration * sfreq))
+    if not np.array_equal(actual, expected):
+        warn(
+            f"{name}: trial onsets are not uniformly spaced at "
+            f"EpochLength={duration}s; epochs may be misaligned."
+        )
 
 
 @verbose

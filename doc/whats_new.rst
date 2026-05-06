@@ -44,7 +44,7 @@ Detailed list of changes
 - Speed up :meth:`mne_bids.BIDSPath.find_matching_sidecar` by searching most likely file locations first, by `Eric Larson`_ (:gh:`1565`)
 - Add support for CHPI channels and gracefully handle incorrect channel definition ``MEGGRAD``, by `Eric Larson`_ (:gh:`1578`)
 - Add ``keywords`` parameter to :func:`mne_bids.make_dataset_description` for the BIDS ``Keywords`` field, by `Bruno Aristimunha`_ (:gh:`1602`)
-- Add :func:`mne_bids.read_epochs_bids` to read pre-epoched EEGLAB ``.set`` datasets (``"RecordingType": "epoched"``) into :class:`mne.Epochs`. :func:`mne_bids.read_raw_bids` now raises a clear error pointing to the new function for formats with a native epochs reader, and otherwise loads the file as continuous :class:`mne.io.Raw` (e.g. ``.edf`` / ``.bdf`` / ``.vhdr``), by `Bruno Aristimunha`_ (:gh:`1605`)
+- Add :func:`mne_bids.read_epochs_bids` to read pre-epoched BIDS data (``"RecordingType": "epoched"``) into :class:`mne.Epochs`, supporting EEGLAB ``.set`` and continuous ``.edf`` / ``.bdf`` / ``.vhdr`` files (the latter tiled into trials of length ``EpochLength``, with a sanity check against ``events.tsv`` when present). :func:`mne_bids.read_raw_bids` now raises a clear error pointing to the new function instead of mis-loading these as :class:`mne.io.Raw`, by `Bruno Aristimunha`_ (:gh:`1605`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

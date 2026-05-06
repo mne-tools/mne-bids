@@ -46,7 +46,7 @@ from mne_bids.read import (
     get_head_mri_trans,
     read_raw_bids,
 )
-from mne_bids.sidecar_updates import _update_sidecar
+from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
 from mne_bids.tsv_handler import _drop, _from_tsv, _to_tsv
 from mne_bids.utils import _write_json
 from mne_bids.write import get_anat_landmarks, write_anat, write_raw_bids
@@ -2485,3 +2485,54 @@ def test_read_epochs_bids_eeglab(tmp_path):
     assert epochs.info["line_freq"] == 60
     with pytest.raises(RuntimeError, match="read_epochs_bids"):
         read_raw_bids(bp)
+
+
+@pytest.mark.parametrize(
+    ("ext", "fmt", "writer_pkg"),
+    [(".edf", "EDF", "edfio"), (".vhdr", "BrainVision", "pybv")],
+)
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_read_epochs_bids_continuous(tmp_path, ext, fmt, writer_pkg):
+    """read_epochs_bids slices a continuous-format epoched file."""
+    pytest.importorskip(writer_pkg)
+    sfreq, n_per, n_ep = 100.0, 100, 3
+    info = mne.create_info(["EEG1", "EEG2"], sfreq, ch_types="eeg")
+    data = np.repeat(np.arange(1, n_ep + 1) * 100e-6, n_per) * np.ones((2, 1))
+    raw = mne.io.RawArray(data, info, verbose=False)
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
+    raw.info["line_freq"] = 60
+
+    bp = BIDSPath(subject="01", task="t", datatype="eeg", root=tmp_path / "bids")
+    write_raw_bids(raw, bp, overwrite=True, allow_preload=True, format=fmt)
+    update_sidecar_json(
+        bp.copy().update(suffix="eeg", extension=".json"),
+        {"RecordingType": "epoched", "EpochLength": n_per / sfreq},
+    )
+
+    bp_read = bp.copy().update(suffix="eeg", extension=ext)
+    epochs = read_epochs_bids(bp_read)
+    assert epochs.get_data().shape == (n_ep, 2, n_per)
+    assert np.all(np.diff(epochs.get_data().mean(axis=(1, 2))) > 0)
+    with pytest.raises(RuntimeError, match="read_epochs_bids"):
+        read_raw_bids(bp_read)
+
+    # When events.tsv disagrees with EpochLength tiling, we warn but still slice.
+    events_tsv = bp.copy().update(suffix="events", extension=".tsv").fpath
+    _to_tsv(
+        OrderedDict(
+            onset=[str(i * n_per / sfreq) for i in range(n_ep + 1)],
+            duration=[str(n_per / sfreq)] * (n_ep + 1),
+        ),
+        events_tsv,
+    )
+    with pytest.warns(RuntimeWarning, match=r"events\.tsv has \d+ rows"):
+        read_epochs_bids(bp_read)
+    _to_tsv(
+        OrderedDict(
+            onset=[str((i * n_per + (i > 0)) / sfreq) for i in range(n_ep)],
+            duration=[str(n_per / sfreq)] * n_ep,
+        ),
+        events_tsv,
+    )
+    with pytest.warns(RuntimeWarning, match="not uniformly spaced"):
+        read_epochs_bids(bp_read)
