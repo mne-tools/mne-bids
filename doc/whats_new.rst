@@ -43,6 +43,7 @@ Detailed list of changes
 - Speed up :func:`mne_bids.get_datatypes` by restricting filesystem traversal to ``bids_root/sub-*/(ses-*/)<datatype>`` directories, by `Eric Larson`_ (:gh:`1563`)
 - Speed up :meth:`mne_bids.BIDSPath.find_matching_sidecar` by searching most likely file locations first, by `Eric Larson`_ (:gh:`1565`)
 - Add support for CHPI channels and gracefully handle incorrect channel definition ``MEGGRAD``, by `Eric Larson`_ (:gh:`1578`)
+- Add ``keywords`` parameter to :func:`mne_bids.make_dataset_description` for the BIDS ``Keywords`` field, by `Bruno Aristimunha`_ (:gh:`1602`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -62,7 +63,7 @@ Detailed list of changes
 - Fix :func:`mne_bids.BIDSPath.find_matching_sidecar` to search for sidecar files at the dataset root level per the BIDS inheritance principle, by `Bruno Aristimunha`_ (:gh:`1508`)
 - Reinstate the requirement for ``coordsystem.json`` whenever ``electrodes.tsv`` is present (including EMG), by `Bruno Aristimunha`_ (:gh:`1508`)
 - Fix :func:`read_raw_bids` ignoring ``electrodes.tsv`` when ``EEGCoordinateUnits`` is ``"n/a"`` by inferring the unit from coordinate magnitudes, and synthesize approximate fiducials for ``ctf_head`` montages to enable the coordinate transform to ``head`` frame, by `Bruno Aristimunha`_ (:gh:`1506`)
-- Improve :func:`mne_bids.read_raw_bids` handling when ``electrodes.tsv`` exists without ``coordsystem.json``: keep strict failure for iEEG, and for EEG/MEG emit a warning and continue without applying a montage, by `Bruno Aristimunha`_
+- Improve :func:`mne_bids.read_raw_bids` handling when ``electrodes.tsv`` exists without ``coordsystem.json``: emit a warning and continue without applying a montage (previously raised for iEEG), by `Bruno Aristimunha`_
 - Allow ``task=None`` in :func:`mne_bids.read_raw_bids` for BIDS paths without a task entity (e.g. datasets that omit task in the path), by `Aman Jaiswal`_
 - Fix :func:`mne_bids.read_raw_bids` and related read paths failing with ``PermissionError`` on datalad/git-annex datasets by keeping the file lock next to the symlink instead of its (read-only) target, and gracefully continuing without a lock when one cannot be created, by `Bruno Aristimunha`_ (:gh:`1569`)
 - Avoid modifying calibration files by making :func:`mne_bids.write_meg_calibration` copy instead of parsing and rewriting, by `Marijn van Vliet`_ (:gh:`1576`)
@@ -75,6 +76,7 @@ Detailed list of changes
 - Allow non-numeric ``run`` entities (e.g. ``run-5H``) in :class:`mne_bids.BIDSPath` when ``check=False``, by `Bruno Aristimunha`_ (:gh:`1601`)
 - :func:`mne_bids.write_raw_bids` now writes an ``*_electrodes.json`` sidecar so derivative datasets pass the BIDS validator, by `Bruno Aristimunha`_ (:gh:`1545`)
 - :func:`mne_bids.read_raw_bids` now strips whitespace-padded ``n/a`` cells and normalizes European-locale decimal commas in TSV sidecars, by `Bruno Aristimunha`_ (:gh:`1599`)
+- :func:`mne_bids.read_raw_bids` now warns (instead of raising ``ValueError``) when ``participants.tsv`` exists but does not list the requested subject, leaving ``raw.info["subject_info"]`` empty. This unifies behavior with the existing missing-``participants.tsv`` path, by `Bruno Aristimunha`_ (:gh:`1606`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

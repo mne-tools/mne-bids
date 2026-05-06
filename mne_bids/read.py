@@ -298,6 +298,10 @@ def _verbose_list_index(lst, val, *, allow_all=False):
 def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _from_tsv(participants_fname)
     subjects = participants_tsv["participant_id"]
+    if subject not in subjects:
+        warn(f"Subject {subject!r} is not listed in {participants_fname.name}")
+        raw.info["subject_info"] = dict()
+        return raw
     row_ind = _verbose_list_index(subjects, subject, allow_all=True)
     raw.info["subject_info"] = dict()  # start from scratch
 
@@ -1425,8 +1429,6 @@ def read_raw_bids(
                     f"Please add coordsystem.json for {bids_path.basename} and "
                     "re-run the BIDS validator."
                 )
-                if datatype == "ieeg":
-                    raise RuntimeError(msg)
                 warn(msg + " Skipping reading electrode locations.")
             elif datatype in ("meg", "eeg", "ieeg"):
                 _read_dig_bids(

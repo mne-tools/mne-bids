@@ -1550,6 +1550,7 @@ def make_dataset_description(
     funding=None,
     ethics_approvals=None,
     references_and_links=None,
+    keywords=None,
     doi=None,
     generated_by=None,
     source_datasets=None,
@@ -1597,6 +1598,12 @@ def make_dataset_description(
         List of references to publication that contain information on the
         dataset, or links.  Must be a list of str (e.g., ['a', 'b', 'c'])
         or a single comma-separated str (e.g., 'a, b, c').
+    keywords : list | str | None
+        List of keywords describing the dataset (BIDS ``Keywords`` field).
+        Must be a list of str (e.g., ``['eeg', 'motor-imagery']``) or a single
+        comma-separated str (e.g., ``'eeg, motor-imagery'``).
+
+        .. versionadded:: 0.19
     doi : str | None
         The Digital Object Identifier of the dataset (not the corresponding
         paper). Must be of the form ``doi:<insert_doi>`` (e.g.,
@@ -1624,12 +1631,12 @@ def make_dataset_description(
     by mne_bids.
     """
     # Convert potential string input into list of strings
-    convert_vars = [authors, funding, references_and_links, ethics_approvals]
+    convert_vars = [authors, funding, references_and_links, ethics_approvals, keywords]
     convert_vars = [
         [i.strip() for i in var.split(",")] if isinstance(var, str) else var
         for var in convert_vars
     ]
-    authors, funding, references_and_links, ethics_approvals = convert_vars
+    authors, funding, references_and_links, ethics_approvals, keywords = convert_vars
 
     # Perform input checks
     if dataset_type not in ["raw", "derivative"]:
@@ -1693,6 +1700,7 @@ def make_dataset_description(
             ("Funding", funding),
             ("EthicsApprovals", ethics_approvals),
             ("ReferencesAndLinks", references_and_links),
+            ("Keywords", keywords),
             ("DatasetDOI", doi),
             ("GeneratedBy", generated_by),
             ("SourceDatasets", source_datasets),

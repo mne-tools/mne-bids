@@ -431,6 +431,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
         authors="MNE B., MNE P., MNE Ł.",
         funding="GSOC2019, GSOC2021",
         references_and_links="https://doi.org/10.21105/joss.01896",
+        keywords="eeg, motor-imagery",
         dataset_type="derivative",
         overwrite=True,
         verbose=True,
@@ -439,6 +440,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
     with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ["MNE B.", "MNE P.", "MNE Ł."]
+        assert dataset_description_json["Keywords"] == ["eeg", "motor-imagery"]
         # If the text on disk is unicode, json.load will convert it. So let's test that
         # the text was encoded correctly on disk.
         fid.seek(0)

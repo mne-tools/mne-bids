@@ -414,6 +414,16 @@ def test_read_participants_data(tmp_path):
 
     assert raw.info["subject_info"] == dict()
 
+    # test reading if subject row is missing from participants.tsv
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv["participant_id"][0] = "sub-doesnotexist"
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    with pytest.warns(RuntimeWarning, match="not listed in participants.tsv"):
+        raw = read_raw_bids(bids_path=bids_path)
+    assert raw.info["subject_info"] == dict()
+
 
 @pytest.mark.parametrize(
     ("hand_bids", "hand_mne", "sex_bids", "sex_mne"),
@@ -1561,13 +1571,13 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     for digpoint in raw_test.info["dig"]:
         assert digpoint["coord_frame"] == coord_frame_int
 
-    # if we delete the coordsystem.json file, an error will be raised
+    # if we delete the coordsystem.json file, a warning is emitted
     os.remove(coordsystem_fname)
-    with pytest.raises(
-        RuntimeError,
+    with pytest.warns(
+        RuntimeWarning,
         match="coordsystem.json is REQUIRED whenever electrodes.tsv is present",
     ):
-        raw = read_raw_bids(bids_path=bids_fname, verbose=False)
+        read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # test error message if electrodes is not a subset of Raw
     bids_path.update(root=tmp_path)
