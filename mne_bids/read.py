@@ -1481,11 +1481,9 @@ def read_epochs_bids(
 ):
     """Read pre-epoched BIDS data (RecordingType="epoched") as :class:`mne.Epochs`.
 
-    EEGLAB ``.set`` only for now. The same sidecars as
-    :func:`read_raw_bids` are applied (channels, electrodes, coordsystem,
-    scans, participants). For continuous formats flagged ``"epoched"`` in
-    the sidecar (``.edf`` / ``.bdf`` / ``.vhdr``), :func:`read_raw_bids`
-    will load them as :class:`mne.io.Raw`; segment them yourself.
+    Currently, only EEGLAB ``.set`` files are supported.  For continuous formats flagged ``"epoched"`` in
+    the sidecar (``.edf`` / ``.bdf`` / ``.vhdr``), please use :func:`read_raw_bids`
+    to load them as :class:`mne.io.Raw` and. then segment them yourself.
 
     Parameters
     ----------
