@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev66+g29a04fb47 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.19.0.dev67+g9c1ec83a8 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=17e88d3b"></script>
+    <script src="../../_static/documentation_options.js?v=985e6f01"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,7 +79,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev66+g29a04fb47" />
+  <meta name="docsearch:version" content="0.19.0.dev67+g9c1ec83a8" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev66+g29a04fb47 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev67+g9c1ec83a8 documentation</p>
   
 </a></div>
     
@@ -1903,8 +1903,6 @@
                     <span class="sa">f</span><span class="s2">&quot;Please add coordsystem.json for </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2"> and &quot;</span>
                     <span class="s2">&quot;re-run the BIDS validator.&quot;</span>
                 <span class="p">)</span>
-                <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                 <span class="n">warn</span><span class="p">(</span><span class="n">msg</span> <span class="o">+</span> <span class="s2">&quot; Skipping reading electrode locations.&quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">):</span>
                 <span class="n">_read_dig_bids</span><span class="p">(</span>
@@ -2233,7 +2231,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-06.
       <br/>
     
   </p>

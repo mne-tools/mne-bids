@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev66+g29a04fb47 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.19.0.dev67+g9c1ec83a8 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="_static/documentation_options.js?v=17e88d3b"></script>
+    <script src="_static/documentation_options.js?v=985e6f01"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -82,7 +82,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.19.0.dev66+g29a04fb47" />
+  <meta name="docsearch:version" content="0.19.0.dev67+g9c1ec83a8" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -151,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.19.0.dev66+g29a04fb47 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev67+g9c1ec83a8 documentation</p>
   
 </a></div>
     
@@ -560,7 +560,7 @@
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_matching_sidecar" title="mne_bids.BIDSPath.find_matching_sidecar"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.find_matching_sidecar()</span></code></a> to search for sidecar files at the dataset root level per the BIDS inheritance principle, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1508">#1508</a>)</p></li>
 <li><p>Reinstate the requirement for <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code> whenever <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> is present (including EMG), by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1508">#1508</a>)</p></li>
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a> ignoring <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> when <code class="docutils literal notranslate"><span class="pre">EEGCoordinateUnits</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;n/a&quot;</span></code> by inferring the unit from coordinate magnitudes, and synthesize approximate fiducials for <code class="docutils literal notranslate"><span class="pre">ctf_head</span></code> montages to enable the coordinate transform to <code class="docutils literal notranslate"><span class="pre">head</span></code> frame, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1506">#1506</a>)</p></li>
-<li><p>Improve <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> handling when <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> exists without <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code>: keep strict failure for iEEG, and for EEG/MEG emit a warning and continue without applying a montage, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a></p></li>
+<li><p>Improve <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> handling when <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> exists without <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code>: emit a warning and continue without applying a montage (previously raised for iEEG), by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a></p></li>
 <li><p>Allow <code class="docutils literal notranslate"><span class="pre">task=None</span></code> in <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> for BIDS paths without a task entity (e.g. datasets that omit task in the path), by <a class="reference external" href="https://github.com/AmanJaiswal1503">Aman Jaiswal</a></p></li>
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> and related read paths failing with <code class="docutils literal notranslate"><span class="pre">PermissionError</span></code> on datalad/git-annex datasets by keeping the file lock next to the symlink instead of its (read-only) target, and gracefully continuing without a lock when one cannot be created, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1569">#1569</a>)</p></li>
 <li><p>Avoid modifying calibration files by making <a class="reference internal" href="generated/mne_bids.write_meg_calibration.html#mne_bids.write_meg_calibration" title="mne_bids.write_meg_calibration"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_meg_calibration()</span></code></a> copy instead of parsing and rewriting, by <a class="reference external" href="https://github.com/wmvanvliet">Marijn van Vliet</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1576">#1576</a>)</p></li>
@@ -673,7 +673,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-06.
       <br/>
     
   </p>
