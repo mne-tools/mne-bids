@@ -1486,9 +1486,11 @@ def read_epochs_bids(
 
     EEGLAB ``.set`` files are read with the dedicated MNE epochs reader.
     Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``"epoched"``
-    in the sidecar are tiled into trials of length ``EpochLength``; if
-    ``events.tsv`` is present, its onsets are cross-checked against this
-    tiling and a warning is emitted on disagreement.
+    in the sidecar are sliced into trials of length ``EpochLength`` (from the
+    sidecar). When ``events.tsv`` is present its onsets give the trial starts
+    (``sample`` / ``begSample`` / ``onset`` columns are tried in that order;
+    trials extending past the recording are dropped with a warning); when
+    absent, the file is uniformly tiled.
 
     Parameters
     ----------
@@ -1556,33 +1558,47 @@ def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
     raw = _continuous_epoched_reader[bids_path.fpath.suffix](
         bids_path.fpath, preload=False, verbose=verbose, **(extra_params or {})
     )
-    epochs = mne.make_fixed_length_epochs(
-        raw, duration=duration, preload=True, verbose=verbose
-    )
     events_fname = _find_matching_sidecar(
         bids_path, suffix="events", extension=".tsv", on_error="ignore"
     )
-    if events_fname is not None:
-        rows = _from_tsv(events_fname)
-        if rows.get("sample"):
-            actual = np.asarray(rows["sample"], dtype=np.int64)
-        elif rows.get("onset"):
-            sfreq = raw.info["sfreq"]
-            actual = np.round(np.asarray(rows["onset"], dtype=float) * sfreq).astype(
-                np.int64
-            )
-        else:
-            return epochs
-        step = int(round(duration * raw.info["sfreq"]))
-        expected = np.arange(len(epochs), dtype=np.int64) * step
-        if not np.array_equal(actual, expected):
-            warn(
-                f"{Path(events_fname).name}: {len(actual)} trial onsets "
-                f"disagree with uniform EpochLength={duration}s tiling "
-                f"({len(epochs)} epochs); file may be truncated, sidecar "
-                "wrong, or epochs misaligned."
-            )
-    return epochs
+    if events_fname is None:
+        return mne.make_fixed_length_epochs(
+            raw, duration=duration, preload=True, verbose=verbose
+        )
+
+    # Delegate to mne-bids' events.tsv parser for descriptions/event_id (handles
+    # n/a, trial_type/stim_type/value, hierarchical event names); place onsets
+    # precisely from sample/begSample when available, else from onset (seconds).
+    info, rows = _make_annotation_kwargs(_from_tsv(events_fname), events_fname)
+    sfreq = raw.info["sfreq"]
+    if rows.get("sample"):
+        onsets = np.asarray(rows["sample"], dtype=np.int64)
+    elif rows.get("begSample"):  # 1-indexed inclusive (non-BIDS, observed)
+        onsets = np.asarray(rows["begSample"], dtype=np.int64) - 1
+    else:
+        onsets = np.round(info["onset"] * sfreq).astype(np.int64)
+    event_id = info["event_id"]
+    ids = np.array([event_id[d] for d in info["description"]], dtype=np.int64)
+
+    n_per = int(round(duration * sfreq))
+    fits = (onsets >= 0) & (onsets + n_per <= raw.n_times)
+    if not fits.all():
+        warn(
+            f"{Path(events_fname).name}: {(~fits).sum()} of {len(onsets)} "
+            "trials extend beyond the recording and will be dropped."
+        )
+        onsets, ids = onsets[fits], ids[fits]
+    events = np.column_stack([onsets, np.zeros_like(onsets), ids])
+    return mne.Epochs(
+        raw,
+        events=events,
+        event_id=event_id,
+        tmin=0.0,
+        tmax=duration - 1.0 / sfreq,
+        baseline=None,
+        preload=True,
+        verbose=verbose,
+    )
 
 
 @verbose

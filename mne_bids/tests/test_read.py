@@ -2516,15 +2516,19 @@ def test_read_epochs_bids_continuous(tmp_path, ext, fmt, writer_pkg):
     with pytest.raises(RuntimeError, match="read_epochs_bids"):
         read_raw_bids(bp_read)
 
-    # When events.tsv disagrees with EpochLength tiling, we warn but still slice.
+    # When events.tsv is present, its onsets drive slicing; trial_type column
+    # supplies categorical labels; trials past the recording end are dropped.
     events_tsv = bp.copy().update(suffix="events", extension=".tsv").fpath
-    for onsets in (  # row-count mismatch, then jittered onsets
-        [i * n_per / sfreq for i in range(n_ep + 1)],
-        [(i * n_per + (i > 0)) / sfreq for i in range(n_ep)],
-    ):
-        _to_tsv(
-            OrderedDict(onset=[str(o) for o in onsets], duration=["0"] * len(onsets)),
-            events_tsv,
-        )
-        with pytest.warns(RuntimeWarning, match="disagree with uniform"):
-            read_epochs_bids(bp_read)
+    _to_tsv(
+        OrderedDict(
+            onset=[str(i * n_per / sfreq) for i in range(n_ep + 1)],
+            duration=[str(n_per / sfreq)] * (n_ep + 1),
+            trial_type=["A", "B", "A", "B"],
+        ),
+        events_tsv,
+    )
+    with pytest.warns(RuntimeWarning, match="will be dropped"):
+        epochs = read_epochs_bids(bp_read)
+    assert epochs.get_data().shape == (n_ep, 2, n_per)
+    assert set(epochs.event_id) == {"A", "B"}
+    assert len(epochs["A"]) == 2 and len(epochs["B"]) == 1  # last 'B' was dropped
