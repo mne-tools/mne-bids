@@ -2126,16 +2126,26 @@ def test_channels_tsv_empty_or_missing_name(tmp_path, content, match):
 
 
 def test_channels_tsv_duplicate_names(tmp_path):
-    """Duplicate channel names in channels.tsv are deduplicated with -0/-1 suffixes."""
+    """Dedupe only on ``on_ch_mismatch='rename'``; raise/warn otherwise."""
     raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
     n_ch = len(raw.ch_names)
     rows = "\n".join(["EEG\tNIRSCWAMPLITUDE"] * n_ch)
     channels_fname.write_text(f"name\ttype\n{rows}\n", encoding="utf-8")
+
     with pytest.warns(RuntimeWarning, match="Channel names are not unique"):
         out = _handle_channels_reading(
             channels_fname, raw.copy(), on_ch_mismatch="rename"
         )
     assert out.ch_names == [f"EEG-{i}" for i in range(n_ch)]
+
+    with pytest.raises(RuntimeError, match="Duplicate channel names"):
+        _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="raise")
+
+    with pytest.warns(RuntimeWarning, match="Duplicate channel names"):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="warn"
+        )
+    assert out.ch_names == raw.ch_names
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])

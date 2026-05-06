@@ -1071,7 +1071,22 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
             warn(f"{channels_fname} has no 'name' column; skipping channel metadata.")
         return raw
     ch_names_tsv = channels_dict["name"]
-    _dedupe_channel_names(ch_names_tsv)
+    if len(ch_names_tsv) != len(set(ch_names_tsv)):
+        if on_ch_mismatch == "rename":
+            _dedupe_channel_names(ch_names_tsv)
+        elif on_ch_mismatch == "warn":
+            warn(
+                f"Duplicate channel names in {channels_fname}; skipping "
+                "channels.tsv-derived channel metadata. Pass "
+                "on_ch_mismatch='rename' to deduplicate with -0/-1/... suffixes."
+            )
+            return raw
+        else:
+            raise RuntimeError(
+                f"Duplicate channel names found in {channels_fname}. "
+                "Pass on_ch_mismatch='rename' to deduplicate, or "
+                "on_ch_mismatch='warn' to skip channels.tsv metadata."
+            )
 
     # Now we can do some work.
     # The "type" column is mandatory in BIDS. We can use it to set channel
