@@ -6,6 +6,7 @@
 import json
 import os
 import re
+from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
 from pathlib import Path
@@ -1007,13 +1008,19 @@ def _get_bads_from_tsv_data(tsv_data):
 
 
 def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
-    """Handle mismatch between channels.tsv and raw channel names."""
+    """Handle mismatch. Returns True if caller should skip channels.tsv metadata."""
     if on_ch_mismatch == "raise":
         raise RuntimeError(
             f"Channel mismatch between {channels_fname} and the raw data file detected."
             f"Either align channel names in channels.tsv with the raw file, or call "
-            f"read_raw_bids(on_ch_mismatch='reorder'|'rename') to proceed."
+            f"read_raw_bids(on_ch_mismatch='reorder'|'rename'|'warn') to proceed."
         )
+    if on_ch_mismatch == "warn":
+        warn(
+            f"Channel mismatch between {channels_fname} and the raw data file. "
+            "Skipping channels.tsv-derived channel metadata."
+        )
+        return True
     logger.info(
         "Channel mismatch between "
         f"{channels_fname} and the raw data file detected. "
@@ -1024,7 +1031,32 @@ def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
     elif on_ch_mismatch == "rename":
         raw.rename_channels(dict(zip(raw.ch_names, ch_names_tsv)))
     else:
-        raise ValueError("on_ch_mismatch must be one of {'reorder','raise','rename'}")
+        raise ValueError(
+            "on_ch_mismatch must be one of {'reorder','raise','rename','warn'}"
+        )
+
+
+def _dedupe_channel_names(ch_names):
+    """Rename duplicate channel names in place ."""
+    positions = defaultdict(list)
+    for i, name in enumerate(ch_names):
+        positions[name].append(i)
+    dups = {name for name, idxs in positions.items() if len(idxs) > 1}
+    if not dups:
+        return
+    warn(
+        f"Channel names are not unique, found duplicates for: {dups}. "
+        "Applying running numbers for duplicates."
+    )
+    for stem in dups:
+        for n, ch_idx in enumerate(positions[stem]):
+            for suffix in (n, *"abcdefghijklmnopqrstuvwxyz"):
+                candidate = f"{stem}-{suffix}"
+                if candidate not in ch_names:
+                    break
+            else:
+                raise ValueError(f"Could not find a unique suffix for {stem!r}")
+            ch_names[ch_idx] = candidate
 
 
 def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
@@ -1034,7 +1066,27 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     """
     logger.info(f"Reading channel info from {channels_fname}.")
     channels_dict = _from_tsv(channels_fname)
+    if not channels_dict.get("name"):
+        if len(channels_dict):
+            warn(f"{channels_fname} has no 'name' column; skipping channel metadata.")
+        return raw
     ch_names_tsv = channels_dict["name"]
+    if len(ch_names_tsv) != len(set(ch_names_tsv)):
+        if on_ch_mismatch == "rename":
+            _dedupe_channel_names(ch_names_tsv)
+        elif on_ch_mismatch == "warn":
+            warn(
+                f"Duplicate channel names in {channels_fname}; skipping "
+                "channels.tsv-derived channel metadata. Pass "
+                "on_ch_mismatch='rename' to deduplicate with -0/-1/... suffixes."
+            )
+            return raw
+        else:
+            raise RuntimeError(
+                f"Duplicate channel names found in {channels_fname}. "
+                "Pass on_ch_mismatch='rename' to deduplicate, or "
+                "on_ch_mismatch='warn' to skip channels.tsv metadata."
+            )
 
     # Now we can do some work.
     # The "type" column is mandatory in BIDS. We can use it to set channel
@@ -1111,8 +1163,10 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
         )
     else:
         orig_names = list(raw.ch_names)
-        if orig_names != ch_names_tsv:
-            _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname)
+        if orig_names != ch_names_tsv and _handle_channel_mismatch(
+            raw, on_ch_mismatch, ch_names_tsv, channels_fname
+        ):
+            return raw
 
     # Set the channel types in the raw data according to channels.tsv
     channel_type_bids_mne_map_available_channels = {
@@ -1199,13 +1253,21 @@ def read_raw_bids(
     on_ch_mismatch : str
         How to handle a mismatch between channel names in channels.tsv file
         and channel names in the raw data file.
-        Must be one of ``'raise'``, ``'reorder'``, ``'rename'`` (default ``'raise'``).
+        Must be one of ``'raise'``, ``'warn'``, ``'reorder'``, ``'rename'``
+        (default ``'raise'``).
 
         * ``'raise'`` will raise a RuntimeError if there is a channel mismatch.
+        * ``'warn'`` will emit a warning and leave the raw data unchanged,
+          skipping channels.tsv-derived channel metadata.
         * ``'reorder'`` will reorder the channels in the raw data file to match the
           channel order in the channels.tsv file.
         * ``'rename'`` will rename the channels in the raw data file to match the
           channel names in the channels.tsv file.
+
+        Duplicate channel names in channels.tsv are treated as a sub-type of
+        mismatch and obey the same setting: ``'rename'`` deduplicates the names
+        with ``-0/-1/...`` suffixes, ``'warn'`` skips channels.tsv metadata,
+        and ``'raise'``/``'reorder'`` raise.
     %(verbose)s
 
     Returns
