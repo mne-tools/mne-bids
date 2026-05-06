@@ -1500,6 +1500,11 @@ def read_epochs_bids(
     epochs : mne.Epochs
         The epoched data with BIDS sidecar metadata applied.
     """
+    
+    Notes
+    ------
+    This function will apply the same sidecars as :func:`read_raw_bids` (``channels.tsv``, ``electrodes.tsv``, ``coordsystem.json``,
+    ``scans.tsv``, ``participants.tsv``).
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object.')
     bids_path = bids_path.copy()
