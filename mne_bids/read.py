@@ -34,7 +34,7 @@ from mne_bids.path import (
     _parse_ext,
     get_bids_path_from_fname,
 )
-from mne_bids.tsv_handler import _detect_file_encoding, _drop, _from_tsv
+from mne_bids.tsv_handler import _drop, _from_tsv
 from mne_bids.utils import (
     _convert_dt_to_utc,
     _get_ch_type_mapping,
@@ -807,8 +807,7 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
         return None
 
     try:
-        encoding = _detect_file_encoding(events_json_fname)
-        with open(events_json_fname, encoding=encoding) as f:
+        with open(events_json_fname, encoding="utf-8") as f:
             sidecar = json.load(f)
     except FileNotFoundError:
         return None
@@ -863,8 +862,7 @@ def _read_hed_version(bids_root):
         return None
     desc_path = Path(bids_root) / "dataset_description.json"
     try:
-        encoding = _detect_file_encoding(desc_path)
-        with open(desc_path, encoding=encoding) as f:
+        with open(desc_path, encoding="utf-8") as f:
             return json.load(f).get("HEDVersion")
     except FileNotFoundError:
         return None

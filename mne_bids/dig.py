@@ -34,7 +34,7 @@ from mne_bids.config import (
     coordsys_standard_template_deprecated,
 )
 from mne_bids.path import BIDSPath
-from mne_bids.tsv_handler import _detect_file_encoding, _from_tsv
+from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (
     _import_nibabel,
     _scale_coord_to_meters,
@@ -490,8 +490,7 @@ def _write_electrodes_json(fname, *, spatial_reference, overwrite=False):
     """Write the ``*_electrodes.json`` sidecar (#1545)."""
     fid_json = {"SpatialReference": spatial_reference}
     if Path(fname).exists() and not overwrite:
-        encoding = _detect_file_encoding(fname)
-        with _open_lock(fname, encoding=encoding) as fin:
+        with _open_lock(fname, encoding="utf-8") as fin:
             existing = json.load(fin)
         if fid_json != existing:
             raise RuntimeError(
