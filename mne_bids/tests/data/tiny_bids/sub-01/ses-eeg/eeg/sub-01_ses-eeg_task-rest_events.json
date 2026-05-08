@@ -6,6 +6,10 @@
         "Description": "The event code (also known as trigger code or event ID) associated with the event."
     },
     "trial_type": {
-        "Description": "The type, category, or name of the event."
+        "Description": "The type, category, or name of the event.",
+        "HED": {
+            "start_experiment": "Experiment-structure",
+            "show_stimulus": "Sensory-event, Visual-presentation"
+        }
     }
 }

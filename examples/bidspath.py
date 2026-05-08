@@ -25,7 +25,7 @@ from mne_bids import BIDSPath
 # naming scheme. The first term we are going to introduce is the **BIDS root**.
 # The BIDS root is simply the root folder of your BIDS dataset. For
 # example, if the BIDS data of one of your studies is stored in
-# `/Users/me/Studies/Study_01`, then this will be the BIDS root.
+# ``/Users/me/Studies/Study_01``, then this will be the BIDS root.
 #
 # Similarly, if you have **no** BIDS dataset to begin with, you need to
 # consider where to store your data upon BIDS conversion. Again, the intended
@@ -95,7 +95,7 @@ print(bids_path)
 # %%
 # As you can see, ``BIDSPath`` automatically arranged all the information we
 # provided such that it creates a valid BIDS folder structure. You can also
-# retrieve a `pathlib.Path` object of this path:
+# retrieve a :class:`pathlib.Path` object of this path:
 
 pathlib_path = bids_path.fpath
 pathlib_path

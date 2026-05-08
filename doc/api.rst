@@ -84,3 +84,4 @@ mne_bids.copyfiles
    copyfile_ctf
    copyfile_bti
    copyfile_kit
+   copyfile_mef

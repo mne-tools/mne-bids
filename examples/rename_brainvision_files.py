@@ -34,6 +34,8 @@ for the :ref:`Python Command Line Interface <python_cli>`.
 
 # %%
 # We are importing everything we need for this example:
+from pathlib import Path
+
 import mne
 
 from mne_bids.copyfiles import copyfile_brainvision
@@ -71,7 +73,7 @@ examples_dir = data_path / "Brainvision"
 
 # Rename the file
 vhdr_file = examples_dir / "Analyzer_nV_Export.vhdr"
-vhdr_file_renamed = examples_dir / "test_renamed.vhdr"
+vhdr_file_renamed = Path.cwd() / "test_renamed.vhdr"
 copyfile_brainvision(vhdr_file, vhdr_file_renamed, verbose=True)
 
 # Check that MNE-Python can read in both, the original as well as the renamed

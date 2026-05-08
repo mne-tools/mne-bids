@@ -2,7 +2,6 @@
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
-from dataclasses import dataclass
 
 from mne import io
 from mne.io.constants import FIFF
@@ -20,9 +19,9 @@ EPHY_ALLOWED_DATATYPES = ["eeg", "emg", "ieeg", "meg", "nirs"]
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh", "motion"]
 
 MEG_CONVERT_FORMATS = ["FIF", "auto"]
-EEG_CONVERT_FORMATS = ["BrainVision", "auto"]
+EEG_CONVERT_FORMATS = ["BrainVision", "EDF", "BDF", "EEGLAB", "auto"]
 EMG_CONVERT_FORMATS = ["EDF", "BDF", "auto"]
-IEEG_CONVERT_FORMATS = ["BrainVision", "auto"]
+IEEG_CONVERT_FORMATS = ["BrainVision", "EDF", "EEGLAB", "auto"]
 NIRS_CONVERT_FORMATS = ["auto"]
 MOTION_CONVERT_FORMATS = ["tsv", "auto"]
 CONVERT_FORMATS = {
@@ -32,6 +31,16 @@ CONVERT_FORMATS = {
     "ieeg": IEEG_CONVERT_FORMATS,
     "nirs": NIRS_CONVERT_FORMATS,
     "motion": MOTION_CONVERT_FORMATS,
+}
+
+# Mapping from format names to file extensions - single source of truth
+# for format-to-extension resolution used in write_raw_bids.
+FORMAT_EXTENSIONS = {
+    "BrainVision": ".vhdr",
+    "EDF": ".edf",
+    "BDF": ".bdf",
+    "EEGLAB": ".set",
+    "FIF": ".fif",
 }
 
 # Orientation of the coordinate system dependent on manufacturer
@@ -746,14 +755,3 @@ ANONYMIZED_JSON_KEY_WHITELIST = [
     "ContinuousHeadLocalization",
     "HeadCoilFrequency",
 ]
-
-
-# charsets for read/write of text files (e.g. TSV)
-@dataclass(frozen=True)
-class _Encoding:
-    TSV_READ = "utf-8-sig"  # for backwards compat
-    TSV_WRITE = "utf-8"
-    JSON = "utf-8"
-
-
-ENCODINGS = _Encoding()

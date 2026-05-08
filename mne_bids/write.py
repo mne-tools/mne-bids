@@ -51,8 +51,8 @@ from mne_bids.config import (
     BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
     BIDS_VERSION,
     CONVERT_FORMATS,
-    ENCODINGS,
     EXT_TO_UNIT_MAP,
+    FORMAT_EXTENSIONS,
     IGNORED_CHANNELS,
     MANUFACTURERS,
     ORIENTATION,
@@ -81,7 +81,13 @@ from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
 from mne_bids.pick import coil_type
 from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.sidecar_updates import update_sidecar_json
-from mne_bids.tsv_handler import _combine_rows, _contains_row, _drop, _from_tsv
+from mne_bids.tsv_handler import (
+    _combine_rows,
+    _contains_row,
+    _detect_file_encoding,
+    _drop,
+    _from_tsv,
+)
 from mne_bids.utils import (
     _age_on_date,
     _check_anonymize,
@@ -126,7 +132,7 @@ def _should_use_bti_pdf_suffix() -> bool:
                 check=True,
             )
         except (subprocess.CalledProcessError, FileNotFoundError, OSError) as e:
-            logger.warning(f"Failed to run bids-validator to check version: {e}")
+            warn(f"Failed to run bids-validator to check version: {e}")
         else:
             version_output = res.stdout.strip() or res.stderr.strip()
             match = re.search(r"(\d+)\.(\d+)\.(\d+)", version_output)
@@ -290,7 +296,7 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         ch_data.move_to_end("type", last=False)
         ch_data.move_to_end("name", last=False)
 
-    _write_tsv(fname, ch_data, overwrite)
+    _write_tsv(fname, ch_data, overwrite=overwrite)
 
 
 _cardinal_ident_mapping = {
@@ -478,11 +484,50 @@ def _events_tsv(
             continue
         data[key] = values
 
-    _write_tsv(fname, data, overwrite)
+    _write_tsv(fname, data, overwrite=overwrite)
 
 
-def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False):
-    """Create participants.json for non-default columns in accompanying TSV.
+def _extract_hed_for_write(raw, *, n_events):
+    """Pull HED strings, version, and an optional trial_type→HED sidecar map.
+
+    Returns ``None`` when annotations aren't ``HEDAnnotations``, or when the
+    HED-string count doesn't match the number of events. Otherwise the
+    ``sidecar_map`` key is a description→HED mapping (preferred, standard
+    BIDS pattern) or ``None`` when descriptions collide on different HED
+    strings and a HED column in events.tsv is required instead.
+    """
+    if not (
+        hasattr(mne, "HEDAnnotations")
+        and isinstance(raw.annotations, mne.HEDAnnotations)
+    ):
+        return None
+    strings = list(raw.annotations.hed_string)
+    if len(strings) != n_events:
+        warn(
+            f"Number of HED strings ({len(strings)}) does not match number "
+            f"of events ({n_events}). HED data will not be written."
+        )
+        return None
+    sidecar_map = {}
+    for desc, s in zip(raw.annotations.description, strings, strict=True):
+        if sidecar_map.setdefault(desc, s) != s:
+            sidecar_map = None
+            break
+    return {
+        "strings": strings,
+        "version": raw.annotations._hed_version,
+        "sidecar_map": sidecar_map,
+    }
+
+
+def _events_json(
+    fname,
+    extra_columns=None,
+    has_trial_type=True,
+    hed_by_trial_type=None,
+    overwrite=False,
+):
+    """Create events.json for non-default columns in accompanying TSV.
 
     Parameters
     ----------
@@ -492,6 +537,9 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
         Dictionary with additional columns to be added to the events.json file.
     has_trial_type : bool
         Whether the events.tsv file should contain a 'trial_type' column.
+    hed_by_trial_type : dict | None
+        Mapping of trial_type values to HED strings. When provided, a ``HED``
+        entry is added under the ``trial_type`` key in the JSON sidecar.
     overwrite : bool
         Whether to overwrite the output file if it exists.
     """
@@ -529,9 +577,10 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
     }
 
     if has_trial_type:
-        new_data["trial_type"] = {
-            "Description": "The type, category, or name of the event."
-        }
+        trial_type_entry = {"Description": "The type, category, or name of the event."}
+        if hed_by_trial_type is not None:
+            trial_type_entry["HED"] = hed_by_trial_type
+        new_data["trial_type"] = trial_type_entry
 
     for key, value in extra_columns.items():
         new_data[key] = {"Description": value}
@@ -544,15 +593,15 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
         )
         new_data = {**orig_data, **new_data}
 
-    _write_json(fname, new_data, overwrite)
+    _write_json(fname, new_data, overwrite=overwrite)
 
 
-def _readme(datatype, fname, overwrite=False):
+def _readme(datatype, fname):
     """Create a README file and save it.
 
-    This will write a README file containing an MNE-BIDS citation.
-    If a README already exists, the behavior depends on the
-    `overwrite` parameter, as described below.
+    If a README already exists, append an MNE-BIDS citation to it
+    unless one is already present. Otherwise, create a new README
+    containing an MNE-BIDS citation.
 
     Parameters
     ----------
@@ -560,31 +609,26 @@ def _readme(datatype, fname, overwrite=False):
         The type of data contained in the raw file ('meg', 'eeg', 'ieeg')
     fname : str | mne_bids.BIDSPath
         Filename to save the README to.
-    overwrite : bool
-        Whether to overwrite the existing file (defaults to False).
-        If overwrite is True, create a new README containing an
-        MNE-BIDS citation. If overwrite is False, append an
-        MNE-BIDS citation to the existing README, unless it
-        already contains that citation.
     """
-    if fname.is_file() and not overwrite:
-        with _open_lock(fname, encoding=ENCODINGS.TSV_READ) as fid:
-            orig_data = fid.read()
-        mne_bids_ref = REFERENCES["mne-bids"] in orig_data
-        datatype_ref = REFERENCES[datatype] in orig_data
+    # Hold the lock across read and write so concurrent writers cannot
+    # observe a partially written file.
+    with _open_lock(fname):
+        if fname.is_file():
+            encoding = _detect_file_encoding(fname)
+            text = fname.read_text(encoding)
+        else:
+            text = ""
+        mne_bids_ref = REFERENCES["mne-bids"] in text
+        datatype_ref = REFERENCES[datatype] in text
         if mne_bids_ref and datatype_ref:
             return
-        text = "{}References\n----------\n{}{}".format(
-            orig_data + "\n\n",
-            "" if mne_bids_ref else REFERENCES["mne-bids"] + "\n\n",
-            "" if datatype_ref else REFERENCES[datatype] + "\n",
-        )
-    else:
-        text = "References\n----------\n{}{}".format(
-            REFERENCES["mne-bids"] + "\n\n", REFERENCES[datatype] + "\n"
-        )
-
-    _write_text(fname, text, overwrite=True)
+        text += "\n\n" if text else ""
+        text += "References\n----------\n"
+        if not mne_bids_ref:
+            text += REFERENCES["mne-bids"] + "\n\n"
+        if not datatype_ref:
+            text += REFERENCES[datatype] + "\n"
+        _write_text(fname, text, overwrite=True, lock=False)
 
 
 def _participants_tsv(raw, subject_id, fname, overwrite=False):
@@ -604,7 +648,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
-        If there is already data for the given `subject_id` and overwrite is
+        If there is already data for the given ``subject_id`` and overwrite is
         False, an error will be raised.
 
     """
@@ -744,7 +788,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             if existing_participants:
                 data = _combine_rows(orig_data, data, "participant_id")
 
-        _write_tsv(fname, data, overwrite=True)
+        _write_tsv(fname, data, overwrite=True, lock=False)  # already have a lock
 
 
 def _participants_json(fname, overwrite=False):
@@ -757,7 +801,7 @@ def _participants_json(fname, overwrite=False):
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
-        If there is already data for the given `fname` and overwrite is False,
+        If there is already data for the given ``fname`` and overwrite is False,
         an error will be raised.
 
     """
@@ -768,8 +812,8 @@ def _participants_json(fname, overwrite=False):
             "Units": "years",
         },
         "sex": {
-            "Description": "Biological sex of the participant",
-            "Levels": {"F": "female", "M": "male"},
+            "Description": "Sex of the participant",
+            "Levels": {"F": "female", "M": "male", "O": "other"},
         },
         "hand": {
             "Description": "Handedness of the participant",
@@ -803,7 +847,7 @@ def _participants_json(fname, overwrite=False):
             except json.JSONDecodeError as e:
                 # File is corrupted/incomplete - this can happen in a race condition
                 # when one process truncates while another reads
-                logger.warning(
+                warn(
                     f"Could not parse JSON in '{fname}': {e}. "
                     "This may occur when reading during concurrent writes. "
                     "Treating as empty."
@@ -851,7 +895,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
-        If there is already data for the given `fname` and overwrite is False,
+        If there is already data for the given ``fname`` and overwrite is False,
         an error will be raised.
 
     """
@@ -926,7 +970,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
             # otherwise add the new data
             data = _combine_rows(orig_data, data, "filename")
 
-        _write_tsv(fpath, data, overwrite=True)
+        _write_tsv(fpath, data, overwrite=True, lock=False)  # already have a lock
 
 
 def _load_image(image, name="image"):
@@ -1274,7 +1318,7 @@ def _sidecar_json(
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
 
-    _write_json(fname, ch_info_json, overwrite)
+    _write_json(fname, ch_info_json, overwrite=overwrite)
 
     return fname
 
@@ -1421,9 +1465,8 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     # function to pybv that maximizes the resolution parameter while
     # ensuring that int16 can represent the data in original units.
     if raw.orig_format != "single":
-        warn(
-            f'Encountered data in "{raw.orig_format}" format. Converting to float32.',
-            RuntimeWarning,
+        logger.info(
+            f'Encountered data in "{raw.orig_format}" format. Converting to float32.'
         )
 
     # Writing to float32 µV with 0.1 resolution are the pybv defaults,
@@ -1446,7 +1489,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     )
 
 
-def _write_raw_edf_bdf(raw, bids_fname, overwrite):
+def _write_raw_edf_bdf(raw, bids_fname, overwrite, *, physical_range="auto"):
     """Store data as EDF.
 
     Parameters
@@ -1455,6 +1498,12 @@ def _write_raw_edf_bdf(raw, bids_fname, overwrite):
         Raw data to save.
     bids_fname : str
         The output filename.
+    physical_range : str | tuple
+        How to get the physical minimal and maximal values from the data.
+        If ``'auto'`` (default), the physical range is inferred from the data,
+        taking the minimum and maximum values per channel type.
+        If ``'channelwise'``, the range will be defined per channel.
+        If a tuple of minimum and maximum, this manual physical range will be used.
     overwrite : bool
         Whether to overwrite an existing file or not.
     """
@@ -1475,7 +1524,7 @@ def _write_raw_edf_bdf(raw, bids_fname, overwrite):
                 year=1985, month=1, day=1, hour=0, minute=0, second=0, microsecond=0
             )
         )
-    raw.export(bids_fname, overwrite=overwrite)
+    raw.export(bids_fname, physical_range=physical_range, overwrite=overwrite)
 
 
 def _write_raw_eeglab(raw, bids_fname, overwrite):
@@ -1508,6 +1557,7 @@ def make_dataset_description(
     funding=None,
     ethics_approvals=None,
     references_and_links=None,
+    keywords=None,
     doi=None,
     generated_by=None,
     source_datasets=None,
@@ -1555,6 +1605,12 @@ def make_dataset_description(
         List of references to publication that contain information on the
         dataset, or links.  Must be a list of str (e.g., ['a', 'b', 'c'])
         or a single comma-separated str (e.g., 'a, b, c').
+    keywords : list | str | None
+        List of keywords describing the dataset (BIDS ``Keywords`` field).
+        Must be a list of str (e.g., ``['eeg', 'motor-imagery']``) or a single
+        comma-separated str (e.g., ``'eeg, motor-imagery'``).
+
+        .. versionadded:: 0.19
     doi : str | None
         The Digital Object Identifier of the dataset (not the corresponding
         paper). Must be of the form ``doi:<insert_doi>`` (e.g.,
@@ -1580,15 +1636,14 @@ def make_dataset_description(
     -----
     The required metadata field ``BIDSVersion`` will be automatically filled in
     by mne_bids.
-
     """
     # Convert potential string input into list of strings
-    convert_vars = [authors, funding, references_and_links, ethics_approvals]
+    convert_vars = [authors, funding, references_and_links, ethics_approvals, keywords]
     convert_vars = [
         [i.strip() for i in var.split(",")] if isinstance(var, str) else var
         for var in convert_vars
     ]
-    authors, funding, references_and_links, ethics_approvals = convert_vars
+    authors, funding, references_and_links, ethics_approvals, keywords = convert_vars
 
     # Perform input checks
     if dataset_type not in ["raw", "derivative"]:
@@ -1652,6 +1707,7 @@ def make_dataset_description(
             ("Funding", funding),
             ("EthicsApprovals", ethics_approvals),
             ("ReferencesAndLinks", references_and_links),
+            ("Keywords", keywords),
             ("DatasetDOI", doi),
             ("GeneratedBy", generated_by),
             ("SourceDatasets", source_datasets),
@@ -1660,13 +1716,14 @@ def make_dataset_description(
 
     # Handle potentially existing file contents
     with _open_lock(fname):
+        orig_cols = {}
         if op.isfile(fname):
             try:
-                with open(fname, encoding=ENCODINGS.JSON) as fin:
+                with open(fname, encoding="utf-8") as fin:
                     orig_cols = json.load(fin)
             except (json.JSONDecodeError, OSError):
                 # File is empty, corrupted, or being written to by another process
-                orig_cols = {}
+                pass
             if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
                 warnings.warn(
                     "Conflicting BIDSVersion found in dataset_description.json! "
@@ -1676,8 +1733,10 @@ def make_dataset_description(
                 )
                 overwrite = False
             for key in description:
-                if description[key] is None or not overwrite:
+                if description[key] is None:
                     description[key] = orig_cols.get(key, None)
+                elif not overwrite:
+                    description[key] = orig_cols.get(key, description[key])
 
         # default author to make dataset description BIDS compliant
         # if the user passed an author don't overwrite,
@@ -1689,7 +1748,12 @@ def make_dataset_description(
         pop_keys = [key for key, val in description.items() if val is None]
         for key in pop_keys:
             description.pop(key)
-        _write_json(fname, description, overwrite=True)
+
+        # Preserve BIDS-spec keys we do not model (e.g. Description, DatasetLinks).
+        for key, val in orig_cols.items():
+            description.setdefault(key, val)
+
+        _write_json(fname, description, overwrite=True, lock=False)
 
 
 @verbose
@@ -1702,7 +1766,8 @@ def write_raw_bids(
     extra_columns_descriptions=None,
     *,
     anonymize=None,
-    format="auto",
+    format="auto",  # noqa: A002
+    physical_range="auto",
     symlink=False,
     empty_room=None,
     allow_preload=False,
@@ -1711,6 +1776,7 @@ def write_raw_bids(
     electrodes_tsv_task=False,
     emg_placement=None,
     overwrite=False,
+    readme=True,
     verbose=None,
 ):
     """Save raw data to a BIDS-compliant folder structure.
@@ -1730,7 +1796,7 @@ def write_raw_bids(
     Parameters
     ----------
     raw : mne.io.Raw
-        The raw data. It must be an instance of `mne.io.Raw` that is not
+        The raw data. It must be an instance of :class:`mne:mne.io.Raw` that is not
         already loaded from disk unless ``allow_preload`` is explicitly set
         to ``True``. See warning for the ``allow_preload`` parameter.
     bids_path : BIDSPath
@@ -1790,7 +1856,6 @@ def write_raw_bids(
            Either, descriptions of all event codes must be specified via the
            ``event_id`` parameter or each event must be accompanied by a
            row in ``event_metadata``.
-
     event_id : dict | None
         Descriptions or names describing the event codes, if you passed
         ``events``. The descriptions will be written to the ``trial_type``
@@ -1806,7 +1871,7 @@ def write_raw_bids(
         A dictionary that maps column names of the ``event_metadata`` to descriptions.
         Each column of ``event_metadata`` must have a corresponding entry in this.
     anonymize : dict | None
-        If `None` (default), no anonymization is performed.
+        If ``None`` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
         keys: ``daysback`` is a required key, ``keep_his`` is optional.
 
@@ -1827,15 +1892,23 @@ def write_raw_bids(
             Whether to store the name of the ``raw`` input file in the
             ``source`` column of ``scans.tsv``. By default, this information
             is not stored.
-
     format : 'auto' | 'BrainVision' | 'BDF' | 'EDF' | 'FIF' | 'EEGLAB'
         Controls the file format of the data after BIDS conversion. If
         ``'auto'``, MNE-BIDS will attempt to convert the input data to BIDS
         without a change of the original file format. A conversion to a
         different file format will then only take place if the original file
         format lacks some necessary features.
-        Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
-        to BDF or EDF for EMG, and to FIF for MEG data.
+        Conversion may be forced to BrainVision, BDF, EDF, or EEGLAB for EEG,
+        to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,
+        and to FIF for MEG data.
+    physical_range : str | tuple
+        If ``'auto'`` (default), the physical range is inferred from the data,
+        taking the minimum and maximum values per channel type.
+        If ``'channelwise'``, the range will be defined per channel.
+        If a tuple of minimum and maximum, this manual physical range will be used.
+        Only used for exporting EDF files.
+
+        .. versionadded:: 0.19
     symlink : bool
         Instead of copying the source files, only create symbolic links to
         preserve storage space. This is only allowed when not anonymizing the
@@ -1850,7 +1923,6 @@ def write_raw_bids(
         .. note::
            Symlinks are currently only supported on macOS and Linux. We will
            add support for Windows 10 at a later time.
-
     empty_room : mne.io.Raw | BIDSPath | None
         The empty-room recording to be associated with this file. This is
         only supported for MEG data.
@@ -1905,7 +1977,11 @@ def write_raw_bids(
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
+    readme : bool
+        If ``False``, leave any existing ``README`` untouched and do
+        not create one. Defaults to ``True``.
 
+        .. versionadded:: 0.19
     %(verbose)s
 
     Returns
@@ -1918,6 +1994,13 @@ def write_raw_bids(
            :class:`~mne_bids.BIDSPath` of the empty-room recording can be
            retrieved via ``bids_path.find_empty_room(use_sidecar_only=True)``.
 
+    See Also
+    --------
+    mne.io.Raw.anonymize
+    mne.find_events
+    mne.Annotations
+    mne.events_from_annotations
+
     Notes
     -----
     You should ensure that ``raw.info['subject_info']`` and
@@ -1925,7 +2008,7 @@ def write_raw_bids(
     for the correct computation of each participant's age when creating
     ``*_participants.tsv``.
 
-    This function will convert existing `mne.Annotations` from
+    This function will convert existing :class:`mne:mne.Annotations` from
     ``raw.annotations`` to events. Additionally, any events supplied via
     ``events`` will be written too. To avoid writing of annotations,
     remove them from the raw file via ``raw.set_annotations(None)`` before
@@ -1956,14 +2039,6 @@ def write_raw_bids(
 
     When writing EDF or BDF files, all file extensions are forced to be
     lower-case, in compliance with the BIDS specification.
-
-    See Also
-    --------
-    mne.io.Raw.anonymize
-    mne.find_events
-    mne.Annotations
-    mne.events_from_annotations
-
     """
     if not isinstance(raw, BaseRaw):
         raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
@@ -2074,20 +2149,12 @@ def write_raw_bids(
 
         raw_orig = reader[ext](**raw._init_kwargs)
     else:
-        if format == "BrainVision":
-            ext = ".vhdr"
-        elif format == "BDF":
-            ext = ".bdf"
-        elif format == "EDF":
-            ext = ".edf"
-        elif format == "EEGLAB":
-            ext = ".set"
-        elif format == "FIF":
-            ext = ".fif"
+        if format in FORMAT_EXTENSIONS:
+            ext = FORMAT_EXTENSIONS[format]
         else:
             msg = (
                 'For preloaded data, you must set the "format" parameter '
-                "to one of: BrainVision, BDF, EDF, EEGLAB, or FIF"
+                f"to one of: {', '.join(FORMAT_EXTENSIONS)}"
             )
             if format != "auto":  # the default was changed
                 msg += f', but got: "{format}"'
@@ -2299,7 +2366,8 @@ def write_raw_bids(
     # save readme file unless it already exists
     # XXX: can include README overwrite in future if using a template API
     # XXX: see https://github.com/mne-tools/mne-bids/issues/551
-    _readme(bids_path.datatype, readme_fname, False)
+    if readme:
+        _readme(bids_path.datatype, readme_fname)
 
     # save all participants meta data
     _participants_tsv(
@@ -2363,6 +2431,7 @@ def write_raw_bids(
         )
 
     # Write events.
+    hed = None
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map, event_extras = _read_events(
             events,
@@ -2370,6 +2439,7 @@ def write_raw_bids(
             raw,
             bids_path=bids_path,
         )
+        hed = _extract_hed_for_write(raw, n_events=len(events_array))
 
         if event_metadata is not None:
             event_desc_id_map = None
@@ -2378,6 +2448,10 @@ def write_raw_bids(
             extras_columns = _extras_dicts_to_columns(
                 event_extras, n_events=len(events_array)
             )
+            write_hed_as_column = hed is not None and hed["sidecar_map"] is None
+            if write_hed_as_column:
+                extras_columns["HED"] = hed["strings"]
+
             _events_tsv(
                 events=events_array,
                 durations=event_dur,
@@ -2395,6 +2469,11 @@ def write_raw_bids(
                 if extra_columns_descriptions is None
                 else dict(extra_columns_descriptions)
             )
+            if write_hed_as_column:
+                events_extra_columns["HED"] = (
+                    "Hierarchical Event Descriptor (HED) tags for this event."
+                )
+
             for column in extras_columns:
                 events_extra_columns.setdefault(
                     column,
@@ -2405,6 +2484,7 @@ def write_raw_bids(
                 fname=events_json_path.fpath,
                 extra_columns=events_extra_columns,
                 has_trial_type=has_trial_type,
+                hed_by_trial_type=hed["sidecar_map"] if hed else None,
                 overwrite=overwrite,
             )
         # Kepp events_array around for BrainVision writing below.
@@ -2414,7 +2494,12 @@ def write_raw_bids(
     # already exist. Always set overwrite to False here. If users
     # want to edit their dataset_description, they can directly call
     # this function.
-    make_dataset_description(path=bids_path.root, name="[Unspecified]", overwrite=False)
+    make_dataset_description(
+        path=bids_path.root,
+        name="[Unspecified]",
+        hed_version=hed["version"] if hed else None,
+        overwrite=False,
+    )
 
     _sidecar_json(
         raw,
@@ -2455,24 +2540,11 @@ def write_raw_bids(
     if not convert:
         logger.info(f"Copying data files to {bids_path.fpath.name}")
 
+    write_format = format
+
     # If users desire a certain format, will handle auto-conversion
     if format != "auto":
-        if format == "BrainVision" and bids_path.datatype in ["ieeg", "eeg"]:
-            convert = True
-            bids_path.update(extension=".vhdr")
-        elif format == "EDF" and bids_path.datatype in ["ieeg", "eeg", "emg"]:
-            convert = True
-            bids_path.update(extension=".edf")
-        elif format == "BDF" and bids_path.datatype in ["emg"]:
-            convert = True
-            bids_path.update(extension=".bdf")
-        elif format == "EEGLAB" and bids_path.datatype in ["ieeg", "eeg"]:
-            convert = True
-            bids_path.update(extension=".set")
-        elif format == "FIF" and bids_path.datatype == "meg":
-            convert = True
-            bids_path.update(extension=".fif")
-        elif all(format not in values for values in CONVERT_FORMATS.values()):
+        if format not in FORMAT_EXTENSIONS:
             raise ValueError(
                 f'The input "format" {format} is not an '
                 f"accepted input format for `write_raw_bids`. "
@@ -2486,12 +2558,26 @@ def write_raw_bids(
                 f"Please use one of {CONVERT_FORMATS[datatype]} "
                 f"for {datatype} datatype."
             )
+        else:
+            convert = True
+            bids_path.update(extension=FORMAT_EXTENSIONS[format])
+
+    if convert and write_format == "auto":
+        # Resolve the actual export format before writing sidecars so metadata
+        # reflects the file format that will be written below.
+        if bids_path.datatype == "meg":
+            write_format = "FIF"
+        elif bids_path.datatype == "emg":
+            write_format = "BDF"
+        else:
+            write_format = "BrainVision"
+        bids_path.update(extension=FORMAT_EXTENSIONS[write_format])
 
     # this can't happen until after value of `convert` has been determined
     _channels_tsv(
         raw,
         channels_path.fpath,
-        convert_fmt=format if convert else None,
+        convert_fmt=write_format if convert else None,
         overwrite=overwrite,
     )
 
@@ -2525,7 +2611,7 @@ def write_raw_bids(
 
     # File saving branching logic
     if convert:
-        if bids_path.datatype == "meg":
+        if write_format == "FIF":
             _write_raw_fif(
                 raw,
                 (
@@ -2534,23 +2620,17 @@ def write_raw_bids(
                     else bids_path.fpath
                 ),
             )
-        elif bids_path.datatype in ["emg"] and format == "BDF":
-            bids_path.update(extension=".bdf")
-            _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ["eeg", "emg", "ieeg"] and format == "EDF":
-            warn("Converting data files to EDF format")
-            bids_path.update(extension=".edf")
-            _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ["eeg", "ieeg"] and format == "EEGLAB":
-            warn("Converting data files to EEGLAB format")
+        elif write_format in ("BDF", "EDF"):
+            logger.info(f"Converting data files to {write_format} format")
+            _write_raw_edf_bdf(
+                raw, bids_path.fpath, physical_range=physical_range, overwrite=overwrite
+            )
+        elif write_format == "EEGLAB":
+            logger.info("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ["emg"]:
-            bids_path.update(extension=".bdf")
-            warn("Converting data files to BDF format")
-            _write_raw_edf_bdf(raw, bids_path.fpath, overwrite=overwrite)
-        else:
-            warn("Converting data files to BrainVision format")
-            bids_path.update(suffix=bids_path.datatype, extension=".vhdr")
+        else:  # BrainVision
+            logger.info("Converting data files to BrainVision format")
+            bids_path.update(suffix=bids_path.datatype)
             # XXX Should we write durations here too?
             _write_raw_brainvision(
                 raw, bids_path.fpath, events=events_array, overwrite=overwrite
@@ -2782,7 +2862,7 @@ def write_anat(
     landmarks : mne.channels.DigMontage | path-like | dict | None
         The montage or path to a montage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
-        from the head model using `mne coreg` GUI, or they can be determined
+        from the head model using :ref:`mne:mne coreg` GUI, or they can be determined
         from the MRI using ``freeview``.  If a dictionary is passed, then the
         values must be instances of :class:`~mne.channels.DigMontage` or
         path-like objects pointing to a :class:`~mne.channels.DigMontage`
@@ -2798,18 +2878,18 @@ def write_anat(
         suffix exist, will use the first ones in the ``landmarks`` dictionary.
         If dict, accepts the following keys:
 
-        - `inset`: how far back in voxels to start defacing
+        - ``inset``: how far back in voxels to start defacing
           relative to the nasion (default 5)
 
-        - `theta`: is the angle of the defacing shear in degrees relative
+        - ``theta``: is the angle of the defacing shear in degrees relative
           to vertical (default 15).
 
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
         If overwrite is True, any existing files with the same BIDS parameters
-        will be overwritten with the exception of the `participants.tsv` and
-        `scans.tsv` files. For these files, parts of pre-existing data that
+        will be overwritten with the exception of the ``participants.tsv`` and
+        ``scans.tsv`` files. For these files, parts of pre-existing data that
         match the current data will be replaced.
         If overwrite is False, no existing data will be overwritten or
         replaced.
@@ -2874,7 +2954,7 @@ def write_anat(
                 "Wanted to write a file but it already exists and "
                 f'`overwrite` is set to False. File: "{fname}"'
             )
-        _write_json(fname, img_json, overwrite)
+        _write_json(fname, img_json, overwrite=overwrite)
 
         if deface:
             landmarks_deface = landmarks.get("deface")
@@ -3099,9 +3179,6 @@ def write_meg_calibration(calibration, bids_path, *, verbose=None):
             "filename."
         )
 
-    if not isinstance(calibration, dict):
-        calibration = mne.preprocessing.read_fine_calibration(calibration)
-
     out_path = BIDSPath(
         subject=bids_path.subject,
         session=bids_path.session,
@@ -3114,9 +3191,12 @@ def write_meg_calibration(calibration, bids_path, *, verbose=None):
 
     logger.info(f"Writing fine-calibration file to {out_path}")
     out_path.mkdir()
-    mne.preprocessing.write_fine_calibration(
-        fname=str(out_path), calibration=calibration
-    )
+    if not isinstance(calibration, dict):
+        shutil.copyfile(src=calibration, dst=str(out_path))
+    else:
+        mne.preprocessing.write_fine_calibration(
+            fname=str(out_path), calibration=calibration
+        )
 
 
 @verbose
@@ -3180,7 +3260,7 @@ def _get_daysback(
         The BIDSPath instances to consider. Will be filtered down in this
         function to reduce run time (only one file run per session).
     rng
-        The RNG to use for selecting a `daysback` from the valid range.
+        The RNG to use for selecting a ``daysback`` from the valid range.
     show_progress_thresh
         After narrowing down the files to query for their measurement date,
         show a progress bar if >= this number of files remain.
