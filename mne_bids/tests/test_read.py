@@ -2093,6 +2093,61 @@ def test_channel_mismatch_invalid_option(tmp_path):
         _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
 
 
+def test_channel_mismatch_warn(tmp_path):
+    """``on_ch_mismatch='warn'`` warns and leaves raw channel names intact."""
+    raw, ch_order_snirf, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(
+        tmp_path
+    )
+    with pytest.warns(RuntimeWarning, match="Channel mismatch"):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="warn"
+        )
+    assert out.ch_names == ch_order_snirf
+
+
+@pytest.mark.filterwarnings("ignore:.*loadtxt:UserWarning")
+@pytest.mark.parametrize(
+    "content,match",
+    [
+        ("", "TSV file is empty"),
+        ("channel_name\ttype\nA\tEEG\nB\tEEG\n", "has no 'name' column"),
+    ],
+    ids=["empty", "wrong-header"],
+)
+def test_channels_tsv_empty_or_missing_name(tmp_path, content, match):
+    """Empty channels.tsv or one without a 'name' column is skipped, not a crash."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    channels_fname.write_text(content, encoding="utf-8")
+    with pytest.warns(RuntimeWarning, match=match):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="rename"
+        )
+    assert out.ch_names == raw.ch_names
+
+
+def test_channels_tsv_duplicate_names(tmp_path):
+    """Dedupe only on ``on_ch_mismatch='rename'``; raise/warn otherwise."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    n_ch = len(raw.ch_names)
+    rows = "\n".join(["EEG\tNIRSCWAMPLITUDE"] * n_ch)
+    channels_fname.write_text(f"name\ttype\n{rows}\n", encoding="utf-8")
+
+    with pytest.warns(RuntimeWarning, match="Channel names are not unique"):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="rename"
+        )
+    assert out.ch_names == [f"EEG-{i}" for i in range(n_ch)]
+
+    with pytest.raises(RuntimeError, match="Duplicate channel names"):
+        _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="raise")
+
+    with pytest.warns(RuntimeWarning, match="Duplicate channel names"):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="warn"
+        )
+    assert out.ch_names == raw.ch_names
+
+
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_channel_units_from_tsv(tmp_path):
     """Test that channel units are correctly read from channels.tsv."""
