@@ -1034,6 +1034,7 @@ def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
         raise ValueError(
             "on_ch_mismatch must be one of {'reorder','raise','rename','warn'}"
         )
+    return False
 
 
 def _dedupe_channel_names(ch_names):
@@ -1059,6 +1060,66 @@ def _dedupe_channel_names(ch_names):
             ch_names[ch_idx] = candidate
 
 
+def _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname):
+    """Bring ``raw.ch_names`` and ``channels_dict['name']`` into agreement.
+
+    Handles, in order: duplicate names in channels.tsv, dropping a synthesized
+    ``STI 014`` not present in the sidecar, length mismatches between sidecar
+    and raw, and name-order mismatches. May mutate ``raw`` and/or
+    ``channels_dict['name']`` in place.
+
+    Returns ``True`` when the caller should bail out and skip applying
+    channels.tsv-derived metadata (types, units, bads).
+    """
+    ch_names_tsv = channels_dict["name"]
+
+    if len(ch_names_tsv) != len(set(ch_names_tsv)):
+        if on_ch_mismatch == "rename":
+            _dedupe_channel_names(ch_names_tsv)
+        elif on_ch_mismatch == "warn":
+            warn(
+                f"Duplicate channel names in {channels_fname}; skipping "
+                "channels.tsv-derived channel metadata. Pass "
+                "on_ch_mismatch='rename' to deduplicate with -0/-1/... suffixes."
+            )
+            return True
+        else:
+            raise RuntimeError(
+                f"Duplicate channel names found in {channels_fname}. "
+                "Pass on_ch_mismatch='rename' to deduplicate, or "
+                "on_ch_mismatch='warn' to skip channels.tsv metadata."
+            )
+
+    # Special handling for (synthesized) stimulus channel
+    synthesized_stim_ch_name = "STI 014"
+    if (
+        synthesized_stim_ch_name in raw.ch_names
+        and synthesized_stim_ch_name not in ch_names_tsv
+    ):
+        logger.info(
+            f'The stimulus channel "{synthesized_stim_ch_name}" is present in '
+            f"the raw data, but not included in channels.tsv. Removing the "
+            f"channel."
+        )
+        raw.drop_channels([synthesized_stim_ch_name])
+
+    if len(ch_names_tsv) != len(raw.ch_names):
+        warn(
+            f"The number of channels in the channels.tsv sidecar file "
+            f"({len(ch_names_tsv)}) does not match the number of channels "
+            f"in the raw data file ({len(raw.ch_names)}). Will not try to "
+            f"set channel names."
+        )
+        return False
+
+    if list(raw.ch_names) != ch_names_tsv:
+        return _handle_channel_mismatch(
+            raw, on_ch_mismatch, ch_names_tsv, channels_fname
+        )
+
+    return False
+
+
 def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     """Read associated channels.tsv and populate raw.
 
@@ -1070,25 +1131,12 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
         if len(channels_dict):
             warn(f"{channels_fname} has no 'name' column; skipping channel metadata.")
         return raw
-    ch_names_tsv = channels_dict["name"]
-    if len(ch_names_tsv) != len(set(ch_names_tsv)):
-        if on_ch_mismatch == "rename":
-            _dedupe_channel_names(ch_names_tsv)
-        elif on_ch_mismatch == "warn":
-            warn(
-                f"Duplicate channel names in {channels_fname}; skipping "
-                "channels.tsv-derived channel metadata. Pass "
-                "on_ch_mismatch='rename' to deduplicate with -0/-1/... suffixes."
-            )
-            return raw
-        else:
-            raise RuntimeError(
-                f"Duplicate channel names found in {channels_fname}. "
-                "Pass on_ch_mismatch='rename' to deduplicate, or "
-                "on_ch_mismatch='warn' to skip channels.tsv metadata."
-            )
 
-    # Now we can do some work.
+    if _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname):
+        return raw
+
+    ch_names_tsv = channels_dict["name"]
+
     # The "type" column is mandatory in BIDS. We can use it to set channel
     # types in the raw data using a mapping between channel types
     channel_type_bids_mne_map = dict()
@@ -1139,34 +1187,6 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
         else:
             # We found a mapping, so use it
             channel_type_bids_mne_map[ch_name] = updated_ch_type
-
-    # Special handling for (synthesized) stimulus channel
-    synthesized_stim_ch_name = "STI 014"
-    if (
-        synthesized_stim_ch_name in raw.ch_names
-        and synthesized_stim_ch_name not in ch_names_tsv
-    ):
-        logger.info(
-            f'The stimulus channel "{synthesized_stim_ch_name}" is present in '
-            f"the raw data, but not included in channels.tsv. Removing the "
-            f"channel."
-        )
-        raw.drop_channels([synthesized_stim_ch_name])
-
-    # Rename channels in loaded Raw to match those read from the BIDS sidecar
-    if len(ch_names_tsv) != len(raw.ch_names):
-        warn(
-            f"The number of channels in the channels.tsv sidecar file "
-            f"({len(ch_names_tsv)}) does not match the number of channels "
-            f"in the raw data file ({len(raw.ch_names)}). Will not try to "
-            f"set channel names."
-        )
-    else:
-        orig_names = list(raw.ch_names)
-        if orig_names != ch_names_tsv and _handle_channel_mismatch(
-            raw, on_ch_mismatch, ch_names_tsv, channels_fname
-        ):
-            return raw
 
     # Set the channel types in the raw data according to channels.tsv
     channel_type_bids_mne_map_available_channels = {
