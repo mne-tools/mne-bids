@@ -414,6 +414,16 @@ def test_read_participants_data(tmp_path):
 
     assert raw.info["subject_info"] == dict()
 
+    # test reading if subject row is missing from participants.tsv
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv["participant_id"][0] = "sub-doesnotexist"
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    with pytest.warns(RuntimeWarning, match="not listed in participants.tsv"):
+        raw = read_raw_bids(bids_path=bids_path)
+    assert raw.info["subject_info"] == dict()
+
 
 @pytest.mark.parametrize(
     ("hand_bids", "hand_mne", "sex_bids", "sex_mne"),
@@ -1561,13 +1571,13 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     for digpoint in raw_test.info["dig"]:
         assert digpoint["coord_frame"] == coord_frame_int
 
-    # if we delete the coordsystem.json file, an error will be raised
+    # if we delete the coordsystem.json file, a warning is emitted
     os.remove(coordsystem_fname)
-    with pytest.raises(
-        RuntimeError,
+    with pytest.warns(
+        RuntimeWarning,
         match="coordsystem.json is REQUIRED whenever electrodes.tsv is present",
     ):
-        raw = read_raw_bids(bids_path=bids_fname, verbose=False)
+        read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # test error message if electrodes is not a subset of Raw
     bids_path.update(root=tmp_path)
@@ -2081,6 +2091,61 @@ def test_channel_mismatch_invalid_option(tmp_path):
     raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
     with pytest.raises(ValueError, match="on_ch_mismatch must be one of"):
         _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
+
+
+def test_channel_mismatch_warn(tmp_path):
+    """``on_ch_mismatch='warn'`` warns and leaves raw channel names intact."""
+    raw, ch_order_snirf, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(
+        tmp_path
+    )
+    with pytest.warns(RuntimeWarning, match="Channel mismatch"):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="warn"
+        )
+    assert out.ch_names == ch_order_snirf
+
+
+@pytest.mark.filterwarnings("ignore:.*loadtxt:UserWarning")
+@pytest.mark.parametrize(
+    "content,match",
+    [
+        ("", "TSV file is empty"),
+        ("channel_name\ttype\nA\tEEG\nB\tEEG\n", "has no 'name' column"),
+    ],
+    ids=["empty", "wrong-header"],
+)
+def test_channels_tsv_empty_or_missing_name(tmp_path, content, match):
+    """Empty channels.tsv or one without a 'name' column is skipped, not a crash."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    channels_fname.write_text(content, encoding="utf-8")
+    with pytest.warns(RuntimeWarning, match=match):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="rename"
+        )
+    assert out.ch_names == raw.ch_names
+
+
+def test_channels_tsv_duplicate_names(tmp_path):
+    """Dedupe only on ``on_ch_mismatch='rename'``; raise/warn otherwise."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    n_ch = len(raw.ch_names)
+    rows = "\n".join(["EEG\tNIRSCWAMPLITUDE"] * n_ch)
+    channels_fname.write_text(f"name\ttype\n{rows}\n", encoding="utf-8")
+
+    with pytest.warns(RuntimeWarning, match="Channel names are not unique"):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="rename"
+        )
+    assert out.ch_names == [f"EEG-{i}" for i in range(n_ch)]
+
+    with pytest.raises(RuntimeError, match="Duplicate channel names"):
+        _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="raise")
+
+    with pytest.warns(RuntimeWarning, match="Duplicate channel names"):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="warn"
+        )
+    assert out.ch_names == raw.ch_names
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
