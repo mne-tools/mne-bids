@@ -1541,6 +1541,7 @@ def read_epochs_bids(
     return _attach_sidecars(epochs, bids_path, on_ch_mismatch=on_ch_mismatch)
 
 
+@verbose
 def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
     """Slice a continuous file flagged ``RecordingType="epoched"`` into Epochs."""
     sidecar_fname = _find_matching_sidecar(
