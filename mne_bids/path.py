@@ -31,7 +31,7 @@ from mne_bids.config import (
     ENTITY_VALUE_TYPE,
     reader,
 )
-from mne_bids.tsv_handler import _drop, _from_tsv, _to_tsv
+from mne_bids.tsv_handler import _detect_file_encoding, _drop, _from_tsv, _to_tsv
 from mne_bids.utils import (
     _check_empty_room_basename,
     _check_key_val,
@@ -1493,7 +1493,8 @@ def _print_lines_with_entry(file, entry, folder, is_tsv, line_numbers, outfile):
         prints to the console, else a string is printed to.
     """
     entry_lines = list()
-    with _open_lock(file, encoding="utf-8-sig") as fid:
+    encoding = _detect_file_encoding(file)
+    with _open_lock(file, encoding=encoding) as fid:
         if is_tsv:  # format tsv files nicely
             header = _truncate_tsv_line(fid.readline())
             if line_numbers:
