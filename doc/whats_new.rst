@@ -11,24 +11,31 @@ What's new?
 
 .. _changes_0_19:
 
-Version 0.19 (unreleased)
+Version 0.19 (2026-05-22)
 -------------------------
 
 👩🏽‍💻 Authors
-~~~~~~~~~~~~~~~
+~~~~~~~~~~
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* None yet
+* `Thomas Binns`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* `Bruno Aristimunha`_
-* `Pierre Guetschel`_
 * `Alexandre Gramfort`_
-* `Scott Huberty`_
+* `Aman Jaiswal`_
+* `Bruno Aristimunha`_
+* `Clemens Brunner`_
+* `Daniel McCloy`_
+* `Eric Larson`_
+* `Flore Boscher`_
 * `Marijn van Vliet`_
-
+* `Maximilien Chaumon `_
+* `Pierre Guetschel`_
+* `Scott Huberty`_
+* `Stefan Appelhoff`_
+* `Teon Brooks`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
