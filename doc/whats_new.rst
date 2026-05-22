@@ -15,7 +15,7 @@ Version 0.19 (2026-05-22)
 -------------------------
 
 👩🏽‍💻 Authors
-~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
