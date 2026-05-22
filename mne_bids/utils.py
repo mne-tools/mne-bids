@@ -11,7 +11,7 @@ from pathlib import Path
 
 import numpy as np
 from mne import pick_types
-from mne.channels import make_standard_montage
+from mne.channels import get_builtin_montages, make_standard_montage
 from mne.io.kit.kit import get_kit_info
 from mne.utils import logger, verbose
 from mne.utils import warn as _warn
@@ -318,7 +318,12 @@ def _infer_eeg_placement_scheme(raw):
     sel = pick_types(raw.info, meg=False, eeg=True)
     ch_names = [raw.ch_names[i] for i in sel]
     channel_names = [ch.lower() for ch in ch_names]
-    montage1005 = make_standard_montage("colin27_1005")
+
+    # TODO: Remove this comprehension once minimum supported MNE is 1.14
+    montage_name = (
+        "colin27_1005" if "colin27_1005" in get_builtin_montages() else "standard_1005"
+    )
+    montage1005 = make_standard_montage(montage_name)
     montage1005_names = [ch.lower() for ch in montage1005.ch_names]
 
     if set(channel_names).issubset(set(montage1005_names)):
