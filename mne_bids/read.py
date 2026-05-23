@@ -494,7 +494,7 @@ def _handle_info_reading(sidecar_fname, raw):
 
     Handle PowerLineFrequency of recording.
     """
-    with _open_lock(sidecar_fname, encoding="utf-8-sig") as fin:
+    with _open_lock(sidecar_fname, encoding="utf-8") as fin:
         sidecar_json = json.load(fin)
 
     # read in the sidecar JSON's and raw object's line frequency
@@ -811,7 +811,7 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
         return None
 
     try:
-        with open(events_json_fname, encoding="utf-8-sig") as f:
+        with open(events_json_fname, encoding="utf-8") as f:
             sidecar = json.load(f)
     except FileNotFoundError:
         return None
@@ -866,7 +866,7 @@ def _read_hed_version(bids_root):
         return None
     desc_path = Path(bids_root) / "dataset_description.json"
     try:
-        with open(desc_path, encoding="utf-8-sig") as f:
+        with open(desc_path, encoding="utf-8") as f:
             return json.load(f).get("HEDVersion")
     except FileNotFoundError:
         return None

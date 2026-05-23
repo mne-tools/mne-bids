@@ -773,7 +773,7 @@ def test_fif(_bids_validate, tmp_path):
 
     # add some readme text
     readme = op.join(bids_root, "README")
-    with open(readme, "w", encoding="utf-8-sig") as fid:
+    with open(readme, "w", encoding="utf-8") as fid:
         fid.write("Welcome to my dataset\n")
 
     bids_path2 = bids_path_meg.copy().update(subject=subject_id2)
@@ -800,7 +800,7 @@ def test_fif(_bids_validate, tmp_path):
         )
 
     # assert README has references in it
-    with open(readme, encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8") as fid:
         text = fid.read()
         assert "Welcome to my dataset\n" in text
         assert REFERENCES["mne-bids"] in text
@@ -811,7 +811,7 @@ def test_fif(_bids_validate, tmp_path):
     # now force the overwrite
     write_raw_bids(raw, bids_path2, events=events, event_id=event_id, overwrite=True)
 
-    with open(readme, encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8") as fid:
         text = fid.read()
         assert "Welcome to my dataset\n" in text
         assert REFERENCES["mne-bids"] in text
@@ -1670,7 +1670,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # assert README has references in it
     readme = op.join(bids_root, "README")
-    with open(readme, encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8") as fid:
         text = fid.read()
         assert REFERENCES["ieeg"] in text
         assert REFERENCES["meg"] not in text
@@ -1875,7 +1875,7 @@ def test_bdf(_bids_validate, tmp_path):
 
     # assert README has references in it
     readme = op.join(tmp_path, "README")
-    with open(readme, encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8") as fid:
         text = fid.read()
         assert REFERENCES["eeg"] in text
         assert REFERENCES["meg"] not in text
@@ -3378,18 +3378,18 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     write_raw_bids(raw, bids_path=bids_path, verbose=False)
     _bids_validate(bids_root)
 
-    # TSV files should be written with a BOM
+    # TSV files should NOT be written with a BOM
     for tsv_file in bids_path.root.rglob("*.tsv"):
         with open(tsv_file, encoding="utf-8") as f:
             x = f.read()
-        assert x[0] == codecs.BOM_UTF8.decode("utf-8")
+        assert x[0] != codecs.BOM_UTF8.decode("utf-8")
 
-    # Readme should be written with a BOM
+    # Readme should NOT be written with a BOM
     with open(bids_path.root / "README", encoding="utf-8") as f:
         x = f.read()
-    assert x[0] == codecs.BOM_UTF8.decode("utf-8")
+    assert x[0] != codecs.BOM_UTF8.decode("utf-8")
 
-    # JSON files should be written without a BOM
+    # JSON files should NOT be written with a BOM
     for json_file in bids_path.root.rglob("*.json"):
         with open(json_file, encoding="utf-8") as f:
             x = f.read()
@@ -3399,7 +3399,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     events_tsv_fname = (
         bids_path.copy().update(suffix="events", extension=".tsv").match()[0]
     )
-    with open(str(events_tsv_fname), encoding="utf-8-sig") as f:
+    with open(str(events_tsv_fname), encoding="utf-8") as f:
         x = f.read()
     assert "döner" in x
     assert "bøfsandwich" in x
