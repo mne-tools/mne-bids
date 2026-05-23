@@ -1611,7 +1611,7 @@ def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
     sidecar_fname = _find_matching_sidecar(
         bids_path, suffix=bids_path.datatype, extension=".json"
     )
-    with _open_lock(sidecar_fname, encoding="utf-8-sig") as fp:
+    with open(sidecar_fname, encoding="utf-8") as fp:
         try:
             duration = float(json.load(fp)["EpochLength"])
         except KeyError:
