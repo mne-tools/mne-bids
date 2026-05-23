@@ -81,7 +81,13 @@ from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
 from mne_bids.pick import coil_type
 from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.sidecar_updates import update_sidecar_json
-from mne_bids.tsv_handler import _combine_rows, _contains_row, _drop, _from_tsv
+from mne_bids.tsv_handler import (
+    _combine_rows,
+    _contains_row,
+    _detect_file_encoding,
+    _drop,
+    _from_tsv,
+)
 from mne_bids.utils import (
     _age_on_date,
     _check_anonymize,
@@ -608,7 +614,8 @@ def _readme(datatype, fname):
     # observe a partially written file.
     with _open_lock(fname):
         if fname.is_file():
-            text = fname.read_text("utf-8-sig")
+            encoding = _detect_file_encoding(fname)
+            text = fname.read_text(encoding)
         else:
             text = ""
         mne_bids_ref = REFERENCES["mne-bids"] in text
@@ -1712,7 +1719,7 @@ def make_dataset_description(
         orig_cols = {}
         if op.isfile(fname):
             try:
-                with open(fname, encoding="utf-8-sig") as fin:
+                with open(fname, encoding="utf-8") as fin:
                     orig_cols = json.load(fin)
             except (json.JSONDecodeError, OSError):
                 # File is empty, corrupted, or being written to by another process

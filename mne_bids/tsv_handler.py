@@ -240,7 +240,7 @@ def _to_tsv(data, fname, *, lock=True):
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
 
-    with _open_lock(fname, "w", encoding="utf-8-sig", lock=lock) as f:
+    with _open_lock(fname, "w", encoding="utf-8", lock=lock) as f:
         f.write(output)
         f.write("\n")
 
