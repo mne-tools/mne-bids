@@ -1343,7 +1343,7 @@ def read_raw_bids(
         bids_path, suffix=datatype, extension=".json", on_error="ignore"
     )
     if sidecar_json_fname is not None:
-        with _open_lock(sidecar_json_fname, encoding="utf-8-sig") as fin:
+        with open(sidecar_json_fname, encoding="utf-8") as fin:
             recording_type = json.load(fin).get("RecordingType")
         if recording_type == "epoched" and bids_path.fpath.suffix in _EPOCHED_EXTS:
             raise RuntimeError(
