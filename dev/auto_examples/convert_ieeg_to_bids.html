@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
+    <title>Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.19.0.dev73+g415d0aa02 documentation</title>
   
   
   
@@ -27,43 +27,51 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=81d8d220" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
 
-    <script src="../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../_static/documentation_options.js?v=eb4e467a"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/convert_ieeg_to_bids';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Convert NIRS data to BIDS format" href="convert_nirs_to_bids.html" />
@@ -74,22 +82,28 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
+  <meta name="docsearch:version" content="0.19.0.dev73+g415d0aa02" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
 
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -115,7 +129,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -137,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev73+g415d0aa02 documentation</p>
   
 </a></div>
     
@@ -213,11 +227,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -250,8 +271,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -262,8 +282,7 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Discourse</span></a>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
         </li>
 </ul></div>
       
@@ -366,11 +385,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -403,8 +429,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -415,8 +440,7 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Discourse</span></a>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
         </li>
 </ul></div>
         
@@ -425,7 +449,14 @@
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
         <div class="sidebar-primary-item">
+
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
@@ -564,7 +595,7 @@ refer to the <a class="reference external" href="https://bids-specification.read
 <h2>Step 1: Download the data<a class="headerlink" href="#step-1-download-the-data" title="Link to this heading">#</a></h2>
 <p>First, we need some data to work with. We will use the
 data downloaded via MNE-Python’s <code class="docutils literal notranslate"><span class="pre">datasets</span></code> API:
-<a class="reference external" href="https://mne.tools/stable/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="(in MNE v1.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.datasets.misc.data_path()</span></code></a></p>
+<a class="reference external" href="https://mne.tools/stable/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.datasets.misc.data_path()</span></code></a></p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">misc_path</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="mne.datasets.misc.data_path" class="sphx-glr-backref-module-mne-datasets-misc sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
 
 <span class="c1"># The electrode coords data are in the tsv file format</span>
@@ -575,6 +606,185 @@ data downloaded via MNE-Python’s <code class="docutils literal notranslate"><s
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for misc...
+Dataset misc version 0.0 out of date, latest version is 0.27
+Fetching 1 file for the misc dataset ...
+
+0.00B [00:00, ?B/s]
+786kB [00:00, 6.88MB/s]
+1.57MB [00:00, 7.14MB/s]
+4.46MB [00:00, 15.6MB/s]
+7.69MB [00:00, 21.7MB/s]
+9.90MB [00:00, 20.0MB/s]
+11.9MB [00:00, 12.2MB/s]
+13.5MB [00:01, 9.53MB/s]
+14.8MB [00:01, 9.60MB/s]
+16.3MB [00:01, 10.3MB/s]
+17.8MB [00:01, 11.2MB/s]
+19.1MB [00:01, 7.95MB/s]
+20.4MB [00:01, 8.14MB/s]
+21.4MB [00:02, 7.83MB/s]
+23.1MB [00:02, 8.93MB/s]
+24.0MB [00:02, 7.26MB/s]
+25.4MB [00:02, 8.42MB/s]
+26.3MB [00:02, 6.25MB/s]
+27.8MB [00:02, 6.88MB/s]
+28.6MB [00:03, 5.83MB/s]
+30.1MB [00:03, 6.60MB/s]
+30.9MB [00:03, 6.28MB/s]
+32.2MB [00:03, 6.88MB/s]
+33.0MB [00:03, 6.53MB/s]
+34.7MB [00:03, 8.85MB/s]
+35.7MB [00:04, 4.54MB/s]
+37.5MB [00:04, 6.34MB/s]
+39.9MB [00:04, 9.24MB/s]
+42.0MB [00:04, 11.6MB/s]
+44.6MB [00:04, 14.5MB/s]
+47.5MB [00:04, 17.9MB/s]
+50.1MB [00:05, 19.8MB/s]
+52.4MB [00:05, 20.6MB/s]
+54.8MB [00:05, 21.0MB/s]
+57.7MB [00:05, 22.9MB/s]
+60.6MB [00:05, 24.3MB/s]
+63.7MB [00:05, 25.8MB/s]
+66.6MB [00:05, 26.5MB/s]
+69.5MB [00:05, 27.3MB/s]
+72.4MB [00:05, 26.9MB/s]
+75.1MB [00:06, 25.7MB/s]
+77.7MB [00:06, 14.9MB/s]
+79.7MB [00:07, 7.77MB/s]
+81.7MB [00:07, 9.15MB/s]
+84.1MB [00:07, 11.3MB/s]
+86.5MB [00:07, 13.3MB/s]
+88.9MB [00:07, 15.3MB/s]
+91.0MB [00:07, 9.19MB/s]
+93.3MB [00:08, 11.3MB/s]
+95.8MB [00:08, 13.7MB/s]
+97.9MB [00:08, 13.9MB/s]
+101MB [00:08, 18.3MB/s]
+105MB [00:08, 21.3MB/s]
+107MB [00:08, 13.2MB/s]
+109MB [00:09, 7.98MB/s]
+111MB [00:09, 6.35MB/s]
+112MB [00:10, 6.22MB/s]
+115MB [00:10, 9.40MB/s]
+118MB [00:10, 11.9MB/s]
+120MB [00:10, 12.9MB/s]
+122MB [00:10, 13.2MB/s]
+123MB [00:10, 9.18MB/s]
+125MB [00:11, 8.39MB/s]
+126MB [00:11, 8.82MB/s]
+127MB [00:11, 7.47MB/s]
+128MB [00:11, 6.88MB/s]
+129MB [00:11, 6.73MB/s]
+131MB [00:11, 8.54MB/s]
+132MB [00:11, 8.85MB/s]
+133MB [00:12, 9.73MB/s]
+134MB [00:12, 9.97MB/s]
+136MB [00:12, 7.77MB/s]
+136MB [00:12, 6.89MB/s]
+137MB [00:12, 6.32MB/s]
+139MB [00:12, 7.63MB/s]
+140MB [00:13, 6.79MB/s]
+140MB [00:13, 6.63MB/s]
+141MB [00:13, 5.65MB/s]
+142MB [00:13, 6.88MB/s]
+144MB [00:13, 9.32MB/s]
+145MB [00:13, 8.14MB/s]
+146MB [00:14, 6.38MB/s]
+147MB [00:14, 6.20MB/s]
+148MB [00:14, 8.00MB/s]
+149MB [00:14, 8.00MB/s]
+150MB [00:14, 7.03MB/s]
+151MB [00:14, 6.16MB/s]
+152MB [00:14, 5.99MB/s]
+153MB [00:14, 7.54MB/s]
+154MB [00:15, 7.17MB/s]
+155MB [00:15, 6.07MB/s]
+155MB [00:15, 6.02MB/s]
+156MB [00:15, 5.83MB/s]
+157MB [00:15, 5.69MB/s]
+158MB [00:15, 7.47MB/s]
+159MB [00:15, 7.31MB/s]
+160MB [00:16, 6.20MB/s]
+160MB [00:16, 5.21MB/s]
+161MB [00:16, 5.67MB/s]
+163MB [00:16, 7.40MB/s]
+163MB [00:16, 7.30MB/s]
+164MB [00:16, 6.12MB/s]
+165MB [00:16, 5.23MB/s]
+166MB [00:17, 6.80MB/s]
+168MB [00:17, 8.73MB/s]
+169MB [00:17, 7.59MB/s]
+170MB [00:17, 6.66MB/s]
+170MB [00:18, 3.76MB/s]
+173MB [00:18, 7.46MB/s]
+176MB [00:18, 11.3MB/s]
+179MB [00:18, 14.5MB/s]
+182MB [00:18, 18.0MB/s]
+185MB [00:18, 20.4MB/s]
+188MB [00:18, 21.6MB/s]
+191MB [00:18, 23.9MB/s]
+194MB [00:18, 22.0MB/s]
+197MB [00:18, 25.7MB/s]
+201MB [00:19, 27.2MB/s]
+204MB [00:19, 29.5MB/s]
+207MB [00:19, 29.2MB/s]
+210MB [00:19, 29.3MB/s]
+213MB [00:19, 29.5MB/s]
+217MB [00:19, 30.0MB/s]
+220MB [00:19, 29.5MB/s]
+223MB [00:19, 29.5MB/s]
+226MB [00:19, 29.5MB/s]
+229MB [00:20, 29.8MB/s]
+232MB [00:20, 29.2MB/s]
+234MB [00:20, 17.2MB/s]
+237MB [00:20, 17.6MB/s]
+239MB [00:20, 18.1MB/s]
+241MB [00:20, 17.9MB/s]
+243MB [00:20, 18.1MB/s]
+245MB [00:21, 18.3MB/s]
+247MB [00:21, 18.3MB/s]
+249MB [00:21, 19.0MB/s]
+251MB [00:21, 19.3MB/s]
+253MB [00:21, 19.3MB/s]
+255MB [00:21, 8.75MB/s]
+257MB [00:22, 8.78MB/s]
+258MB [00:22, 8.74MB/s]
+259MB [00:22, 9.05MB/s]
+261MB [00:22, 9.22MB/s]
+262MB [00:22, 8.76MB/s]
+263MB [00:22, 8.77MB/s]
+264MB [00:22, 8.91MB/s]
+265MB [00:23, 8.89MB/s]
+266MB [00:23, 8.97MB/s]
+267MB [00:23, 8.94MB/s]
+268MB [00:23, 9.06MB/s]
+269MB [00:23, 9.01MB/s]
+270MB [00:23, 8.99MB/s]
+271MB [00:23, 8.93MB/s]
+272MB [00:23, 8.90MB/s]
+273MB [00:23, 8.75MB/s]
+274MB [00:24, 9.06MB/s]
+275MB [00:24, 8.92MB/s]
+276MB [00:24, 8.97MB/s]
+277MB [00:24, 8.66MB/s]
+278MB [00:24, 8.24MB/s]
+279MB [00:24, 8.51MB/s]
+280MB [00:24, 8.59MB/s]
+281MB [00:24, 8.78MB/s]
+282MB [00:25, 8.83MB/s]
+283MB [00:25, 8.89MB/s]
+284MB [00:25, 9.10MB/s]
+285MB [00:25, 9.15MB/s]
+287MB [00:25, 9.12MB/s]
+288MB [00:25, 9.01MB/s]
+289MB [00:25, 9.00MB/s]
+290MB [00:25, 9.10MB/s]
+291MB [00:25, 8.77MB/s]
+292MB [00:26, 8.57MB/s]
+0.00B [00:00, ?B/s]
+0.00B [00:00, ?B/s]
+Download complete in 31s (278.8 MB)
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
@@ -623,7 +833,7 @@ the montage channel locations set to the coordinate frame ‘unknown’.</p>
 </section>
 <section id="step-2-formatting-as-bids">
 <h2>Step 2: Formatting as BIDS<a class="headerlink" href="#step-2-formatting-as-bids" title="Link to this heading">#</a></h2>
-<p>Now, let us format the <em class="xref py py-obj">Raw</em> object into BIDS.</p>
+<p>Now, let us format the <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a> object into BIDS.</p>
 <p>With this step, we have everything to start a new BIDS directory using
 our data. To do that, we can use <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>
 Generally, <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> tries to extract as much
@@ -656,7 +866,7 @@ which are however optional. The required inputs are:</p>
 Parameters
 ----------
 raw : mne.io.Raw
-    The raw data. It must be an instance of `mne.io.Raw` that is not
+    The raw data. It must be an instance of :class:`mne:mne.io.Raw` that is not
     already loaded from disk unless ``allow_preload`` is explicitly set
     to ``True``. See warning for the ``allow_preload`` parameter.
 bids_path : BIDSPath
@@ -716,7 +926,6 @@ events : path-like | np.ndarray | None
        Either, descriptions of all event codes must be specified via the
        ``event_id`` parameter or each event must be accompanied by a
        row in ``event_metadata``.
-
 event_id : dict | None
     Descriptions or names describing the event codes, if you passed
     ``events``. The descriptions will be written to the ``trial_type``
@@ -732,7 +941,7 @@ extra_columns_descriptions : dict | None
     A dictionary that maps column names of the ``event_metadata`` to descriptions.
     Each column of ``event_metadata`` must have a corresponding entry in this.
 anonymize : dict | None
-    If `None` (default), no anonymization is performed.
+    If ``None`` (default), no anonymization is performed.
     If a dictionary, data will be anonymized depending on the dictionary
     keys: ``daysback`` is a required key, ``keep_his`` is optional.
 
@@ -753,15 +962,23 @@ anonymize : dict | None
         Whether to store the name of the ``raw`` input file in the
         ``source`` column of ``scans.tsv``. By default, this information
         is not stored.
-
 format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;BDF&#39; | &#39;EDF&#39; | &#39;FIF&#39; | &#39;EEGLAB&#39;
     Controls the file format of the data after BIDS conversion. If
     ``&#39;auto&#39;``, MNE-BIDS will attempt to convert the input data to BIDS
     without a change of the original file format. A conversion to a
     different file format will then only take place if the original file
     format lacks some necessary features.
-    Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
-    to BDF or EDF for EMG, and to FIF for MEG data.
+    Conversion may be forced to BrainVision, BDF, EDF, or EEGLAB for EEG,
+    to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,
+    and to FIF for MEG data.
+physical_range : str | tuple
+    If ``&#39;auto&#39;`` (default), the physical range is inferred from the data,
+    taking the minimum and maximum values per channel type.
+    If ``&#39;channelwise&#39;``, the range will be defined per channel.
+    If a tuple of minimum and maximum, this manual physical range will be used.
+    Only used for exporting EDF files.
+
+    .. versionadded:: 0.19
 symlink : bool
     Instead of copying the source files, only create symbolic links to
     preserve storage space. This is only allowed when not anonymizing the
@@ -776,7 +993,6 @@ symlink : bool
     .. note::
        Symlinks are currently only supported on macOS and Linux. We will
        add support for Windows 10 at a later time.
-
 empty_room : mne.io.Raw | BIDSPath | None
     The empty-room recording to be associated with this file. This is
     only supported for MEG data.
@@ -831,7 +1047,11 @@ overwrite : bool
     and ``participants.tsv`` by a user will be retained.
     If ``False``, no existing data will be overwritten or
     replaced.
+readme : bool
+    If ``False``, leave any existing ``README`` untouched and do
+    not create one. Defaults to ``True``.
 
+    .. versionadded:: 0.19
 
 verbose : bool | str | int | None
     Control verbosity of the logging output. If ``None``, use the default
@@ -849,6 +1069,13 @@ bids_path : BIDSPath
        :class:`~mne_bids.BIDSPath` of the empty-room recording can be
        retrieved via ``bids_path.find_empty_room(use_sidecar_only=True)``.
 
+See Also
+--------
+mne.io.Raw.anonymize
+mne.find_events
+mne.Annotations
+mne.events_from_annotations
+
 Notes
 -----
 You should ensure that ``raw.info[&#39;subject_info&#39;]`` and
@@ -856,7 +1083,7 @@ You should ensure that ``raw.info[&#39;subject_info&#39;]`` and
 for the correct computation of each participant&#39;s age when creating
 ``*_participants.tsv``.
 
-This function will convert existing `mne.Annotations` from
+This function will convert existing :class:`mne:mne.Annotations` from
 ``raw.annotations`` to events. Additionally, any events supplied via
 ``events`` will be written too. To avoid writing of annotations,
 remove them from the raw file via ``raw.set_annotations(None)`` before
@@ -887,13 +1114,6 @@ call :func:`mne_bids.make_dataset_description` directly.
 
 When writing EDF or BDF files, all file extensions are forced to be
 lower-case, in compliance with the BIDS specification.
-
-See Also
---------
-mne.io.Raw.anonymize
-mne.find_events
-mne.Annotations
-mne.events_from_annotations
 </pre></div>
 </div>
 <p>Let us initialize some of the necessary data for the subject.</p>
@@ -953,13 +1173,13 @@ step is required.</p>
 <a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">landmarks</span></a> <span class="o">=</span> <a href="../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anat_landmarks</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">T1_fname</span></a><span class="p">,</span> <a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <a href="https://mne.tools/stable/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">,</span> <span class="s2">&quot;sample_seeg&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">)</span>
 <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">T1_bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">T1_fname</span></a><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">landmarks</span></a><span class="o">=</span><a href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">landmarks</span></a><span class="p">)</span>
 
-<span class="c1"># write `raw` to BIDS and anonymize it (converts to BrainVision format)</span>
+<span class="c1"># write ``raw`` to BIDS and anonymize it (converts to BrainVision format)</span>
 <span class="c1">#</span>
-<span class="c1"># we need to pass the `montage` argument for coordinate frames other than</span>
-<span class="c1"># &quot;head&quot; which is what MNE uses internally in the `raw` object</span>
+<span class="c1"># we need to pass the ``montage`` argument for coordinate frames other than</span>
+<span class="c1"># &quot;head&quot; which is what MNE uses internally in the ``raw`` object</span>
 <span class="c1">#</span>
-<span class="c1"># `acpc_aligned=True` affirms that our MRI is aligned to ACPC</span>
-<span class="c1"># if this is not true, convert to `fsaverage` (see below)!</span>
+<span class="c1"># ``acpc_aligned=True`` affirms that our MRI is aligned to ACPC</span>
+<span class="c1"># if this is not true, convert to ``fsaverage`` (see below)!</span>
 <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span>
     <a href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span>
     <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span>
@@ -984,6 +1204,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_coordsystem.json&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_electrodes.json&#39;...
 The provided raw data contains annotations, but you did not pass an &quot;event_id&quot; mapping from annotation descriptions to event codes. We will generate arbitrary event codes. To specify custom event codes, please pass &quot;event_id&quot;.
 Used Annotations descriptions: [np.str_(&#39;Fixation&#39;), np.str_(&#39;Go Cue&#39;), np.str_(&#39;ISI Onset&#39;), np.str_(&#39;Response&#39;)]
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv&#39;...
@@ -991,8 +1212,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/examples/convert_ieeg_to_bids.py:213: RuntimeWarning: Converting data files to BrainVision format
-  write_raw_bids(
+Converting data files to BrainVision format
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
 |ieeg_bids/
@@ -1007,6 +1227,7 @@ Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/su
 |--------- sub-1_T1w.nii.gz
 |------ ieeg/
 |--------- sub-1_space-ACPC_coordsystem.json
+|--------- sub-1_space-ACPC_electrodes.json
 |--------- sub-1_space-ACPC_electrodes.tsv
 |--------- sub-1_task-motor_channels.tsv
 |--------- sub-1_task-motor_events.json
@@ -1027,14 +1248,27 @@ It’s easy to find these by searching for <code class="docutils literal notrans
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.search_folder_for_text.html#mne_bids.search_folder_for_text" title="mne_bids.search_folder_for_text" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">search_folder_for_text</span></a><span class="p">(</span><span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>sub-1/ieeg/sub-1_task-motor_ieeg.json
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>sub-1/ieeg/sub-1_task-motor_events.json
+    8            &quot;Description&quot;: &quot;Duration of the event in seconds from onset. Must be zero, positive, or &#39;n/a&#39; if unavailable. A zero value indicates an impulse event. &quot;,
+sub-1/ieeg/sub-1_task-motor_ieeg.json
     7        &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
     10       &quot;iEEGReference&quot;: &quot;n/a&quot;,
-sub-1/ieeg/sub-1_task-motor_events.json
-    8            &quot;Description&quot;: &quot;Duration of the event in seconds from onset. Must be zero, positive, or &#39;n/a&#39; if unavailable. A zero value indicates an impulse event. &quot;,
 participants.tsv
     1    participa age       sex       hand      weight    height
     2    sub-1     n/a       n/a       n/a       n/a       n/a
+sub-1/ieeg/sub-1_task-motor_channels.tsv
+    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de
+    2    LENT 1    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    3    LENT 2    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    4    LENT 3    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    5    LENT 4    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    6    LENT 5    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    7    LENT 6    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    8    LENT 7    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    9    LAMY 1    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    10   LAMY 2    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    11   LAMY 3    SEEG      µV        0.0       499.70605 StereoEEG 999.41210 good      n/a
+    ...
 sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv
     1    name      x         y         z         size
     2    LENT 1    -0.021200 0.0158514 -0.039700 n/a
@@ -1048,26 +1282,12 @@ sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv
     10   LAMY 2    -0.030600 -0.000148 -0.015200 n/a
     11   LAMY 3    -0.035536 0.0011150 -0.014882 n/a
     ...
-sub-1/ieeg/sub-1_task-motor_channels.tsv
-    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de
-    2    LENT 1    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    3    LENT 2    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    4    LENT 3    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    5    LENT 4    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    6    LENT 5    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    7    LENT 6    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    8    LENT 7    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    9    LAMY 1    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    10   LAMY 2    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    11   LAMY 3    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    ...
 </pre></div>
 </div>
-<p>Remember that there is a convenient JavaScript tool to validate all your BIDS
-directories called the “BIDS-validator”, available as a web version and a
-command line tool:</p>
-<p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
-<p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
+<p>Remember that there is a convenient tool to validate all your BIDS
+directories called the “BIDS-validator”, available as a web version and
+on the command line:</p>
+<p><a class="github reference external" href="https://github.com/bids-standard/bids-validator">bids-standard/bids-validator</a></p>
 </section>
 <section id="step-3-load-channels-from-bids-formatted-dataset-and-compare">
 <h2>Step 3: Load channels from BIDS-formatted dataset and compare<a class="headerlink" href="#step-3-load-channels-from-bids-formatted-dataset-and-compare" title="Link to this heading">#</a></h2>
@@ -1079,7 +1299,6 @@ command line tool:</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting parameters from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.vhdr...
 Setting channel info structure...
-Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv.
 Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv.
 Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv.
 </pre></div>
@@ -1153,7 +1372,7 @@ reason, you can also do that.</p>
 <p>Here we’ll use the MNI Talairach transform to get to <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code> space
 from “mri” aka surface RAS space.
 <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code> is very useful for group analysis as shown in
-<a class="reference external" href="https://mne.tools/stable/auto_tutorials/clinical/20_seeg.html#tut-working-with-seeg" title="(in MNE v1.11)"><span>Working with sEEG data</span></a>. Note, this is only a linear transform and so
+<a class="reference external" href="https://mne.tools/stable/auto_tutorials/clinical/20_seeg.html#tut-working-with-seeg" title="(in MNE v1.12)"><span>Working with sEEG data</span></a>. Note, this is only a linear transform and so
 one loses quite a bit of accuracy relative to the needs of intracranial
 researchers so it is quite suboptimal. A better option is to use a
 symmetric diffeomorphic transform to create a one-to-one mapping of brain
@@ -1205,13 +1424,14 @@ Ready.
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/examples/convert_ieeg_to_bids.py:350: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/examples/convert_ieeg_to_bids.py:348: RuntimeWarning: Converting data files to BrainVision format for anonymization
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_coordsystem.json&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.json&#39;...
 The provided raw data contains annotations, but you did not pass an &quot;event_id&quot; mapping from annotation descriptions to event codes. We will generate arbitrary event codes. To specify custom event codes, please pass &quot;event_id&quot;.
 Used Annotations descriptions: [np.str_(&#39;Fixation&#39;), np.str_(&#39;Go Cue&#39;), np.str_(&#39;ISI Onset&#39;), np.str_(&#39;Response&#39;)]
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv&#39;...
@@ -1219,13 +1439,11 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/examples/convert_ieeg_to_bids.py:350: RuntimeWarning: Converting data files to BrainVision format
-  write_raw_bids(
+Converting data files to BrainVision format
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
 Extracting parameters from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.vhdr...
 Setting channel info structure...
-Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv.
 Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv.
 Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv.
 </pre></div>
@@ -1238,14 +1456,14 @@ to add these. Fortunately, there is a convenient function
 (<a class="reference internal" href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.template_to_head()</span></code></a>) that loads stored fiducials and takes
 care of the transformations. Once this function is applied, you can use
 the <code class="docutils literal notranslate"><span class="pre">raw</span></code> object and the <code class="docutils literal notranslate"><span class="pre">trans</span></code> as in any MNE example
-(e.g. <a class="reference external" href="https://mne.tools/stable/auto_tutorials/clinical/20_seeg.html#tut-working-with-seeg" title="(in MNE v1.11)"><span>Working with sEEG data</span></a>).</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># use `coord_frame=&#39;mri&#39;` to indicate that the montage is in surface RAS</span>
-<span class="c1"># and `unit=&#39;m&#39;` to indicate that the units are in meters</span>
+(e.g. <a class="reference external" href="https://mne.tools/stable/auto_tutorials/clinical/20_seeg.html#tut-working-with-seeg" title="(in MNE v1.12)"><span>Working with sEEG data</span></a>).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># use ``coord_frame=&#39;mri&#39;`` to indicate that the montage is in surface RAS</span>
+<span class="c1"># and ``unit=&#39;m&#39;`` to indicate that the units are in meters</span>
 <a href="https://mne.tools/stable/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a> <span class="o">=</span> <a href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">template_to_head</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw2</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s2">&quot;fsaverage&quot;</span><span class="p">,</span> <span class="n">coord_frame</span><span class="o">=</span><span class="s2">&quot;mri&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 <span class="c1"># this a bit confusing since we transformed from mri-&gt;mni and now we&#39;re</span>
 <span class="c1"># saying we&#39;re back in &#39;mri&#39; but that is because we were in the surface RAS</span>
-<span class="c1"># coordinate frame of `sample_seeg` and transformed to &#39;mni_tal&#39;, which is the</span>
-<span class="c1"># surface RAS coordinate frame for `fsaverage`: since MNE denotes surface RAS</span>
+<span class="c1"># coordinate frame of ``sample_seeg`` and transformed to &#39;mni_tal&#39;, which is the</span>
+<span class="c1"># surface RAS coordinate frame for ``fsaverage``: since MNE denotes surface RAS</span>
 <span class="c1"># as &#39;mri&#39;, both coordinate frames are &#39;mri&#39;, it&#39;s just that &#39;mni_tal&#39; is &#39;mri&#39;</span>
 <span class="c1"># when the subject is &#39;fsaverage&#39;</span>
 </pre></div>
@@ -1386,13 +1604,14 @@ Ready.
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/examples/convert_ieeg_to_bids.py:493: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/examples/convert_ieeg_to_bids.py:491: RuntimeWarning: Converting data files to BrainVision format for anonymization
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_coordsystem.json&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.json&#39;...
 The provided raw data contains annotations, but you did not pass an &quot;event_id&quot; mapping from annotation descriptions to event codes. We will generate arbitrary event codes. To specify custom event codes, please pass &quot;event_id&quot;.
 Used Annotations descriptions: [np.str_(&#39;Fixation&#39;), np.str_(&#39;Go Cue&#39;), np.str_(&#39;ISI Onset&#39;), np.str_(&#39;Response&#39;)]
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_events.tsv&#39;...
@@ -1400,8 +1619,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_channels.tsv&#39;...
-/home/circleci/project/examples/convert_ieeg_to_bids.py:493: RuntimeWarning: Converting data files to BrainVision format
-  write_raw_bids(
+Converting data files to BrainVision format
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_space-fsaverage_ieeg.vhdr.
 
@@ -1420,7 +1638,6 @@ basename: sub-1_task-motor_space-fsaverage_ieeg.vhdr)
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting parameters from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_ieeg.vhdr...
 Setting channel info structure...
-Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_events.tsv.
 Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_channels.tsv.
 Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv.
 </pre></div>
@@ -1448,7 +1665,7 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.871 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 34.919 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/cf640e6bfa39f55978e620ef4269fd4c/convert_ieeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_ieeg_to_bids.ipynb</span></code></a></p>
@@ -1509,8 +1726,8 @@ coordinate frame.</p>
     class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-download-the-data">Step 1: Download the data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bids-vs-mne-python-coordinate-systems">BIDS vs MNE-Python Coordinate Systems</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-formatting-as-bids">Step 2: Formatting as BIDS</a></li>
@@ -1533,8 +1750,8 @@ coordinate frame.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1545,7 +1762,7 @@ coordinate frame.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-26.
       <br/>
     
   </p>
@@ -1554,7 +1771,7 @@ coordinate frame.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>
@@ -1568,7 +1785,7 @@ coordinate frame.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
 </p></div>
       
     </div>

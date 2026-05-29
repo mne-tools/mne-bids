@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert MNE sample data to BIDS format &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
+    <title>Convert MNE sample data to BIDS format &#8212; MNE-BIDS 0.19.0.dev73+g415d0aa02 documentation</title>
   
   
   
@@ -27,43 +27,51 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=81d8d220" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
 
-    <script src="../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../_static/documentation_options.js?v=eb4e467a"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/convert_mne_sample';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Interactive data inspection and bad channel selection" href="mark_bad_channels.html" />
@@ -74,22 +82,28 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
+  <meta name="docsearch:version" content="0.19.0.dev73+g415d0aa02" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
 
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -115,7 +129,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -137,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev73+g415d0aa02 documentation</p>
   
 </a></div>
     
@@ -213,11 +227,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -250,8 +271,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -262,8 +282,7 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Discourse</span></a>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
         </li>
 </ul></div>
       
@@ -362,11 +381,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -399,8 +425,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -411,8 +436,7 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Discourse</span></a>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
         </li>
 </ul></div>
         
@@ -421,7 +445,14 @@
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
         <div class="sidebar-primary-item">
+
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
@@ -536,10 +567,10 @@ sample data, and then finally the MNE-BIDS functions we need for this example</p
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.stats</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events" class="sphx-glr-backref-module-mne_bids-stats sphx-glr-backref-type-py-function"><span class="n">count_events</span></a>
 </pre></div>
 </div>
-<p>Now we can read the MNE sample data. We define an <em class="xref py py-obj">event_id</em> based on our
+<p>Now we can read the MNE sample data. We define an <code class="docutils literal notranslate"><span class="pre">event_id</span></code> based on our
 knowledge of the data, to give meaning to events in the data.</p>
-<p>With <em class="xref py py-obj">raw_fname</em> and <em class="xref py py-obj">events</em>, we determine where to get the sample data
-from. <em class="xref py py-obj">output_path</em> determines where we will write the BIDS conversion to.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">raw_fname</span></code> and <code class="docutils literal notranslate"><span class="pre">events</span></code>, we determine where to get the sample data
+from. <code class="docutils literal notranslate"><span class="pre">output_path</span></code> determines where we will write the BIDS conversion to.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;Auditory/Left&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -554,6 +585,195 @@ from. <em class="xref py py-obj">output_path</em> determines where we will write
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">er_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">&quot;MEG&quot;</span> <span class="o">/</span> <span class="s2">&quot;sample&quot;</span> <span class="o">/</span> <span class="s2">&quot;ernoise_raw.fif&quot;</span>  <span class="c1"># empty room</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">&quot;MEG&quot;</span> <span class="o">/</span> <span class="s2">&quot;sample&quot;</span> <span class="o">/</span> <span class="s2">&quot;sample_audvis_raw-eve.fif&quot;</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.parent" title="pathlib.PurePath.parent" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-attribute"><span class="n">data_path</span><span class="o">.</span><span class="n">parent</span></a> <span class="o">/</span> <span class="s2">&quot;MNE-sample-data-bids&quot;</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for sample...
+Fetching 1 file for the sample dataset ...
+
+  0%|                                              | 0.00/1.65G [00:00&lt;?, ?B/s]
+  0%|                                     | 3.32M/1.65G [00:00&lt;00:49, 33.2MB/s]
+  1%|▎                                    | 12.4M/1.65G [00:00&lt;00:24, 67.2MB/s]
+  1%|▍                                    | 21.6M/1.65G [00:00&lt;00:20, 78.5MB/s]
+  2%|▋                                    | 30.8M/1.65G [00:00&lt;00:19, 84.0MB/s]
+  2%|▉                                    | 40.1M/1.65G [00:00&lt;00:18, 87.1MB/s]
+  3%|█                                    | 49.4M/1.65G [00:00&lt;00:18, 88.9MB/s]
+  4%|█▎                                   | 58.6M/1.65G [00:00&lt;00:17, 90.1MB/s]
+  4%|█▌                                   | 67.9M/1.65G [00:00&lt;00:17, 91.0MB/s]
+  5%|█▋                                   | 77.2M/1.65G [00:00&lt;00:17, 91.6MB/s]
+  5%|█▉                                   | 86.6M/1.65G [00:01&lt;00:16, 92.5MB/s]
+  6%|██▏                                  | 96.1M/1.65G [00:01&lt;00:16, 93.2MB/s]
+  6%|██▍                                   | 106M/1.65G [00:01&lt;00:16, 93.5MB/s]
+  7%|██▋                                   | 115M/1.65G [00:01&lt;00:16, 93.9MB/s]
+  8%|██▊                                   | 125M/1.65G [00:01&lt;00:16, 94.2MB/s]
+  8%|███                                   | 134M/1.65G [00:01&lt;00:16, 94.3MB/s]
+  9%|███▎                                  | 143M/1.65G [00:01&lt;00:15, 94.4MB/s]
+  9%|███▌                                  | 153M/1.65G [00:01&lt;00:15, 94.2MB/s]
+ 10%|███▋                                  | 162M/1.65G [00:01&lt;00:15, 94.3MB/s]
+ 10%|███▉                                  | 172M/1.65G [00:01&lt;00:15, 94.2MB/s]
+ 11%|████▏                                 | 181M/1.65G [00:02&lt;00:15, 94.3MB/s]
+ 12%|████▍                                 | 191M/1.65G [00:02&lt;00:15, 94.4MB/s]
+ 12%|████▌                                 | 200M/1.65G [00:02&lt;00:15, 94.4MB/s]
+ 13%|████▊                                 | 210M/1.65G [00:02&lt;00:15, 93.9MB/s]
+ 13%|█████                                 | 219M/1.65G [00:02&lt;00:15, 94.1MB/s]
+ 14%|█████▎                                | 228M/1.65G [00:02&lt;00:15, 93.4MB/s]
+ 14%|█████▍                                | 238M/1.65G [00:02&lt;00:15, 93.8MB/s]
+ 15%|█████▋                                | 247M/1.65G [00:02&lt;00:14, 93.9MB/s]
+ 16%|█████▉                                | 257M/1.65G [00:02&lt;00:14, 94.1MB/s]
+ 16%|██████                                | 266M/1.65G [00:02&lt;00:14, 93.7MB/s]
+ 17%|██████▎                               | 275M/1.65G [00:03&lt;00:15, 89.3MB/s]
+ 17%|██████▌                               | 284M/1.65G [00:03&lt;00:15, 86.9MB/s]
+ 18%|██████▊                               | 294M/1.65G [00:03&lt;00:15, 88.8MB/s]
+ 18%|██████▉                               | 303M/1.65G [00:03&lt;00:14, 90.2MB/s]
+ 19%|███████▏                              | 313M/1.65G [00:03&lt;00:14, 91.4MB/s]
+ 19%|███████▍                              | 322M/1.65G [00:03&lt;00:14, 92.4MB/s]
+ 20%|███████▌                              | 332M/1.65G [00:03&lt;00:14, 93.2MB/s]
+ 21%|███████▊                              | 341M/1.65G [00:03&lt;00:14, 93.6MB/s]
+ 21%|████████                              | 351M/1.65G [00:03&lt;00:13, 94.0MB/s]
+ 22%|████████▎                             | 360M/1.65G [00:03&lt;00:13, 93.8MB/s]
+ 22%|████████▍                             | 369M/1.65G [00:04&lt;00:13, 94.1MB/s]
+ 23%|████████▋                             | 379M/1.65G [00:04&lt;00:13, 94.4MB/s]
+ 23%|████████▉                             | 388M/1.65G [00:04&lt;00:14, 90.0MB/s]
+ 24%|█████████▏                            | 397M/1.65G [00:04&lt;00:14, 88.4MB/s]
+ 25%|█████████▎                            | 407M/1.65G [00:04&lt;00:13, 90.2MB/s]
+ 25%|█████████▌                            | 416M/1.65G [00:04&lt;00:13, 91.3MB/s]
+ 26%|█████████▊                            | 426M/1.65G [00:04&lt;00:13, 92.3MB/s]
+ 26%|██████████                            | 435M/1.65G [00:04&lt;00:13, 93.0MB/s]
+ 27%|██████████▏                           | 445M/1.65G [00:04&lt;00:12, 93.5MB/s]
+ 27%|██████████▍                           | 454M/1.65G [00:04&lt;00:12, 93.0MB/s]
+ 28%|██████████▋                           | 463M/1.65G [00:05&lt;00:13, 86.9MB/s]
+ 29%|██████████▊                           | 473M/1.65G [00:05&lt;00:13, 89.0MB/s]
+ 29%|███████████                           | 482M/1.65G [00:05&lt;00:12, 90.5MB/s]
+ 30%|███████████▎                          | 492M/1.65G [00:05&lt;00:12, 91.8MB/s]
+ 30%|███████████▌                          | 501M/1.65G [00:05&lt;00:13, 82.6MB/s]
+ 31%|███████████▋                          | 509M/1.65G [00:05&lt;00:13, 82.1MB/s]
+ 31%|███████████▉                          | 519M/1.65G [00:05&lt;00:13, 84.9MB/s]
+ 32%|████████████                          | 527M/1.65G [00:05&lt;00:13, 81.7MB/s]
+ 32%|████████████▎                         | 537M/1.65G [00:05&lt;00:13, 85.1MB/s]
+ 33%|████████████▌                         | 546M/1.65G [00:06&lt;00:12, 87.8MB/s]
+ 34%|████████████▊                         | 556M/1.65G [00:06&lt;00:12, 89.7MB/s]
+ 34%|████████████▉                         | 565M/1.65G [00:06&lt;00:11, 91.1MB/s]
+ 35%|█████████████▏                        | 574M/1.65G [00:06&lt;00:11, 92.1MB/s]
+ 35%|█████████████▍                        | 584M/1.65G [00:06&lt;00:11, 92.5MB/s]
+ 36%|█████████████▋                        | 593M/1.65G [00:06&lt;00:12, 87.7MB/s]
+ 36%|█████████████▊                        | 603M/1.65G [00:06&lt;00:11, 89.8MB/s]
+ 37%|██████████████                        | 612M/1.65G [00:06&lt;00:11, 91.5MB/s]
+ 38%|██████████████▎                       | 622M/1.65G [00:06&lt;00:11, 92.2MB/s]
+ 38%|██████████████▌                       | 631M/1.65G [00:06&lt;00:11, 86.7MB/s]
+ 39%|██████████████▋                       | 640M/1.65G [00:07&lt;00:11, 89.1MB/s]
+ 39%|██████████████▉                       | 650M/1.65G [00:07&lt;00:11, 90.8MB/s]
+ 40%|███████████████▏                      | 659M/1.65G [00:07&lt;00:10, 91.3MB/s]
+ 40%|███████████████▎                      | 669M/1.65G [00:07&lt;00:10, 92.5MB/s]
+ 41%|███████████████▌                      | 678M/1.65G [00:07&lt;00:10, 93.4MB/s]
+ 42%|███████████████▊                      | 688M/1.65G [00:07&lt;00:10, 93.9MB/s]
+ 42%|████████████████                      | 697M/1.65G [00:07&lt;00:10, 94.3MB/s]
+ 43%|████████████████▏                     | 707M/1.65G [00:07&lt;00:10, 93.5MB/s]
+ 43%|████████████████▍                     | 716M/1.65G [00:07&lt;00:09, 94.0MB/s]
+ 44%|████████████████▋                     | 726M/1.65G [00:07&lt;00:09, 92.8MB/s]
+ 44%|████████████████▉                     | 735M/1.65G [00:08&lt;00:10, 87.3MB/s]
+ 45%|█████████████████                     | 744M/1.65G [00:08&lt;00:10, 83.8MB/s]
+ 46%|█████████████████▎                    | 752M/1.65G [00:08&lt;00:11, 81.6MB/s]
+ 46%|█████████████████▍                    | 760M/1.65G [00:08&lt;00:11, 80.4MB/s]
+ 47%|█████████████████▋                    | 770M/1.65G [00:08&lt;00:10, 84.1MB/s]
+ 47%|█████████████████▉                    | 779M/1.65G [00:08&lt;00:10, 87.1MB/s]
+ 48%|██████████████████▏                   | 789M/1.65G [00:08&lt;00:09, 89.3MB/s]
+ 48%|██████████████████▎                   | 798M/1.65G [00:08&lt;00:09, 91.0MB/s]
+ 49%|██████████████████▌                   | 808M/1.65G [00:08&lt;00:09, 92.1MB/s]
+ 49%|██████████████████▊                   | 817M/1.65G [00:09&lt;00:08, 93.0MB/s]
+ 50%|███████████████████                   | 827M/1.65G [00:09&lt;00:08, 93.7MB/s]
+ 51%|███████████████████▏                  | 836M/1.65G [00:09&lt;00:08, 94.1MB/s]
+ 51%|███████████████████▍                  | 846M/1.65G [00:09&lt;00:08, 94.1MB/s]
+ 52%|███████████████████▋                  | 855M/1.65G [00:09&lt;00:08, 94.3MB/s]
+ 52%|███████████████████▉                  | 864M/1.65G [00:09&lt;00:08, 94.5MB/s]
+ 53%|████████████████████                  | 874M/1.65G [00:09&lt;00:08, 94.6MB/s]
+ 53%|████████████████████▎                 | 883M/1.65G [00:09&lt;00:08, 94.7MB/s]
+ 54%|████████████████████▌                 | 893M/1.65G [00:09&lt;00:08, 94.8MB/s]
+ 55%|████████████████████▋                 | 902M/1.65G [00:09&lt;00:07, 94.8MB/s]
+ 55%|████████████████████▉                 | 912M/1.65G [00:10&lt;00:07, 94.8MB/s]
+ 56%|█████████████████████▏                | 921M/1.65G [00:10&lt;00:07, 94.8MB/s]
+ 56%|█████████████████████▍                | 931M/1.65G [00:10&lt;00:07, 94.8MB/s]
+ 57%|█████████████████████▌                | 940M/1.65G [00:10&lt;00:07, 94.9MB/s]
+ 57%|█████████████████████▊                | 950M/1.65G [00:10&lt;00:07, 94.9MB/s]
+ 58%|██████████████████████                | 959M/1.65G [00:10&lt;00:07, 95.0MB/s]
+ 59%|██████████████████████▎               | 969M/1.65G [00:10&lt;00:07, 95.0MB/s]
+ 59%|██████████████████████▍               | 978M/1.65G [00:10&lt;00:07, 95.0MB/s]
+ 60%|██████████████████████▋               | 988M/1.65G [00:10&lt;00:08, 75.4MB/s]
+ 60%|██████████████████████▉               | 996M/1.65G [00:11&lt;00:08, 76.9MB/s]
+ 61%|██████████████████████▍              | 1.00G/1.65G [00:11&lt;00:08, 73.1MB/s]
+ 61%|██████████████████████▋              | 1.01G/1.65G [00:11&lt;00:08, 78.7MB/s]
+ 62%|██████████████████████▉              | 1.02G/1.65G [00:11&lt;00:07, 83.1MB/s]
+ 62%|███████████████████████              | 1.03G/1.65G [00:11&lt;00:07, 86.3MB/s]
+ 63%|███████████████████████▎             | 1.04G/1.65G [00:11&lt;00:06, 88.6MB/s]
+ 64%|███████████████████████▌             | 1.05G/1.65G [00:11&lt;00:06, 90.5MB/s]
+ 64%|███████████████████████▊             | 1.06G/1.65G [00:11&lt;00:06, 91.8MB/s]
+ 65%|███████████████████████▉             | 1.07G/1.65G [00:11&lt;00:06, 92.7MB/s]
+ 65%|████████████████████████▏            | 1.08G/1.65G [00:11&lt;00:06, 93.1MB/s]
+ 66%|████████████████████████▍            | 1.09G/1.65G [00:12&lt;00:06, 85.8MB/s]
+ 66%|████████████████████████▌            | 1.10G/1.65G [00:12&lt;00:06, 82.1MB/s]
+ 67%|████████████████████████▊            | 1.11G/1.65G [00:12&lt;00:06, 84.9MB/s]
+ 68%|█████████████████████████            | 1.12G/1.65G [00:12&lt;00:06, 87.5MB/s]
+ 68%|█████████████████████████▏           | 1.13G/1.65G [00:12&lt;00:05, 89.2MB/s]
+ 69%|█████████████████████████▍           | 1.14G/1.65G [00:12&lt;00:05, 90.6MB/s]
+ 69%|█████████████████████████▋           | 1.14G/1.65G [00:12&lt;00:05, 91.0MB/s]
+ 70%|█████████████████████████▊           | 1.15G/1.65G [00:12&lt;00:05, 91.7MB/s]
+ 70%|██████████████████████████           | 1.16G/1.65G [00:12&lt;00:05, 92.3MB/s]
+ 71%|██████████████████████████▎          | 1.17G/1.65G [00:13&lt;00:05, 92.6MB/s]
+ 72%|██████████████████████████▍          | 1.18G/1.65G [00:13&lt;00:05, 92.9MB/s]
+ 72%|██████████████████████████▋          | 1.19G/1.65G [00:13&lt;00:04, 93.1MB/s]
+ 73%|██████████████████████████▉          | 1.20G/1.65G [00:13&lt;00:04, 93.4MB/s]
+ 73%|███████████████████████████          | 1.21G/1.65G [00:13&lt;00:04, 93.5MB/s]
+ 74%|███████████████████████████▎         | 1.22G/1.65G [00:13&lt;00:04, 93.6MB/s]
+ 74%|███████████████████████████▌         | 1.23G/1.65G [00:13&lt;00:04, 93.6MB/s]
+ 75%|███████████████████████████▋         | 1.24G/1.65G [00:13&lt;00:04, 93.6MB/s]
+ 76%|███████████████████████████▉         | 1.25G/1.65G [00:13&lt;00:04, 93.5MB/s]
+ 76%|████████████████████████████▏        | 1.26G/1.65G [00:13&lt;00:04, 93.5MB/s]
+ 77%|████████████████████████████▎        | 1.27G/1.65G [00:14&lt;00:04, 93.5MB/s]
+ 77%|████████████████████████████▌        | 1.28G/1.65G [00:14&lt;00:04, 93.7MB/s]
+ 78%|████████████████████████████▊        | 1.29G/1.65G [00:14&lt;00:03, 93.7MB/s]
+ 78%|████████████████████████████▉        | 1.29G/1.65G [00:14&lt;00:03, 92.8MB/s]
+ 79%|█████████████████████████████▏       | 1.30G/1.65G [00:14&lt;00:03, 93.1MB/s]
+ 79%|█████████████████████████████▍       | 1.31G/1.65G [00:14&lt;00:03, 93.2MB/s]
+ 80%|█████████████████████████████▌       | 1.32G/1.65G [00:14&lt;00:03, 93.2MB/s]
+ 81%|█████████████████████████████▊       | 1.33G/1.65G [00:14&lt;00:03, 93.3MB/s]
+ 81%|██████████████████████████████       | 1.34G/1.65G [00:14&lt;00:03, 93.3MB/s]
+ 82%|██████████████████████████████▏      | 1.35G/1.65G [00:14&lt;00:03, 93.4MB/s]
+ 82%|██████████████████████████████▍      | 1.36G/1.65G [00:15&lt;00:03, 93.4MB/s]
+ 83%|██████████████████████████████▋      | 1.37G/1.65G [00:15&lt;00:03, 93.6MB/s]
+ 83%|██████████████████████████████▊      | 1.38G/1.65G [00:15&lt;00:02, 93.7MB/s]
+ 84%|███████████████████████████████      | 1.39G/1.65G [00:15&lt;00:02, 93.7MB/s]
+ 85%|███████████████████████████████▎     | 1.40G/1.65G [00:15&lt;00:02, 93.7MB/s]
+ 85%|███████████████████████████████▌     | 1.41G/1.65G [00:15&lt;00:02, 93.7MB/s]
+ 86%|███████████████████████████████▋     | 1.42G/1.65G [00:15&lt;00:02, 93.8MB/s]
+ 86%|███████████████████████████████▉     | 1.43G/1.65G [00:15&lt;00:02, 93.7MB/s]
+ 87%|████████████████████████████████▏    | 1.44G/1.65G [00:15&lt;00:02, 93.8MB/s]
+ 87%|████████████████████████████████▎    | 1.44G/1.65G [00:15&lt;00:02, 93.7MB/s]
+ 88%|████████████████████████████████▌    | 1.45G/1.65G [00:16&lt;00:02, 93.7MB/s]
+ 89%|████████████████████████████████▊    | 1.46G/1.65G [00:16&lt;00:02, 93.8MB/s]
+ 89%|████████████████████████████████▉    | 1.47G/1.65G [00:16&lt;00:01, 93.8MB/s]
+ 90%|█████████████████████████████████▏   | 1.48G/1.65G [00:16&lt;00:01, 93.1MB/s]
+ 90%|█████████████████████████████████▍   | 1.49G/1.65G [00:16&lt;00:01, 92.2MB/s]
+ 91%|█████████████████████████████████▌   | 1.50G/1.65G [00:16&lt;00:01, 92.7MB/s]
+ 91%|█████████████████████████████████▊   | 1.51G/1.65G [00:16&lt;00:01, 93.1MB/s]
+ 92%|██████████████████████████████████   | 1.52G/1.65G [00:16&lt;00:01, 93.3MB/s]
+ 93%|██████████████████████████████████▏  | 1.53G/1.65G [00:16&lt;00:01, 93.5MB/s]
+ 93%|██████████████████████████████████▍  | 1.54G/1.65G [00:16&lt;00:01, 91.8MB/s]
+ 94%|██████████████████████████████████▋  | 1.55G/1.65G [00:17&lt;00:01, 92.5MB/s]
+ 94%|██████████████████████████████████▊  | 1.56G/1.65G [00:17&lt;00:01, 93.0MB/s]
+ 95%|███████████████████████████████████  | 1.57G/1.65G [00:17&lt;00:00, 90.8MB/s]
+ 95%|███████████████████████████████████▎ | 1.58G/1.65G [00:17&lt;00:00, 81.6MB/s]
+ 96%|███████████████████████████████████▍ | 1.58G/1.65G [00:17&lt;00:00, 82.2MB/s]
+ 96%|███████████████████████████████████▋ | 1.59G/1.65G [00:17&lt;00:00, 85.3MB/s]
+ 97%|███████████████████████████████████▉ | 1.60G/1.65G [00:17&lt;00:00, 87.7MB/s]
+ 98%|████████████████████████████████████ | 1.61G/1.65G [00:17&lt;00:00, 89.5MB/s]
+ 98%|████████████████████████████████████▎| 1.62G/1.65G [00:17&lt;00:00, 90.8MB/s]
+ 99%|████████████████████████████████████▌| 1.63G/1.65G [00:17&lt;00:00, 91.1MB/s]
+ 99%|████████████████████████████████████▋| 1.64G/1.65G [00:18&lt;00:00, 90.7MB/s]
+100%|████████████████████████████████████▉| 1.65G/1.65G [00:18&lt;00:00, 91.7MB/s]
+  0%|                                              | 0.00/1.65G [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 1.65G/1.65G [00:00&lt;00:00, 6.00TB/s]
+Attempting to create new mne-python configuration file:
+/home/circleci/.mne/mne-python.json
+Could not read the /home/circleci/.mne/mne-python.json json file during the writing. Assuming it is empty. Got: Expecting value: line 1 column 1 (char 0)
+Download complete in 45s (1576.2 MB)
 </pre></div>
 </div>
 <p>To ensure the output path doesn’t contain any leftover files from previous
@@ -748,8 +968,8 @@ Writing crosstalk file to /home/circleci/mne_data/MNE-sample-data-bids/sub-01/se
 </pre></div>
 </div>
 <p>Now let’s get an overview of the events on the whole dataset</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">counts</span></a> <span class="o">=</span> <a href="../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events" class="sphx-glr-backref-module-mne_bids-stats sphx-glr-backref-type-py-function"><span class="n">count_events</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">)</span>
-<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">counts</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">counts</span></a> <span class="o">=</span> <a href="../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events" class="sphx-glr-backref-module-mne_bids-stats sphx-glr-backref-type-py-function"><span class="n">count_events</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">)</span>
+<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">counts</span></a>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -832,7 +1052,6 @@ into MNE-Python can easily be done using <a class="reference internal" href="../
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-Reading events from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_events.tsv.
 Reading channel info from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_channels.tsv.
 </pre></div>
 </div>
@@ -1022,9 +1241,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-c129cf70-9e82-42be-aa15-5d552ac5a048"
+<tr class="mne-repr-section-header general-8415f1e9-1950-4ac8-a0e3-2c627739e3e7"
      title="Hide section"
-    onclick="toggleVisibility('general-c129cf70-9e82-42be-aa15-5d552ac5a048')">
+    onclick="toggleVisibility('general-8415f1e9-1950-4ac8-a0e3-2c627739e3e7')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1036,7 +1255,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-c129cf70-9e82-42be-aa15-5d552ac5a048 ">
+<tr class="repr-element general-8415f1e9-1950-4ac8-a0e3-2c627739e3e7 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -1047,19 +1266,19 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-c129cf70-9e82-42be-aa15-5d552ac5a048 ">
+<tr class="repr-element general-8415f1e9-1950-4ac8-a0e3-2c627739e3e7 ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>Raw</td>
 </tr>
-<tr class="repr-element general-c129cf70-9e82-42be-aa15-5d552ac5a048 ">
+<tr class="repr-element general-8415f1e9-1950-4ac8-a0e3-2c627739e3e7 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>2002-12-06 at 15:16:18 UTC</td>
 
 </tr>
-<tr class="repr-element general-c129cf70-9e82-42be-aa15-5d552ac5a048 ">
+<tr class="repr-element general-8415f1e9-1950-4ac8-a0e3-2c627739e3e7 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
@@ -1068,7 +1287,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 </tr>
-<tr class="repr-element general-c129cf70-9e82-42be-aa15-5d552ac5a048 ">
+<tr class="repr-element general-8415f1e9-1950-4ac8-a0e3-2c627739e3e7 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -1083,9 +1302,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-27501e22-ebad-4dec-8071-4ab944065da5"
+<tr class="mne-repr-section-header acquisition-352e3bbf-90ec-47ed-9cac-596ea0cadc42"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-27501e22-ebad-4dec-8071-4ab944065da5')">
+    onclick="toggleVisibility('acquisition-352e3bbf-90ec-47ed-9cac-596ea0cadc42')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1097,7 +1316,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-27501e22-ebad-4dec-8071-4ab944065da5 ">
+<tr class="repr-element acquisition-352e3bbf-90ec-47ed-9cac-596ea0cadc42 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Duration</td>
     <td>00:01:51 (HH:MM:SS)</td>
@@ -1110,14 +1329,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-27501e22-ebad-4dec-8071-4ab944065da5 ">
+<tr class="repr-element acquisition-352e3bbf-90ec-47ed-9cac-596ea0cadc42 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>600.61 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-27501e22-ebad-4dec-8071-4ab944065da5 ">
+<tr class="repr-element acquisition-352e3bbf-90ec-47ed-9cac-596ea0cadc42 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>66,068</td>
@@ -1132,9 +1351,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-08114efd-d61b-44a7-b978-f5526ac1ea42"
+<tr class="mne-repr-section-header channels-27265adb-ca60-4529-9c0a-fec99e957190"
      title="Hide section"
-    onclick="toggleVisibility('channels-08114efd-d61b-44a7-b978-f5526ac1ea42')">
+    onclick="toggleVisibility('channels-27265adb-ca60-4529-9c0a-fec99e957190')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1147,7 +1366,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-08114efd-d61b-44a7-b978-f5526ac1ea42 ">
+<tr class="repr-element channels-27265adb-ca60-4529-9c0a-fec99e957190 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Magnetometers</td>
     <td>
@@ -1160,7 +1379,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-08114efd-d61b-44a7-b978-f5526ac1ea42 ">
+<tr class="repr-element channels-27265adb-ca60-4529-9c0a-fec99e957190 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Gradiometers</td>
     <td>
@@ -1178,7 +1397,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-08114efd-d61b-44a7-b978-f5526ac1ea42 ">
+<tr class="repr-element channels-27265adb-ca60-4529-9c0a-fec99e957190 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Stimulus</td>
     <td>
@@ -1191,7 +1410,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-08114efd-d61b-44a7-b978-f5526ac1ea42 ">
+<tr class="repr-element channels-27265adb-ca60-4529-9c0a-fec99e957190 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1206,9 +1425,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-58f391b4-9add-4f1d-bba6-25c7f7fbc1af"
+<tr class="mne-repr-section-header filters-4781c7e9-a54b-4da2-bf06-db58580f72cb"
      title="Hide section"
-    onclick="toggleVisibility('filters-58f391b4-9add-4f1d-bba6-25c7f7fbc1af')">
+    onclick="toggleVisibility('filters-4781c7e9-a54b-4da2-bf06-db58580f72cb')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1220,21 +1439,21 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-58f391b4-9add-4f1d-bba6-25c7f7fbc1af ">
+<tr class="repr-element filters-4781c7e9-a54b-4da2-bf06-db58580f72cb ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.10 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-58f391b4-9add-4f1d-bba6-25c7f7fbc1af ">
+<tr class="repr-element filters-4781c7e9-a54b-4da2-bf06-db58580f72cb ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>172.18 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-58f391b4-9add-4f1d-bba6-25c7f7fbc1af ">
+<tr class="repr-element filters-4781c7e9-a54b-4da2-bf06-db58580f72cb ">
     <td class="mne-repr-section-toggle"></td>
     <td>Projections</td>
     <td>
@@ -1351,7 +1570,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
              &#39;ANR-14-NEUC-0002-01&#39;],
  &#39;GeneratedBy&#39;: [{&#39;CodeURL&#39;: &#39;https://mne.tools/mne-bids/&#39;,
                   &#39;Name&#39;: &#39;MNE-BIDS&#39;,
-                  &#39;Version&#39;: &#39;0.18.0.dev44+g9139214b9&#39;}],
+                  &#39;Version&#39;: &#39;0.19.0.dev73+g415d0aa02&#39;}],
  &#39;HowToAcknowledge&#39;: &#39;If you reference this dataset in a publication, please &#39;
                      &#39;acknowledge its authors and cite MNE papers: A. &#39;
                      &#39;Gramfort, M. Luessi, E. Larson, D. Engemann, D. &#39;
@@ -1371,7 +1590,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
 </pre></div>
 </div>
 <p>This should be very similar to the <a class="reference external" href="https://github.com/sappelhoff/bids-examples/blob/master/ds000248/dataset_description.json">ds000248 dataset_description.json</a>!</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.639 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 48.754 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mne-sample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/529f3230e5683b7676557bd33b2ea01b/convert_mne_sample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_mne_sample.ipynb</span></code></a></p>
@@ -1432,8 +1651,8 @@ see the <a class="reference external" href="https://bids-specification.readthedo
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1444,7 +1663,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-26.
       <br/>
     
   </p>
@@ -1453,7 +1672,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>
@@ -1467,7 +1686,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
 </p></div>
       
     </div>

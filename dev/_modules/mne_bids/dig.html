@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.dig &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
+    <title>mne_bids.dig &#8212; MNE-BIDS 0.19.0.dev73+g415d0aa02 documentation</title>
   
   
   
@@ -26,43 +26,51 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=81d8d220" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
 
-    <script src="../../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../../_static/documentation_options.js?v=eb4e467a"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_bids/dig';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/_modules/mne_bids/dig.html" />
@@ -71,22 +79,28 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
+  <meta name="docsearch:version" content="0.19.0.dev73+g415d0aa02" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
 
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -112,7 +126,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -134,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev73+g415d0aa02 documentation</p>
   
 </a></div>
     
@@ -210,11 +224,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -247,8 +268,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -259,8 +279,7 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Discourse</span></a>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
         </li>
 </ul></div>
       
@@ -361,11 +380,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -398,8 +424,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -410,8 +435,7 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Discourse</span></a>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
         </li>
 </ul></div>
         
@@ -502,11 +526,13 @@
     <span class="n">ALLOWED_SPACES</span><span class="p">,</span>
     <span class="n">BIDS_COORD_FRAME_DESCRIPTIONS</span><span class="p">,</span>
     <span class="n">BIDS_COORDINATE_UNITS</span><span class="p">,</span>
+    <span class="n">BIDS_IEEG_COORDINATE_FRAMES</span><span class="p">,</span>
     <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span><span class="p">,</span>
     <span class="n">BIDS_TO_MNE_FRAMES</span><span class="p">,</span>
     <span class="n">MNE_FRAME_TO_STR</span><span class="p">,</span>
     <span class="n">MNE_STR_TO_FRAME</span><span class="p">,</span>
     <span class="n">MNE_TO_BIDS_FRAMES</span><span class="p">,</span>
+    <span class="n">coordsys_standard_template_deprecated</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSPath</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.tsv_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">_from_tsv</span>
@@ -520,6 +546,98 @@
 <span class="p">)</span>
 
 <span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_coord_unit</span><span class="p">(</span><span class="n">electrodes_fpath</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Infer coordinate units from electrode coordinate magnitudes.</span>
+
+<span class="sd">    When coordinate units are specified as ``&quot;n/a&quot;`` in the BIDS dataset,</span>
+<span class="sd">    this function reads the electrode coordinates and infers the unit</span>
+<span class="sd">    based on the magnitude of the coordinate values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    electrodes_fpath : str | Path</span>
+<span class="sd">        Filepath of the electrodes.tsv to read.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    unit : str</span>
+<span class="sd">        The inferred unit: ``&quot;m&quot;``, ``&quot;cm&quot;``, or ``&quot;mm&quot;``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">electrodes_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">electrodes_fpath</span><span class="p">)</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">):</span>
+        <span class="n">coords</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">electrodes_dict</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">if</span> <span class="n">val</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">coords</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;m&quot;</span>
+    <span class="n">max_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coords</span><span class="p">))</span>
+    <span class="c1"># Typical EEG head radius: ~0.1 m, ~10 cm, ~100 mm.</span>
+    <span class="c1"># Thresholds chosen so values &lt; 1 are meters, 1–99 are cm, &gt;= 100 are mm.</span>
+    <span class="k">if</span> <span class="n">max_abs</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;m&quot;</span>
+    <span class="k">elif</span> <span class="n">max_abs</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;cm&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;mm&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_fiducials_ctf_head</span><span class="p">(</span><span class="n">montage</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Synthesize approximate fiducial points for a ctf_head montage.</span>
+
+<span class="sd">    When electrode positions are in the ``ctf_head`` coordinate frame but</span>
+<span class="sd">    no fiducial landmarks (nasion, LPA, RPA) are present, this function</span>
+<span class="sd">    estimates their positions from the electrode geometry. In the CTF/ALS</span>
+<span class="sd">    coordinate system, the origin is between the left and right preauricular</span>
+<span class="sd">    points, ``+X`` points toward the nasion, ``+Y`` toward the left ear, and</span>
+<span class="sd">    ``+Z`` upward.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    montage : mne.channels.DigMontage</span>
+<span class="sd">        The montage in ``ctf_head`` frame. Modified in place.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">pos</span><span class="p">[</span><span class="s2">&quot;coord_frame&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;ctf_head&quot;</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="c1"># check if fiducials already exist</span>
+    <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nasion&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">ch_pos</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="s2">&quot;ch_pos&quot;</span><span class="p">]</span>
+    <span class="n">locs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ch_pos</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">locs</span> <span class="o">=</span> <span class="n">locs</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">locs</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">locs</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Estimate head radius from the electrode distribution.</span>
+    <span class="c1"># In CTF/ALS coordinates, the origin is between the ears.</span>
+    <span class="n">centroid</span> <span class="o">=</span> <span class="n">locs</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">locs</span> <span class="o">-</span> <span class="n">centroid</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">head_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;No fiducial points found for ctf_head montage. Synthesizing &quot;</span>
+        <span class="s2">&quot;approximate fiducials (nasion, LPA, RPA) from electrode geometry &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;with estimated head radius </span><span class="si">{</span><span class="n">head_radius</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># In CTF (ALS): +X = anterior (nasion), +Y = left (LPA), -Y = right (RPA)</span>
+    <span class="c1"># Place fiducials at the estimated head radius along each axis</span>
+    <span class="n">nasion</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">head_radius</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+    <span class="n">lpa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">head_radius</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+    <span class="n">rpa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="n">head_radius</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+
+    <span class="c1"># Create a new montage with fiducials and existing channels</span>
+    <span class="n">new_montage</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span><span class="p">(</span>
+        <span class="n">ch_pos</span><span class="o">=</span><span class="n">ch_pos</span><span class="p">,</span>
+        <span class="n">nasion</span><span class="o">=</span><span class="n">nasion</span><span class="p">,</span>
+        <span class="n">lpa</span><span class="o">=</span><span class="n">lpa</span><span class="p">,</span>
+        <span class="n">rpa</span><span class="o">=</span><span class="n">rpa</span><span class="p">,</span>
+        <span class="n">coord_frame</span><span class="o">=</span><span class="s2">&quot;ctf_head&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">montage</span><span class="o">.</span><span class="n">dig</span> <span class="o">=</span> <span class="n">new_montage</span><span class="o">.</span><span class="n">dig</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_handle_electrodes_reading</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">,</span> <span class="n">coord_unit</span><span class="p">):</span>
@@ -561,7 +679,7 @@
 <span class="sd">    Handle reading the coordinate frame and coordinate unit</span>
 <span class="sd">    of each electrode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">coordsystem_fpath</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">coordsystem_fpath</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">coordsystem_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span><span class="p">:</span>
@@ -754,7 +872,7 @@
         <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">ys</span><span class="p">,</span>
         <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">zs</span><span class="p">,</span>
     <span class="p">}</span>
-    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_coordsystem_json</span><span class="p">(</span>
@@ -857,7 +975,7 @@
     <span class="c1"># XXX: improve later when BIDS is updated</span>
     <span class="c1"># check that there already exists a coordsystem.json</span>
     <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
             <span class="n">coordsystem_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fid_json</span> <span class="o">!=</span> <span class="n">coordsystem_dict</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
@@ -867,6 +985,47 @@
                 <span class="sa">f</span><span class="s1">&#39;from the existing one, or set &quot;overwrite&quot; to True.&#39;</span>
             <span class="p">)</span>
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">fid_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_electrodes_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">spatial_reference</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the ``*_electrodes.json`` sidecar (#1545).&quot;&quot;&quot;</span>
+    <span class="n">fid_json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;SpatialReference&quot;</span><span class="p">:</span> <span class="n">spatial_reference</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">existing</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fid_json</span> <span class="o">!=</span> <span class="n">existing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Trying to write electrodes.json, but it already exists at &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2"> and the contents do not match. You must &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;differentiate this electrodes.json file from the existing &quot;</span>
+                <span class="sa">f</span><span class="s1">&#39;one, or set &quot;overwrite&quot; to True.&#39;</span>
+            <span class="p">)</span>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">fid_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_spatial_reference</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Infer SpatialReference for the ``*_electrodes.json`` sidecar (#1545).&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span>
+        <span class="o">+</span> <span class="n">coordsys_standard_template_deprecated</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">coord_frame</span>
+    <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">in</span> <span class="n">BIDS_IEEG_COORDINATE_FRAMES</span><span class="p">:</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;anat&quot;</span><span class="p">,</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;T1w&quot;</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.nii.gz&quot;</span><span class="p">,</span> <span class="s2">&quot;.nii&quot;</span><span class="p">):</span>
+            <span class="n">cand</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
+            <span class="k">if</span> <span class="n">cand</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;bids::</span><span class="si">{</span><span class="n">cand</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No T1w found for sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s2">; using &#39;n/a&#39;.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;n/a&quot;</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_empty_ieeg_positions</span><span class="p">(</span>
@@ -915,6 +1074,12 @@
         <span class="n">fname</span><span class="o">=</span><span class="n">coordsystem_path</span><span class="p">,</span>
         <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">electrodes_json_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
+        <span class="o">**</span><span class="n">electrode_entities</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;electrodes&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span>
+    <span class="p">)</span>
+    <span class="n">_write_electrodes_json</span><span class="p">(</span>
+        <span class="n">electrodes_json_path</span><span class="p">,</span> <span class="n">spatial_reference</span><span class="o">=</span><span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span>
     <span class="p">)</span>
 
 
@@ -1023,15 +1188,19 @@
         <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># just a space, use that</span>
             <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># space and raw have coordinate frame, check match</span>
-            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span> <span class="o">!=</span> <span class="n">coord_frame</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
-                <span class="n">coord_frame</span> <span class="o">==</span> <span class="s2">&quot;fsaverage&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span> <span class="o">==</span> <span class="s2">&quot;MNI305&quot;</span>
-            <span class="p">):</span>  <span class="c1"># fsaverage == MNI305</span>
+            <span class="c1"># Check if frames are compatible (same or map to same MNE frame)</span>
+            <span class="n">coord_mne</span> <span class="o">=</span> <span class="n">BIDS_TO_MNE_FRAMES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">coord_frame</span><span class="p">)</span>
+            <span class="n">space_mne</span> <span class="o">=</span> <span class="n">BIDS_TO_MNE_FRAMES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">space</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span> <span class="o">==</span> <span class="n">coord_frame</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">coord_mne</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">coord_mne</span> <span class="o">==</span> <span class="n">space_mne</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Coordinates in the raw object or montage &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;are in the </span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s2"> coordinate &quot;</span>
-                    <span class="s2">&quot;frame but BIDSPath.space is &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Coordinates in the raw object or montage are in the &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s2"> coordinate frame but BIDSPath.space is &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">space</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
+            <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span>  <span class="c1"># use BIDSPath.space for output</span>
 
     <span class="c1"># create electrodes/coordsystem files using a subset of entities</span>
     <span class="c1"># that are specified for these files in the specification</span>
@@ -1069,6 +1238,19 @@
         <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">!=</span> <span class="s2">&quot;nirs&quot;</span><span class="p">:</span>
+        <span class="c1"># NIRS uses *_optodes.{tsv,json}; for EEG/iEEG the BIDS spec defines</span>
+        <span class="c1"># a *_electrodes.json sidecar whose SpatialReference field the</span>
+        <span class="c1"># validator requires for derivative datasets (see #1545):</span>
+        <span class="c1"># https://bids-specification.readthedocs.io/en/stable/modality-specific-files/electroencephalography.html#electrodes-description-_electrodestsv</span>
+        <span class="n">electrodes_json_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">electrode_file_entities</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;electrodes&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span>
+        <span class="p">)</span>
+        <span class="n">_write_electrodes_json</span><span class="p">(</span>
+            <span class="n">electrodes_json_path</span><span class="p">,</span>
+            <span class="n">spatial_reference</span><span class="o">=</span><span class="n">_infer_spatial_reference</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">),</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+        <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_read_dig_bids</span><span class="p">(</span><span class="n">electrodes_fpath</span><span class="p">,</span> <span class="n">coordsystem_fpath</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
@@ -1112,12 +1294,23 @@
 
     <span class="c1"># check coordinate units</span>
     <span class="k">if</span> <span class="n">bids_coord_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">BIDS_COORDINATE_UNITS</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Coordinate unit is not an accepted BIDS unit for &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">electrodes_fpath</span><span class="si">}</span><span class="s2">. Please specify to be one of &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BIDS_COORDINATE_UNITS</span><span class="si">}</span><span class="s2">. Skipping electrodes.tsv reading...&quot;</span>
-        <span class="p">)</span>
-        <span class="n">coord_frame</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bids_coord_unit</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
+            <span class="c1"># Attempt to infer the unit from electrode coordinate magnitudes</span>
+            <span class="n">inferred_unit</span> <span class="o">=</span> <span class="n">_infer_coord_unit</span><span class="p">(</span><span class="n">electrodes_fpath</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Coordinate unit is &quot;n/a&quot; for </span><span class="si">{</span><span class="n">electrodes_fpath</span><span class="si">}</span><span class="s1">. &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Inferring unit as &quot;</span><span class="si">{</span><span class="n">inferred_unit</span><span class="si">}</span><span class="s1">&quot; based on coordinate &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;magnitudes. Please update the coordsystem.json to specify &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;one of </span><span class="si">{</span><span class="n">BIDS_COORDINATE_UNITS</span><span class="si">}</span><span class="s2"> for accurate results.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">bids_coord_unit</span> <span class="o">=</span> <span class="n">inferred_unit</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Coordinate unit is not an accepted BIDS unit for &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">electrodes_fpath</span><span class="si">}</span><span class="s2">. Please specify to be one of &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BIDS_COORDINATE_UNITS</span><span class="si">}</span><span class="s2">. Skipping electrodes.tsv reading...&quot;</span>
+            <span class="p">)</span>
+            <span class="n">coord_frame</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># montage is interpretable only if coordinate frame was properly parsed</span>
     <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1129,6 +1322,11 @@
         <span class="n">montage</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">montage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># For ctf_head montages without fiducials, synthesize approximate</span>
+        <span class="c1"># fiducials to enable the ctf_head -&gt; head coordinate transform</span>
+        <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="s2">&quot;ctf_head&quot;</span><span class="p">:</span>
+            <span class="n">_ensure_fiducials_ctf_head</span><span class="p">(</span><span class="n">montage</span><span class="p">)</span>
+
         <span class="c1"># determine if there are problematic channels</span>
         <span class="n">ch_pos</span> <span class="o">=</span> <span class="n">montage</span><span class="o">.</span><span class="n">_get_ch_pos</span><span class="p">()</span>
         <span class="n">nan_chs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1189,7 +1387,6 @@
 <span class="sd">            in one when they are actually in the other. The only way to tell</span>
 <span class="sd">            for template coordinate systems, currently, is if it is specified</span>
 <span class="sd">            in the dataset documentation.</span>
-
 <span class="sd">    unit : &#39;m&#39; | &#39;mm&#39; | &#39;auto&#39;</span>
 <span class="sd">        The unit that was used in the coordinate system specification.</span>
 <span class="sd">        If ``&#39;auto&#39;``, ``&#39;m&#39;`` will be inferred if the montage</span>
@@ -1203,7 +1400,6 @@
 <span class="sd">    trans : mne.transforms.Transform</span>
 <span class="sd">        The data transformation matrix from ``&#39;head&#39;`` to ``&#39;mri&#39;``</span>
 <span class="sd">        coordinates.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">Info</span><span class="p">)</span>
     <span class="n">_check_option</span><span class="p">(</span><span class="s2">&quot;space&quot;</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span><span class="p">)</span>
@@ -1373,8 +1569,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1385,7 +1581,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-26.
       <br/>
     
   </p>
@@ -1394,7 +1590,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>
@@ -1408,7 +1604,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
 </p></div>
       
     </div>

@@ -38,7 +38,7 @@ from mne_bids.stats import count_events
 subject_ids = [1, 2]
 
 # The run numbers in the eegbci are not consecutive ... we follow the online
-# documentation to get the 1st, 2nd, and 3rd run of one of the the motor
+# documentation to get the 1st, 2nd, and 3rd run of one of the motor
 # imagery task
 runs = [
     4,  # This is run #1 of imagining to open/close left or right fist

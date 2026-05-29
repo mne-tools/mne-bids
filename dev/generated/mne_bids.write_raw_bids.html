@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
+    <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.19.0.dev73+g415d0aa02 documentation</title>
   
   
   
@@ -27,43 +27,51 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=81d8d220" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
 
-    <script src="../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../_static/documentation_options.js?v=eb4e467a"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.write_raw_bids';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mne_bids.read_raw_bids" href="mne_bids.read_raw_bids.html" />
@@ -74,22 +82,28 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
+  <meta name="docsearch:version" content="0.19.0.dev73+g415d0aa02" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
 
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -115,7 +129,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -137,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev73+g415d0aa02 documentation</p>
   
 </a></div>
     
@@ -213,11 +227,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -250,8 +271,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -262,8 +282,7 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Discourse</span></a>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
         </li>
 </ul></div>
       
@@ -366,11 +385,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -403,8 +429,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -415,8 +440,7 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Discourse</span></a>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
         </li>
 </ul></div>
         
@@ -425,7 +449,14 @@
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
         <div class="sidebar-primary-item">
+
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
@@ -468,6 +499,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html">mne_bids.copyfiles.copyfile_ctf</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html">mne_bids.copyfiles.copyfile_bti</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html">mne_bids.copyfiles.copyfile_kit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_mef.html">mne_bids.copyfiles.copyfile_mef</a></li>
 </ul>
 </div>
 </nav></div>
@@ -532,7 +564,7 @@
 <h1>mne_bids.write_raw_bids<a class="headerlink" href="#mne-bids-write-raw-bids" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.write_raw_bids">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">write_raw_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_columns_descriptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_room</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_preload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">montage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acpc_aligned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electrodes_tsv_task</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emg_placement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">write_raw_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_columns_descriptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">physical_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_room</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_preload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">montage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acpc_aligned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electrodes_tsv_task</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emg_placement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Link to this definition">#</a></dt>
 <dd><p>Save raw data to a BIDS-compliant folder structure.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -552,7 +584,7 @@ in the sidecars manually.</p></li>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> that is not
+<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> that is not
 already loaded from disk unless <code class="docutils literal notranslate"><span class="pre">allow_preload</span></code> is explicitly set
 to <code class="docutils literal notranslate"><span class="pre">True</span></code>. See warning for the <code class="docutils literal notranslate"><span class="pre">allow_preload</span></code> parameter.</p>
 </dd>
@@ -586,8 +618,8 @@ Example:</p>
 <p>Note that the extension is automatically inferred from the raw
 object.</p>
 </dd>
-<dt><strong>events</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.11)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
-sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>
+<dt><strong>events</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.12)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
+sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>
 (which are always written).
 If <code class="docutils literal notranslate"><span class="pre">path-like</span></code>, specifies the location of an MNE events file.
 If an array, the MNE events array (shape: <code class="docutils literal notranslate"><span class="pre">(n_events,</span> <span class="pre">3)</span></code>).
@@ -596,10 +628,10 @@ If a path or an array and <code class="docutils literal notranslate"><span class
 Mappings from event names to event codes (listed in the third
 column of the MNE events array) must be specified via the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>
 parameter; otherwise, an exception is raised. If
-<a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a> are present, their descriptions must be
+<a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a> are present, their descriptions must be
 included in <code class="docutils literal notranslate"><span class="pre">event_id</span></code> as well.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, events will only be inferred from the raw object’s
-<a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>.</p>
+<a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If specified, writes the union of <code class="docutils literal notranslate"><span class="pre">events</span></code> and
@@ -620,16 +652,16 @@ row in <code class="docutils literal notranslate"><span class="pre">event_metada
 column in <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. The dictionary keys correspond to the event
 description,s and the values to the event codes. You must specify a
 description for all event codes appearing in <code class="docutils literal notranslate"><span class="pre">events</span></code>. If your data
-contains <a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>, you can use this parameter to
+contains <a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>, you can use this parameter to
 assign event codes to each unique annotation description (mapping from
 description to event code).</p>
 </dd>
-<dt><strong>event_metadata</strong><span class="classifier"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Metadata for each event in <code class="docutils literal notranslate"><span class="pre">events</span></code>. Each row corresponds to an event.</p>
+<dt><strong>event_metadata</strong><span class="classifier"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v3.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Metadata for each event in <code class="docutils literal notranslate"><span class="pre">events</span></code>. Each row corresponds to an event.</p>
 </dd>
 <dt><strong>extra_columns_descriptions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>A dictionary that maps column names of the <code class="docutils literal notranslate"><span class="pre">event_metadata</span></code> to descriptions.
 Each column of <code class="docutils literal notranslate"><span class="pre">event_metadata</span></code> must have a corresponding entry in this.</p>
 </dd>
-<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
+<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), no anonymization is performed.
 If a dictionary, data will be anonymized depending on the dictionary
 keys: <code class="docutils literal notranslate"><span class="pre">daysback</span></code> is a required key, <code class="docutils literal notranslate"><span class="pre">keep_his</span></code> is optional.</p>
 <dl class="simple">
@@ -655,8 +687,18 @@ is not stored.</p>
 without a change of the original file format. A conversion to a
 different file format will then only take place if the original file
 format lacks some necessary features.
-Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
-to BDF or EDF for EMG, and to FIF for MEG data.</p>
+Conversion may be forced to BrainVision, BDF, EDF, or EEGLAB for EEG,
+to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,
+and to FIF for MEG data.</p>
+</dd>
+<dt><strong>physical_range</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">'auto'</span></code> (default), the physical range is inferred from the data,
+taking the minimum and maximum values per channel type.
+If <code class="docutils literal notranslate"><span class="pre">'channelwise'</span></code>, the range will be defined per channel.
+If a tuple of minimum and maximum, this manual physical range will be used.
+Only used for exporting EDF files.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.19.</span></p>
+</div>
 </dd>
 <dt><strong>symlink</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Instead of copying the source files, only create symbolic links to
 preserve storage space. This is only allowed when not anonymizing the
@@ -674,9 +716,9 @@ data again.</p>
 add support for Windows 10 at a later time.</p>
 </div>
 </dd>
-<dt><strong>empty_room</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The empty-room recording to be associated with this file. This is
+<dt><strong>empty_room</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The empty-room recording to be associated with this file. This is
 only supported for MEG data.
-If <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a>, you may pass raw data that was not preloaded
+If <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a>, you may pass raw data that was not preloaded
 (otherwise, pass <code class="docutils literal notranslate"><span class="pre">allow_preload=True</span></code>); i.e., it behaves similar to
 the <code class="docutils literal notranslate"><span class="pre">raw</span></code> parameter. The session name will be automatically generated
 from the raw object’s <code class="docutils literal notranslate"><span class="pre">info['meas_date']</span></code>.
@@ -684,7 +726,7 @@ If a <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPat
 same as in <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>. Pass <code class="docutils literal notranslate"><span class="pre">None</span></code> (default) if you do not wish to
 specify an associated empty-room recording.</p>
 <div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 0.11: </span>Accepts <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a> data.</p>
+<p><span class="versionmodified changed">Changed in version 0.11: </span>Accepts <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a> data.</p>
 </div>
 </dd>
 <dt><strong>allow_preload</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, allow writing of preloaded raw objects (i.e.,
@@ -700,7 +742,7 @@ formats not supported by MNE or writing preprocessed derivatives.
 Be aware that these use cases are not fully supported.</p>
 </div>
 </dd>
-<dt><strong>montage</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage with channel positions if channel position data are
+<dt><strong>montage</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage with channel positions if channel position data are
 to be stored in a format other than “head” (the internal MNE
 coordinate frame that the data in <code class="docutils literal notranslate"><span class="pre">raw</span></code> is stored in).</p>
 </dd>
@@ -728,9 +770,15 @@ and <code class="docutils literal notranslate"><span class="pre">participants.ts
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, no existing data will be overwritten or
 replaced.</p>
 </dd>
+<dt><strong>readme</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, leave any existing <code class="docutils literal notranslate"><span class="pre">README</span></code> untouched and do
+not create one. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.19.</span></p>
+</div>
+</dd>
 <dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
 verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.14)"><span class="xref std std-ref">logging documentation</span></a> and
-<a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
+<a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
 argument.</p>
 </dd>
 </dl>
@@ -751,10 +799,10 @@ retrieved via <code class="docutils literal notranslate"><span class="pre">bids_
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.find_events.html#mne.find_events" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.find_events.html#mne.find_events" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
@@ -762,14 +810,14 @@ retrieved via <code class="docutils literal notranslate"><span class="pre">bids_
 <code class="docutils literal notranslate"><span class="pre">raw.info['meas_date']</span></code> are set to proper (not-<code class="docutils literal notranslate"><span class="pre">None</span></code>) values to allow
 for the correct computation of each participant’s age when creating
 <code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code>.</p>
-<p>This function will convert existing <a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
+<p>This function will convert existing <a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.12)"><code class="docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
 <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> to events. Additionally, any events supplied via
 <code class="docutils literal notranslate"><span class="pre">events</span></code> will be written too. To avoid writing of annotations,
 remove them from the raw file via <code class="docutils literal notranslate"><span class="pre">raw.set_annotations(None)</span></code> before
 invoking <code class="docutils literal notranslate"><span class="pre">write_raw_bids</span></code>.</p>
 <p>To write events encoded in a <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channel, you first need to create the
 events array manually and pass it to this function:</p>
-<p>See the documentation of <a class="reference external" href="https://mne.tools/stable/generated/mne.find_events.html#mne.find_events" title="(in MNE v1.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.find_events()</span></code></a> for more information on
+<p>See the documentation of <a class="reference external" href="https://mne.tools/stable/generated/mne.find_events.html#mne.find_events" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.find_events()</span></code></a> for more information on
 event extraction from <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channels.</p>
 <p>When anonymizing <code class="docutils literal notranslate"><span class="pre">.edf</span></code> files, then the file format for EDF limits
 how far back we can set the recording date. Therefore, all anonymized
@@ -791,9 +839,6 @@ lower-case, in compliance with the BIDS specification.</p>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Consider the following scenario:"><img alt="" src="../_images/sphx_glr_anonymize_dataset_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/anonymize_dataset.html"><span class="doc">Anonymizing a BIDS dataset</span></a></p>
   <div class="sphx-glr-thumbnail-title">Anonymizing a BIDS dataset</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="BIDSPath is MNE-BIDS&#x27;s working horse when it comes to file and folder operations. Learn here how to use it."><img alt="" src="../_images/sphx_glr_bidspath_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/bidspath.html"><span class="doc">An introduction to BIDSPath</span></a></p>
-  <div class="sphx-glr-thumbnail-title">An introduction to BIDSPath</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specifically, we will follow these steps:"><img alt="" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html"><span class="doc">Convert EEG data to BIDS format</span></a></p>
   <div class="sphx-glr-thumbnail-title">Convert EEG data to BIDS format</div>
@@ -869,8 +914,8 @@ lower-case, in compliance with the BIDS specification.</p>
     class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.write_raw_bids"><code class="docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-mne-bids-write-raw-bids">Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids</span></code></a></li>
 </ul>
@@ -889,8 +934,8 @@ lower-case, in compliance with the BIDS specification.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -901,7 +946,7 @@ lower-case, in compliance with the BIDS specification.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-26.
       <br/>
     
   </p>
@@ -910,7 +955,7 @@ lower-case, in compliance with the BIDS specification.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>
@@ -924,7 +969,7 @@ lower-case, in compliance with the BIDS specification.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
 </p></div>
       
     </div>

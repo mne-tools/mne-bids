@@ -188,7 +188,7 @@ print_dir_tree(bids_root_anon)
 # Reproducibility
 # ---------------
 # Every time you run this function, the automatically-generated subject IDs and
-# the timeshift may differ (unless you excplicitly specify them as described
+# the timeshift may differ (unless you explicitly specify them as described
 # above), as they are determined randomly.
 #
 # To ensure results are reproducible across runs, you can pass the
@@ -207,7 +207,7 @@ print_dir_tree(bids_root_anon)
 # culture, like "42", or "1337". To obtain a truly random seed, you can paste
 # the following into your console:
 # ``python -c "import secrets; print(secrets.randbits(31))"``
-# Here, 31 bits correspond to the maximum seed "size" that the the legacy
+# Here, 31 bits correspond to the maximum seed "size" that the legacy
 # ``RandomState`` by NumPy, which many scientific libraries still rely on,
 # can accept. For more information, see also this blog post on
 # `NumPy RNG best practices <https://blog.scientific-python.org/numpy/numpy-rng/>`_.

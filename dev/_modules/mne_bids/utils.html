@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.utils &#8212; MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</title>
+    <title>mne_bids.utils &#8212; MNE-BIDS 0.19.0.dev73+g415d0aa02 documentation</title>
   
   
   
@@ -26,43 +26,51 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=81d8d220" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
 
-    <script src="../../_static/documentation_options.js?v=72fbe1e2"></script>
+    <script src="../../_static/documentation_options.js?v=eb4e467a"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_bids/utils';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/_modules/mne_bids/utils.html" />
@@ -71,22 +79,28 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev44+g9139214b9" />
+  <meta name="docsearch:version" content="0.19.0.dev73+g415d0aa02" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
 
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
-
+  <body data-default-mode="auto">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -112,7 +126,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -134,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev44+g9139214b9 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev73+g415d0aa02 documentation</p>
   
 </a></div>
     
@@ -210,11 +224,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -247,8 +268,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -259,8 +279,7 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Discourse</span></a>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
         </li>
 </ul></div>
       
@@ -361,11 +380,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item">
 <div class="version-switcher__container dropdown pst-js-only">
@@ -398,8 +424,7 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -410,8 +435,7 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Discourse</span></a>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
         </li>
 </ul></div>
         
@@ -488,7 +512,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">pick_types</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_standard_montage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_builtin_montages</span><span class="p">,</span> <span class="n">make_standard_montage</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.kit.kit</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_kit_info</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span> <span class="k">as</span> <span class="n">_warn</span>
@@ -517,16 +541,16 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    fro : str</span>
-<span class="sd">        Mapping from nomenclature of `fro`. Can be &#39;mne&#39;, &#39;bids&#39;</span>
+<span class="sd">        Mapping from nomenclature of ``fro``. Can be &#39;mne&#39;, &#39;bids&#39;</span>
 <span class="sd">    to : str</span>
-<span class="sd">        Mapping to nomenclature of `to`. Can be &#39;mne&#39;, &#39;bids&#39;</span>
+<span class="sd">        Mapping to nomenclature of ``to``. Can be &#39;mne&#39;, &#39;bids&#39;</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    mapping : dict</span>
 <span class="sd">        Dictionary mapping from one nomenclature of channel types to another.</span>
 <span class="sd">        If a key is not present, a default value will be returned that depends</span>
-<span class="sd">        on the `fro` and `to` parameters.</span>
+<span class="sd">        on the ``fro`` and ``to`` parameters.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -613,7 +637,7 @@
 <span class="sd">        Raw object.</span>
 <span class="sd">    datatype : str | None</span>
 <span class="sd">        Can be one of either ``&#39;meg&#39;``, ``&#39;eeg&#39;``, ``&#39;emg&#39;`` or ``&#39;ieeg&#39;``. If ``None``,</span>
-<span class="sd">        `mne.utils._handle_datatype()` will attempt to infer the datatype from</span>
+<span class="sd">        ``mne.utils._handle_datatype()`` will attempt to infer the datatype from</span>
 <span class="sd">        the ``raw`` object. In case of multiple data types in the ``raw``</span>
 <span class="sd">        object, ``datatype`` must not be ``None``.</span>
 
@@ -705,7 +729,7 @@
             <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write JSON to a file.&quot;&quot;&quot;</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
@@ -714,7 +738,7 @@
         <span class="p">)</span>
 
     <span class="n">json_output</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
         <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_output</span><span class="p">)</span>
         <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -722,25 +746,25 @@
 
 
 <span class="nd">@verbose</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write an ordered dictionary to a .tsv file.&quot;&quot;&quot;</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. Please set overwrite to True.&#39;</span>
         <span class="p">)</span>
-    <span class="n">_to_tsv</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+    <span class="n">_to_tsv</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_write_text</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_text</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write text to a file.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. Please set overwrite to True.&#39;</span>
         <span class="p">)</span>
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
         <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -795,7 +819,12 @@
     <span class="n">sel</span> <span class="o">=</span> <span class="n">pick_types</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sel</span><span class="p">]</span>
     <span class="n">channel_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">ch_names</span><span class="p">]</span>
-    <span class="n">montage1005</span> <span class="o">=</span> <span class="n">make_standard_montage</span><span class="p">(</span><span class="s2">&quot;standard_1005&quot;</span><span class="p">)</span>
+
+    <span class="c1"># TODO: Remove this comprehension once minimum supported MNE is 1.14</span>
+    <span class="n">montage_name</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;colin27_1005&quot;</span> <span class="k">if</span> <span class="s2">&quot;colin27_1005&quot;</span> <span class="ow">in</span> <span class="n">get_builtin_montages</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;standard_1005&quot;</span>
+    <span class="p">)</span>
+    <span class="n">montage1005</span> <span class="o">=</span> <span class="n">make_standard_montage</span><span class="p">(</span><span class="n">montage_name</span><span class="p">)</span>
     <span class="n">montage1005_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">montage1005</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">channel_names</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">montage1005_names</span><span class="p">)):</span>
@@ -830,7 +859,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the `anonymize` dict.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the ``anonymize`` dict.&quot;&quot;&quot;</span>
     <span class="c1"># if info[&#39;meas_date&#39;] None, then the dates are not stored</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">daysback</span> <span class="o">=</span> <span class="kc">None</span>
@@ -886,7 +915,7 @@
 <div class="viewcode-block" id="get_anonymization_daysback">
 <a class="viewcode-back" href="../../generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_anonymization_daysback</span><span class="p">(</span><span class="n">raws</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_anonymization_daysback</span><span class="p">(</span><span class="n">raws</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the group min and max number of daysback necessary for BIDS specs.</span>
 
 <span class="sd">    .. warning:: It is important that you remember the anonymization</span>
@@ -896,14 +925,14 @@
 
 <span class="sd">    BIDS requires that anonymized dates be before 1925. In order to</span>
 <span class="sd">    preserve the longitudinal structure and ensure anonymization, the</span>
-<span class="sd">    user is asked to provide the same `daysback` argument to each call</span>
-<span class="sd">    of `write_raw_bids`. To determine the minimum number of daysback</span>
+<span class="sd">    user is asked to provide the same ``daysback`` argument to each call</span>
+<span class="sd">    of :func:`~mne_bids.write_raw_bids`. To determine the minimum number of daysback</span>
 <span class="sd">    necessary, this function will calculate the minimum number based on</span>
 <span class="sd">    the most recent measurement date of raw objects.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    raw : mne.io.Raw | list of mne.io.Raw</span>
+<span class="sd">    raws : mne.io.Raw | list of mne.io.Raw</span>
 <span class="sd">        Subject raw data or list of raw data from several subjects.</span>
 <span class="sd">    %(verbose)s</span>
 
@@ -965,10 +994,6 @@
 <span class="sd">        Raw object.</span>
 <span class="sd">    datatype : str</span>
 <span class="sd">        Can be one of either ``&#39;meg&#39;``, ``&#39;eeg&#39;``, or ``&#39;ieeg&#39;``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">supported_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;emg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;nirs&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
@@ -1020,9 +1045,8 @@
 <span class="sd">    function is defined here (instead of in `conf.py`) because it must be *importable*</span>
 <span class="sd">    in order for the sphinx gallery config dict in `conf.py` to remain serializable.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span>
-        <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;doc&quot;</span> <span class="o">/</span> <span class="s2">&quot;example_order.json&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span>
-    <span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;doc&quot;</span> <span class="o">/</span> <span class="s2">&quot;example_order.json&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
         <span class="n">EXAMPLE_ORDER</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fid</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">filename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">EXAMPLE_ORDER</span><span class="p">:</span>
@@ -1047,6 +1071,25 @@
 
 <span class="c1"># Some of the defaults here will be wrong but it should be close enough</span>
 <span class="n">warn</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_warn</span><span class="p">,</span> <span class="s2">&quot;__doc__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_dt_to_utc</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">local_tz</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a naive datetime to UTC.</span>
+
+<span class="sd">    Fallsback to the computers *current* tz if needed (e.g. Windows pre-epoch failures).</span>
+
+<span class="sd">    This is in a helper in order to make unit testing this behavior easier.</span>
+<span class="sd">    The local_tz parameter exists so that tests can make the fallback path deterministic</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># Windows needs an explicit local tz for naive, pre-epoch datetimes.</span>
+        <span class="c1"># https://bugs.python.org/issue36759</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using the current local tz for </span><span class="si">%s</span><span class="s2">, due to: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">local_tz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">local_tz</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">astimezone</span><span class="p">()</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">or</span> <span class="n">UTC</span>
+        <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">local_tz</span><span class="p">)</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span>
 </pre></div>
 
                 </article>
@@ -1076,8 +1119,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1088,7 +1131,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-12-22.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-26.
       <br/>
     
   </p>
@@ -1097,7 +1140,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>
@@ -1111,7 +1154,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
 </p></div>
       
     </div>

@@ -1,0 +1,1291 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.19.0.dev83+g4138e2604 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=81d8d220" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+
+    <script src="../../_static/documentation_options.js?v=6b2caeb3"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=fd10adb8"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_bids/copyfiles';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/_modules/mne_bids/copyfiles.html" />
+    <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../../_static/scrollfix.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.19.0.dev83+g4138e2604" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev83+g4138e2604 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    News
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use.html">
+    Use
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../generated/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    News
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use.html">
+    Use
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../generated/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.copyfiles</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_bids.copyfiles</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utility functions to copy raw data files.</span>
+
+<span class="sd">When writing BIDS datasets, we often move and/or rename raw data files. several</span>
+<span class="sd">original data formats have properties that restrict such operations. That is,</span>
+<span class="sd">moving/renaming raw data files naively might lead to broken files, for example</span>
+<span class="sd">due to internal pointers that are not being updated.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Authors: The MNE-BIDS developers</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sh</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">anonymize_info</span><span class="p">,</span> <span class="n">read_raw_bdf</span><span class="p">,</span> <span class="n">read_raw_brainvision</span><span class="p">,</span> <span class="n">read_raw_edf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids._fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">_chmod_rw_R</span><span class="p">,</span> <span class="n">_open_lock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_parse_ext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">warn</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;See: https://github.com/jupyterlab/jupyterlab/pull/5150.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="c1"># ``copytree`` throws an error if copying to + from NFS even though</span>
+        <span class="c1"># the copy is successful (see https://bugs.python.org/issue24564)</span>
+        <span class="k">if</span> <span class="s2">&quot;[Errno 22]&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
+            <span class="k">raise</span>
+    <span class="c1"># set reasonable perms for new files (writeable by user at least)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_chmod_rw_R</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not set write permissions for </span><span class="si">{</span><span class="n">dst</span><span class="si">}</span><span class="s2"> and its subdirectories, &quot;</span>
+            <span class="s2">&quot;please check the permissions of the copied files.&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_kit_marker_acq_label</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">acquisition_label</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compose a BIDS acquisition label for KIT marker files.&quot;&quot;&quot;</span>
+    <span class="n">label_parts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">label_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">acquisition_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">label_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acquisition_label</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">label_parts</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">label_parts</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the encoding of .vhdr and .vmrk files.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vhdr_file : str</span>
+<span class="sd">        Path to the header file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    enc : str</span>
+<span class="sd">        Encoding of the .vhdr file to pass it on to open() function</span>
+<span class="sd">        either &#39;UTF-8&#39; (default) or whatever encoding scheme is specified</span>
+<span class="sd">        in the header.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ef</span><span class="p">:</span>
+        <span class="n">enc</span> <span class="o">=</span> <span class="n">ef</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">enc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Codepage=&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="n">enc</span><span class="p">[</span><span class="n">enc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Codepage=&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">9</span> <span class="p">:]</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="s2">&quot;(read from header)&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="s2">&quot;UTF-8&quot;</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="s2">&quot;(default)&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected file encoding: </span><span class="si">{</span><span class="n">enc</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">enc</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the .eeg/.dat and .vmrk file paths from a BrainVision header file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vhdr_path : str</span>
+<span class="sd">        Path to the header file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    paths : tuple</span>
+<span class="sd">        Paths to the .eeg/.dat file at index 0 and the .vmrk file at index 1 of</span>
+<span class="sd">        the returned tuple.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Expecting file ending in &quot;.vhdr&quot;, but got </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Header file seems fine</span>
+    <span class="c1"># extract encoding from brainvision header file, or default to utf-8</span>
+    <span class="n">enc</span> <span class="o">=</span> <span class="n">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
+
+    <span class="c1"># ..and read it</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+    <span class="c1"># Try to find data file .eeg/.dat</span>
+    <span class="n">eeg_file_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;DataFile=(.*\.(eeg|dat))&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">eeg_file_match</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find a .eeg or .dat file link in </span><span class="si">{</span><span class="n">vhdr_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">eeg_file</span> <span class="o">=</span> <span class="n">eeg_file_match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Try to find marker file .vmrk</span>
+    <span class="n">vmrk_file_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;MarkerFile=(.*\.vmrk)&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">vmrk_file_match</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find a .vmrk file link in </span><span class="si">{</span><span class="n">vhdr_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vmrk_file</span> <span class="o">=</span> <span class="n">vmrk_file_match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Make sure we are dealing with file names as is customary, not paths</span>
+    <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="p">[</span><span class="n">eeg_file</span><span class="p">,</span> <span class="n">vmrk_file</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">in</span> <span class="n">fi</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Detected a path separator in a file link: </span><span class="si">{</span><span class="n">fi</span><span class="si">}</span><span class="s2">.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Paths are problematic when copying the files to another system. &quot;</span>
+                <span class="s2">&quot;Instead, always use the file name and keep the &quot;</span>
+                <span class="s2">&quot;BrainVision file triplet (eeg/dat, vhdr, vmrk) in the same directory.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Assert the paths exist</span>
+    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
+    <span class="n">eeg_file_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">eeg_file</span><span class="p">)</span>
+    <span class="n">vmrk_file_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">vmrk_file</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="p">[</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2"> referenced in </span><span class="si">{</span><span class="n">vhdr_path</span><span class="si">}</span><span class="s2"> but it does not exist.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Return the paths</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="copyfile_ctf">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_ctf.html#mne_bids.copyfiles.copyfile_ctf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_ctf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy and rename CTF files to a new location.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : path-like</span>
+<span class="sd">        Path to the source raw .ds folder.</span>
+<span class="sd">    dest : path-like</span>
+<span class="sd">        Path to the destination of the new bids folder.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    copyfile_kit</span>
+<span class="sd">    copyfile_mef</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+    <span class="c1"># list of file types to rename</span>
+    <span class="n">file_types</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;.acq&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.eeg&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.dat&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.hc&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.hist&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.infods&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.bak&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.meg4&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.newds&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.res4&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Consider CTF files that are split having consecutively numbered extensions</span>
+    <span class="n">extra_ctf_file_types</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_meg4&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># cap at 20 is arbitrary</span>
+    <span class="n">file_types</span> <span class="o">+=</span> <span class="n">extra_ctf_file_types</span>
+
+    <span class="c1"># Rename files in dest with the name of the dest directory</span>
+    <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">file_types</span><span class="p">)]</span>
+    <span class="n">bids_folder_name</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dest</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># ensure it&#39;s writeable before trying to rename it</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">fname</span><span class="p">),</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">bids_folder_name</span> <span class="o">+</span> <span class="n">ext</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="copyfile_mef">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_mef.html#mne_bids.copyfiles.copyfile_mef">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_mef</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy MEF3 files to a new location.</span>
+
+<span class="sd">    MEF3 (Multiscale Electrophysiology Format) data is stored in a directory</span>
+<span class="sd">    with the ``.mefd`` extension. This function copies the entire directory</span>
+<span class="sd">    structure to the destination.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : path-like</span>
+<span class="sd">        Path to the source raw .mefd folder.</span>
+<span class="sd">    dest : path-like</span>
+<span class="sd">        Path to the destination of the new bids folder.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    copyfile_kit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="copyfile_kit">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_kit.html#mne_bids.copyfiles.copyfile_kit">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_kit</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">_init_kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy and rename KIT files to a new location.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : path-like</span>
+<span class="sd">        Path to the source raw .con or .sqd folder.</span>
+<span class="sd">    dest : path-like</span>
+<span class="sd">        Path to the destination of the new bids folder.</span>
+<span class="sd">    subject_id : str | None</span>
+<span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
+<span class="sd">    session_id : str | None</span>
+<span class="sd">        The session identifier. Corresponds to &quot;ses&quot;.</span>
+<span class="sd">    task : str | None</span>
+<span class="sd">        The task identifier. Corresponds to &quot;task&quot;.</span>
+<span class="sd">    run : int | None</span>
+<span class="sd">        The run number. Corresponds to &quot;run&quot;.</span>
+<span class="sd">    _init_kwargs : dict</span>
+<span class="sd">        Extract information of marker and headpoints.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># create parent directories in case it does not exist yet</span>
+    <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dest</span><span class="p">))</span>
+
+    <span class="c1"># KIT data requires the marker file to be copied over too</span>
+    <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dest</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">datatype</span> <span class="o">=</span> <span class="s2">&quot;meg&quot;</span>
+
+    <span class="k">if</span> <span class="s2">&quot;mrk&quot;</span> <span class="ow">in</span> <span class="n">_init_kwargs</span> <span class="ow">and</span> <span class="n">_init_kwargs</span><span class="p">[</span><span class="s2">&quot;mrk&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">hpi</span> <span class="o">=</span> <span class="n">_init_kwargs</span><span class="p">[</span><span class="s2">&quot;mrk&quot;</span><span class="p">]</span>
+        <span class="n">acq_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hpi</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">_get_mrk_meas_date</span><span class="p">(</span><span class="n">hpi</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">_get_mrk_meas_date</span><span class="p">(</span><span class="n">hpi</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Markers provided in incorrect order.&quot;</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">marker_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">hpi</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">acq_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;pre&quot;</span><span class="p">,</span> <span class="s2">&quot;post&quot;</span><span class="p">],</span> <span class="n">hpi</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">marker_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
+            <span class="n">acq_map</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">acq_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">marker_acq</span> <span class="o">=</span> <span class="n">_kit_marker_acq_label</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="n">marker_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span>
+                <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+                <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
+                <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">acquisition</span><span class="o">=</span><span class="n">marker_acq</span><span class="p">,</span>
+                <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;markers&quot;</span><span class="p">,</span>
+                <span class="n">extension</span><span class="o">=</span><span class="n">marker_ext</span><span class="p">,</span>
+                <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">marker_path</span><span class="o">.</span><span class="n">basename</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">acq</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;elp&quot;</span><span class="p">,</span> <span class="s2">&quot;hsp&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">acq</span> <span class="ow">in</span> <span class="n">_init_kwargs</span> <span class="ow">and</span> <span class="n">_init_kwargs</span><span class="p">[</span><span class="n">acq</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">position_file</span> <span class="o">=</span> <span class="n">_init_kwargs</span><span class="p">[</span><span class="n">acq</span><span class="p">]</span>
+            <span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">acq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">acq</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="n">position_ext</span> <span class="o">=</span> <span class="s2">&quot;.pos&quot;</span>
+            <span class="n">position_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span>
+                <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+                <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
+                <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+                <span class="n">acquisition</span><span class="o">=</span><span class="n">acq</span><span class="p">,</span>
+                <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;headshape&quot;</span><span class="p">,</span>
+                <span class="n">extension</span><span class="o">=</span><span class="n">position_ext</span><span class="p">,</span>
+                <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">position_file</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">position_path</span><span class="o">.</span><span class="n">basename</span><span class="p">))</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_replace_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Overwrite file, replacing end of lines matching pattern with replace.&quot;&quot;&quot;</span>
+    <span class="n">new_content</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">replace</span><span class="p">)]</span> <span class="o">+</span> <span class="n">replace</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">new_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">new_content</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_anonymize_brainvision</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Anonymize vmrk and vhdr files in place using ``date`` datetime object.&quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">vmrk_file</span> <span class="o">=</span> <span class="n">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">)</span>
+
+    <span class="c1"># Go through VMRK</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^Mk\d+=New Segment,.*,\d+,\d+,\d+,\d</span><span class="si">{20}</span><span class="s2">$&quot;</span><span class="p">)</span>
+    <span class="n">replace</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">%H%M%S</span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">_replace_file</span><span class="p">(</span><span class="n">vmrk_file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+
+    <span class="c1"># Go through VHDR</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^Impedance \[kOhm\] at \d\d:\d\d:\d\d :$&quot;</span><span class="p">)</span>
+    <span class="n">replace</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;at </span><span class="si">{</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M:%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> :&quot;</span>
+    <span class="n">_replace_file</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="copyfile_brainvision">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision">[docs]</a>
+<span class="nd">@verbose</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy a BrainVision file triplet to a new location and repair links.</span>
+
+<span class="sd">    The BrainVision file format consists of three files:</span>
+<span class="sd">    .vhdr, .eeg/.dat, and .vmrk</span>
+<span class="sd">    The .eeg/.dat and .vmrk files associated with the .vhdr file will be</span>
+<span class="sd">    given names as in ``vhdr_dest`` with adjusted extensions. Internal file</span>
+<span class="sd">    pointers will be fixed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vhdr_src : path-like</span>
+<span class="sd">        The source path of the .vhdr file to be copied.</span>
+<span class="sd">    vhdr_dest : path-like</span>
+<span class="sd">        The destination path of the .vhdr file.</span>
+<span class="sd">    anonymize : dict | None</span>
+<span class="sd">        If None (default), no anonymization is performed.</span>
+<span class="sd">        If dict, data will be anonymized depending on the keys provided with</span>
+<span class="sd">        the dict: ``daysback`` is a required key, ``keep_his`` is an optional key.</span>
+
+<span class="sd">        ``daysback`` : int</span>
+<span class="sd">            Number of days by which to move back the recording date in time.</span>
+<span class="sd">            In studies with multiple subjects the relative recording date</span>
+<span class="sd">            differences between subjects can be kept by using the same number</span>
+<span class="sd">            of ``daysback`` for all subject anonymizations. ``daysback`` should be</span>
+<span class="sd">            great enough to shift the date prior to 1925 to conform with BIDS</span>
+<span class="sd">            anonymization rules.</span>
+<span class="sd">        ``keep_his`` : bool</span>
+<span class="sd">            By default (False), all subject information next to the recording</span>
+<span class="sd">            date will be overwritten as well. If True, keep subject information</span>
+<span class="sd">            apart from the recording date.</span>
+<span class="sd">    %(verbose)s</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne.io.anonymize_info</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    copyfile_kit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get extension of the brainvision file</span>
+    <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
+    <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext_src</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Need to move data with same extension, &quot;</span>
+            <span class="sa">f</span><span class="s1">&#39; but got &quot;</span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s1">&quot; and &quot;</span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+        <span class="p">)</span>
+
+    <span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span> <span class="o">=</span> <span class="n">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
+
+    <span class="c1"># extract encoding from brainvision header file, or default to utf-8</span>
+    <span class="n">enc</span> <span class="o">=</span> <span class="n">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
+
+    <span class="c1"># raise warning if binary file has .dat extension</span>
+    <span class="k">if</span> <span class="s2">&quot;.dat&quot;</span> <span class="ow">in</span> <span class="n">eeg_file_path</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;The file extension of your binary EEG data file is .dat, while &quot;</span>
+            <span class="s2">&quot;the expected extension for raw data is .eeg. &quot;</span>
+            <span class="s2">&quot;This might imply it&#39;s preprocessed or processed data: &quot;</span>
+            <span class="s2">&quot;We copied the files and changed the extension to .eeg, &quot;</span>
+            <span class="s2">&quot;but please ensure that this is actually BIDS compatible data!&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Copy data .eeg/.dat ... no links to repair</span>
+    <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">fname_dest</span> <span class="o">+</span> <span class="s2">&quot;.eeg&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Write new header and marker files, fixing the file pointer links</span>
+    <span class="c1"># For that, we need to replace an old &quot;basename&quot; with a new one</span>
+    <span class="c1"># assuming that all .eeg/.dat, .vhdr, .vmrk share one basename</span>
+    <span class="n">basename_src</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname_src</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">eeg_expected</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.eeg&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.dat&quot;</span><span class="p">]</span>
+    <span class="n">vmrk_expected</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.vmrk&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">eeg_expected</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unexpected path to data file in </span><span class="si">{</span><span class="n">vhdr_src</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">    &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;--&gt;</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">Expected one of </span><span class="si">{</span><span class="n">eeg_expected</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vmrk_expected</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unexpected path to marker file in </span><span class="si">{</span><span class="n">vhdr_src</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">    &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;--&gt;</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">Expected one of </span><span class="si">{</span><span class="n">vmrk_expected</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">basename_dest</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname_dest</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">search_lines</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s2">&quot;DataFile=</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.eeg&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;DataFile=</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.dat&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;MarkerFile=</span><span class="si">{</span><span class="n">basename_src</span><span class="si">}</span><span class="s2">.vmrk&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="n">search_lines</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">basename_src</span><span class="p">,</span> <span class="n">basename_dest</span><span class="p">)</span>
+                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s2">&quot;.vmrk&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="n">search_lines</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">basename_src</span><span class="p">,</span> <span class="n">basename_dest</span><span class="p">)</span>
+                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">anonymize_info</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">)</span>
+        <span class="n">_anonymize_brainvision</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">,</span> <span class="s2">&quot;.vmrk&quot;</span><span class="p">]:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="n">ext</span><span class="p">)</span>
+        <span class="n">dirname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Created &quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; in &quot;</span><span class="si">{</span><span class="n">dirname</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">anonymize</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Anonymized all dates in VHDR and VMRK.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="copyfile_edf">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf">[docs]</a>
+<span class="nd">@verbose</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.</span>
+
+<span class="sd">    .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:</span>
+<span class="sd">                 A generic &quot;startdate&quot; field that supports only 2-digit years,</span>
+<span class="sd">                 and a &quot;Startdate&quot; field as part of the &quot;local recording</span>
+<span class="sd">                 identification&quot;, which supports 4-digit years.</span>
+<span class="sd">                 If you want to anonymize your file, MNE-BIDS will set the</span>
+<span class="sd">                 &quot;startdate&quot; field to 85 (i.e., 1985), the earliest possible</span>
+<span class="sd">                 date for that field. However, the &quot;Startdate&quot; field in the</span>
+<span class="sd">                 file&#39;s &quot;local recording identification&quot; and the date in the</span>
+<span class="sd">                 session&#39;s corresponding ``scans.tsv`` will be set correctly</span>
+<span class="sd">                 according to the argument provided to the ``anonymize``</span>
+<span class="sd">                 parameter. Note that it is possible that not all EDF/EDF+/BDF</span>
+<span class="sd">                 reading software parses the accurate recording date, and</span>
+<span class="sd">                 that for some reading software, the wrong year (1985) may</span>
+<span class="sd">                 be parsed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : path-like</span>
+<span class="sd">        The source path of the .edf or .bdf file to be copied.</span>
+<span class="sd">    dest : path-like</span>
+<span class="sd">        The destination path of the .edf or .bdf file.</span>
+<span class="sd">    anonymize : dict | None</span>
+<span class="sd">        If None (default), no anonymization is performed.</span>
+<span class="sd">        If dict, data will be anonymized depending on the keys provided with</span>
+<span class="sd">        the dict: ``daysback`` is a required key, ``keep_his`` is an optional key.</span>
+
+<span class="sd">        ``daysback`` : int</span>
+<span class="sd">            Number of days by which to move back the recording date in time.</span>
+<span class="sd">            In studies with multiple subjects the relative recording date</span>
+<span class="sd">            differences between subjects can be kept by using the same number</span>
+<span class="sd">            of ``daysback`` for all subject anonymizations. ``daysback`` should be</span>
+<span class="sd">            great enough to shift the date prior to 1925 to conform with BIDS</span>
+<span class="sd">            anonymization rules. Due to limitations of the EDF/BDF format, the</span>
+<span class="sd">            year of the anonymized date will always be set to 1985 in the</span>
+<span class="sd">            &#39;startdate&#39; field of the file. The correctly-shifted year will be</span>
+<span class="sd">            written to the &#39;local recording identification&#39; region of the</span>
+<span class="sd">            file header, which may not be parsed by all EDF/EDF+/BDF reader</span>
+<span class="sd">            software.</span>
+<span class="sd">        ``keep_his`` : bool</span>
+<span class="sd">            By default (False), all subject information next to the recording</span>
+<span class="sd">            date will be overwritten as well. If True, keep subject information</span>
+<span class="sd">            apart from the recording date. Participant names and birthdates</span>
+<span class="sd">            will always be anonymized if present, regardless of this setting.</span>
+<span class="sd">    %(verbose)s</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne.io.anonymize_info</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    copyfile_kit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure source &amp; destination extensions are the same</span>
+    <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ext_src</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Need to move data with same extension, &quot;</span>
+            <span class="sa">f</span><span class="s1">&#39; but got &quot;</span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s1">&quot; and &quot;</span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ext_dest</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.EDF&quot;</span><span class="p">,</span> <span class="s2">&quot;.BDF&quot;</span><span class="p">]:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Upper-case extension for EDF/BDF files is not supported &quot;</span>
+            <span class="s2">&quot;in BIDS. Converting destination extension to lower-case.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">ext_dest</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">ext_dest</span><span class="p">)</span>
+
+    <span class="c1"># Copy data prior to any anonymization</span>
+    <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+
+    <span class="c1"># Anonymize EDF/BDF data, if requested</span>
+    <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ext_src</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.bdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.BDF&quot;</span><span class="p">]:</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bdf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ext_src</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.edf&quot;</span><span class="p">,</span> <span class="s2">&quot;.EDF&quot;</span><span class="p">]:</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_edf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported file type (</span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get subject info, recording info, and recording date</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># id_info field starts 8 bytes in</span>
+            <span class="n">id_info</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+            <span class="n">rec_info</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+
+        <span class="c1"># Parse metadata from file</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">id_info</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">id_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">id_info</span> <span class="o">=</span> <span class="s2">&quot;X X X X&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rec_info</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">rec_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">rec_info</span> <span class="o">=</span> <span class="s2">&quot;Startdate X X X X&quot;</span>
+        <span class="n">pid</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="n">birthdate</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">id_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="n">start_date</span><span class="p">,</span> <span class="n">admin_code</span><span class="p">,</span> <span class="n">tech</span><span class="p">,</span> <span class="n">equip</span> <span class="o">=</span> <span class="n">rec_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+
+        <span class="c1"># Try to anonymize the recording date</span>
+        <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="s2">&quot;.edf&quot;</span><span class="p">)</span>
+        <span class="n">anonymize_info</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">)</span>
+        <span class="n">start_date</span> <span class="o">=</span> <span class="s2">&quot;01-JAN-1985&quot;</span>
+        <span class="n">meas_date</span> <span class="o">=</span> <span class="s2">&quot;01.01.85&quot;</span>
+
+        <span class="c1"># Anonymize ID info and write to file</span>
+        <span class="k">if</span> <span class="n">keep_his</span><span class="p">:</span>
+            <span class="c1"># Always remove participant birthdate and name to be safe</span>
+            <span class="n">id_info</span> <span class="o">=</span> <span class="p">[</span><span class="n">pid</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">]</span>
+            <span class="n">rec_info</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Startdate&quot;</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">admin_code</span><span class="p">,</span> <span class="n">tech</span><span class="p">,</span> <span class="n">equip</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">id_info</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">]</span>
+            <span class="n">rec_info</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Startdate&quot;</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;mne-bids_anonymize&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">]</span>
+        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;r+b&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># id_info field starts 8 bytes in</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">id_info</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">80</span><span class="p">),</span> <span class="s2">&quot;ascii&quot;</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rec_info</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">80</span><span class="p">),</span> <span class="s2">&quot;ascii&quot;</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="s2">&quot;ascii&quot;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="copyfile_eeglab">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_eeglab</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy an EEGLAB file to a new location.</span>
+
+<span class="sd">    If the EEGLAB ``.set`` file comes with an accompanying ``.fdt`` binary file</span>
+<span class="sd">    that contains the actual data, this function will copy this file, too, and</span>
+<span class="sd">    update all internal pointers in the new ``.set`` file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : path-like</span>
+<span class="sd">        Path to the source raw .set file.</span>
+<span class="sd">    dest : path-like</span>
+<span class="sd">        Path to the destination of the new .set file.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_kit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get extension of the EEGLAB file</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext_src</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Need to move data with same extension but got </span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Load the EEG struct</span>
+    <span class="c1"># NOTE: do *not* simplify cells, because this changes the underlying</span>
+    <span class="c1"># structure and potentially breaks re-reading of the file</span>
+    <span class="n">uint16_codec</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">eeg</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span>
+        <span class="n">file_name</span><span class="o">=</span><span class="n">src</span><span class="p">,</span>
+        <span class="n">simplify_cells</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">uint16_codec</span><span class="o">=</span><span class="n">uint16_codec</span><span class="p">,</span>
+        <span class="n">mat_dtype</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">oldstyle</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="s2">&quot;EEG&quot;</span> <span class="ow">in</span> <span class="n">eeg</span><span class="p">:</span>
+        <span class="n">eeg</span> <span class="o">=</span> <span class="n">eeg</span><span class="p">[</span><span class="s2">&quot;EEG&quot;</span><span class="p">]</span>
+        <span class="n">oldstyle</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">has_fdt_link</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># If the data field is a string, it points to a .fdt file in src dir</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eeg</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">has_fdt_link</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">has_fdt_link</span><span class="p">:</span>
+        <span class="n">fdt_fname</span> <span class="o">=</span> <span class="n">eeg</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">assert</span> <span class="n">fdt_fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.fdt&quot;</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Unexpected fdt name: </span><span class="si">{</span><span class="n">fdt_fname</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">head</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+        <span class="n">fdt_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">fdt_fname</span><span class="p">)</span>
+
+        <span class="c1"># Copy the .fdt file and give it a new name</span>
+        <span class="n">fdt_name_new</span> <span class="o">=</span> <span class="n">fname_dest</span> <span class="o">+</span> <span class="s2">&quot;.fdt&quot;</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">fdt_path</span><span class="p">,</span> <span class="n">fdt_name_new</span><span class="p">)</span>
+
+        <span class="c1"># Now adjust the pointer in the .set file</span>
+        <span class="c1"># NOTE: Clunky numpy code is to match MATLAB structure for &quot;savemat&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fdt_name_new</span><span class="p">)</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+        <span class="n">new_value</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tail</span><span class="p">))</span>
+        <span class="n">eeg</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+
+        <span class="c1"># Save the EEG dictionary as a Matlab struct again</span>
+        <span class="n">mdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">EEG</span><span class="o">=</span><span class="n">eeg</span><span class="p">)</span> <span class="k">if</span> <span class="n">oldstyle</span> <span class="k">else</span> <span class="n">eeg</span>
+        <span class="n">savemat</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="n">mdict</span><span class="o">=</span><span class="n">mdict</span><span class="p">,</span> <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># If no .fdt file, simply copy the .set file, no modifications</span>
+        <span class="c1"># necessary</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="copyfile_bti">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_bti.html#mne_bids.copyfiles.copyfile_bti">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_bti</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy BTi data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : mne.io.Raw</span>
+<span class="sd">        An MNE-Python raw object of BTi data.</span>
+<span class="sd">    dest : path-like</span>
+<span class="sd">        Destination to copy the BTi data to.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    copyfile_kit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s2">&quot;pdf_fname&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;config_fname&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;head_shape_fname&quot;</span><span class="p">,</span> <span class="s2">&quot;hs_file&quot;</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="n">keyfile</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">_raw_extras</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c1"># Keep name of pdf file</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;pdf_fname&quot;</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">keyfile</span><span class="p">)</span>
+
+        <span class="c1"># If no headshape file present, cannot copy it</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;head_shape_fname&quot;</span> <span class="ow">and</span> <span class="n">keyfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">keyfile</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-26.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

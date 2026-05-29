@@ -1,0 +1,1268 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Convert NIRS data to BIDS format &#8212; MNE-BIDS 0.19.0.dev83+g4138e2604 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=81d8d220" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+
+    <script src="../_static/documentation_options.js?v=6b2caeb3"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=fd10adb8"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/convert_nirs_to_bids';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Manually storing empty room data" href="convert_empty_room.html" />
+    <link rel="prev" title="Convert iEEG data to BIDS format" href="convert_ieeg_to_bids.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/auto_examples/convert_nirs_to_bids.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.19.0.dev83+g4138e2604" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-BIDS 0.19.0.dev83+g4138e2604 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    News
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../use.html">
+    Use
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../generated/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    News
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../use.html">
+    Use
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../generated/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="read_bids_datasets.html">Read BIDS datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_mne_sample.html">Convert MNE sample data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mark_bad_channels.html">Interactive data inspection and bad channel selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_eeg_to_bids.html">Convert EEG data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_group_studies.html">BIDS conversion for group studies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rename_brainvision_files.html">Rename BrainVision EEG data files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_mri_and_trans.html">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_ieeg_to_bids.html">Convert iEEG data to BIDS format</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Convert NIRS data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_empty_room.html">Manually storing empty room data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bidspath.html">An introduction to BIDSPath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_bids_folder.html">Creating BIDS-compatible folder names and filenames</a></li>
+<li class="toctree-l1"><a class="reference internal" href="update_bids_datasets.html">Updating BIDS datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="anonymize_dataset.html">Anonymizing a BIDS dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_fieldtrip_emg.html">Convert EMG data to BIDS format</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../use.html" class="nav-link">Using MNE-BIDS</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Convert NIRS data to BIDS format</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-convert-nirs-to-bids-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="convert-nirs-data-to-bids-format">
+<span id="sphx-glr-auto-examples-convert-nirs-to-bids-py"></span><h1>Convert NIRS data to BIDS format<a class="headerlink" href="#convert-nirs-data-to-bids-format" title="Link to this heading">#</a></h1>
+<p>In this example, we use MNE-BIDS to create a BIDS-compatible directory of NIRS
+data. Specifically, we will follow these steps:</p>
+<ol class="arabic simple">
+<li><p>Download some NIRS data</p></li>
+<li><p>Load the data, extract information, and save it in a new BIDS directory.</p></li>
+<li><p>Check the result and compare it with the standard.</p></li>
+<li><p>Cite <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>.</p></li>
+</ol>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: The MNE-BIDS developers</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
+</pre></div>
+</div>
+<p>We are importing everything we need for this example:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_nirs</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span>  <span class="c1"># For convenient downloading of example data</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span> <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.stats</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events" class="sphx-glr-backref-module-mne_bids-stats sphx-glr-backref-type-py-function"><span class="n">count_events</span></a>
+</pre></div>
+</div>
+<section id="download-the-data">
+<h2>Download the data<a class="headerlink" href="#download-the-data" title="Link to this heading">#</a></h2>
+<p>First, we need some data to work with. We will use the
+<a class="reference external" href="https://github.com/rob-luke/BIDS-NIRS-Tapping">Finger Tapping Dataset</a>
+available on GitHub.
+We will use the MNE-NIRS package which includes convenient functions to
+download openly available datasets.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">fnirs_motor_group</span><span class="o">.</span><span class="n">data_path</span><span class="p">())</span>
+
+<span class="c1"># Let&#39;s see whether the data has been downloaded using a quick visualization</span>
+<span class="c1"># of the directory tree.</span>
+<a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for fnirs_motor_group...
+|fNIRS-motor-group/
+|--- .gitignore
+|--- CITATION.cff
+|--- README.md
+|--- dataset_description.json
+|--- participants.json
+|--- participants.tsv
+|--- sub-01/
+|------ sub-01_scans.tsv
+|------ nirs/
+|--------- sub-01_coordsystem.json
+|--------- sub-01_optodes.tsv
+|--------- sub-01_task-tapping_channels.tsv
+|--------- sub-01_task-tapping_events.tsv
+|--------- sub-01_task-tapping_nirs.json
+|--------- sub-01_task-tapping_nirs.snirf
+|--- sub-02/
+|------ sub-02_scans.tsv
+|------ nirs/
+|--------- sub-02_coordsystem.json
+|--------- sub-02_optodes.tsv
+|--------- sub-02_task-tapping_channels.tsv
+|--------- sub-02_task-tapping_events.tsv
+|--------- sub-02_task-tapping_nirs.json
+|--------- sub-02_task-tapping_nirs.snirf
+|--- sub-03/
+|------ sub-03_scans.tsv
+|------ nirs/
+|--------- sub-03_coordsystem.json
+|--------- sub-03_optodes.tsv
+|--------- sub-03_task-tapping_channels.tsv
+|--------- sub-03_task-tapping_events.tsv
+|--------- sub-03_task-tapping_nirs.json
+|--------- sub-03_task-tapping_nirs.snirf
+|--- sub-04/
+|------ sub-04_scans.tsv
+|------ nirs/
+|--------- sub-04_coordsystem.json
+|--------- sub-04_optodes.tsv
+|--------- sub-04_task-tapping_channels.tsv
+|--------- sub-04_task-tapping_events.tsv
+|--------- sub-04_task-tapping_nirs.json
+|--------- sub-04_task-tapping_nirs.snirf
+|--- sub-05/
+|------ sub-05_scans.tsv
+|------ nirs/
+|--------- sub-05_coordsystem.json
+|--------- sub-05_optodes.tsv
+|--------- sub-05_task-tapping_channels.tsv
+|--------- sub-05_task-tapping_events.tsv
+|--------- sub-05_task-tapping_nirs.json
+|--------- sub-05_task-tapping_nirs.snirf
+</pre></div>
+</div>
+<p>The data are already in BIDS format. However, we will just use one of the
+SNIRF files and demonstrate how this could be used to generate a new BIDS
+compliant dataset from this single file.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify file to use as input to BIDS generation process</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">file_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">/</span> <span class="s2">&quot;sub-01&quot;</span> <span class="o">/</span> <span class="s2">&quot;nirs&quot;</span> <span class="o">/</span> <span class="s2">&quot;sub-01_task-tapping_nirs.snirf&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="convert-to-bids">
+<h2>Convert to BIDS<a class="headerlink" href="#convert-to-bids" title="Link to this heading">#</a></h2>
+<p>Let’s start with loading the data and updating the annotations.
+We are reading the data using MNE-Python’s <code class="docutils literal notranslate"><span class="pre">io</span></code> module and the
+<a class="reference external" href="https://mne.tools/stable/generated/mne.io.read_raw_snirf.html#mne.io.read_raw_snirf" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_snirf()</span></code></a> function.
+Note that we must use the <code class="docutils literal notranslate"><span class="pre">preload=False</span></code> parameter, which is the default
+in MNE-Python.
+It prevents the data from being loaded and modified when converting to BIDS.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the data</span>
+<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_snirf.html#mne.io.read_raw_snirf" title="mne.io.read_raw_snirf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_snirf</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">file_path</span></a><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span>  <span class="c1"># specify power line frequency as required by BIDS</span>
+
+<span class="c1"># Sanity check, show the optode positions</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">plot_sensors</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_convert_nirs_to_bids_001.png" srcset="../_images/sphx_glr_convert_nirs_to_bids_001.png" alt="convert nirs to bids" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading /home/circleci/mne_data/fNIRS-motor-group/sub-01/nirs/sub-01_task-tapping_nirs.snirf
+Found jitter of 0.000000% in sample times.
+
+&lt;Figure size 640x640 with 1 Axes&gt;
+</pre></div>
+</div>
+<p>I also like to rename the annotations to something meaningful and
+set the duration of each stimulus</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trigger_info</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;1.0&quot;</span><span class="p">:</span> <span class="s2">&quot;Control&quot;</span><span class="p">,</span> <span class="s2">&quot;2.0&quot;</span><span class="p">:</span> <span class="s2">&quot;Tapping/Left&quot;</span><span class="p">,</span> <span class="s2">&quot;3.0&quot;</span><span class="p">:</span> <span class="s2">&quot;Tapping/Right&quot;</span><span class="p">}</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trigger_info</span></a><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">set_durations</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Annotations | 92 segments: 15.0 (2), Control (30), Tapping/Left (30), ...&gt;
+</pre></div>
+</div>
+<p>With these steps, we have everything to start a new BIDS directory using
+our data.</p>
+<p>To do that, we can use <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a></p>
+<p>Generally, <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> tries to extract as much
+meta data as possible from the raw data and then formats it in a BIDS
+compatible way. <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> takes a bunch of inputs, most of
+which are however optional. The required inputs are:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">raw</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">bids_basename</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">bids_root</span></code></p></li>
+</ul>
+<p>… as you can see in the docstring:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+
+<span class="c1"># zero padding to account for &gt;100 subjects in this dataset</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="s2">&quot;01&quot;</span>
+
+<span class="c1"># define a task name and a directory where to save the data to</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a> <span class="o">=</span> <span class="s2">&quot;Tapping&quot;</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.with_name" title="pathlib.PurePath.with_name" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">data_dir</span><span class="o">.</span><span class="n">with_name</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.name" title="pathlib.PurePath.name" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-attribute"><span class="n">data_dir</span><span class="o">.</span><span class="n">name</span></a> <span class="o">+</span> <span class="s2">&quot;-bids&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Save raw data to a BIDS-compliant folder structure.
+
+.. warning:: * The original file is simply copied over if the original
+               file format is BIDS-supported for that datatype. Otherwise,
+               this function will convert to a BIDS-supported file format
+               while warning the user. For EEG and iEEG data, conversion
+               will be to BrainVision format; for MEG, conversion will be
+               to FIFF.
+
+             * ``mne-bids`` will infer the manufacturer information
+               from the file extension. If your file format is non-standard
+               for the manufacturer, please update the manufacturer field
+               in the sidecars manually.
+
+Parameters
+----------
+raw : mne.io.Raw
+    The raw data. It must be an instance of :class:`mne:mne.io.Raw` that is not
+    already loaded from disk unless ``allow_preload`` is explicitly set
+    to ``True``. See warning for the ``allow_preload`` parameter.
+bids_path : BIDSPath
+    The file to write. The :class:`mne_bids.BIDSPath` instance passed here
+    **must** have the ``subject``, ``task``, and ``root`` attributes set.
+    If the ``datatype`` attribute is not set, it will be inferred from the
+    recording data type found in ``raw``. In case of multiple data types,
+    the ``.datatype`` attribute must be set.
+    Example::
+
+        bids_path = BIDSPath(subject=&#39;01&#39;, session=&#39;01&#39;, task=&#39;testing&#39;,
+                             acquisition=&#39;01&#39;, run=&#39;01&#39;, datatype=&#39;meg&#39;,
+                             root=&#39;/data/BIDS&#39;)
+
+    This will write the following files in the correct subfolder ``root``::
+
+        sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
+        sub-01_ses-01_task-testing_acq-01_run-01_meg.json
+        sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
+        sub-01_ses-01_acq-01_coordsystem.json
+
+    and the following one if ``events`` is not ``None``::
+
+        sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
+
+    and add a line to the following files::
+
+        participants.tsv
+        scans.tsv
+
+    Note that the extension is automatically inferred from the raw
+    object.
+events : path-like | np.ndarray | None
+    Use this parameter to specify events to write to the ``*_events.tsv``
+    sidecar file, additionally to the object&#39;s :class:`~mne.Annotations`
+    (which are always written).
+    If ``path-like``, specifies the location of an MNE events file.
+    If an array, the MNE events array (shape: ``(n_events, 3)``).
+    If a path or an array and ``raw.annotations`` exist, the union of
+    ``events`` and ``raw.annotations`` will be written.
+    Mappings from event names to event codes (listed in the third
+    column of the MNE events array) must be specified via the ``event_id``
+    parameter; otherwise, an exception is raised. If
+    :class:`~mne.Annotations` are present, their descriptions must be
+    included in ``event_id`` as well.
+    If ``None``, events will only be inferred from the raw object&#39;s
+    :class:`~mne.Annotations`.
+
+    .. note::
+       If specified, writes the union of ``events`` and
+       ``raw.annotations``. If you wish to **only** write
+       ``raw.annotations``, pass ``events=None``. If you want to
+       **exclude** the events in ``raw.annotations`` from being written,
+       call ``raw.set_annotations(None)`` before invoking this function.
+
+    .. note::
+       Either, descriptions of all event codes must be specified via the
+       ``event_id`` parameter or each event must be accompanied by a
+       row in ``event_metadata``.
+event_id : dict | None
+    Descriptions or names describing the event codes, if you passed
+    ``events``. The descriptions will be written to the ``trial_type``
+    column in ``*_events.tsv``. The dictionary keys correspond to the event
+    description,s and the values to the event codes. You must specify a
+    description for all event codes appearing in ``events``. If your data
+    contains :class:`~mne.Annotations`, you can use this parameter to
+    assign event codes to each unique annotation description (mapping from
+    description to event code).
+event_metadata : pandas.DataFrame | None
+    Metadata for each event in ``events``. Each row corresponds to an event.
+extra_columns_descriptions : dict | None
+    A dictionary that maps column names of the ``event_metadata`` to descriptions.
+    Each column of ``event_metadata`` must have a corresponding entry in this.
+anonymize : dict | None
+    If ``None`` (default), no anonymization is performed.
+    If a dictionary, data will be anonymized depending on the dictionary
+    keys: ``daysback`` is a required key, ``keep_his`` is optional.
+
+    ``daysback`` : int
+        Number of days by which to move back the recording date in time.
+        In studies with multiple subjects the relative recording date
+        differences between subjects can be kept by using the same number
+        of ``daysback`` for all subject anonymizations. ``daysback`` should
+        be great enough to shift the date prior to 1925 to conform with
+        BIDS anonymization rules.
+
+    ``keep_his`` : bool
+        If ``False`` (default), all subject information next to the
+        recording date will be overwritten as well. If ``True``, keep
+        subject information apart from the recording date.
+
+    ``keep_source`` : bool
+        Whether to store the name of the ``raw`` input file in the
+        ``source`` column of ``scans.tsv``. By default, this information
+        is not stored.
+format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;BDF&#39; | &#39;EDF&#39; | &#39;FIF&#39; | &#39;EEGLAB&#39;
+    Controls the file format of the data after BIDS conversion. If
+    ``&#39;auto&#39;``, MNE-BIDS will attempt to convert the input data to BIDS
+    without a change of the original file format. A conversion to a
+    different file format will then only take place if the original file
+    format lacks some necessary features.
+    Conversion may be forced to BrainVision, BDF, EDF, or EEGLAB for EEG,
+    to BrainVision, EDF, or EEGLAB for iEEG, to BDF or EDF for EMG,
+    and to FIF for MEG data.
+physical_range : str | tuple
+    If ``&#39;auto&#39;`` (default), the physical range is inferred from the data,
+    taking the minimum and maximum values per channel type.
+    If ``&#39;channelwise&#39;``, the range will be defined per channel.
+    If a tuple of minimum and maximum, this manual physical range will be used.
+    Only used for exporting EDF files.
+
+    .. versionadded:: 0.19
+symlink : bool
+    Instead of copying the source files, only create symbolic links to
+    preserve storage space. This is only allowed when not anonymizing the
+    data (i.e., ``anonymize`` must be ``None``).
+
+    .. note::
+       Symlinks currently only work with FIFF files. In case of split
+       files, only a link to the first file will be created, and
+       :func:`mne_bids.read_raw_bids` will correctly handle reading the
+       data again.
+
+    .. note::
+       Symlinks are currently only supported on macOS and Linux. We will
+       add support for Windows 10 at a later time.
+empty_room : mne.io.Raw | BIDSPath | None
+    The empty-room recording to be associated with this file. This is
+    only supported for MEG data.
+    If :class:`~mne.io.Raw`, you may pass raw data that was not preloaded
+    (otherwise, pass ``allow_preload=True``); i.e., it behaves similar to
+    the ``raw`` parameter. The session name will be automatically generated
+    from the raw object&#39;s ``info[&#39;meas_date&#39;]``.
+    If a :class:`~mne_bids.BIDSPath`, the ``root`` attribute must be the
+    same as in ``bids_path``. Pass ``None`` (default) if you do not wish to
+    specify an associated empty-room recording.
+
+    .. versionchanged:: 0.11
+       Accepts :class:`~mne.io.Raw` data.
+allow_preload : bool
+    If ``True``, allow writing of preloaded raw objects (i.e.,
+    ``raw.preload`` is ``True``). Because the original file is ignored, you
+    must specify what ``format`` to write (not ``auto``).
+
+    .. warning::
+        BIDS was originally designed for unprocessed or minimally processed
+        data. For this reason, by default, we prevent writing of preloaded
+        data that may have been modified. Only use this option when
+        absolutely necessary: for example, manually converting from file
+        formats not supported by MNE or writing preprocessed derivatives.
+        Be aware that these use cases are not fully supported.
+montage : mne.channels.DigMontage | None
+    The montage with channel positions if channel position data are
+    to be stored in a format other than &quot;head&quot; (the internal MNE
+    coordinate frame that the data in ``raw`` is stored in).
+acpc_aligned : bool
+    It is difficult to check whether the T1 scan is ACPC aligned which
+    means that &quot;mri&quot; coordinate space is &quot;ACPC&quot; BIDS coordinate space.
+    So, this flag is required to be True when the digitization data
+    is in &quot;mri&quot; for intracranial data to confirm that the T1 is
+    ACPC-aligned.
+electrodes_tsv_task : bool
+    Add the ``task-`` entity to the ``electrodes.tsv`` filename.
+    Defaults to ``False``.
+emg_placement : &quot;Measured&quot; | &quot;ChannelSpecific&quot; | &quot;Other&quot; | None
+    How the EMG sensor locations were determined. Must be one of the literal strings
+    if datatype is &quot;emg&quot; and should be ``None`` for all other datatypes.
+overwrite : bool
+    Whether to overwrite existing files or data in files.
+    Defaults to ``False``.
+
+    If ``True``, any existing files with the same BIDS parameters
+    will be overwritten with the exception of the ``*_participants.tsv``
+    and ``*_scans.tsv`` files. For these files, parts of pre-existing data
+    that match the current data will be replaced. For
+    ``*_participants.tsv``, specifically, age, sex and hand fields will be
+    overwritten, while any manually added fields in ``participants.json``
+    and ``participants.tsv`` by a user will be retained.
+    If ``False``, no existing data will be overwritten or
+    replaced.
+readme : bool
+    If ``False``, leave any existing ``README`` untouched and do
+    not create one. Defaults to ``True``.
+
+    .. versionadded:: 0.19
+
+verbose : bool | str | int | None
+    Control verbosity of the logging output. If ``None``, use the default
+    verbosity level. See the :ref:`logging documentation &lt;tut-logging&gt;` and
+    :func:`mne.verbose` for details. Should only be passed as a keyword
+    argument.
+
+Returns
+-------
+bids_path : BIDSPath
+    The path of the created data file.
+
+    .. note::
+       If you passed empty-room raw data via ``empty_room``, the
+       :class:`~mne_bids.BIDSPath` of the empty-room recording can be
+       retrieved via ``bids_path.find_empty_room(use_sidecar_only=True)``.
+
+See Also
+--------
+mne.io.Raw.anonymize
+mne.find_events
+mne.Annotations
+mne.events_from_annotations
+
+Notes
+-----
+You should ensure that ``raw.info[&#39;subject_info&#39;]`` and
+``raw.info[&#39;meas_date&#39;]`` are set to proper (not-``None``) values to allow
+for the correct computation of each participant&#39;s age when creating
+``*_participants.tsv``.
+
+This function will convert existing :class:`mne:mne.Annotations` from
+``raw.annotations`` to events. Additionally, any events supplied via
+``events`` will be written too. To avoid writing of annotations,
+remove them from the raw file via ``raw.set_annotations(None)`` before
+invoking ``write_raw_bids``.
+
+To write events encoded in a ``STIM`` channel, you first need to create the
+events array manually and pass it to this function:
+
+..
+    events = mne.find_events(raw, min_duration=0.002)
+    write_raw_bids(..., events=events)
+
+See the documentation of :func:`mne.find_events` for more information on
+event extraction from ``STIM`` channels.
+
+When anonymizing ``.edf`` files, then the file format for EDF limits
+how far back we can set the recording date. Therefore, all anonymized
+EDF datasets will have an internal recording date of ``01-01-1985``,
+and the actual recording date will be stored in the ``scans.tsv``
+file&#39;s ``acq_time`` column.
+
+``write_raw_bids`` will generate a ``dataset_description.json`` file
+if it does not already exist. Minimal metadata will be written there.
+If one sets ``overwrite`` to ``True`` here, it will not overwrite an
+existing ``dataset_description.json`` file.
+If you need to add more data there, or overwrite it, then you should
+call :func:`mne_bids.make_dataset_description` directly.
+
+When writing EDF or BDF files, all file extensions are forced to be
+lower-case, in compliance with the BIDS specification.
+
+/home/circleci/mne_data/fNIRS-motor-group-bids
+</pre></div>
+</div>
+<p>To ensure the output path doesn’t contain any leftover files from previous
+tests and example runs, we simply delete it.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not delete directories that may contain important data!</p>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.exists" title="pathlib.Path.exists" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">bids_root</span><span class="o">.</span><span class="n">exists</span></a><span class="p">():</span>
+    <a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>The data contains annotations; which will be converted to events
+automatically by MNE-BIDS when writing the BIDS data:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Annotations | 92 segments: 15.0 (2), Control (30), Tapping/Left (30), ...&gt;
+</pre></div>
+</div>
+<p>Finally, let’s write the BIDS data!</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">,</span> <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Loading /home/circleci/mne_data/fNIRS-motor-group/sub-01/nirs/sub-01_task-tapping_nirs.snirf
+Found jitter of 0.000000% in sample times.
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/README&#39;...
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/participants.json&#39;...
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/sub-01/nirs/sub-01_optodes.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/sub-01/nirs/sub-01_coordsystem.json&#39;...
+The provided raw data contains annotations, but you did not pass an &quot;event_id&quot; mapping from annotation descriptions to event codes. We will generate arbitrary event codes. To specify custom event codes, please pass &quot;event_id&quot;.
+Used Annotations descriptions: [np.str_(&#39;15.0&#39;), np.str_(&#39;Control&#39;), np.str_(&#39;Tapping/Left&#39;), np.str_(&#39;Tapping/Right&#39;)]
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/sub-01/nirs/sub-01_task-Tapping_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/sub-01/nirs/sub-01_task-Tapping_events.json&#39;...
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/sub-01/nirs/sub-01_task-Tapping_nirs.json&#39;...
+Copying data files to sub-01_task-Tapping_nirs.snirf
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/sub-01/nirs/sub-01_task-Tapping_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/fNIRS-motor-group-bids/sub-01/sub-01_scans.tsv&#39;...
+Wrote /home/circleci/mne_data/fNIRS-motor-group-bids/sub-01/sub-01_scans.tsv entry with nirs/sub-01_task-Tapping_nirs.snirf.
+
+BIDSPath(
+root: /home/circleci/mne_data/fNIRS-motor-group-bids
+datatype: nirs
+basename: sub-01_task-Tapping_nirs.snirf)
+</pre></div>
+</div>
+<p>What does our fresh BIDS directory look like?</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|fNIRS-motor-group-bids/
+|--- README
+|--- dataset_description.json
+|--- participants.json
+|--- participants.tsv
+|--- sub-01/
+|------ sub-01_scans.tsv
+|------ nirs/
+|--------- sub-01_coordsystem.json
+|--------- sub-01_optodes.tsv
+|--------- sub-01_task-Tapping_channels.tsv
+|--------- sub-01_task-Tapping_events.json
+|--------- sub-01_task-Tapping_events.tsv
+|--------- sub-01_task-Tapping_nirs.json
+|--------- sub-01_task-Tapping_nirs.snirf
+</pre></div>
+</div>
+<p>Finally let’s get an overview of the events on the whole dataset</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">counts</span></a> <span class="o">=</span> <a href="../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events" class="sphx-glr-backref-module-mne_bids-stats sphx-glr-backref-type-py-function"><span class="n">count_events</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">counts</span></a>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+
+    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="4" halign="left">Tapping</th>
+    </tr>
+    <tr>
+      <th>trial_type</th>
+      <th>15.0</th>
+      <th>Control</th>
+      <th>Tapping/Left</th>
+      <th>Tapping/Right</th>
+    </tr>
+    <tr>
+      <th>subject</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>01</th>
+      <td>2</td>
+      <td>30</td>
+      <td>30</td>
+      <td>30</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<br />
+<br /><p>We can see that MNE-BIDS wrote several important files related to subject 1
+for us:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">optodes.tsv</span></code> containing the optode coordinates and
+<code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code>, which contains the metadata about the optode
+coordinates.</p></li>
+<li><p>The actual SNIRF data file (with a proper BIDS name) and an accompanying
+<code class="docutils literal notranslate"><span class="pre">*_nirs.json</span></code> file that contains metadata about the NIRS recording.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">*scans.json</span></code> file lists all data recordings with their acquisition
+date. This file becomes more handy once there are multiple sessions and
+recordings to keep track of.</p></li>
+<li><p>And finally, <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> and <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> which contain even further
+metadata.</p></li>
+</ul>
+<p>Next to the subject specific files, MNE-BIDS also created several experiment
+specific files. However, we will not go into detail for them in this example.</p>
+</section>
+<section id="cite-mne-bids">
+<h2>Cite mne-bids<a class="headerlink" href="#cite-mne-bids" title="Link to this heading">#</a></h2>
+<p>After a lot of work was done by MNE-BIDS, it’s fair to cite the software
+when preparing a manuscript and/or a dataset publication.</p>
+<p>We can see that the appropriate citations are already written in the
+<code class="docutils literal notranslate"><span class="pre">README</span></code> file.</p>
+<p>If you are preparing a manuscript, please make sure to also cite MNE-BIDS
+there.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">/</span> <span class="s2">&quot;README&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">text</span></a> <span class="o">=</span> <span class="n">fid</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">text</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>References
+----------
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896).https://doi.org/10.21105/joss.01896
+
+Luke, R., Oostenveld, R., Cockx, H., Niso, G., Shader, M., Orihuela-Espina, F., Innes-Brown, H., Tucker, S., Boas, D., Gau, R., Salo, T., Appelhoff, S., Markiewicz, C McAlpine, D., BIDS maintainers, Pollonini, L. (2023). fNIRS-BIDS, the Brain Imaging Data Structure Extended to Functional Near-Infrared Spectroscopy. PsyArXiv. https://doi.org/10.31219/osf.io/7nmcp
+</pre></div>
+</div>
+<p>Now it’s time to manually check the BIDS directory and the meta files to add
+all the information that MNE-BIDS could not infer. For instance, you must
+describe Authors.</p>
+<p>Remember that there is a convenient tool to validate all your BIDS
+directories called the “BIDS-validator”, available as a web version and
+on the command line:</p>
+<p><a class="github reference external" href="https://github.com/bids-standard/bids-validator">bids-standard/bids-validator</a></p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.416 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-nirs-to-bids-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/b666106ea850b55fb6bc69db6fdda679/convert_nirs_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_nirs_to_bids.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/9e546b1b08e67ca7572c8e76f5992643/convert_nirs_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_nirs_to_bids.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/4c4fb656ad2ed5296dbabd0c14fa2b02/convert_nirs_to_bids.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">convert_nirs_to_bids.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="convert_ieeg_to_bids.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Convert iEEG data to BIDS format</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="convert_empty_room.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Manually storing empty room data</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-the-data">Download the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convert-to-bids">Convert to BIDS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cite-mne-bids">Cite mne-bids</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-05-26.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.18.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
