@@ -154,6 +154,45 @@ if hasattr(io, "read_raw_mef"):
     reader[".mefd"] = io.read_raw_mef
 
 
+# Some file extensions are ambiguous: more than one MNE reader can produce a
+# file with that extension. For example, ``.cnt`` is used both by Neuroscan,
+# read via :func:`mne.io.read_raw_cnt`, and by ANT Neuro eego recordings, read
+# via :func:`mne.io.read_raw_ant`. When re-reading the original file (e.g. to
+# obtain an unmodified copy), the extension alone is therefore not always enough
+# to pick the reader that produced a given ``raw`` object; using the wrong one
+# passes mismatched ``raw._init_kwargs`` (e.g. ``read_raw_cnt`` does not accept
+# the ``fname`` argument used by ``read_raw_ant``) and raises ``TypeError``.
+# This maps the class name of the ``raw`` object to the reader that created it,
+# taking precedence over the extension-based ``reader`` lookup.
+# See https://github.com/mne-tools/mne-bids/issues/1500
+reader_by_raw_class = {}
+if hasattr(io, "read_raw_ant"):
+    reader_by_raw_class["RawANT"] = io.read_raw_ant
+
+
+def _reader_for_raw(raw, ext):
+    """Return the MNE reader function that produced ``raw``.
+
+    Most file extensions map to a single reader, but some are shared by multiple
+    readers (see :data:`reader_by_raw_class`). In that case the class of ``raw``
+    is used to disambiguate, so the original file is re-read with the same reader
+    that created it rather than one inferred from the (ambiguous) extension.
+
+    Parameters
+    ----------
+    raw : instance of mne.io.BaseRaw
+        The raw object whose original file should be re-read.
+    ext : str
+        The file extension (including the leading dot) of the original file.
+
+    Returns
+    -------
+    reader : callable
+        The ``mne.io.read_raw_*`` function to use.
+    """
+    return reader_by_raw_class.get(type(raw).__name__, reader[ext])
+
+
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
 # MANUFACTURERS dictionary only includes the extension of the input filename
 # that mne-python accepts (e.g. BrainVision has three files, but the reader
