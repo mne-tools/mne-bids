@@ -58,6 +58,7 @@
 .. _Stefan Appelhoff: https://stefanappelhoff.com/
 .. _Swastika Gupta: https://swastyy.github.io
 .. _Teon Brooks: https://teonbrooks.com
+.. _Thomas Binns: https://github.com/tsbinns
 .. _Thomas Hartmann: https://github.com/thht
 .. _Tom Donoghue: https://github.com/TomDonoghue
 .. _waldie11: https://github.com/waldie11
