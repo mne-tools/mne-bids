@@ -28,7 +28,6 @@
 .. _Ford McDonald: https://github.com/fordmcdonald
 .. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
 .. _Fu-Te Wong: https://github.com/zuxfoucault
-.. _gaoflow: https://github.com/gaoflow
 .. _Harrison Ritz: https://github.com/harrisonritz
 .. _Jean-Rémi King: https://kingjr.github.io
 .. _Jonathan Vanhoecke: https://sfb-retune.de/people/jonathan-vanhoecke/
@@ -62,6 +61,7 @@
 .. _Thomas Binns: https://github.com/tsbinns
 .. _Thomas Hartmann: https://github.com/thht
 .. _Tom Donoghue: https://github.com/TomDonoghue
+.. _Vincent Gao: https://github.com/gaoflow
 .. _waldie11: https://github.com/waldie11
 .. _William Turner: https://bootstrapbill.github.io/
 .. _Yorguin Mantilla: https://github.com/yjmantilla

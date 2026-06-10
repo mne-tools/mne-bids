@@ -19,7 +19,7 @@ Version 0.20 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* `gaoflow`_
+* `Vincent Gao`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -46,7 +46,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- :func:`mne_bids.write_raw_bids` no longer raises a ``TypeError`` when writing ANT Neuro eego recordings (``.cnt``): the reader used to re-read the original file is now chosen from the class of the ``raw`` object, disambiguating extensions shared by multiple MNE readers (e.g. ``.cnt`` for Neuroscan and ANT Neuro), by `gaoflow`_ (:gh:`1617`)
+- :func:`mne_bids.write_raw_bids` no longer raises a ``TypeError`` when writing ANT Neuro eego recordings (``.cnt``), by `Vincent Gao`_ (:gh:`1617`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

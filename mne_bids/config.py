@@ -165,7 +165,7 @@ if hasattr(io, "read_raw_mef"):
 # This maps the class name of the ``raw`` object to the reader that created it,
 # taking precedence over the extension-based ``reader`` lookup.
 # See https://github.com/mne-tools/mne-bids/issues/1500
-reader_by_raw_class = {}
+reader_by_raw_class = dict()
 if hasattr(io, "read_raw_ant"):
     reader_by_raw_class["RawANT"] = io.read_raw_ant
 
