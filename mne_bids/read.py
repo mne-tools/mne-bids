@@ -1008,7 +1008,7 @@ def _get_bads_from_tsv_data(tsv_data):
 
 
 def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
-    """Handle mismatch. Returns True if caller should skip channels.tsv metadata."""
+    """Handle mismatch. Returns True if channels.tsv metadata can be applied."""
     if on_ch_mismatch == "raise":
         raise RuntimeError(
             f"Channel mismatch between {channels_fname} and the raw data file detected."
@@ -1020,7 +1020,7 @@ def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
             f"Channel mismatch between {channels_fname} and the raw data file. "
             "Skipping channels.tsv-derived channel metadata."
         )
-        return True
+        return False
     logger.info(
         "Channel mismatch between "
         f"{channels_fname} and the raw data file detected. "
@@ -1034,7 +1034,7 @@ def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
         raise ValueError(
             "on_ch_mismatch must be one of {'reorder','raise','rename','warn'}"
         )
-    return False
+    return True
 
 
 def _dedupe_channel_names(ch_names):
@@ -1068,8 +1068,9 @@ def _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname)
     and raw, and name-order mismatches. May mutate ``raw`` and/or
     ``channels_dict['name']`` in place.
 
-    Returns ``True`` when the caller should bail out and skip applying
-    channels.tsv-derived metadata (types, units, bads).
+    Returns ``True`` when the caller can proceed with applying
+    channels.tsv-derived metadata (types, units, bads), ``False`` when that
+    metadata should be skipped.
     """
     ch_names_tsv = channels_dict["name"]
 
@@ -1082,7 +1083,7 @@ def _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname)
                 "channels.tsv-derived channel metadata. Pass "
                 "on_ch_mismatch='rename' to deduplicate with -0/-1/... suffixes."
             )
-            return True
+            return False
         else:
             raise RuntimeError(
                 f"Duplicate channel names found in {channels_fname}. "
@@ -1110,14 +1111,14 @@ def _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname)
             f"in the raw data file ({len(raw.ch_names)}). Will not try to "
             f"set channel names."
         )
-        return False
+        return True
 
     if list(raw.ch_names) != ch_names_tsv:
         return _handle_channel_mismatch(
             raw, on_ch_mismatch, ch_names_tsv, channels_fname
         )
 
-    return False
+    return True
 
 
 def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
@@ -1132,7 +1133,7 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
             warn(f"{channels_fname} has no 'name' column; skipping channel metadata.")
         return raw
 
-    if _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname):
+    if not _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname):
         return raw
 
     ch_names_tsv = channels_dict["name"]
