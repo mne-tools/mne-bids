@@ -40,7 +40,7 @@ jobs:
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
-    - uses: astral-sh/setup-uv@v8.1.0
+    - uses: astral-sh/setup-uv@v8.2.0
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: true
@@ -162,7 +162,7 @@ jobs:
       with:
         deno-version: lts
 
-    - uses: astral-sh/setup-uv@v8.1.0
+    - uses: astral-sh/setup-uv@v8.2.0
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: true
@@ -260,7 +260,7 @@ jobs:
 
     - run: make test ARGS="${{ matrix.test-mode }}"
 
-    - uses: codecov/codecov-action@v6
+    - uses: codecov/codecov-action@v7
       with:
         files: ./coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
