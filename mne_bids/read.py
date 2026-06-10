@@ -16,7 +16,7 @@ import numpy as np
 from mne import events_from_annotations, io, pick_channels_regexp, read_events
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
-from mne.utils import check_version, get_subjects_dir, logger
+from mne.utils import _validate_type, check_version, get_subjects_dir, logger
 
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
@@ -1545,7 +1545,7 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
 def read_epochs_bids(
     bids_path, extra_params=None, *, on_ch_mismatch="raise", verbose=None
 ):
-    """Read pre-epoched BIDS data (RecordingType="epoched") as :class:`mne.Epochs`.
+    """Read epoched BIDS data (RecordingType="epoched") as :class:`mne.Epochs`.
 
     EEGLAB ``.set`` files are read with the dedicated MNE epochs reader.
     Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``"epoched"``
@@ -1576,8 +1576,7 @@ def read_epochs_bids(
     (``channels.tsv``, ``electrodes.tsv``, ``coordsystem.json``,
     ``scans.tsv``, ``participants.tsv``).
     """
-    if not isinstance(bids_path, BIDSPath):
-        raise RuntimeError('"bids_path" must be a BIDSPath object.')
+    _validate_type(item=bids_path, types=BIDSPath, item_name="bids_path")
     bids_path = bids_path.copy()
     if bids_path.datatype is None:
         bids_path.update(
