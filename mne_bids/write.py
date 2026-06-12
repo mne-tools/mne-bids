@@ -61,7 +61,7 @@ from mne_bids.config import (
     UNITS_FIFF_TO_BIDS_MAP,
     UNITS_MNE_TO_BIDS_MAP,
     _map_options,
-    reader,
+    _reader_for_raw,
 )
 from mne_bids.copyfiles import (
     copyfile_brainvision,
@@ -2147,7 +2147,7 @@ def write_raw_bids(
                 "Symlinks are currently only supported for FIFF files."
             )
 
-        raw_orig = reader[ext](**raw._init_kwargs)
+        raw_orig = _reader_for_raw(raw, ext)(**raw._init_kwargs)
     else:
         if format in FORMAT_EXTENSIONS:
             ext = FORMAT_EXTENSIONS[format]
