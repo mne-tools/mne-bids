@@ -51,6 +51,6 @@ Detailed list of changes
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- None yet
+- Sped up reading fNIRS electrode coordinates with a single-pass index map, and reduced peak memory when copying BrainVision header/marker files by streaming them instead of reading them fully into memory, by `Stefan Appelhoff`_ (:gh:`1621`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
