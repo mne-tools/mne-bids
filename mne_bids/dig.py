@@ -348,13 +348,21 @@ def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
     xs = np.zeros(names.shape)
     ys = np.zeros(names.shape)
     zs = np.zeros(names.shape)
+    # Map each source/detector value to its first index in a single pass,
+    # instead of an O(n) np.where scan per unique value.
+    source_first_idx = {}
+    for idx, source in enumerate(sources):
+        source_first_idx.setdefault(source, idx)
+    detector_first_idx = {}
+    for idx, detector in enumerate(detectors):
+        detector_first_idx.setdefault(detector, idx)
     for i, source in enumerate(unique_sources):
-        s_idx = np.where(sources == source)[0][0]
+        s_idx = source_first_idx[source]
         xs[i] = raw.info["chs"][s_idx]["loc"][3]
         ys[i] = raw.info["chs"][s_idx]["loc"][4]
         zs[i] = raw.info["chs"][s_idx]["loc"][5]
     for i, detector in enumerate(unique_detectors):
-        d_idx = np.where(detectors == detector)[0][0]
+        d_idx = detector_first_idx[detector]
         xs[i + n_sources] = raw.info["chs"][d_idx]["loc"][6]
         ys[i + n_sources] = raw.info["chs"][d_idx]["loc"][7]
         zs[i + n_sources] = raw.info["chs"][d_idx]["loc"][8]
