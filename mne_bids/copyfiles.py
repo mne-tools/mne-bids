@@ -428,14 +428,14 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
 
     with open(vhdr_src, encoding=enc) as fin:
         with _open_lock(vhdr_dest, "w", encoding=enc) as fout:
-            for line in fin.readlines():
+            for line in fin:
                 if line.strip() in search_lines:
                     line = line.replace(basename_src, basename_dest)
                 fout.write(line)
 
     with open(vmrk_file_path, encoding=enc) as fin:
         with _open_lock(fname_dest + ".vmrk", "w", encoding=enc) as fout:
-            for line in fin.readlines():
+            for line in fin:
                 if line.strip() in search_lines:
                     line = line.replace(basename_src, basename_dest)
                 fout.write(line)
