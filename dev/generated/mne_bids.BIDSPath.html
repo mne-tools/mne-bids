@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.20.0.dev9+gd6d892802 documentation</title>
+    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.20.0.dev10+g7c407921c documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../_static/documentation_options.js?v=a3741a7d"></script>
+    <script src="../_static/documentation_options.js?v=d281b210"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev9+gd6d892802" />
+  <meta name="docsearch:version" content="0.20.0.dev10+g7c407921c" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev9+gd6d892802 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev10+g7c407921c documentation</p>
   
 </a></div>
     
@@ -467,6 +467,7 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.write_raw_bids.html">mne_bids.write_raw_bids</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.read_raw_bids.html">mne_bids.read_raw_bids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.read_epochs_bids.html">mne_bids.read_epochs_bids</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.write_meg_calibration.html">mne_bids.write_meg_calibration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.write_meg_crosstalk.html">mne_bids.write_meg_crosstalk</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_bids.BIDSPath</a></li>
@@ -1264,6 +1265,9 @@ or updates for ‘root’ or ‘datatype’.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, an important resource is the OpenNeuro database. OpenNeuro works great with MNE-BIDS because every dataset must pass a validator that tests to ensure its format meets BIDS specifications before the dataset can be uploaded, so you know the data will work with a script like in this example without modification."><img alt="" src="../_images/sphx_glr_read_bids_datasets_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/read_bids_datasets.html"><span class="doc">Read BIDS datasets</span></a></p>
   <div class="sphx-glr-thumbnail-title">Read BIDS datasets</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Some BIDS datasets contain recordings that were already segmented into trials, marked with &quot;RecordingType&quot;: &quot;epoched&quot; in their JSON sidecar. mne_bids.read_raw_bids refuses to load such recordings, because representing them as continuous mne.io.Raw data would be wrong. Instead, mne_bids.read_epochs_bids reads them as mne.Epochs, applying the same sidecar metadata (``channels.tsv``, *_eeg.json, participants.tsv, ...)."><img alt="" src="../_images/sphx_glr_read_epochs_bids_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/read_epochs_bids.html"><span class="doc">Read epoched BIDS data as MNE Epochs</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Read epoched BIDS data as MNE Epochs</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually do not have all the metadata stored in the Raw mne-python object. We can update the BIDS sidecar files via the update_sidecar_json function."><img alt="" src="../_images/sphx_glr_update_bids_datasets_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/update_bids_datasets.html"><span class="doc">Updating BIDS datasets</span></a></p>
   <div class="sphx-glr-thumbnail-title">Updating BIDS datasets</div>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.20.0.dev9+gd6d892802 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.20.0.dev10+g7c407921c documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../_static/documentation_options.js?v=a3741a7d"></script>
+    <script src="../../_static/documentation_options.js?v=d281b210"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev9+gd6d892802" />
+  <meta name="docsearch:version" content="0.20.0.dev10+g7c407921c" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev9+gd6d892802 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev10+g7c407921c documentation</p>
   
 </a></div>
     
@@ -521,15 +521,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">events_from_annotations</span><span class="p">,</span> <span class="n">io</span><span class="p">,</span> <span class="n">pick_channels_regexp</span><span class="p">,</span> <span class="n">read_events</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.coreg</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_matched_points</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_trans</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">logger</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids._fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">_open_lock</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_EPOCHED_EXTS</span><span class="p">,</span>
     <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ANNOTATIONS_TO_KEEP</span><span class="p">,</span>
     <span class="n">EPHY_ALLOWED_DATATYPES</span><span class="p">,</span>
     <span class="n">UNITS_BIDS_TO_FIFF_MAP</span><span class="p">,</span>
+    <span class="n">_continuous_epoched_reader</span><span class="p">,</span>
     <span class="n">_map_options</span><span class="p">,</span>
+    <span class="n">epoch_reader</span><span class="p">,</span>
     <span class="n">reader</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.dig</span><span class="w"> </span><span class="kn">import</span> <span class="n">_read_dig_bids</span>
@@ -1867,6 +1870,18 @@
     <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
 
+    <span class="n">sidecar_json_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">sidecar_json_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_json_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">recording_type</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RecordingType&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">recording_type</span> <span class="o">==</span> <span class="s2">&quot;epoched&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">_EPOCHED_EXTS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s1">&#39;RecordingType is &quot;epoched&quot;; use mne_bids.read_epochs_bids() &#39;</span>
+                <span class="s2">&quot;instead of read_raw_bids().&quot;</span>
+            <span class="p">)</span>
+
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
         <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">bids_raw_folder</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -1970,6 +1985,20 @@
             <span class="n">events_json_fname</span><span class="o">=</span><span class="n">events_json_fname</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">_attach_sidecars</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="o">=</span><span class="n">on_ch_mismatch</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span> <span class="o">==</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">return_event_dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">raw</span><span class="p">,</span> <span class="n">event_id</span>
+    <span class="k">return</span> <span class="n">raw</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_attach_sidecars</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply BIDS sidecars to a Raw or Epochs object.&quot;&quot;&quot;</span>
+    <span class="n">datatype</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
+    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
+
     <span class="c1"># Try to find an associated channels.tsv to get information about the</span>
     <span class="c1"># status and type of present channels</span>
     <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
@@ -2026,7 +2055,8 @@
         <span class="n">root</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
 
-    <span class="k">if</span> <span class="n">scans_fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="c1"># Epochs without annotations crash in set_meas_date; skip the scans path.</span>
+    <span class="k">if</span> <span class="n">scans_fname</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_scans_reading</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># read in associated subject info from participants.tsv</span>
@@ -2037,14 +2067,136 @@
             <span class="n">participants_fname</span><span class="o">=</span><span class="n">participants_tsv_path</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;participants.tsv file not found for </span><span class="si">{</span><span class="n">raw_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;participants.tsv file not found for </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
-    <span class="k">assert</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span> <span class="o">==</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">return_event_dict</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">raw</span><span class="p">,</span> <span class="n">event_id</span>
-    <span class="k">return</span> <span class="n">raw</span></div>
+    <span class="k">return</span> <span class="n">raw</span>
 
+
+<div class="viewcode-block" id="read_epochs_bids">
+<a class="viewcode-back" href="../../generated/mne_bids.read_epochs_bids.html#mne_bids.read_epochs_bids">[docs]</a>
+<span class="nd">@verbose</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_epochs_bids</span><span class="p">(</span>
+    <span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read epoched BIDS data (RecordingType=&quot;epoched&quot;) as :class:`mne.Epochs`.</span>
+
+<span class="sd">    EEGLAB ``.set`` files are read with the dedicated MNE epochs reader.</span>
+<span class="sd">    Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``&quot;epoched&quot;``</span>
+<span class="sd">    in the sidecar are sliced into trials of length ``EpochLength`` (from the</span>
+<span class="sd">    sidecar). When ``events.tsv`` is present its onsets give the trial starts</span>
+<span class="sd">    (``sample`` / ``begSample`` / ``onset`` columns are tried in that order;</span>
+<span class="sd">    trials extending past the recording are dropped with a warning); when</span>
+<span class="sd">    absent, the file is uniformly tiled.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        Same semantics as :func:`read_raw_bids`.</span>
+<span class="sd">    extra_params : None | dict</span>
+<span class="sd">        Forwarded to the underlying MNE reader.</span>
+<span class="sd">    on_ch_mismatch : str</span>
+<span class="sd">        See :func:`read_raw_bids`.</span>
+<span class="sd">    %(verbose)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    epochs : mne.Epochs</span>
+<span class="sd">        The epoched data with BIDS sidecar metadata applied.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function applies the same sidecars as :func:`read_raw_bids`</span>
+<span class="sd">    (``channels.tsv``, ``electrodes.tsv``, ``coordsystem.json``,</span>
+<span class="sd">    ``scans.tsv``, ``participants.tsv``).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">&quot;bids_path&quot;</span><span class="p">)</span>
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">datatype</span><span class="o">=</span><span class="n">_infer_datatype</span><span class="p">(</span>
+                <span class="n">root</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">epoch_reader</span><span class="p">:</span>
+        <span class="n">epochs</span> <span class="o">=</span> <span class="n">epoch_reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">extra_params</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">_continuous_epoched_reader</span><span class="p">:</span>
+        <span class="n">epochs</span> <span class="o">=</span> <span class="n">_read_epochs_from_continuous</span><span class="p">(</span>
+            <span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;read_epochs_bids does not support </span><span class="si">{</span><span class="n">ext</span><span class="si">!r}</span><span class="s2"> epoched files; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;supported: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">_EPOCHED_EXTS</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_attach_sidecars</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="o">=</span><span class="n">on_ch_mismatch</span><span class="p">)</span></div>
+
+
+
+<span class="nd">@verbose</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_epochs_from_continuous</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Slice a continuous file flagged ``RecordingType=&quot;epoched&quot;`` into Epochs.&quot;&quot;&quot;</span>
+    <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)[</span><span class="s2">&quot;EpochLength&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> sidecar is missing &#39;EpochLength&#39;; &quot;</span>
+                <span class="s2">&quot;required to slice an &#39;epoched&#39; continuous file.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">_continuous_epoched_reader</span><span class="p">[</span><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span><span class="p">](</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">extra_params</span> <span class="ow">or</span> <span class="p">{})</span>
+    <span class="p">)</span>
+    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">events_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mne</span><span class="o">.</span><span class="n">make_fixed_length_epochs</span><span class="p">(</span>
+            <span class="n">raw</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Delegate to mne-bids&#39; events.tsv parser for descriptions/event_id (handles</span>
+    <span class="c1"># n/a, trial_type/stim_type/value, hierarchical event names); place onsets</span>
+    <span class="c1"># precisely from sample/begSample when available, else from onset (seconds).</span>
+    <span class="n">info</span><span class="p">,</span> <span class="n">rows</span> <span class="o">=</span> <span class="n">_make_annotation_kwargs</span><span class="p">(</span><span class="n">_from_tsv</span><span class="p">(</span><span class="n">events_fname</span><span class="p">),</span> <span class="n">events_fname</span><span class="p">)</span>
+    <span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">rows</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample&quot;</span><span class="p">):</span>
+        <span class="n">onsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="s2">&quot;sample&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">rows</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;begSample&quot;</span><span class="p">):</span>  <span class="c1"># 1-indexed inclusive (non-BIDS, observed)</span>
+        <span class="n">onsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="s2">&quot;begSample&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">onsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;event_id&quot;</span><span class="p">]</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">event_id</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+    <span class="n">n_per</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">))</span>
+    <span class="n">fits</span> <span class="o">=</span> <span class="p">(</span><span class="n">onsets</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">onsets</span> <span class="o">+</span> <span class="n">n_per</span> <span class="o">&lt;=</span> <span class="n">raw</span><span class="o">.</span><span class="n">n_times</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fits</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">events_fname</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="p">(</span><span class="o">~</span><span class="n">fits</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">onsets</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="s2">&quot;trials extend beyond the recording and will be dropped.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">onsets</span><span class="p">,</span> <span class="n">ids</span> <span class="o">=</span> <span class="n">onsets</span><span class="p">[</span><span class="n">fits</span><span class="p">],</span> <span class="n">ids</span><span class="p">[</span><span class="n">fits</span><span class="p">]</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">onsets</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">onsets</span><span class="p">),</span> <span class="n">ids</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span><span class="p">(</span>
+        <span class="n">raw</span><span class="p">,</span>
+        <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+        <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+        <span class="n">tmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">tmax</span><span class="o">=</span><span class="n">duration</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sfreq</span><span class="p">,</span>
+        <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_head_mri_trans">
