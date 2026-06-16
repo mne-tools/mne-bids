@@ -1478,7 +1478,7 @@ def test_vhdr(_bids_validate, tmp_path):
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     """Test write_raw_bids conversion for EEG/iEEG data formats."""
     if fname.endswith(".mff"):
-        pytest.importorskip("mffpy", version="0.11.0")
+        pytest.importorskip("mffpy", minversion="0.11.0")
     bids_root = tmp_path / "bids1"
     raw_fname = data_path / dir_name / fname
 
@@ -3680,7 +3680,7 @@ def test_convert_meg_formats(dir_name, fmt, fname, reader, tmp_path):
 def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     """Test errors when converting raw file formats."""
     if fname.endswith(".mff"):
-        pytest.importorskip("mffpy", version="0.11.0")
+        pytest.importorskip("mffpy", minversion="0.11.0")
     bids_root = tmp_path / "bids_1"
 
     raw_fname = data_path / dir_name / fname
