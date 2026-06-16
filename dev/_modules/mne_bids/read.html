@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.20.0.dev8+g005fb44aa documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.20.0.dev9+gd6d892802 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../_static/documentation_options.js?v=d699fda9"></script>
+    <script src="../../_static/documentation_options.js?v=a3741a7d"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev8+g005fb44aa" />
+  <meta name="docsearch:version" content="0.20.0.dev9+gd6d892802" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev8+g005fb44aa documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev9+gd6d892802 documentation</p>
   
 </a></div>
     
@@ -1516,7 +1516,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_handle_channel_mismatch</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="p">,</span> <span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">channels_fname</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle mismatch. Returns True if caller should skip channels.tsv metadata.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle mismatch. Returns True if channels.tsv metadata can be applied.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">on_ch_mismatch</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Channel mismatch between </span><span class="si">{</span><span class="n">channels_fname</span><span class="si">}</span><span class="s2"> and the raw data file detected.&quot;</span>
@@ -1528,7 +1528,7 @@
             <span class="sa">f</span><span class="s2">&quot;Channel mismatch between </span><span class="si">{</span><span class="n">channels_fname</span><span class="si">}</span><span class="s2"> and the raw data file. &quot;</span>
             <span class="s2">&quot;Skipping channels.tsv-derived channel metadata.&quot;</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
         <span class="s2">&quot;Channel mismatch between &quot;</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">channels_fname</span><span class="si">}</span><span class="s2"> and the raw data file detected. &quot;</span>
@@ -1542,6 +1542,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;on_ch_mismatch must be one of {&#39;reorder&#39;,&#39;raise&#39;,&#39;rename&#39;,&#39;warn&#39;}&quot;</span>
         <span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_dedupe_channel_names</span><span class="p">(</span><span class="n">ch_names</span><span class="p">):</span>
@@ -1567,6 +1568,67 @@
             <span class="n">ch_names</span><span class="p">[</span><span class="n">ch_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">candidate</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_reconcile_channel_names</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channels_dict</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="p">,</span> <span class="n">channels_fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bring ``raw.ch_names`` and ``channels_dict[&#39;name&#39;]`` into agreement.</span>
+
+<span class="sd">    Handles, in order: duplicate names in channels.tsv, dropping a synthesized</span>
+<span class="sd">    ``STI 014`` not present in the sidecar, length mismatches between sidecar</span>
+<span class="sd">    and raw, and name-order mismatches. May mutate ``raw`` and/or</span>
+<span class="sd">    ``channels_dict[&#39;name&#39;]`` in place.</span>
+
+<span class="sd">    Returns ``True`` when the caller can proceed with applying</span>
+<span class="sd">    channels.tsv-derived metadata (types, units, bads), ``False`` when that</span>
+<span class="sd">    metadata should be skipped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">on_ch_mismatch</span> <span class="o">==</span> <span class="s2">&quot;rename&quot;</span><span class="p">:</span>
+            <span class="n">_dedupe_channel_names</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">on_ch_mismatch</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Duplicate channel names in </span><span class="si">{</span><span class="n">channels_fname</span><span class="si">}</span><span class="s2">; skipping &quot;</span>
+                <span class="s2">&quot;channels.tsv-derived channel metadata. Pass &quot;</span>
+                <span class="s2">&quot;on_ch_mismatch=&#39;rename&#39; to deduplicate with -0/-1/... suffixes.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Duplicate channel names found in </span><span class="si">{</span><span class="n">channels_fname</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Pass on_ch_mismatch=&#39;rename&#39; to deduplicate, or &quot;</span>
+                <span class="s2">&quot;on_ch_mismatch=&#39;warn&#39; to skip channels.tsv metadata.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Special handling for (synthesized) stimulus channel</span>
+    <span class="n">synthesized_stim_ch_name</span> <span class="o">=</span> <span class="s2">&quot;STI 014&quot;</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">synthesized_stim_ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span>
+        <span class="ow">and</span> <span class="n">synthesized_stim_ch_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ch_names_tsv</span>
+    <span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;The stimulus channel &quot;</span><span class="si">{</span><span class="n">synthesized_stim_ch_name</span><span class="si">}</span><span class="s1">&quot; is present in &#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;the raw data, but not included in channels.tsv. Removing the &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;channel.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="n">synthesized_stim_ch_name</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">):</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The number of channels in the channels.tsv sidecar file &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match the number of channels &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;in the raw data file (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">). Will not try to &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;set channel names.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ch_names_tsv</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_handle_channel_mismatch</span><span class="p">(</span>
+            <span class="n">raw</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="p">,</span> <span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">channels_fname</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read associated channels.tsv and populate raw.</span>
 
@@ -1578,25 +1640,12 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">):</span>
             <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">channels_fname</span><span class="si">}</span><span class="s2"> has no &#39;name&#39; column; skipping channel metadata.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">raw</span>
-    <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">on_ch_mismatch</span> <span class="o">==</span> <span class="s2">&quot;rename&quot;</span><span class="p">:</span>
-            <span class="n">_dedupe_channel_names</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">on_ch_mismatch</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Duplicate channel names in </span><span class="si">{</span><span class="n">channels_fname</span><span class="si">}</span><span class="s2">; skipping &quot;</span>
-                <span class="s2">&quot;channels.tsv-derived channel metadata. Pass &quot;</span>
-                <span class="s2">&quot;on_ch_mismatch=&#39;rename&#39; to deduplicate with -0/-1/... suffixes.&quot;</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="n">raw</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Duplicate channel names found in </span><span class="si">{</span><span class="n">channels_fname</span><span class="si">}</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;Pass on_ch_mismatch=&#39;rename&#39; to deduplicate, or &quot;</span>
-                <span class="s2">&quot;on_ch_mismatch=&#39;warn&#39; to skip channels.tsv metadata.&quot;</span>
-            <span class="p">)</span>
 
-    <span class="c1"># Now we can do some work.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_reconcile_channel_names</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channels_dict</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="p">,</span> <span class="n">channels_fname</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">raw</span>
+
+    <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
     <span class="c1"># The &quot;type&quot; column is mandatory in BIDS. We can use it to set channel</span>
     <span class="c1"># types in the raw data using a mapping between channel types</span>
     <span class="n">channel_type_bids_mne_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -1647,34 +1696,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># We found a mapping, so use it</span>
             <span class="n">channel_type_bids_mne_map</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_ch_type</span>
-
-    <span class="c1"># Special handling for (synthesized) stimulus channel</span>
-    <span class="n">synthesized_stim_ch_name</span> <span class="o">=</span> <span class="s2">&quot;STI 014&quot;</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">synthesized_stim_ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span>
-        <span class="ow">and</span> <span class="n">synthesized_stim_ch_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ch_names_tsv</span>
-    <span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;The stimulus channel &quot;</span><span class="si">{</span><span class="n">synthesized_stim_ch_name</span><span class="si">}</span><span class="s1">&quot; is present in &#39;</span>
-            <span class="sa">f</span><span class="s2">&quot;the raw data, but not included in channels.tsv. Removing the &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;channel.&quot;</span>
-        <span class="p">)</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="n">synthesized_stim_ch_name</span><span class="p">])</span>
-
-    <span class="c1"># Rename channels in loaded Raw to match those read from the BIDS sidecar</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">):</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The number of channels in the channels.tsv sidecar file &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match the number of channels &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;in the raw data file (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">). Will not try to &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;set channel names.&quot;</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">orig_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">orig_names</span> <span class="o">!=</span> <span class="n">ch_names_tsv</span> <span class="ow">and</span> <span class="n">_handle_channel_mismatch</span><span class="p">(</span>
-            <span class="n">raw</span><span class="p">,</span> <span class="n">on_ch_mismatch</span><span class="p">,</span> <span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">channels_fname</span>
-        <span class="p">):</span>
-            <span class="k">return</span> <span class="n">raw</span>
 
     <span class="c1"># Set the channel types in the raw data according to channels.tsv</span>
     <span class="n">channel_type_bids_mne_map_available_channels</span> <span class="o">=</span> <span class="p">{</span>
