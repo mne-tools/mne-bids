@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.20.0.dev7+g0c0b20df8 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.20.0.dev8+g005fb44aa documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="_static/documentation_options.js?v=8e518966"></script>
+    <script src="_static/documentation_options.js?v=d699fda9"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev7+g0c0b20df8" />
+  <meta name="docsearch:version" content="0.20.0.dev8+g005fb44aa" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev7+g0c0b20df8 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev8+g005fb44aa documentation</p>
   
 </a></div>
     
@@ -564,7 +564,7 @@
 <section id="code-health">
 <h4>⚕️ Code health<a class="headerlink" href="#code-health" title="Link to this heading">#</a></h4>
 <ul class="simple">
-<li><p>None yet</p></li>
+<li><p>Sped up writing of recordings with many channels by avoiding redundant per-channel work in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> (single-pass channel-type counting, cached coil-type lookup, and a fixed quadratic loop when writing BrainVision units), by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1620">#1620</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
