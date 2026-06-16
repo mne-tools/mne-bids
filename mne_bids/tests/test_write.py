@@ -1477,6 +1477,8 @@ def test_vhdr(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     """Test write_raw_bids conversion for EEG/iEEG data formats."""
+    if fname.endswith(".mff"):
+        pytest.importorskip("mffpy", minversion="0.11.0")
     bids_root = tmp_path / "bids1"
     raw_fname = data_path / dir_name / fname
 
@@ -3677,6 +3679,8 @@ def test_convert_meg_formats(dir_name, fmt, fname, reader, tmp_path):
 @testing.requires_testing_data
 def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     """Test errors when converting raw file formats."""
+    if fname.endswith(".mff"):
+        pytest.importorskip("mffpy", minversion="0.11.0")
     bids_root = tmp_path / "bids_1"
 
     raw_fname = data_path / dir_name / fname
@@ -4552,3 +4556,53 @@ def test_write_hed_annotations(tmp_path, _bids_validate):
     # Semantic HED validation against the declared HEDVersion schema.
     issues = BidsDataset(str(bids_root)).validate(check_for_warnings=True)
     assert issues == [], issues
+
+
+def test_reader_for_raw_ambiguous_extension():
+    """Re-reading picks the reader by raw class for ambiguous extensions.
+
+    Regression test for gh-1500: the ``.cnt`` extension is used by both
+    Neuroscan (read via ``read_raw_cnt``) and ANT Neuro eego (read via
+    ``read_raw_ant``) recordings. When ``write_raw_bids`` re-reads the original
+    file, the reader must be chosen from the class of the ``raw`` object, not
+    from the (ambiguous) extension: choosing by extension passed
+    ``read_raw_ant``'s ``_init_kwargs`` (which use ``fname``) to
+    ``read_raw_cnt`` (which expects ``input_fname``) and raised ``TypeError``.
+    """
+    import inspect
+
+    import mne.io as io
+
+    from mne_bids.config import _reader_for_raw, reader
+
+    # Unambiguous extensions resolve to the extension-based reader, regardless
+    # of the raw object's class.
+    class RawArray:
+        pass
+
+    assert _reader_for_raw(RawArray(), ".fif") is reader[".fif"]
+    assert _reader_for_raw(RawArray(), ".vhdr") is reader[".vhdr"]
+
+    # A Neuroscan ``.cnt`` recording uses ``read_raw_cnt`` ...
+    class RawCNT:
+        pass
+
+    assert _reader_for_raw(RawCNT(), ".cnt") is reader[".cnt"]
+    assert reader[".cnt"] is io.read_raw_cnt
+
+    # ... while an ANT Neuro ``.cnt`` recording must use ``read_raw_ant``.
+    if hasattr(io, "read_raw_ant"):
+
+        class RawANT:
+            pass
+
+        assert _reader_for_raw(RawANT(), ".cnt") is io.read_raw_ant
+        assert _reader_for_raw(RawANT(), ".cnt") is not reader[".cnt"]
+
+        # The extension-based reader would be passed ``read_raw_ant``'s init
+        # kwargs (which use ``fname``) and reject them: this is the original
+        # ``TypeError`` reported in gh-1500.
+        ant_params = inspect.signature(io.read_raw_ant).parameters
+        cnt_params = inspect.signature(reader[".cnt"]).parameters
+        assert "fname" in ant_params
+        assert "fname" not in cnt_params
