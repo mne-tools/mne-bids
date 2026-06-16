@@ -23,7 +23,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* None yet
+* `Bruno Aristimunha`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,7 +31,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- None yet
+- Add :func:`mne_bids.read_epochs_bids` to read epoched BIDS recordings (``"RecordingType": "epoched"``) as :class:`mne.Epochs`; :func:`mne_bids.read_raw_bids` now raises a helpful error for such recordings, by `Bruno Aristimunha`_ (:gh:`1605`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

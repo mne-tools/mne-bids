@@ -154,6 +154,16 @@ if hasattr(io, "read_raw_mef"):
     reader[".mefd"] = io.read_raw_mef
 
 
+epoch_reader = {".set": io.read_epochs_eeglab}
+
+# Continuous-format files where each "trial" is a fixed-length segment of the
+# file. Trial duration is read from the sidecar's ``EpochLength`` field.
+_continuous_epoched_reader = {
+    ".edf": io.read_raw_edf,
+    ".bdf": io.read_raw_bdf,
+    ".vhdr": io.read_raw_brainvision,
+}
+_EPOCHED_EXTS = frozenset(epoch_reader) | frozenset(_continuous_epoched_reader)
 # Some file extensions are ambiguous: more than one MNE reader can produce a
 # file with that extension. For example, ``.cnt`` is used both by Neuroscan,
 # read via :func:`mne.io.read_raw_cnt`, and by ANT Neuro eego recordings, read

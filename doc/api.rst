@@ -21,6 +21,7 @@ mne_bids
 
    write_raw_bids
    read_raw_bids
+   read_epochs_bids
    write_meg_calibration
    write_meg_crosstalk
    BIDSPath
