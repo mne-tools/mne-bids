@@ -11,7 +11,7 @@ import shutil
 import subprocess
 import sys
 import warnings
-from collections import OrderedDict, defaultdict
+from collections import Counter, OrderedDict, defaultdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -1157,22 +1157,19 @@ def _sidecar_json(
     )
     # all ignored channels are trigger channels at the moment...
 
-    n_megchan = len([ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_MEG_CH])
-    n_megrefchan = len(
-        [ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_REF_MEG_CH]
-    )
-    n_eegchan = len([ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_EEG_CH])
-    n_ecogchan = len([ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_ECOG_CH])
-    n_seegchan = len([ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_SEEG_CH])
-    n_eogchan = len([ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_EOG_CH])
-    n_ecgchan = len([ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_ECG_CH])
-    n_emgchan = len([ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_EMG_CH])
-    n_miscchan = len([ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_MISC_CH])
-    n_stimchan = (
-        len([ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_STIM_CH])
-        - n_ignored
-    )
-    n_dbschan = len([ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_DBS_CH])
+    # Count channels per kind in a single pass over raw.info["chs"].
+    n_chan_per_kind = Counter(ch["kind"] for ch in raw.info["chs"])
+    n_megchan = n_chan_per_kind[FIFF.FIFFV_MEG_CH]
+    n_megrefchan = n_chan_per_kind[FIFF.FIFFV_REF_MEG_CH]
+    n_eegchan = n_chan_per_kind[FIFF.FIFFV_EEG_CH]
+    n_ecogchan = n_chan_per_kind[FIFF.FIFFV_ECOG_CH]
+    n_seegchan = n_chan_per_kind[FIFF.FIFFV_SEEG_CH]
+    n_eogchan = n_chan_per_kind[FIFF.FIFFV_EOG_CH]
+    n_ecgchan = n_chan_per_kind[FIFF.FIFFV_ECG_CH]
+    n_emgchan = n_chan_per_kind[FIFF.FIFFV_EMG_CH]
+    n_miscchan = n_chan_per_kind[FIFF.FIFFV_MISC_CH]
+    n_stimchan = n_chan_per_kind[FIFF.FIFFV_STIM_CH] - n_ignored
+    n_dbschan = n_chan_per_kind[FIFF.FIFFV_DBS_CH]
     nirs_channels = [ch for ch in raw.info["chs"] if ch["kind"] == FIFF.FIFFV_FNIRS_CH]
     n_nirscwchan = len(nirs_channels)
     n_nirscwsrc = len(
@@ -1457,7 +1454,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
             unit.append("µV")
         else:
             unit.append(_unit2human.get(chs["unit"], "n/a"))
-            unit = [u if u not in ["NA"] else "n/a" for u in unit]
+    unit = [u if u not in ["NA"] else "n/a" for u in unit]
 
     # We enforce conversion to float32 format
     # XXX: pybv can also write to int16, to do that, we need to get

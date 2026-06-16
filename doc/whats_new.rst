@@ -51,6 +51,6 @@ Detailed list of changes
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- None yet
+- Sped up writing of recordings with many channels by avoiding redundant per-channel work in :func:`mne_bids.write_raw_bids` (single-pass channel-type counting, cached coil-type lookup, and a fixed quadratic loop when writing BrainVision units), by `Stefan Appelhoff`_ (:gh:`1620`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
