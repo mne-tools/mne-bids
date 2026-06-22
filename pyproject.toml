@@ -158,6 +158,8 @@ filterwarnings = [
   "ignore:No events found or provided.*:RuntimeWarning",
   "ignore:numpy.ufunc size changed.*:RuntimeWarning",
   "ignore:Participants file not found for.*:RuntimeWarning",
+  # old MNE with newer NumPy
+  "ignore:Setting the shape on a NumPy array[\\S\\s]*:DeprecationWarning",
   # old MNE _fake_click
   "ignore:The .*_event function was deprecated in Matplotlib.*:",
   "ignore:There are channels without locations (n/a)*:RuntimeWarning",
