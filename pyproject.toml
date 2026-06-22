@@ -153,6 +153,7 @@ filterwarnings = [
   "ignore:MEG ref channel RMSP did not.*:RuntimeWarning",
   "ignore:No events found or provided.*:RuntimeWarning",
   "ignore:numpy.ufunc size changed.*:RuntimeWarning",
+  "ignore:numpy\\.fix is deprecated.*:DeprecationWarning",
   "ignore:Participants file not found for.*:RuntimeWarning",
   "ignore:Setting the shape on a NumPy array[\\S\\s]*:DeprecationWarning",
   "ignore:The .*_event function was deprecated in Matplotlib.*:",
