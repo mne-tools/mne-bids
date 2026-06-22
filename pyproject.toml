@@ -137,11 +137,8 @@ addopts = """
 """
 filterwarnings = [
   "error",
-  # Python 3.10+ and NumPy 1.22 (and maybe also newer NumPy versions?)
   "ignore:.*distutils\\.sysconfig module is deprecated.*:DeprecationWarning",
-  # NumPy 2.1 bug (probably)
   "ignore:__array__ implementation doesn.*:DeprecationWarning",
-  # numba with NumPy dev
   "ignore:`np.MachAr` is deprecated.*:DeprecationWarning",
   "ignore:`product` is deprecated as of NumPy.*:DeprecationWarning",
   "ignore:Converting data files to BrainVision format:RuntimeWarning",
@@ -152,13 +149,13 @@ filterwarnings = [
   "ignore:Did not find any electrodes.tsv.*:RuntimeWarning",
   "ignore:Did not find any events.tsv.*:RuntimeWarning",
   "ignore:Estimation of line frequency only supports.*:RuntimeWarning",
-  # matplotlib
   "ignore:Figure.*is non-interactive.*cannot be shown:UserWarning",
   "ignore:MEG ref channel RMSP did not.*:RuntimeWarning",
   "ignore:No events found or provided.*:RuntimeWarning",
   "ignore:numpy.ufunc size changed.*:RuntimeWarning",
+  "ignore:numpy\\.fix is deprecated.*:DeprecationWarning",
   "ignore:Participants file not found for.*:RuntimeWarning",
-  # old MNE _fake_click
+  "ignore:Setting the shape on a NumPy array[\\S\\s]*:DeprecationWarning",
   "ignore:The .*_event function was deprecated in Matplotlib.*:",
   "ignore:There are channels without locations (n/a)*:RuntimeWarning",
   "ignore:tostring\\(\\) is deprecated.*:DeprecationWarning",
