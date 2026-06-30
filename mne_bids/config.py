@@ -682,12 +682,13 @@ HAND_BIDS_TO_MNE = {
 HAND_MNE_TO_BIDS = {0: "n/a", 1: "R", 2: "L", 3: "A"}
 
 SEX_BIDS_TO_MNE = {
-    ("n/a", "other", "o", "O", "OTHER", "Other"): 0,
+    ("n/a"): 0,
     ("male", "m", "M", "MALE", "Male"): 1,
     ("female", "f", "F", "FEMALE", "Female"): 2,
+    ("other", "o", "O", "OTHER", "Other"): 3,
 }
 
-SEX_MNE_TO_BIDS = {0: "n/a", 1: "M", 2: "F"}
+SEX_MNE_TO_BIDS = {0: "n/a", 1: "M", 2: "F", 3: "O"}
 
 
 def _map_options(what, key, fro, to):
