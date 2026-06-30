@@ -221,7 +221,7 @@ def test_copyfile_eeglab(tmp_path, fname):
     bids_root = tmp_path
     data_path = testing_path / "EEGLAB"
     raw_fname = data_path / fname
-    new_name = bids_root / f"CONVERTED_{fname}.set"
+    new_name = bids_root / f"CONVERTED_{fname}"
 
     # IO error testing
     with pytest.raises(ValueError, match="Need to move data with same ext"):
