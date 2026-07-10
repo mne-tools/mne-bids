@@ -12,6 +12,14 @@ on:
     branches: ['**']
   schedule:
     - cron: "0 4 * * 1"  # every Monday at 4:00 UTC
+  # adapted from mne-python which adapted theirs from spyder-ide/spyder
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'Enable ssh debugging'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   style:  # takes ~10s
@@ -157,6 +165,22 @@ jobs:
     - uses: actions/checkout@v7
       with:
         fetch-depth: 0
+    - name: Get commit message
+      run: echo "COMMIT_MESSAGE=$(git show -s --format=%s ${{ github.event.pull_request.head.sha || github.sha }})" | tee -a ${GITHUB_ENV}
+    - name: Triage SSH
+      run: |
+        if [[ "${{ inputs.ssh }}" == "true" ]] || [[ "$COMMIT_MESSAGE" == *"[actions ssh]"* ]]; then
+          echo "ENABLE_SSH=true" | tee -a $GITHUB_ENV
+        else
+          echo "ENABLE_SSH=false" | tee -a $GITHUB_ENV
+        fi
+    - name: Setup Remote SSH Connection
+      if: env.ENABLE_SSH == 'true'
+      uses: Warpbuilds/action-debugger@v1.3
+      timeout-minutes: 80
+      with:
+        detached: true
+        limit-access-to-actor: true
 
     - uses: denoland/setup-deno@v2
       with:
