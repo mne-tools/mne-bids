@@ -4488,14 +4488,6 @@ def test_parallel_write_many_subjects(tmp_path):
     dataset_description = bids_root / "dataset_description.json"
     assert dataset_description.exists()
 
-    # Clean up remaining lock files created during parallel writes
-    for lock_file in bids_root.rglob("*.lock"):
-        try:
-            lock_file.unlink()
-        except OSError:
-            # In case lock is still held or file is in use, that's OK
-            pass
-
     # putting some sleep to make sure all file locks are released
     time.sleep(1)
     # No stale lock files should remain after the parallel writes complete.
