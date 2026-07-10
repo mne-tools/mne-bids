@@ -5,6 +5,7 @@
 
 import os
 import sys
+from pathlib import Path
 from datetime import date
 
 from intersphinx_registry import get_intersphinx_mapping
@@ -69,12 +70,27 @@ numpydoc_xref_ignore = {
     "instances",
     "of",
 }
-
+numpydoc_validate = True
+try:
+    import tomllib
+except Exception:
+    pass
+else:
+    pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
+    pyproject = tomllib.loads(pyproject_path.read_text("utf-8"))
+    pyproject_nv = pyproject["tool"]["numpydoc_validation"]
+    numpydoc_validation_checks = set(pyproject_nv["checks"])
+    numpydoc_validation_exclude = set(pyproject_nv["exclude"])
 
 # generate autosummary even if no references
 autosummary_generate = True
 autodoc_default_options = {"inherited-members": None}
-default_role = "autolink"  # XXX silently allows bad syntax, someone should fix
+
+default_role = "py:obj"
+
+rst_prolog = """
+.. currentmodule:: mne_bids
+"""
 
 # configure linkcheck
 # https://sphinx-doc.org/en/master/usage/configuration.html?#options-for-the-linkcheck-builder
@@ -114,10 +130,8 @@ release = version
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ["auto_examples/index.rst", "_build", "Thumbs.db", ".DS_Store"]
 
-nitpick_ignore_regex = [
-    # TODO can be removed when min. Sphinx version is 8.2
-    ("py:class", r".*pathlib\._local\.Path"),
-]
+nitpicky = True
+show_warning_types = True
 
 # HTML options (e.g., theme)
 html_show_sourcelink = False

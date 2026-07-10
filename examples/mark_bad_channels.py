@@ -87,7 +87,7 @@ write_raw_bids(
 # with the data, a small popup window will allow you to toggle the projectors
 # on and off. If you changed the selection of bad channels, you will be
 # prompted whether you would like to save the changes when closing the main
-# window. Your raw data and the `*_channels.tsv` sidecar file will be updated
+# window. Your raw data and the ``*_channels.tsv`` sidecar file will be updated
 # upon saving.
 
 inspect_dataset(bids_path)
@@ -106,7 +106,7 @@ inspect_dataset(bids_path, l_freq=1.0, h_freq=30.0)
 # the `MNE-Python Annotations tutorial`_ for an introduction to the interactive
 # interface. If you're closing the main window after changing the annotations,
 # you will be prompted whether you wish to save the changes. Your raw data and
-# the `*_events.tsv` sidecar file will be updated upon saving.
+# the ``*_events.tsv`` sidecar file will be updated upon saving.
 #
 # Non-interactive (programmatic) bad channel selection
 # ----------------------------------------------------

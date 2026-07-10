@@ -110,14 +110,17 @@ figure out how to run the commands without invoking `make`.
 
 We run several style checks on `mne-bids`.
 If you have accurately followed the steps to setup your `mne-bids` development version,
-you can simply use the following command from the root of the `mne-bids` repository:
+you should install pre-commit hooks with
+```Shell
+pre-commit install --install-hooks
+```
+and then you can simply use the following command from the root of the `mne-bids` repository:
 
 ```Shell
-make pep
+pre-commit run -a
 ```
-
 We use [ruff](https://docs.astral.sh/ruff/) to format our code.
-You can simply call `make ruff-format` from the root of the `mne-bids` repository
+You can simply call the pre-commit command above from the root of the `mne-bids` repository
 to automatically convert your code to follow the appropriate style.
 
 ### git pre-commit hooks

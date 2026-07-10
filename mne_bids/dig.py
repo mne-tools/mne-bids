@@ -25,11 +25,13 @@ from mne_bids.config import (
     ALLOWED_SPACES,
     BIDS_COORD_FRAME_DESCRIPTIONS,
     BIDS_COORDINATE_UNITS,
+    BIDS_IEEG_COORDINATE_FRAMES,
     BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
     BIDS_TO_MNE_FRAMES,
     MNE_FRAME_TO_STR,
     MNE_STR_TO_FRAME,
     MNE_TO_BIDS_FRAMES,
+    coordsys_standard_template_deprecated,
 )
 from mne_bids.path import BIDSPath
 from mne_bids.tsv_handler import _from_tsv
@@ -176,7 +178,7 @@ def _handle_coordsystem_reading(coordsystem_fpath, datatype):
     Handle reading the coordinate frame and coordinate unit
     of each electrode.
     """
-    with _open_lock(coordsystem_fpath, encoding="utf-8-sig") as fin:
+    with _open_lock(coordsystem_fpath, encoding="utf-8") as fin:
         coordsystem_json = json.load(fin)
 
     if datatype == "meg":
@@ -369,7 +371,7 @@ def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
         "y": ys,
         "z": zs,
     }
-    _write_tsv(fname, ch_data, overwrite, verbose)
+    _write_tsv(fname, ch_data, overwrite=overwrite, verbose=verbose)
 
 
 def _write_coordsystem_json(
@@ -472,7 +474,7 @@ def _write_coordsystem_json(
     # XXX: improve later when BIDS is updated
     # check that there already exists a coordsystem.json
     if Path(fname).exists() and not overwrite:
-        with _open_lock(fname, encoding="utf-8-sig") as fin:
+        with _open_lock(fname, encoding="utf-8") as fin:
             coordsystem_dict = json.load(fin)
         if fid_json != coordsystem_dict:
             raise RuntimeError(
@@ -482,6 +484,47 @@ def _write_coordsystem_json(
                 f'from the existing one, or set "overwrite" to True.'
             )
     _write_json(fname, fid_json, overwrite=True)
+
+
+def _write_electrodes_json(fname, *, spatial_reference, overwrite=False):
+    """Write the ``*_electrodes.json`` sidecar (#1545)."""
+    fid_json = {"SpatialReference": spatial_reference}
+    if Path(fname).exists() and not overwrite:
+        with _open_lock(fname, encoding="utf-8") as fin:
+            existing = json.load(fin)
+        if fid_json != existing:
+            raise RuntimeError(
+                f"Trying to write electrodes.json, but it already exists at "
+                f"{fname} and the contents do not match. You must "
+                f"differentiate this electrodes.json file from the existing "
+                f'one, or set "overwrite" to True.'
+            )
+    _write_json(fname, fid_json, overwrite=True)
+
+
+def _infer_spatial_reference(bids_path, coord_frame):
+    """Infer SpatialReference for the ``*_electrodes.json`` sidecar (#1545)."""
+    if coord_frame in (
+        BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS
+        + coordsys_standard_template_deprecated
+    ):
+        return coord_frame
+    if coord_frame in BIDS_IEEG_COORDINATE_FRAMES:
+        query = bids_path.copy().update(
+            datatype="anat",
+            suffix="T1w",
+            task=None,
+            space=None,
+            acquisition=None,
+            run=None,
+            processing=None,
+        )
+        for ext in (".nii.gz", ".nii"):
+            cand = query.copy().update(extension=ext).fpath
+            if cand.exists():
+                return f"bids::{cand.relative_to(bids_path.root).as_posix()}"
+        logger.info(f"No T1w found for sub-{bids_path.subject}; using 'n/a'.")
+    return "n/a"
 
 
 def _write_empty_ieeg_positions(
@@ -530,6 +573,12 @@ def _write_empty_ieeg_positions(
         fname=coordsystem_path,
         datatype=bids_path.datatype,
         overwrite=overwrite,
+    )
+    electrodes_json_path = BIDSPath(
+        **electrode_entities, suffix="electrodes", extension=".json"
+    )
+    _write_electrodes_json(
+        electrodes_json_path, spatial_reference="n/a", overwrite=overwrite
     )
 
 
@@ -688,6 +737,19 @@ def _write_dig_bids(
         datatype=bids_path.datatype,
         overwrite=overwrite,
     )
+    if bids_path.datatype != "nirs":
+        # NIRS uses *_optodes.{tsv,json}; for EEG/iEEG the BIDS spec defines
+        # a *_electrodes.json sidecar whose SpatialReference field the
+        # validator requires for derivative datasets (see #1545):
+        # https://bids-specification.readthedocs.io/en/stable/modality-specific-files/electroencephalography.html#electrodes-description-_electrodestsv
+        electrodes_json_path = BIDSPath(
+            **electrode_file_entities, suffix="electrodes", extension=".json"
+        )
+        _write_electrodes_json(
+            electrodes_json_path,
+            spatial_reference=_infer_spatial_reference(bids_path, coord_frame),
+            overwrite=overwrite,
+        )
 
 
 def _read_dig_bids(electrodes_fpath, coordsystem_fpath, datatype, raw):
@@ -822,7 +884,6 @@ def template_to_head(info, space, coord_frame="auto", unit="auto", verbose=None)
             in one when they are actually in the other. The only way to tell
             for template coordinate systems, currently, is if it is specified
             in the dataset documentation.
-
     unit : 'm' | 'mm' | 'auto'
         The unit that was used in the coordinate system specification.
         If ``'auto'``, ``'m'`` will be inferred if the montage
@@ -836,7 +897,6 @@ def template_to_head(info, space, coord_frame="auto", unit="auto", verbose=None)
     trans : mne.transforms.Transform
         The data transformation matrix from ``'head'`` to ``'mri'``
         coordinates.
-
     """
     _validate_type(info, mne.Info)
     _check_option("space", space, BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
