@@ -133,7 +133,7 @@ def test_read_compressed_tsv(tmp_path):
     json_path.unlink()
     with pytest.raises(ValueError, match="a corresponding sidecar JSON is needed"):
         _from_compressed_tsv(tsv_path)
-    json_path.write_text('{"Columns": ["onset", "duration"]}', encoding="utf-8-sig")
+    json_path.write_text('{"Columns": ["onset", "duration"]}', encoding="utf-8")
     with pytest.raises(
         ValueError, match="physioevents.json contains names for 2 columns"
     ):
