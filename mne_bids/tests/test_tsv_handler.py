@@ -119,9 +119,8 @@ def test_read_compressed_tsv(tmp_path):
     json_path = tmp_path / "physioevents.json"
 
     _to_tsv(data, tsv_path, compress=True)
-    # Dummy file
     json_path.write_text(
-        '{"Columns": ["onset", "duration", "trial_type"]}', encoding="utf-8-sig"
+        '{"Columns": ["onset", "duration", "trial_type"]}', encoding="utf-8"
     )
 
     parsed = _from_compressed_tsv(tsv_path)

@@ -248,11 +248,11 @@ def _from_compressed_tsv(fname, dtypes=None):
     sidecar_json = fname.with_suffix("").with_suffix(".json")
     if not sidecar_json.exists():
         raise ValueError(
-            "To read a compressed tsv file, a corresponding sidecar JSON is needed. "
-            f"searched for:\n {sidecar_json}"
+            f"To read {fname}, a corresponding sidecar JSON is needed. searched for:\n "
+            f"  {sidecar_json}"
         )
 
-    sidecar = json.loads(sidecar_json.read_text(encoding="utf-8-sig"))
+    sidecar = json.loads(sidecar_json.read_text(encoding="utf-8"))
     columns = sidecar["Columns"]
     _validate_type(columns, list)
 
@@ -285,7 +285,6 @@ def _to_tsv(data, fname, *, compress=False, lock=True):
     output = f"{output}\n"
 
     if compress:
-        # TODO: need to test that this works as expected during parallel write.
         with _open_lock(fname, "wb") as f:
             f.write(gzip.compress(output.encode("utf-8")))
     else:
