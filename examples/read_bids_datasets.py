@@ -49,7 +49,7 @@ from mne_bids import (
 # --------------------------------------
 #
 # A downloaded OpenNeuro dataset is stored in a ``target_dir`` directory, which is
-# called the `root` of each BIDS dataset. This example uses this
+# called the ``root`` of each BIDS dataset. This example uses this
 # `EEG dataset <https://openneuro.org/datasets/ds002778>`_ of resting-state recordings
 # of patients with Parkinson's disease.
 #

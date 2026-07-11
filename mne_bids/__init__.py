@@ -24,6 +24,7 @@ from mne_bids.path import (
 )
 from mne_bids.read import (
     get_head_mri_trans,
+    read_epochs_bids,
     read_raw_bids,
     events_file_to_annotation_kwargs,
 )

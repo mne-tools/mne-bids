@@ -19,9 +19,9 @@ EPHY_ALLOWED_DATATYPES = ["eeg", "emg", "ieeg", "meg", "nirs"]
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh", "motion"]
 
 MEG_CONVERT_FORMATS = ["FIF", "auto"]
-EEG_CONVERT_FORMATS = ["BrainVision", "auto"]
+EEG_CONVERT_FORMATS = ["BrainVision", "EDF", "BDF", "EEGLAB", "auto"]
 EMG_CONVERT_FORMATS = ["EDF", "BDF", "auto"]
-IEEG_CONVERT_FORMATS = ["BrainVision", "auto"]
+IEEG_CONVERT_FORMATS = ["BrainVision", "EDF", "EEGLAB", "auto"]
 NIRS_CONVERT_FORMATS = ["auto"]
 MOTION_CONVERT_FORMATS = ["tsv", "auto"]
 CONVERT_FORMATS = {
@@ -31,6 +31,16 @@ CONVERT_FORMATS = {
     "ieeg": IEEG_CONVERT_FORMATS,
     "nirs": NIRS_CONVERT_FORMATS,
     "motion": MOTION_CONVERT_FORMATS,
+}
+
+# Mapping from format names to file extensions - single source of truth
+# for format-to-extension resolution used in write_raw_bids.
+FORMAT_EXTENSIONS = {
+    "BrainVision": ".vhdr",
+    "EDF": ".edf",
+    "BDF": ".bdf",
+    "EEGLAB": ".set",
+    "FIF": ".fif",
 }
 
 # Orientation of the coordinate system dependent on manufacturer
@@ -142,6 +152,55 @@ reader = {
 # MEF3 support requires MNE >= 1.12
 if hasattr(io, "read_raw_mef"):
     reader[".mefd"] = io.read_raw_mef
+
+
+epoch_reader = {".set": io.read_epochs_eeglab}
+
+# Continuous-format files where each "trial" is a fixed-length segment of the
+# file. Trial duration is read from the sidecar's ``EpochLength`` field.
+_continuous_epoched_reader = {
+    ".edf": io.read_raw_edf,
+    ".bdf": io.read_raw_bdf,
+    ".vhdr": io.read_raw_brainvision,
+}
+_EPOCHED_EXTS = frozenset(epoch_reader) | frozenset(_continuous_epoched_reader)
+# Some file extensions are ambiguous: more than one MNE reader can produce a
+# file with that extension. For example, ``.cnt`` is used both by Neuroscan,
+# read via :func:`mne.io.read_raw_cnt`, and by ANT Neuro eego recordings, read
+# via :func:`mne.io.read_raw_ant`. When re-reading the original file (e.g. to
+# obtain an unmodified copy), the extension alone is therefore not always enough
+# to pick the reader that produced a given ``raw`` object; using the wrong one
+# passes mismatched ``raw._init_kwargs`` (e.g. ``read_raw_cnt`` does not accept
+# the ``fname`` argument used by ``read_raw_ant``) and raises ``TypeError``.
+# This maps the class name of the ``raw`` object to the reader that created it,
+# taking precedence over the extension-based ``reader`` lookup.
+# See https://github.com/mne-tools/mne-bids/issues/1500
+reader_by_raw_class = dict()
+if hasattr(io, "read_raw_ant"):
+    reader_by_raw_class["RawANT"] = io.read_raw_ant
+
+
+def _reader_for_raw(raw, ext):
+    """Return the MNE reader function that produced ``raw``.
+
+    Most file extensions map to a single reader, but some are shared by multiple
+    readers (see :data:`reader_by_raw_class`). In that case the class of ``raw``
+    is used to disambiguate, so the original file is re-read with the same reader
+    that created it rather than one inferred from the (ambiguous) extension.
+
+    Parameters
+    ----------
+    raw : instance of mne.io.BaseRaw
+        The raw object whose original file should be re-read.
+    ext : str
+        The file extension (including the leading dot) of the original file.
+
+    Returns
+    -------
+    reader : callable
+        The ``mne.io.read_raw_*`` function to use.
+    """
+    return reader_by_raw_class.get(type(raw).__name__, reader[ext])
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way

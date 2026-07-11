@@ -24,6 +24,7 @@
 .. _Ethan Knights: https://github.com/ethanknights
 .. _Evgenii Kalenkovich: https://github.com/kalenkovich
 .. _Ezequiel Mikulan: https://github.com/ezemikulan
+.. _Flore Boscher: https://github.com/boscherf
 .. _Ford McDonald: https://github.com/fordmcdonald
 .. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
 .. _Fu-Te Wong: https://github.com/zuxfoucault
@@ -57,8 +58,10 @@
 .. _Stefan Appelhoff: https://stefanappelhoff.com/
 .. _Swastika Gupta: https://swastyy.github.io
 .. _Teon Brooks: https://teonbrooks.com
+.. _Thomas Binns: https://github.com/tsbinns
 .. _Thomas Hartmann: https://github.com/thht
 .. _Tom Donoghue: https://github.com/TomDonoghue
+.. _Vincent Gao: https://github.com/gaoflow
 .. _waldie11: https://github.com/waldie11
 .. _William Turner: https://bootstrapbill.github.io/
 .. _Yorguin Mantilla: https://github.com/yjmantilla
