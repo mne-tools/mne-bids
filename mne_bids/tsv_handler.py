@@ -290,7 +290,6 @@ def _to_tsv(data, fname, *, compress=False, lock=True):
     else:
         with _open_lock(fname, "w", encoding="utf-8", lock=lock) as f:
             f.write(output)
-            f.write("\n")
 
 
 def _tsv_to_str(data, rows=5, *, include_header=True):
