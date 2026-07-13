@@ -70,8 +70,6 @@ def _find_empty_room_candidates(bids_path):
     bids_path = bids_path.copy()
 
     datatype = "meg"  # We're only concerned about MEG data here
-    bids_fname = bids_path.update(suffix=datatype).fpath
-    _, ext = _parse_ext(bids_fname)
     # Create a path for the empty-room directory to be used for matching.
     emptyroom_dir = BIDSPath(root=bids_root, subject="emptyroom").directory
 
@@ -1666,7 +1664,7 @@ def _parse_ext(raw_fname):
     """Split a filename into its stem and extension."""
     # Some callsites in our codebase pass _parse_ext(None)
     if not raw_fname:
-        return "", ""
+        return None, None
     raw_fname = Path(raw_fname)
 
     fname, exts = raw_fname.with_suffix(""), raw_fname.suffixes
@@ -1674,9 +1672,9 @@ def _parse_ext(raw_fname):
         fname = fname.with_suffix("")
 
     # BTi data is the only file format that does not have a file extension
-    if not exts or "c,rf" in str(fname):
+    if not exts or "c,rf" in fname.name:
         logger.info(
-            'Found no extension for raw file, assuming "BTi" format '
+            f"Found no extension for raw file {raw_fname}.\n assuming 'BTi' format "
             "and appending extension .pdf"
         )
         ext = ".pdf"
@@ -1684,9 +1682,7 @@ def _parse_ext(raw_fname):
         ext = exts[0]
     else:  # >1 extension e.g. .nii.gz, .tsv.gz
         ext = "".join(raw_fname.suffixes)
-        fname = raw_fname.name[: -len(ext)]  # cut off the .nii.gz, tsv.gz etc.
-    # TODO: Should we return a Path obj, and refactor call sites if needed?
-    return str(fname), ext
+    return fname, ext
 
 
 def _infer_datatype_from_path(fname: Path):
