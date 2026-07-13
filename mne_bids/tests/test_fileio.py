@@ -144,7 +144,7 @@ def test_get_lock_context_oserror(tmp_path):
     test_file = tmp_path / "test.txt"
     test_file.write_text("test")
 
-    with patch.object(filelock, "FileLock", side_effect=_mock_filelock_oserror):
+    with patch.object(filelock, "SoftFileLock", side_effect=_mock_filelock_oserror):
         with pytest.warns(RuntimeWarning, match="Could not create lock"):
             with _get_lock_context(test_file) as lock_ctx:
                 assert lock_ctx is not None
@@ -157,7 +157,7 @@ def test_get_lock_context_typeerror(tmp_path):
     test_file = tmp_path / "test.txt"
     test_file.write_text("test")
 
-    with patch.object(filelock, "FileLock", side_effect=_mock_filelock_typeerror):
+    with patch.object(filelock, "SoftFileLock", side_effect=_mock_filelock_typeerror):
         with pytest.warns(RuntimeWarning, match="Could not create lock"):
             with _get_lock_context(test_file) as lock_ctx:
                 assert lock_ctx is not None
