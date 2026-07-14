@@ -122,12 +122,8 @@ def test_read_compressed_tsv(tmp_path):
     json_path.write_text(
         '{"Columns": ["onset", "duration", "trial_type"]}', encoding="utf-8"
     )
-
-    parsed = _from_compressed_tsv(tsv_path)
-    assert list(parsed.keys()) == ["onset", "duration", "trial_type"]
-    assert parsed["onset"] == ["0.1", "0.2"]
-    assert parsed["duration"] == ["1", "2"]
-    assert parsed["trial_type"] == ["a", "b"]
+    parsed = _from_compressed_tsv(tsv_path, dtypes=[float, float, str])
+    assert parsed == data
 
     # Errors
     json_path.unlink()
