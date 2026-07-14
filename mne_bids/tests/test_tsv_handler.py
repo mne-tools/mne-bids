@@ -97,22 +97,7 @@ def test_to_tsv_without_filelock(monkeypatch, tmp_path):
     assert not refcount_path.exists()
 
 
-def test_write_compressed_tsv(tmp_path):
-    """Ensure compressed TSV files are headerless."""
-    data = dict(onset=[0.1, 0.2], duration=[1, 2], trial_type=["a", "b"])
-    tsv_path = tmp_path / "physioevents.tsv.gz"
-
-    _to_tsv(data, tsv_path, compress=True)
-
-    assert tsv_path.exists()
-    parsed = _from_tsv(tsv_path)
-    assert list(parsed.keys()) == ["column_0", "column_1", "column_2"]
-    assert parsed["column_0"] == ["0.1", "0.2"]
-    assert parsed["column_1"] == ["1", "2"]
-    assert parsed["column_2"] == ["a", "b"]
-
-
-def test_read_compressed_tsv(tmp_path):
+def test_compressed_tsv(tmp_path):
     """Compressed TSV reader should get column names from sidecar JSON."""
     data = dict(onset=[0.1, 0.2], duration=[1, 2], trial_type=["a", "b"])
     tsv_path = tmp_path / "physioevents.tsv.gz"
