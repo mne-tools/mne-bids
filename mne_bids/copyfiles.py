@@ -99,7 +99,7 @@ def _get_brainvision_paths(vhdr_path):
         Paths to the .eeg/.dat file at index 0 and the .vmrk file at index 1 of
         the returned tuple.
     """
-    fname, ext = _parse_ext(vhdr_path)
+    _, ext = _parse_ext(vhdr_path)
     if ext != ".vhdr":
         raise ValueError(f'Expecting file ending in ".vhdr", but got {ext}')
 
@@ -401,12 +401,12 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
         )
 
     # Copy data .eeg/.dat ... no links to repair
-    sh.copyfile(eeg_file_path, fname_dest + ".eeg")
+    sh.copyfile(eeg_file_path, fname_dest.with_suffix(".eeg"))
 
     # Write new header and marker files, fixing the file pointer links
     # For that, we need to replace an old "basename" with a new one
     # assuming that all .eeg/.dat, .vhdr, .vmrk share one basename
-    basename_src = Path(fname_src).name
+    basename_src = fname_src.name
     eeg_expected = [f"{basename_src}.eeg", f"{basename_src}.dat"]
     vmrk_expected = [f"{basename_src}.vmrk"]
     if Path(eeg_file_path).name not in eeg_expected:
@@ -419,7 +419,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
             f"Unexpected path to marker file in {vhdr_src}:\n    "
             f"-->{Path(vmrk_file_path).name}\nExpected one of {vmrk_expected}."
         )
-    basename_dest = Path(fname_dest).name
+    basename_dest = fname_dest.name
     search_lines = [
         f"DataFile={basename_src}.eeg",
         f"DataFile={basename_src}.dat",
@@ -434,7 +434,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
                 fout.write(line)
 
     with open(vmrk_file_path, encoding=enc) as fin:
-        with _open_lock(fname_dest + ".vmrk", "w", encoding=enc) as fout:
+        with _open_lock(fname_dest.with_suffix(".vmrk"), "w", encoding=enc) as fout:
             for line in fin.readlines():
                 if line.strip() in search_lines:
                     line = line.replace(basename_src, basename_dest)
@@ -444,10 +444,12 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
         raw = read_raw_brainvision(vhdr_src, preload=False, verbose=verbose)
         daysback, keep_his, _ = _check_anonymize(anonymize, raw, ".vhdr")
         raw.info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
-        _anonymize_brainvision(fname_dest + ".vhdr", date=raw.info["meas_date"])
+        _anonymize_brainvision(
+            fname_dest.with_suffix(".vhdr"), date=raw.info["meas_date"]
+        )
 
     for ext in [".eeg", ".vhdr", ".vmrk"]:
-        _, fname = os.path.split(fname_dest + ext)
+        _, fname = os.path.split(fname_dest.with_suffix(ext))
         dirname = op.dirname(op.realpath(vhdr_dest))
         logger.info(f'Created "{fname}" in "{dirname}".')
     if anonymize:
@@ -513,8 +515,8 @@ def copyfile_edf(src, dest, anonymize=None, *, verbose=None):
     copyfile_kit
     """
     # Ensure source & destination extensions are the same
-    fname_src, ext_src = _parse_ext(src)
-    fname_dest, ext_dest = _parse_ext(dest)
+    _, ext_src = _parse_ext(src)
+    _, ext_dest = _parse_ext(dest)
 
     if ext_src.lower() != ext_dest.lower():
         raise ValueError(
@@ -639,7 +641,7 @@ def copyfile_eeglab(src, dest):
         fdt_path = op.join(head, fdt_fname)
 
         # Copy the .fdt file and give it a new name
-        fdt_name_new = fname_dest + ".fdt"
+        fdt_name_new = fname_dest.with_suffix(".fdt")
         sh.copyfile(fdt_path, fdt_name_new)
 
         # Now adjust the pointer in the .set file

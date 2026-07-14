@@ -3742,7 +3742,7 @@ def test_write_extension_case_insensitive(_bids_validate, tmp_path, datatype):
 
     # rename extension to upper-case
     _fname, ext = _parse_ext(fname)
-    new_fname = _fname + ext.upper()
+    new_fname = _fname.with_suffix(ext.upper())
 
     # rename the file's extension
     raw_fname = dir_path / fname
