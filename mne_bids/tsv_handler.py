@@ -180,13 +180,13 @@ def _from_tsv(fname, dtypes=None):
     dtypes : list, optional
         List of types to cast the values loaded as. This is specified column by
         column. Defaults to None. In this case all the data is loaded as strings.
-        For gzipped files (``*.gz``), note there are no in-file header names;
-        generated keys ``column_0``, ``column_1``, ... will be used.
 
     Returns
     -------
     data_dict : collections.OrderedDict
-        Keys are the column names, and values are the column data.
+        Keys are the column names, and values are the column data. For gzipped files
+        (``*.gz``), note there are no in-file header names; generated keys ``column_0``,
+        ``column_1``, ... will be used.s
 
     """
     from .utils import warn  # avoid circular import
