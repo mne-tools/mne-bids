@@ -753,21 +753,21 @@ def test_rm(bids_root, capsys, tmp_path, path_counter, fast_sidecar):
 
 def test_parse_ext():
     """Test the file extension extraction."""
-    f = "sub-05_task-matchingpennies.vhdr"
+    f = Path("sub-05_task-matchingpennies.vhdr")
     fname, ext = _parse_ext(f)
-    assert fname == "sub-05_task-matchingpennies"
+    assert fname == f.with_suffix("")
     assert ext == ".vhdr"
 
     # Test for case where no extension: assume BTi format
     f = "sub-01_task-rest"
     fname, ext = _parse_ext(f)
-    assert fname == f
+    assert fname == Path(f)
     assert ext == ".pdf"
 
-    # Get a .nii.gz file
+    # Get a .nii.gz file, and pass str as input
     f = "sub-01_task-rest.nii.gz"
     fname, ext = _parse_ext(f)
-    assert fname == "sub-01_task-rest"
+    assert fname == Path("sub-01_task-rest")
     assert ext == ".nii.gz"
 
 

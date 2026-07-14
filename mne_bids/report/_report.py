@@ -311,7 +311,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
         scans = scans_tsv["filename"]
         for scan in scans:
             # summarize metadata of recordings
-            bids_path, ext = _parse_ext(scan)
+            bids_path, _ = _parse_ext(scan)
             datatype = str(Path(scan).parent)
             if datatype not in ALLOWED_DATATYPES:
                 continue
