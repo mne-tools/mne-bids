@@ -280,8 +280,9 @@ class BIDSPath:
 
         .. versionadded:: 0.11
     tracking_system : str | None
-        The motion tracking system for Motion-BIDS data. This corresponds to
-        the BIDS entity ``tracksys``. For example,
+        The motion tracking system label for Motion-BIDS data. This corresponds
+        to the BIDS entity ``tracksys``, rather than the human-readable
+        ``TrackingSystemName`` metadata. For example,
         ``tracking_system="omcA"`` produces filenames containing
         ``tracksys-omcA``.
 
@@ -2809,8 +2810,9 @@ def find_matching_paths(
 
         .. versionadded:: 0.11
     tracking_systems : str | array-like of str | None
-        The motion tracking systems to match for Motion-BIDS data. This
-        corresponds to the BIDS entity ``tracksys``. For example,
+        The motion tracking system labels to match for Motion-BIDS data. These
+        correspond to the BIDS entity ``tracksys``, rather than the
+        human-readable ``TrackingSystemName`` metadata. For example,
         ``tracking_systems="omcA"`` matches filenames containing
         ``tracksys-omcA``.
 
