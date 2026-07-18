@@ -1770,12 +1770,13 @@ def test_match_advanced(tmp_path):
 
 def test_match_preserves_nested_roots(tmp_path):
     """Keep identical filenames from nested BIDS roots distinct."""
-    nested_roots = (
+    roots = (
+        tmp_path,
         tmp_path / "sourcedata",
         tmp_path / "derivatives" / "pipeline-a",
     )
     expected = set()
-    for root in nested_roots:
+    for root in roots:
         bids_path = BIDSPath(
             root=root,
             subject="01",
@@ -1797,6 +1798,7 @@ def test_match_preserves_nested_roots(tmp_path):
     matches = query.match()
 
     assert {match.fpath for match in matches} == expected
+    assert {match.root for match in matches} == set(roots)
     assert len(set(matches)) == len(expected)
     assert all(match.fpath.exists() for match in matches)
 
