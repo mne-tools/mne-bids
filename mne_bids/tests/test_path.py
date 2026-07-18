@@ -444,7 +444,6 @@ def bids_root_dense(tmp_path):
 def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     """Benchmark exploring bids tree."""
     tmp_bids_root = bids_root_dense.root
-    n_subjects = bids_root_dense.n_subjects
     n_sessions = bids_root_dense.n_sessions
     # This benchmark is to verify the speed-up in function call get_entity_vals with
     # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
@@ -492,13 +491,9 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
         root=tmp_bids_root,
     )
     paths = path.match()
-    # TODO: We *should* have n_subjects * n_sessions of these, but we get way more:
     assert len(paths) == 684
-    # This is because we have duplicate files here with BIDS entities, like:
-    # bids_root/derivatives/derivatives0/sub-1/ses-1/meg/sub-1_ses-1_task-audvis_meg.ds
-    # bids_root/derivatives/derivatives1/sub-1/ses-1/meg/sub-1_ses-1_task-audvis_meg.ds
-    # And _fnames_to_bidspaths converts these to the same names!
-    assert paths[0] == paths[n_subjects * n_sessions]
+    assert len(set(paths)) == len(paths)
+    assert all(path.fpath.exists() for path in paths)
     assert path_counter.count == 3420
     path.subject = "1"  # add subject
     paths = path.match()
@@ -1771,6 +1766,39 @@ def test_match_advanced(tmp_path):
     )
     matches = path.match()
     assert len(matches) == len(fnames), path
+
+
+def test_match_preserves_nested_roots(tmp_path):
+    """Keep identical filenames from nested BIDS roots distinct."""
+    nested_roots = (
+        tmp_path / "sourcedata",
+        tmp_path / "derivatives" / "pipeline-a",
+    )
+    expected = set()
+    for root in nested_roots:
+        bids_path = BIDSPath(
+            root=root,
+            subject="01",
+            task="rest",
+            datatype="eeg",
+            suffix="eeg",
+            extension=".edf",
+        )
+        bids_path.mkdir()
+        bids_path.fpath.touch()
+        expected.add(bids_path.fpath)
+
+    query = BIDSPath(
+        root=tmp_path,
+        datatype="eeg",
+        suffix="eeg",
+        extension=".edf",
+    )
+    matches = query.match()
+
+    assert {match.fpath for match in matches} == expected
+    assert len(set(matches)) == len(expected)
+    assert all(match.fpath.exists() for match in matches)
 
 
 def test_find_matching_paths(bids_root):
