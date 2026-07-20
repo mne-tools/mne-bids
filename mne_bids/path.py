@@ -3046,8 +3046,12 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     for fname in fnames:
         datatype = _infer_datatype_from_path(fname)
         bids_path = get_bids_path_from_fname(fname, check=False)
+        inferred_root = bids_path.root
         bids_path.root = root
         bids_path.datatype = datatype
+        expected_fpath = bids_path.directory / bids_path.basename
+        if expected_fpath != Path(fname):
+            bids_path.root = inferred_root
         bids_path.check = True
 
         try:
