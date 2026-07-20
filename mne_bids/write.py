@@ -1506,6 +1506,12 @@ def _write_raw_edf_bdf(raw, bids_fname, overwrite, *, physical_range="auto"):
     """
     ext = bids_fname.suffix[1:].upper()
     assert ext in ("EDF", "BDF")
+
+    subject_info = raw.info.get("subject_info", None)
+
+    if subject_info is not None and subject_info.get("sex", None) == 3:
+        raise ValueError("EDF/BFD files only support M (1) and F (2) sex options")
+
     if raw.info["meas_date"] is not None and raw.info["meas_date"].year < 1985:
         warn(
             f"Attempting to write a {ext} file with a meas_date of "
