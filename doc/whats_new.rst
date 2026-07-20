@@ -48,7 +48,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Preserve the actual root of files returned by :meth:`mne_bids.BIDSPath.match`, avoiding duplicate paths and paths that do not exist when matching inside nested BIDS roots, by `Daria Agafonova`_ (:gh:`1561`)
+- Preserve the actual root of files returned by :meth:`mne_bids.BIDSPath.match`, avoiding duplicate paths and paths that do not exist when matching inside nested BIDS roots, by `Daria Agafonova`_ (:gh:`1637`)
 - :func:`mne_bids.write_raw_bids` no longer raises a ``TypeError`` when writing ANT Neuro eego recordings (``.cnt``), by `Vincent Gao`_ (:gh:`1617`)
 
 ⚕️ Code health
