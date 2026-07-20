@@ -444,7 +444,9 @@ def bids_root_dense(tmp_path):
 def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     """Benchmark exploring bids tree."""
     tmp_bids_root = bids_root_dense.root
+    n_subjects = bids_root_dense.n_subjects
     n_sessions = bids_root_dense.n_sessions
+    n_bids_roots = len(bids_root_dense.bids_subdirectories)
     # This benchmark is to verify the speed-up in function call get_entity_vals with
     # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
     fnames = mne_bids.path._return_root_paths(tmp_bids_root)
@@ -491,7 +493,9 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
         root=tmp_bids_root,
     )
     paths = path.match()
-    assert len(paths) == 684
+    # Each BIDS root contains one .ds recording per subject-session pair.
+    expected_n_paths = n_subjects * n_sessions * n_bids_roots
+    assert len(paths) == expected_n_paths
     assert len(set(paths)) == len(paths)
     assert all(path.fpath.exists() for path in paths)
     assert path_counter.count == 3420
