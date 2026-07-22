@@ -4604,33 +4604,30 @@ def test_reader_for_raw_ambiguous_extension():
 def test_deface_mri_errors(t1_image, mri_landmarks):
     """Test error raising for mri defacing function."""
     bad_inset_type = "foo"
-    bad_inset_val = -1
     bad_theta_type = "foo"
-    bad_theta_val = -5
+    bad_theta_val = -0.5
 
-    deface = dict(inset=5.0, theta=15.0)
+    inset = -5
+    theta = 15
 
     # image type error
     with pytest.raises(TypeError, match="nibabel.spatialimages"):
-        deface_mri("foo", mri_landmarks, None)
+        deface_mri("foo", mri_landmarks, inset=inset, theta=theta)
 
     # landmark type error
     with pytest.raises(TypeError, match="landmarks"):
-        deface_mri(t1_image, "foo", None)
+        deface_mri(t1_image, "foo", inset=inset, theta=theta)
 
     # inset errors
-    with pytest.raises(ValueError, match="inset must be numeric"):
-        deface_mri(t1_image, mri_landmarks, dict(deface, inset=bad_inset_type))
-
-    with pytest.raises(ValueError, match="inset should be positive"):
-        deface_mri(t1_image, mri_landmarks, dict(deface, inset=bad_inset_val))
+    with pytest.raises(ValueError, match="inset must be an integer"):
+        deface_mri(t1_image, mri_landmarks, inset=bad_inset_type, theta=theta)
 
     # theta errors
-    with pytest.raises(ValueError, match="theta must be numeric"):
-        deface_mri(t1_image, mri_landmarks, dict(deface, theta=bad_theta_type))
+    with pytest.raises(ValueError, match="theta must be an integer"):
+        deface_mri(t1_image, mri_landmarks, inset=inset, theta=bad_theta_type)
 
     with pytest.raises(ValueError, match="theta should be between"):
-        deface_mri(t1_image, mri_landmarks, dict(deface, theta=bad_theta_val))
+        deface_mri(t1_image, mri_landmarks, inset=inset, theta=bad_theta_val)
 
 
 @testing.requires_testing_data
@@ -4640,3 +4637,9 @@ def test_deface_mri(t1_image, mri_landmarks):
 
     defaced_mri = deface_mri(t1_image, mri_landmarks, None)
     assert isinstance(defaced_mri, SpatialImage)
+
+    # check the proportion of changed voxels is under 5%
+    orig = t1_image.get_fdata().ravel()
+    dfd = defaced_mri.get_fdata().ravel()
+    assert np.isclose(orig, dfd).mean() > 0.95
+
