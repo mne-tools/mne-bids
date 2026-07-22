@@ -4603,31 +4603,31 @@ def test_reader_for_raw_ambiguous_extension():
 @testing.requires_testing_data
 def test_deface_mri_errors(t1_image, mri_landmarks):
     """Test error raising for mri defacing function."""
-    bad_inset_type = "foo"
+    bad_offset_type = "foo"
     bad_theta_type = "foo"
     bad_theta_val = -0.5
 
-    inset = -5
+    offset = -5
     theta = 15
 
     # image type error
     with pytest.raises(TypeError, match="nibabel.spatialimages"):
-        deface_mri("foo", mri_landmarks, inset=inset, theta=theta)
+        deface_mri("foo", mri_landmarks, offset=offset, theta=theta)
 
     # landmark type error
     with pytest.raises(TypeError, match="landmarks"):
-        deface_mri(t1_image, "foo", inset=inset, theta=theta)
+        deface_mri(t1_image, "foo", offset=offset, theta=theta)
 
-    # inset errors
-    with pytest.raises(ValueError, match="inset must be an integer"):
-        deface_mri(t1_image, mri_landmarks, inset=bad_inset_type, theta=theta)
+    # offset errors
+    with pytest.raises(TypeError, match="offset must be an integer"):
+        deface_mri(t1_image, mri_landmarks, offset=bad_offset_type, theta=theta)
 
     # theta errors
     with pytest.raises(ValueError, match="theta must be an integer"):
-        deface_mri(t1_image, mri_landmarks, inset=inset, theta=bad_theta_type)
+        deface_mri(t1_image, mri_landmarks, offset=offset, theta=bad_theta_type)
 
     with pytest.raises(ValueError, match="theta should be between"):
-        deface_mri(t1_image, mri_landmarks, inset=inset, theta=bad_theta_val)
+        deface_mri(t1_image, mri_landmarks, offset=offset, theta=bad_theta_val)
 
 
 @testing.requires_testing_data
