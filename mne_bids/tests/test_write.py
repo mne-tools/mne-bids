@@ -4635,7 +4635,7 @@ def test_deface_mri(t1_image, mri_landmarks):
     """Test that defacing completes successfully."""
     from nibabel.spatialimages import SpatialImage
 
-    defaced_mri = deface_mri(t1_image, mri_landmarks, None)
+    defaced_mri = deface_mri(t1_image, mri_landmarks)
     assert isinstance(defaced_mri, SpatialImage)
 
     # check the proportion of changed voxels is under 5%
