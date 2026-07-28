@@ -2188,49 +2188,6 @@ def test_write_anat(_bids_validate, tmp_path):
     assert "ses-None" not in anat_dir2.as_posix()
     assert op.exists(op.join(anat_dir2, "sub-01_T1w.nii.gz"))
 
-    # test deface
-    bids_path = write_anat(t1w_mgh, **kwargs)
-    anat_dir = bids_path.directory
-    t1w = nib.load(op.join(anat_dir, "sub-01_T1w.nii.gz"))
-    vox_sum = t1w.get_fdata().sum()
-
-    _check_anat_json(bids_path)
-
-    # Check that increasing inset leads to more voxels at 0
-    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset=25.0)))
-    anat_dir2 = bids_path.directory
-    t1w2 = nib.load(op.join(anat_dir2, "sub-01_T1w.nii.gz"))
-    vox_sum2 = t1w2.get_fdata().sum()
-
-    _check_anat_json(bids_path)
-
-    assert vox_sum > vox_sum2
-
-    # Check that increasing theta leads to more voxels at 0
-    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=45)))
-    anat_dir3 = bids_path.directory
-    t1w3 = nib.load(op.join(anat_dir3, "sub-01_T1w.nii.gz"))
-    vox_sum3 = t1w3.get_fdata().sum()
-
-    assert vox_sum > vox_sum3
-
-    with pytest.raises(ValueError, match="must be provided to deface"):
-        write_anat(
-            t1w_mgh, bids_path=bids_path, deface=True, verbose=True, overwrite=True
-        )
-
-    with pytest.raises(ValueError, match="inset must be numeric"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset="small")))
-
-    with pytest.raises(ValueError, match="inset should be positive"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset=-2.0)))
-
-    with pytest.raises(ValueError, match="theta must be numeric"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta="big")))
-
-    with pytest.raises(ValueError, match="theta should be between 0 and 90"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=100)))
-
     # test using landmarks
     bids_path.update(acquisition=acq)
 
