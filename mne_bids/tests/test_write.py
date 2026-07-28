@@ -4605,7 +4605,7 @@ def test_deface_mri_errors(t1_image, mri_landmarks):
     """Test error raising for mri defacing function."""
     bad_offset_type = "foo"
     bad_theta_type = "foo"
-    bad_theta_val = -0.5
+    bad_theta_val = -5
 
     offset = -5
     theta = 15
