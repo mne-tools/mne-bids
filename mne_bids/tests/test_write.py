@@ -4623,7 +4623,7 @@ def test_deface_mri_errors(t1_image, mri_landmarks):
         deface_mri(t1_image, mri_landmarks, offset=bad_offset_type, theta=theta)
 
     # theta errors
-    with pytest.raises(ValueError, match="theta must be an integer"):
+    with pytest.raises(TypeError, match="theta must be an integer"):
         deface_mri(t1_image, mri_landmarks, offset=offset, theta=bad_theta_type)
 
     with pytest.raises(ValueError, match="theta should be between"):
