@@ -4623,5 +4623,3 @@ def test_deface_mri(t1_image, mri_landmarks):
     dfd = defaced_mri.get_fdata().ravel()
     assert np.isclose(orig, dfd).mean() > 0.95
 
-
-
