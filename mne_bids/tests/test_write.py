@@ -4610,7 +4610,7 @@ def test_deface_mri(tmp_path, t1_image, mri_landmarks):
         overwrite=True,
     )
     anat_dir = bids_path.directory
-    t1w = nib.load(op.join(anat_dir, "sub-01_T1w.nii.gz"))
+    t1w = nibabel.load(op.join(anat_dir, "sub-01_T1w.nii.gz"))
     vox_sum = t1w.get_fdata().sum()
 
     _check_anat_json(bids_path)
