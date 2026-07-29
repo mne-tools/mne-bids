@@ -4597,7 +4597,6 @@ def test_deface_mri_errors(t1_image, mri_landmarks):
 @testing.requires_testing_data
 def test_deface_mri(t1_image, mri_landmarks):
     """Test that defacing completes successfully."""
-    from nibabel import load
     from nibabel.spatialimages import SpatialImage
 
     # reference mri
