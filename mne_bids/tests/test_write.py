@@ -4600,6 +4600,17 @@ def test_deface_mri(tmp_path, t1_image, mri_landmarks):
     from nibabel import load
     from nibabel.spatialimages import SpatialImage
 
+    # define some keyword arguments to simplify testing
+    bids_root = tmp_path / "bids1"
+    bids_path = _bids_path.copy().update(root=bids_root)
+    kwargs = dict(
+        bids_path=bids_path,
+        landmarks=mri_landmarks,
+        deface=True,
+        verbose=True,
+        overwrite=True,
+    )
+
     # reference mri
     vox_sum = t1_image.get_fdata().sum()
 
