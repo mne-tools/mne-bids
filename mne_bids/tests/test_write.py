@@ -4600,6 +4600,15 @@ def test_deface_mri(t1_image, mri_landmarks):
     from nibabel.spatialimages import SpatialImage
 
     # reference mri
+    bids_root = tmp_path / "bids1"
+    bids_path = _bids_path.copy().update(root=bids_root)
+    kwargs = dict(
+        bids_path=bids_path,
+        landmarks=mri_landmarks,
+        deface=True,
+        verbose=True,
+        overwrite=True,
+    )
     anat_dir = bids_path.directory
     t1w = nib.load(op.join(anat_dir, "sub-01_T1w.nii.gz"))
     vox_sum = t1w.get_fdata().sum()
