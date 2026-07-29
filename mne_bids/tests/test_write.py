@@ -2161,6 +2161,13 @@ def test_write_anat(_bids_validate, tmp_path):
     _check_anat_json(bids_path)
 
     # Now try some anat writing that will fail
+    # if deface is true but no landmarks provided, error should raise
+    with pytest.raises(ValueError, match="must be provided to deface"):
+        write_anat(
+            t1w_mgh, bids_path=bids_path, deface=True, verbose=True,
+            overwrite=True
+        )
+
     # We already have some MRI data there
     with pytest.raises(IOError, match="`overwrite` is set to False"):
         write_anat(t1w_mgh, **dict(kwargs, overwrite=False))
@@ -4592,11 +4599,38 @@ def test_deface_mri(t1_image, mri_landmarks):
     """Test that defacing completes successfully."""
     from nibabel.spatialimages import SpatialImage
 
+    # reference mri
+    anat_dir = bids_path.directory
+    t1w = nib.load(op.join(anat_dir, "sub-01_T1w.nii.gz"))
+    vox_sum = t1w.get_fdata().sum()
+
+    _check_anat_json(bids_path)
+
+    # Check that a more negative offset leads to more voxels at 0
+    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(offset=-25, theta=15)))
+    anat_dir2 = bids_path.directory
+    t1w2 = nib.load(op.join(anat_dir2, "sub-01_T1w.nii.gz"))
+    vox_sum2 = t1w2.get_fdata().sum()
+
+    _check_anat_json(bids_path)
+
+    assert vox_sum > vox_sum2
+
+    # Check that increasing theta leads to more voxels at 0
+    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=45, offset=-5)))
+    anat_dir3 = bids_path.directory
+    t1w3 = nib.load(op.join(anat_dir3, "sub-01_T1w.nii.gz"))
+    vox_sum3 = t1w3.get_fdata().sum()
+
+    assert vox_sum > vox_sum3
+
     defaced_mri = deface_mri(t1_image, mri_landmarks)
     assert isinstance(defaced_mri, SpatialImage)
 
-    # check the proportion of changed voxels is under 5%
+    # check the proportion of changed voxels is under 5% for default vals
     orig = t1_image.get_fdata().ravel()
     dfd = defaced_mri.get_fdata().ravel()
     assert np.isclose(orig, dfd).mean() > 0.95
+
+
 
