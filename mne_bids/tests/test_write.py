@@ -4597,28 +4597,16 @@ def test_deface_mri_errors(t1_image, mri_landmarks):
 @testing.requires_testing_data
 def test_deface_mri(tmp_path, t1_image, mri_landmarks):
     """Test that defacing completes successfully."""
+    from nibabel import load
     from nibabel.spatialimages import SpatialImage
 
     # reference mri
-    bids_root = tmp_path / "bids1"
-    bids_path = _bids_path.copy().update(root=bids_root)
-    kwargs = dict(
-        bids_path=bids_path,
-        landmarks=mri_landmarks,
-        deface=True,
-        verbose=True,
-        overwrite=True,
-    )
-    anat_dir = bids_path.directory
-    t1w = nibabel.load(op.join(anat_dir, "sub-01_T1w.nii.gz"))
-    vox_sum = t1w.get_fdata().sum()
-
-    _check_anat_json(bids_path)
+    vox_sum = t1_image.get_fdata().sum()
 
     # Check that a more negative offset leads to more voxels at 0
-    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(offset=-25, theta=15)))
+    bids_path = write_anat(t1_image, **dict(kwargs, deface=dict(offset=-25, theta=15)))
     anat_dir2 = bids_path.directory
-    t1w2 = nib.load(op.join(anat_dir2, "sub-01_T1w.nii.gz"))
+    t1w2 = load(op.join(anat_dir2, "sub-01_T1w.nii.gz"))
     vox_sum2 = t1w2.get_fdata().sum()
 
     _check_anat_json(bids_path)
@@ -4628,7 +4616,7 @@ def test_deface_mri(tmp_path, t1_image, mri_landmarks):
     # Check that increasing theta leads to more voxels at 0
     bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=45, offset=-5)))
     anat_dir3 = bids_path.directory
-    t1w3 = nib.load(op.join(anat_dir3, "sub-01_T1w.nii.gz"))
+    t1w3 = load(op.join(anat_dir3, "sub-01_T1w.nii.gz"))
     vox_sum3 = t1w3.get_fdata().sum()
 
     assert vox_sum > vox_sum3
