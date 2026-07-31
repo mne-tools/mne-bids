@@ -16,6 +16,7 @@
 .. _Christian O'Reilly: https://github.com/christian-oreilly
 .. _Clemens Brunner: https://github.com/cbrnr
 .. _Daniel McCloy: http://dan.mccloy.info
+.. _Daria Agafonova: https://github.com/viranovskaya
 .. _Denis Engemann: https://github.com/dengemann
 .. _Diego Lozano-Soldevilla: https://orcid.org/0000-0003-1794-8204
 .. _Dominik Welke: https://github.com/dominikwelke
