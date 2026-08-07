@@ -96,6 +96,28 @@ def test_to_tsv_without_filelock(monkeypatch, tmp_path):
     assert not refcount_path.exists()
 
 
+def test_compressed_tsv(tmp_path):
+    """Compressed TSV reader should get column names from sidecar JSON."""
+    data = dict(onset=[0.1, 0.2], duration=[1, 2], trial_type=["a", "b"])
+    tsv_path = tmp_path / "physioevents.tsv.gz"
+    json_path = tmp_path / "physioevents.json"
+
+    _to_tsv(data, tsv_path, compress=True)
+    json_path.write_text(
+        '{"Columns": ["onset", "duration", "trial_type"]}', encoding="utf-8"
+    )
+    parsed = _from_tsv(tsv_path, dtypes=[float, float, str])
+    assert parsed == data
+
+    # Errors
+    json_path.unlink()
+    with pytest.raises(ValueError, match="a corresponding sidecar JSON is needed"):
+        _from_tsv(tsv_path)
+    json_path.write_text('{"Columns": ["onset", "duration"]}', encoding="utf-8")
+    with pytest.raises(ValueError, match="physioevents.json lists 2 column names"):
+        _from_tsv(tsv_path)
+
+
 def test_contains_row_different_types():
     """Test that _contains_row() can handle different dtypes without warning.
 
