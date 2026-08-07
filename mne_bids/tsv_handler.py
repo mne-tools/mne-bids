@@ -40,7 +40,9 @@ def _detect_file_encoding(fname, chunk_size=65536):
     file: enough to catch non-UTF-8 bytes in typical BIDS TSV files (e.g.
     ``µV`` in ``channels.tsv``).
     """
-    with open(fname, "rb") as f:
+    fname = Path(fname)
+    opener = gzip.open if fname.suffix == ".gz" else open
+    with opener(fname, "rb") as f:
         chunk = f.read(chunk_size)
     if chunk.startswith(codecs.BOM_UTF8):
         return "utf-8-sig"
