@@ -15,7 +15,6 @@ from mne_bids.tsv_handler import (
     _contains_row,
     _detect_file_encoding,
     _drop,
-    _from_compressed_tsv,
     _from_tsv,
     _to_tsv,
     _tsv_to_str,
@@ -107,18 +106,16 @@ def test_compressed_tsv(tmp_path):
     json_path.write_text(
         '{"Columns": ["onset", "duration", "trial_type"]}', encoding="utf-8"
     )
-    parsed = _from_compressed_tsv(tsv_path, dtypes=[float, float, str])
+    parsed = _from_tsv(tsv_path, dtypes=[float, float, str])
     assert parsed == data
 
     # Errors
     json_path.unlink()
     with pytest.raises(ValueError, match="a corresponding sidecar JSON is needed"):
-        _from_compressed_tsv(tsv_path)
+        _from_tsv(tsv_path)
     json_path.write_text('{"Columns": ["onset", "duration"]}', encoding="utf-8")
-    with pytest.raises(
-        ValueError, match="physioevents.json contains names for 2 columns"
-    ):
-        _from_compressed_tsv(tsv_path)
+    with pytest.raises(ValueError, match="physioevents.json lists 2 column names"):
+        _from_tsv(tsv_path)
 
 
 def test_contains_row_different_types():

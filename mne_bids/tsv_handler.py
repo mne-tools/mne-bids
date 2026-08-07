@@ -186,10 +186,7 @@ def _from_tsv(fname, dtypes=None):
     Returns
     -------
     data_dict : collections.OrderedDict
-        Keys are the column names, and values are the column data. For gzipped files
-        (``*.gz``), note there are no in-file header names; generated keys ``column_0``,
-        ``column_1``, ... will be used.s
-
+        Keys are the column names, and values are the column data.
     """
     from .utils import warn  # avoid circular import
 
@@ -212,25 +209,33 @@ def _from_tsv(fname, dtypes=None):
 
     if compressed:
         # Compressed TSVs are headerless
-        info = data
-        column_names = [f"column_{i}" for i in range(info.shape[1])]
+        rows = data
+        column_names, json_fpath = _get_column_names_from_json(fname)
+
+        n_cols = rows.shape[1]
+        if len(column_names) != n_cols:
+            raise ValueError(
+                f"{fname.name} has {n_cols} columns but {json_fpath} "
+                f"lists {len(column_names)} column names in its 'Columns' field."
+            )
+
     else:
         # cast to list to avoid `np.str_()` keys in dict
         column_names = data[0, :].tolist()
-        info = data[1:, :]
+        rows = data[1:, :]
     data_dict = OrderedDict()
     if dtypes is None:
-        dtypes = [str] * info.shape[1]
+        dtypes = [str] * rows.shape[1]
     if not isinstance(dtypes, list | tuple):
-        dtypes = [dtypes] * info.shape[1]
-    if not len(dtypes) == info.shape[1]:
+        dtypes = [dtypes] * rows.shape[1]
+    if not len(dtypes) == rows.shape[1]:
         raise ValueError(
             "dtypes length mismatch. "
-            f"Provided: {len(dtypes)}, Expected: {info.shape[1]}"
+            f"Provided: {len(dtypes)}, Expected: {rows.shape[1]}"
         )
     empty_cols = 0
     for i, name in enumerate(column_names):
-        cells = np.array([_normalize_tsv_cell(v) for v in info[:, i].tolist()])
+        cells = np.array([_normalize_tsv_cell(v) for v in rows[:, i].tolist()])
         values = cells.astype(dtypes[i]).tolist()
         data_dict[name] = values
         if len(values) == 0:
@@ -242,12 +247,11 @@ def _from_tsv(fname, dtypes=None):
     return data_dict
 
 
-def _from_compressed_tsv(fname, dtypes=None):
+def _get_column_names_from_json(fname, dtypes=None):
     """Wrap _from_tsv and then read column names from corresponding JSON."""
     fname = Path(fname)
-    data_dict = _from_tsv(fname=fname, dtypes=dtypes)
-
     sidecar_json = fname.with_suffix("").with_suffix(".json")
+
     if not sidecar_json.exists():
         raise ValueError(
             f"To read {fname}, a corresponding sidecar JSON is needed. searched for:\n "
@@ -255,19 +259,9 @@ def _from_compressed_tsv(fname, dtypes=None):
         )
 
     sidecar = json.loads(sidecar_json.read_text(encoding="utf-8"))
-    columns = sidecar["Columns"]
-    _validate_type(columns, list)
-
-    if len(columns) != len(data_dict):
-        raise ValueError(
-            f"{fname.name} has {len(data_dict)} columns but {sidecar_json.name} "
-            f"contains names for {len(columns)} columns in its 'Columns' field."
-        )
-
-    renamed = dict()
-    for idx, values in enumerate(data_dict.values()):
-        renamed[columns[idx]] = values
-    return renamed
+    column_names = sidecar["Columns"]
+    _validate_type(column_names, list)
+    return column_names, sidecar_json
 
 
 def _to_tsv(data, fname, *, compress=False, lock=True):
