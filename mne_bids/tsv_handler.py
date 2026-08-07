@@ -248,7 +248,7 @@ def _from_tsv(fname, dtypes=None):
 
 
 def _get_column_names_from_json(fname, dtypes=None):
-    """Wrap _from_tsv and then read column names from corresponding JSON."""
+    """Read column names for gzipped TSV files from corresponding JSON."""
     fname = Path(fname)
     sidecar_json = fname.with_suffix("").with_suffix(".json")
 
