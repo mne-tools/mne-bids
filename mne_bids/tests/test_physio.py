@@ -14,8 +14,6 @@ from mne_bids.utils import _write_json
 # Our toy dataset doesnt create a participants.tsv
 pytestmark = pytest.mark.filterwarnings("ignore:participants.tsv:RuntimeWarning")
 
-pytest.skip(reason="for physio branch", allow_module_level=True)
-
 
 @pytest.fixture(scope="module")
 def physio_dataset(tmp_path_factory, _bids_validate):
