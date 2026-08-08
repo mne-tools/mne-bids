@@ -43,7 +43,7 @@ for msg, mod in known_warnings.items():
     )
 
 # %%
-# First we'll get the data. We'll use :mod:`pooch` here, but the :mod:`requests` module
+# First we'll get the data. We'll use ``pooch`` here, but the ``requests`` module
 # would work just as well (or you could manually download the data of course).
 
 remote_folder = "https://download.fieldtriptoolbox.org/example/bids_emg/original/"

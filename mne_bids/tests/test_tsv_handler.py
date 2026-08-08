@@ -3,16 +3,18 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import codecs
 from collections import OrderedDict as odict
 
 import pytest
+from mne.utils import catch_logging
 
 import mne_bids._fileio as _fileio
 from mne_bids.tsv_handler import (
     _combine_rows,
     _contains_row,
+    _detect_file_encoding,
     _drop,
-    _from_compressed_tsv,
     _from_tsv,
     _to_tsv,
     _tsv_to_str,
@@ -94,38 +96,26 @@ def test_to_tsv_without_filelock(monkeypatch, tmp_path):
     assert not refcount_path.exists()
 
 
-def test_write_compressed_tsv(tmp_path):
-    """Ensure compressed TSV files are headerless."""
-    data = dict(onset=[0.1, 0.2], duration=[1, 2], trial_type=["a", "b"])
-    tsv_path = tmp_path / "physioevents.tsv.gz"
-
-    _to_tsv(data, tsv_path, compress=True)
-
-    assert tsv_path.exists()
-    parsed = _from_tsv(tsv_path)
-    assert list(parsed.keys()) == ["column_0", "column_1", "column_2"]
-    assert parsed["column_0"] == ["0.1", "0.2"]
-    assert parsed["column_1"] == ["1", "2"]
-    assert parsed["column_2"] == ["a", "b"]
-
-
-def test_read_compressed_tsv(tmp_path):
+def test_compressed_tsv(tmp_path):
     """Compressed TSV reader should get column names from sidecar JSON."""
     data = dict(onset=[0.1, 0.2], duration=[1, 2], trial_type=["a", "b"])
     tsv_path = tmp_path / "physioevents.tsv.gz"
     json_path = tmp_path / "physioevents.json"
 
     _to_tsv(data, tsv_path, compress=True)
-    # Dummy file
     json_path.write_text(
-        '{"Columns": ["onset", "duration", "trial_type"]}', encoding="utf-8-sig"
+        '{"Columns": ["onset", "duration", "trial_type"]}', encoding="utf-8"
     )
+    parsed = _from_tsv(tsv_path, dtypes=[float, float, str])
+    assert parsed == data
 
-    parsed = _from_compressed_tsv(tsv_path)
-    assert list(parsed.keys()) == ["onset", "duration", "trial_type"]
-    assert parsed["onset"] == ["0.1", "0.2"]
-    assert parsed["duration"] == ["1", "2"]
-    assert parsed["trial_type"] == ["a", "b"]
+    # Errors
+    json_path.unlink()
+    with pytest.raises(ValueError, match="a corresponding sidecar JSON is needed"):
+        _from_tsv(tsv_path)
+    json_path.write_text('{"Columns": ["onset", "duration"]}', encoding="utf-8")
+    with pytest.raises(ValueError, match="physioevents.json lists 2 column names"):
+        _from_tsv(tsv_path)
 
 
 def test_contains_row_different_types():
@@ -138,6 +128,50 @@ def test_contains_row_different_types():
     data = odict(age=[20, 30, 40, "n/a"])  # string
     row = dict(age=60)  # int
     _contains_row(data, row)
+
+
+@pytest.mark.parametrize(
+    "payload,expected",
+    [
+        (b"name\tunit\nEEG\tuV\n", "utf-8"),
+        ("name\tunit\nEEG\tµV\n".encode(), "utf-8"),
+        (codecs.BOM_UTF8 + b"name\tunit\nEEG\tuV\n", "utf-8-sig"),
+        ("name\tunit\nEEG\tµV\n".encode("utf-16"), "utf-16"),
+        (b"name\tunit\nEEG\t\xb5V\n", "latin-1"),
+    ],
+    ids=["ascii", "utf8", "utf8-bom", "utf16", "latin1"],
+)
+def test_detect_file_encoding(tmp_path, payload, expected):
+    """Encoding is detected deterministically from BOM and UTF-8 validity."""
+    fpath = tmp_path / "test.tsv"
+    fpath.write_bytes(payload)
+    assert _detect_file_encoding(fpath) == expected
+
+
+def test_from_tsv_latin1_logs_info(tmp_path):
+    """``_from_tsv`` reads non-UTF-8 TSV files and emits a soft info message."""
+    tsv = tmp_path / "channels.tsv"
+    tsv.write_bytes(b"name\tunit\nEEG\t\xb5V\n")  # 'µV' in latin-1
+    with catch_logging(verbose="info") as log:
+        d = _from_tsv(tsv)
+    assert d["unit"] == ["µV"]
+    assert "non-UTF-8" in log.getvalue()
+
+
+def test_from_tsv_strips_whitespace_and_normalizes_decimal_commas(tmp_path):
+    """``_from_tsv`` tolerates padded ``n/a`` cells and European decimal commas."""
+    tsv = tmp_path / "events.tsv"
+    tsv.write_text(
+        "onset\tduration\ttrial_type\n"
+        "0,5\t1,25\tstim\n"  # European decimals
+        "n/a    \t  n/a\tstim\n"  # whitespace-padded n/a
+        "1.0\t1\trest, eyes-open\n",  # untouched: dot decimal, comma in string
+        encoding="utf-8",
+    )
+    d = _from_tsv(tsv)
+    assert d["onset"] == ["0.5", "n/a", "1.0"]
+    assert d["duration"] == ["1.25", "n/a", "1"]
+    assert d["trial_type"] == ["stim", "stim", "rest, eyes-open"]
 
 
 def test_drop_different_types():

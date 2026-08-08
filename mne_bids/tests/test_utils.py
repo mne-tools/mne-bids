@@ -3,7 +3,7 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-from datetime import datetime
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 
 import mne
@@ -16,6 +16,7 @@ from mne_bids.utils import (
     _age_on_date,
     _check_datatype,
     _check_types,
+    _convert_dt_to_utc,
     _get_ch_type_mapping,
     _handle_datatype,
     _infer_eeg_placement_scheme,
@@ -205,3 +206,13 @@ def test_check_datatype():
             ValueError, match=f"The specified datatype {datatype} was not found"
         ):
             _check_datatype(raw, datatype)
+
+
+def test_convert_naive_datetime_fallback(windows_datetime):
+    """Test Windows platform pre-epoch failure fallback."""
+    naive = windows_datetime(1950, 6, 15, 13, 45, 30)
+    fallback_tz = timezone(timedelta(hours=-5), name="EST")
+
+    # Note that June would be EDT i.e. UTC-4, so this is (expectedly) incorrect.
+    expected = naive.replace(tzinfo=fallback_tz).astimezone(UTC)
+    assert _convert_dt_to_utc(naive, local_tz=fallback_tz) == expected

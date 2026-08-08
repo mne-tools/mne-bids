@@ -129,7 +129,7 @@ convert_montage_to_ras(montage, "sample_seeg", subjects_dir)  # mri->ras
 # Step 2: Formatting as BIDS
 # --------------------------
 #
-# Now, let us format the `Raw` object into BIDS.
+# Now, let us format the :class:`~mne:mne.io.Raw` object into BIDS.
 #
 # With this step, we have everything to start a new BIDS directory using
 # our data. To do that, we can use :func:`write_raw_bids`
@@ -203,13 +203,13 @@ fig.axes["x"].ax.annotate(
 landmarks = get_anat_landmarks(T1_fname, raw.info, trans, "sample_seeg", subjects_dir)
 T1_bids_path = write_anat(T1_fname, bids_path, deface=True, landmarks=landmarks)
 
-# write `raw` to BIDS and anonymize it (converts to BrainVision format)
+# write ``raw`` to BIDS and anonymize it (converts to BrainVision format)
 #
-# we need to pass the `montage` argument for coordinate frames other than
-# "head" which is what MNE uses internally in the `raw` object
+# we need to pass the ``montage`` argument for coordinate frames other than
+# "head" which is what MNE uses internally in the ``raw`` object
 #
-# `acpc_aligned=True` affirms that our MRI is aligned to ACPC
-# if this is not true, convert to `fsaverage` (see below)!
+# ``acpc_aligned=True`` affirms that our MRI is aligned to ACPC
+# if this is not true, convert to ``fsaverage`` (see below)!
 write_raw_bids(
     raw,
     bids_path,
@@ -363,13 +363,13 @@ raw2 = read_raw_bids(bids_path=bids_path)
 # the ``raw`` object and the ``trans`` as in any MNE example
 # (e.g. :ref:`tut-working-with-seeg`).
 
-# use `coord_frame='mri'` to indicate that the montage is in surface RAS
-# and `unit='m'` to indicate that the units are in meters
+# use ``coord_frame='mri'`` to indicate that the montage is in surface RAS
+# and ``unit='m'`` to indicate that the units are in meters
 trans2 = template_to_head(raw2.info, space="fsaverage", coord_frame="mri", unit="m")[1]
 # this a bit confusing since we transformed from mri->mni and now we're
 # saying we're back in 'mri' but that is because we were in the surface RAS
-# coordinate frame of `sample_seeg` and transformed to 'mni_tal', which is the
-# surface RAS coordinate frame for `fsaverage`: since MNE denotes surface RAS
+# coordinate frame of ``sample_seeg`` and transformed to 'mni_tal', which is the
+# surface RAS coordinate frame for ``fsaverage``: since MNE denotes surface RAS
 # as 'mri', both coordinate frames are 'mri', it's just that 'mni_tal' is 'mri'
 # when the subject is 'fsaverage'
 

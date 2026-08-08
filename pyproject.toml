@@ -14,6 +14,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python",
   "Topic :: Scientific/Engineering",
   "Topic :: Software Development",
@@ -64,16 +65,18 @@ full = [
   "defusedxml",  # For reading EGI MFF data and BrainVision montages
   "edfio >= 0.4.10",
   "eeglabio >= 0.1.0",
-  "filelock",
+  "filelock >= 3.20.4",
   "h5py!=3.15.0",  # temporary fix until h5py 3.15.1 is released
+  "hedtools",  # For HED (Hierarchical Event Descriptors) annotation support
   "matplotlib >= 3.6",
+  "mffpy >= 0.11",
   "nibabel >= 3.2.1",
   "pandas >= 1.3.2",
   "pybv >= 0.7.5",
   "pymatreader",
 ]
 # Dependencies for running the test infrastructure
-test = ["curryreader", "mne_bids[full]", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "ruff"]
+test = ["curryreader", "mne_bids[full]", "packaging", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "ruff"]
 
 [project.urls]
 "Bug Tracker" = "https://github.com/mne-tools/mne-bids/issues/"
@@ -109,16 +112,33 @@ allow-direct-references = true  # allow specifying URLs in our dependencies
 raw-options = {version_scheme = "release-branch-semver"}
 source = "vcs"
 
+[tool.numpydoc_validation]
+checks = [
+  "all",  # report on all checks, except the below
+  "ES01",  # no extended summary
+  "EX01",  # no examples section
+  "EX02",  # examples failed (we test them separately)
+  "GL01",  # docstring should start in the line immediately after the quotes
+  "PR04",  # Parameter "shape (n_channels" has no type
+  "RT02",  # first line of the Returns section should contain only the type
+  "SA01",  # no see also
+  "SA04",  # no description in See Also
+]
+exclude = [
+  # set of regex
+  'mne\.utils\.deprecated',
+]
+
 [tool.pytest.ini_options]
-addopts = """--durations=20 -ra --junit-xml=junit-results.xml --tb=short
-    --ignore=doc --ignore=examples --ignore=mne_bids/tests/data"""
+addopts = """
+  --durations=20 -ra --junit-xml=junit-results.xml --tb=short
+  --ignore=doc --ignore=examples --ignore=mne_bids/tests/data
+  --doctest-modules --cov=mne_bids --cov-report=xml --cov-config=pyproject.toml
+"""
 filterwarnings = [
   "error",
-  # Python 3.10+ and NumPy 1.22 (and maybe also newer NumPy versions?)
   "ignore:.*distutils\\.sysconfig module is deprecated.*:DeprecationWarning",
-  # NumPy 2.1 bug (probably)
   "ignore:__array__ implementation doesn.*:DeprecationWarning",
-  # numba with NumPy dev
   "ignore:`np.MachAr` is deprecated.*:DeprecationWarning",
   "ignore:`product` is deprecated as of NumPy.*:DeprecationWarning",
   "ignore:Converting data files to BrainVision format:RuntimeWarning",
@@ -129,23 +149,26 @@ filterwarnings = [
   "ignore:Did not find any electrodes.tsv.*:RuntimeWarning",
   "ignore:Did not find any events.tsv.*:RuntimeWarning",
   "ignore:Estimation of line frequency only supports.*:RuntimeWarning",
-  # matplotlib
   "ignore:Figure.*is non-interactive.*cannot be shown:UserWarning",
   "ignore:MEG ref channel RMSP did not.*:RuntimeWarning",
   "ignore:No events found or provided.*:RuntimeWarning",
   "ignore:numpy.ufunc size changed.*:RuntimeWarning",
+  "ignore:numpy\\.fix is deprecated.*:DeprecationWarning",
   "ignore:Participants file not found for.*:RuntimeWarning",
-  # old MNE _fake_click
+  "ignore:Setting the shape on a NumPy array[\\S\\s]*:DeprecationWarning",
   "ignore:The .*_event function was deprecated in Matplotlib.*:",
   "ignore:There are channels without locations (n/a)*:RuntimeWarning",
   "ignore:tostring\\(\\) is deprecated.*:DeprecationWarning",
   "ignore:Writing of electrodes.tsv is not supported for datatype.*:RuntimeWarning",
 ]
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "slow_windows: marks tests as slow on Windows (deselect with '-m \"not slow_windows\"')",
+]
 
 [tool.ruff.lint]
 exclude = ["__init__.py"]
-ignore = ["A002", "A005"]
-select = ["A", "D", "E", "F", "I", "UP", "W"]
+select = ["A", "B006", "D", "E", "F", "I", "UP", "UP031", "W"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"

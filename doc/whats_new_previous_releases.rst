@@ -9,6 +9,84 @@
 What was new in previous releases?
 ==================================
 
+.. _changes_0_19:
+
+Version 0.19 (2026-05-26)
+-------------------------
+
+👩🏽‍💻 Authors
+~~~~~~~~~~~~~~~
+
+The following authors contributed for the first time. Thank you so much! 🤩
+
+* `Thomas Binns`_
+
+The following authors had contributed before. Thank you for sticking around! 🤘
+
+* `Alexandre Gramfort`_
+* `Aman Jaiswal`_
+* `Bruno Aristimunha`_
+* `Clemens Brunner`_
+* `Daniel McCloy`_
+* `Eric Larson`_
+* `Flore Boscher`_
+* `Marijn van Vliet`_
+* `Maximilien Chaumon`_
+* `Pierre Guetschel`_
+* `Scott Huberty`_
+* `Stefan Appelhoff`_
+* `Teon Brooks`_
+
+Detailed list of changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+🚀 Enhancements
+^^^^^^^^^^^^^^^
+
+- Add support for reading and writing MEF3 (Multiscale Electrophysiology Format) iEEG data with the ``.mefd`` extension. Requires MNE-Python 1.12 or later, by `Bruno Aristimunha`_ (:gh:`1511`)
+- Save ``Annotations.extras`` fields in events.tsv files when writing events, by `Pierre Guetschel`_ (:gh:`1502`)
+- Added support for ``EEGLAB`` and ``EEGLAB-HJ`` coordinate systems as defined in the BIDS specification. Both use ALS orientation (identical to CTF) and map to MNE's ``ctf_head`` coordinate frame, by `Bruno Aristimunha`_ (:gh:`1514`)
+- :func:`mne_bids.read_raw_bids` now reads channel units from ``channels.tsv`` and sets them on the raw object. This includes support for units like ``rad`` (radians), ``V``, ``µV``, ``mV``, ``T``, ``T/m``, ``S``, ``oC``, ``M``, and ``px``. The write path was also updated to correctly write ``rad`` units to ``channels.tsv``, by `Alexandre Gramfort`_ (:gh:`1509`)
+- Added support for hashing ``BIDSPath`` objects so they can be used in caching and other contexts that require hashable objects, by `Eric Larson`_ (:gh:`1563`)
+- Speed up :func:`mne_bids.get_datatypes` by restricting filesystem traversal to ``bids_root/sub-*/(ses-*/)<datatype>`` directories, by `Eric Larson`_ (:gh:`1563`)
+- Speed up :meth:`mne_bids.BIDSPath.find_matching_sidecar` by searching most likely file locations first, by `Eric Larson`_ (:gh:`1565`)
+- Add support for CHPI channels and gracefully handle incorrect channel definition ``MEGGRAD``, by `Eric Larson`_ (:gh:`1578`)
+- Add ``keywords`` parameter to :func:`mne_bids.make_dataset_description` for the BIDS ``Keywords`` field, by `Bruno Aristimunha`_ (:gh:`1602`)
+
+🧐 API and behavior changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- MNE-BIDS now writes text files (``README.txt``, ``*.tsv`` etc.) using ``utf-8`` encoding instead of ``utf-8-sig``.
+- Expected format conversions notices are now logged at ``info`` instead of ``warn`` level, by `Bruno Aristimunha`_ (:gh:`1589`)
+- Add ``readme`` parameter to :func:`mne_bids.write_raw_bids`; pass ``readme=False`` to leave any existing ``README`` untouched and skip creating one, by `Bruno Aristimunha`_ (:gh:`1550`)
+- :func:`mne_bids.make_dataset_description` preserves BIDS-spec keys it does not model when merging with an existing ``dataset_description.json``, by `Bruno Aristimunha`_ (:gh:`1548`)
+
+🛠 Requirements
+^^^^^^^^^^^^^^^
+
+- MEF3 (``.mefd``) file format support requires MNE-Python 1.12 or later, by `Bruno Aristimunha`_ (:gh:`1511`)
+
+🪲 Bug fixes
+^^^^^^^^^^^^
+
+- Fix :func:`mne_bids.BIDSPath.find_matching_sidecar` to search for sidecar files at the dataset root level per the BIDS inheritance principle, by `Bruno Aristimunha`_ (:gh:`1508`)
+- Reinstate the requirement for ``coordsystem.json`` whenever ``electrodes.tsv`` is present (including EMG), by `Bruno Aristimunha`_ (:gh:`1508`)
+- Fix :func:`read_raw_bids` ignoring ``electrodes.tsv`` when ``EEGCoordinateUnits`` is ``"n/a"`` by inferring the unit from coordinate magnitudes, and synthesize approximate fiducials for ``ctf_head`` montages to enable the coordinate transform to ``head`` frame, by `Bruno Aristimunha`_ (:gh:`1506`)
+- Improve :func:`mne_bids.read_raw_bids` handling when ``electrodes.tsv`` exists without ``coordsystem.json``: emit a warning and continue without applying a montage (previously raised for iEEG), by `Bruno Aristimunha`_
+- Allow ``task=None`` in :func:`mne_bids.read_raw_bids` for BIDS paths without a task entity (e.g. datasets that omit task in the path), by `Aman Jaiswal`_
+- Fix :func:`mne_bids.read_raw_bids` and related read paths failing with ``PermissionError`` on datalad/git-annex datasets by keeping the file lock next to the symlink instead of its (read-only) target, and gracefully continuing without a lock when one cannot be created, by `Bruno Aristimunha`_ (:gh:`1569`)
+- Avoid modifying calibration files by making :func:`mne_bids.write_meg_calibration` copy instead of parsing and rewriting, by `Marijn van Vliet`_ (:gh:`1576`)
+- Fix bug with :meth:`mne_bids.BIDSPath.find_matching_sidecar` not searching parent directories properly, by `Eric Larson`_ (:gh:`1565`)
+- Detect TSV file encoding before reading, fixing ``UnicodeDecodeError`` on non-UTF-8 sidecars (e.g. ``channels.tsv`` with ``µV`` in latin-1), by `Bruno Aristimunha`_ (:gh:`1593`)
+- Fix :func:`mne_bids.events_file_to_annotation_kwargs` to drop rows with invalid ``onset`` values (``n/a``, ``nan``, ``NaN``, empty string) before float conversion. This makes reading real-world OpenNeuro datasets (e.g. ``ds004841``, ``ds004842``, ``ds004843``) succeed instead of either raising or returning ``NaN`` onsets, by `Bruno Aristimunha`_ (:gh:`1547`)
+- Fix :func:`mne_bids.events_file_to_annotation_kwargs` to fall back to the ``value`` column when ``trial_type`` is entirely ``n/a`` but ``value`` contains trigger codes, instead of dropping all events, by `Bruno Aristimunha`_ (:gh:`947`)
+- :func:`mne_bids.read_raw_bids` now tolerates malformed ``scans.tsv`` entries and ISO 8601 ``acq_time`` variants, by `Bruno Aristimunha`_ (:gh:`1591`)
+- :func:`mne_bids.read_raw_bids` is more tolerant of imperfect ``channels.tsv`` files and supports a new ``on_ch_mismatch="warn"`` option, by `Bruno Aristimunha`_ (:gh:`1603`)
+- Allow non-numeric ``run`` entities (e.g. ``run-5H``) in :class:`mne_bids.BIDSPath` when ``check=False``, by `Bruno Aristimunha`_ (:gh:`1601`)
+- :func:`mne_bids.write_raw_bids` now writes an ``*_electrodes.json`` sidecar so derivative datasets pass the BIDS validator, by `Bruno Aristimunha`_ (:gh:`1545`)
+- :func:`mne_bids.read_raw_bids` now strips whitespace-padded ``n/a`` cells and normalizes European-locale decimal commas in TSV sidecars, by `Bruno Aristimunha`_ (:gh:`1599`)
+- :func:`mne_bids.read_raw_bids` now warns (instead of raising ``ValueError``) when ``participants.tsv`` exists but does not list the requested subject, leaving ``raw.info["subject_info"]`` empty. This unifies behavior with the existing missing-``participants.tsv`` path, by `Bruno Aristimunha`_ (:gh:`1606`)
+
 .. _changes_0_18:
 
 Version 0.18 (2025-12-23)
@@ -36,10 +114,10 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- :func:`mne_bids.write_raw_bids()` has a new parameter `electrodes_tsv_task` which allows adding the `task` entity to the `electrodes.tsv` filepath, by `Alex Lopez Marquez`_ (:gh:`1424`)
-- Extended the configuration to recognise `motion` as a valid BIDS datatype by `Julius Welzel`_ (:gh:`1430`)
+- :func:`mne_bids.write_raw_bids()` has a new parameter ```electrodes_tsv_task`` which allows adding the ``task`` entity to the ``electrodes.tsv`` filepath, by `Alex Lopez Marquez`_ (:gh:`1424`)
+- Extended the configuration to recognise ``motion`` as a valid BIDS datatype by `Julius Welzel`_ (:gh:`1430`)
 - Better control of verbosity in several functions, by `Bruno Aristimunha`_ (:gh:`1449`)
-- Added parallel reading and writing in all the `open` operations using `_open_lock` mechanism from mne, creating a small wrapper to manage the locks by `Bruno Aristimunha`_ (:gh:`1451`)
+- Added parallel reading and writing in all the ``open`` operations using ``_open_lock`` mechanism from mne, creating a small wrapper to manage the locks by `Bruno Aristimunha`_ (:gh:`1451`)
 - :meth:`mne_bids.BIDSPath.match()` now short-circuits root directory scans when ``subject``, ``session``, or ``datatype`` entities are known, reducing lookup time on large datasets, by `Bruno Aristimunha`_ and `Maximilien Chaumon`_ (:gh:`1450`)
 
 🧐 API and behavior changes
@@ -108,14 +186,14 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- :func:`mne_bids.write_raw_bids()` can now handle mne `Raw` objects with `eyegaze` and `pupil` channels, by `Christian O'Reilly`_ (:gh:`1344`)
+- :func:`mne_bids.write_raw_bids()` can now handle mne :class:`~mne.io.Raw` objects with ``eyegaze`` and ``pupil`` channels, by `Christian O'Reilly`_ (:gh:`1344`)
 - :func:`mne_bids.get_entity_vals()` has a new parameter ``ignore_suffixes`` to easily ignore sidecar files, by `Daniel McCloy`_ (:gh:`1362`)
-- Empty-room matching now preferentially finds recordings in the subject directory tagged as `task-noise` before looking in the `sub-emptyroom` directories. This adds support for a part of the BIDS specification for ER recordings, by `Berk Gerçek`_ (:gh:`1364`)
-- Path matching is now implemenented in a more efficient manner within :meth:`mne_bids.BIDSPath.match()` and :func:`mne_bids.find_matching_paths()`, by `Arne Gottwald` (:gh:`1355`)
-- :func:`mne_bids.get_entity_vals()` has a new parameter ``include_match`` to prefilter item matching and ignore non-matched items from begin of directory scan, by `Arne Gottwald` (:gh:`1355`)
-- Data from ``events.tsv`` can now be read into an OrderedDict using :func:`mne_bids.events_file_to_annotation_kwargs()`, by `Matthias Dold` (:gh:`1389`)
-- Read the optionally present extra columns from ``events.tsv`` and pass them to :class:`mne.Annotations`, by `Pierre Guetschel` (:gh:`1401`)
-- ``_filter_fnames()`` now correctly checks the default extension, correcting suffix filtering, by `Nathan Azrak` (:gh:`1427`)
+- Empty-room matching now preferentially finds recordings in the subject directory tagged as ``task-noise`` before looking in the ``sub-emptyroom`` directories. This adds support for a part of the BIDS specification for ER recordings, by `Berk Gerçek`_ (:gh:`1364`)
+- Path matching is now implemenented in a more efficient manner within :meth:`mne_bids.BIDSPath.match()` and :func:`mne_bids.find_matching_paths()`, by `Arne Gottwald`_ (:gh:`1355`)
+- :func:`mne_bids.get_entity_vals()` has a new parameter ``include_match`` to prefilter item matching and ignore non-matched items from begin of directory scan, by `Arne Gottwald`_ (:gh:`1355`)
+- Data from ``events.tsv`` can now be read into an OrderedDict using :func:`mne_bids.events_file_to_annotation_kwargs()`, by `Matthias Dold`_ (:gh:`1389`)
+- Read the optionally present extra columns from ``events.tsv`` and pass them to :class:`mne.Annotations`, by `Pierre Guetschel`_ (:gh:`1401`)
+- ``_filter_fnames()`` now correctly checks the default extension, correcting suffix filtering, by `Nathan Azrak`_ (:gh:`1427`)
 
 
 🧐 API and behavior changes
@@ -135,10 +213,10 @@ Detailed list of changes
 - :func:`mne_bids.read_raw_bids` can optionally return an ``event_id`` dictionary suitable for use with :func:`mne.events_from_annotations`, and if a ``values`` column is present in ``events.tsv`` it will be used as the source of the integer event ID codes, by `Daniel McCloy`_ (:gh:`1349`)
 - BIDS dictates that the recording entity should be displayed as "_recording-" in the filename. This PR makes :class:`mne_bids.BIDSPath`  correctly display "_recording-" (instead of "_rec-") in BIDSPath.fpath. By `Scott Huberty`_ (:gh:`1348`)
 - :func:`mne_bids.make_dataset_description` now correctly encodes the dataset description as UTF-8 on disk, by `Scott Huberty`_ (:gh:`1357`)
-- Corrects extension when filtering filenames in :meth:`mne_bids.BIDSPath.match()` and :func:`mne_bids.find_matching_paths()`, by `Arne Gottwald` (:gh:`1355`)
-- Fix :class:`mne_bids.BIDSPath` partially matching a value, by `Pierre Guetschel` (:gh:`1388`)
+- Corrects extension when filtering filenames in :meth:`mne_bids.BIDSPath.match()` and :func:`mne_bids.find_matching_paths()`, by `Arne Gottwald`_ (:gh:`1355`)
+- Fix :class:`mne_bids.BIDSPath` partially matching a value, by `Pierre Guetschel`_ (:gh:`1388`)
 - Ensures that ``check`` parameter in :meth:`mne_bids.BIDSPath.update()` is passed to :class:`mne_bids.BIDSPath`, by `Teon Brooks`_ (:gh:`1411`)
-- minor: added `T2w` to the suffix allowlist, by `Harrison Ritz`_ (:gh:`1420`)
+- minor: added ``T2w`` to the suffix allowlist, by `Harrison Ritz`_ (:gh:`1420`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
@@ -201,8 +279,8 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Writing MEGIN data with MNE channel types `chpi` will now map to BIDS type HLU by `Simon Kern`_ (:gh:`1325`)
-- When anonymizing the date of a recording, MNE-BIDS will no longer error during `~mne_bids.write_raw_bids` if passing a `~mne.io.Raw` instance to ``empty_room``, by `Daniel McCloy`_ (:gh:`1270`)
+- Writing MEGIN data with MNE channel types ``chpi`` will now map to BIDS type HLU by `Simon Kern`_ (:gh:`1325`)
+- When anonymizing the date of a recording, MNE-BIDS will no longer error during `~mne_bids.write_raw_bids` if passing a :class:`~mne.io.Raw` instance to ``empty_room``, by `Daniel McCloy`_ (:gh:`1270`)
 - Dealing with alphanumeric ``sub`` entity labels is now fixed for :func:`~mne_bids.write_raw_bids`, by `Aaron Earle-Richardson`_ (:gh:`1291`)
 - When processing subject_info data that MNE Python imports as numpy arrays with only one item, MNE-BIDS now unpacks these, resulting in a correct participants.tsv, by `Thomas Hartmann`_ (:gh:`1310`)
 - Fixed broken links in examples 7 and 8, by `William Turner`_ (:gh:`1316`)
@@ -419,7 +497,7 @@ Detailed list of changes
 - Add :meth:`mne_bids.BIDSPath.find_matching_sidecar` to find the sidecar file associated with a given file path by `Eric Larson`_ (:gh:`1093`)
 - When writing data via :func:`~mne_bids.write_raw_bids`, it is now possible to specify a custom mapping of :class:`mne.Annotations` descriptions to event codes via the ``event_id`` parameter. Previously, passing this parameter would always require to also pass ``events``, and using a custom event code mapping for annotations was impossible, by `Richard Höchenberger`_ (:gh:`1084`)
 - Improve error message when :obj:`~mne_bids.BIDSPath.fpath` cannot be uniquely resolved by `Eric Larson`_ (:gh:`1097`)
-- Add :func:`mne_bids.find_matching_paths` to retrieve all `BIDSPaths` matching user-specified entities. The functionality partially overlaps with what's offered through :meth:`mne_bids.BIDSPath.match()`, but is more versatile, by `Moritz Gerster`_ (:gh:`1103`)
+- Add :func:`mne_bids.find_matching_paths` to retrieve all :class:`~mne_bids.BIDSPath` instances matching user-specified entities. The functionality partially overlaps with what's offered through :meth:`mne_bids.BIDSPath.match()`, but is more versatile, by `Moritz Gerster`_ (:gh:`1103`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -639,7 +717,7 @@ Detailed list of changes
 
 - :func:`mne_bids.update_anat_landmarks` will now by default raise an exception if the requested MRI landmarks do not already exist. Use the new ``on_missing`` parameter to control this behavior, by `Richard Höchenberger`_ (:gh:`957`)
 
-- :func:`mne_bids.get_head_mri_trans` now raises a warning if ``datatype`` or ``suffix`` of the provided electrophysiological :class:`mne_bids.BIDSPath` are not set. In the future, this will raise an exception, by `Richard Höchenberger`_(:gh:`969`)
+- :func:`mne_bids.get_head_mri_trans` now raises a warning if ``datatype`` or ``suffix`` of the provided electrophysiological :class:`mne_bids.BIDSPath` are not set. In the future, this will raise an exception, by `Richard Höchenberger`_ (:gh:`969`)
 
 - Passing ``fs_subject=None`` to :func:`get_head_mri_trans` has been deprecated. Please pass the FreeSurfer subject name explicitly, by Richard Höchenberger`_ (:gh:`977`)
 
@@ -873,10 +951,10 @@ Bug fixes
 
 - :func:`mne_bids.make_report` now (1) detects male/female sex and left/right handedness irrespective of letter case, (2) will parse a ``gender`` column if no ``sex`` column is found in ``participants.tsv``, and (3) reports sex as male/female instead of man/woman, by `Alex Rockhill`_ (:gh:`755`)
 - The :class:`mne.Annotations` ``BAD_ACQ_SKIP`` – added by the acquisition system to ``FIFF`` files – will now be preserved when reading raw data, even if these time periods are **not** explicitly included in ``*_events.tsv``, by `Richard Höchenberger`_ and `Alexandre Gramfort`_ (:gh:`754` and :gh:`762`)
-- :func:`mne_bids.write_raw_bids` will handle different cased extensions for EDF files, such as `.edf` and `.EDF` by `Adam Li`_ (:gh:`765`)
+- :func:`mne_bids.write_raw_bids` will handle different cased extensions for EDF files, such as ``.edf`` and ``.EDF`` by `Adam Li`_ (:gh:`765`)
 - :func:`mne_bids.inspect_dataset` didn't handle certain filenames correctly on some systems, by `Richard Höchenberger`_ (:gh:`769`)
 - :func:`mne_bids.write_raw_bids` now works across data types with ``overwrite=True``, by `Alexandre Gramfort`_ (:gh:`791`)
-- :func:`mne_bids.read_raw_bids` didn't always replace all traces of the measurement date and time stored in the raw data with the date found in `*_scans.tsv`, by `Richard Höchenberger`_ (:gh:`812`, :gh:`815`)
+- :func:`mne_bids.read_raw_bids` didn't always replace all traces of the measurement date and time stored in the raw data with the date found in ``*_scans.tsv``, by `Richard Höchenberger`_ (:gh:`812`, :gh:`815`)
 - :func:`mne_bids.read_raw_bids` crashed when the (optional) ``acq_time`` column was missing in ``*_scans.tsv``, by `Alexandre Gramfort`_ (:gh:`814`)
 - :func:`mne_bids.write_raw_bids` doesn't crash anymore if the designated output directory contains the string ``"tsv"``, by `Richard Höchenberger`_ (:gh:`833`)
 - :func:`mne_bids.get_head_mri_trans` gave incorrect results when the T1 image was not in LIA format, now all formats function properly, by `Alex Rockhill`_ and `Alexandre Gramfort`_ (:gh:`827`)
@@ -898,7 +976,7 @@ Notable changes
   take precedence over the names stored in the raw files.
 - When reading data where the same trial type refers to different trigger
   values, we will now automatically create hierarchical event names in the
-  form of ``trial_type/value1``, `trial_type/value2`` etc.
+  form of ``trial_type/value1``, ``trial_type/value2`` etc.
 - :func:`mne_bids.write_raw_bids` now allows users to specify a format
   conversion via the new ``format`` parameter.
 - Various improvements to data reading and :class:`mne_bids.BIDSPath` make
@@ -932,7 +1010,7 @@ Enhancements
 - More detailed error messages when trying to write modified data via :func:`mne_bids.write_raw_bids`, by `Richard Höchenberger`_ (:gh:`719`)
 - If ``check=True``, :class:`mne_bids.BIDSPath` now checks the ``space`` entity to be valid according to BIDS specification Appendix VIII, by `Stefan Appelhoff`_ (:gh:`724`)
 - Data types that are currently unsupported by MNE-BIDS (e.g. ``dwi``, ``func``) can now be used in :class:`mne_bids.BIDSPath` by setting ``check=False``, by `Adam Li`_ (:gh:`744`)
-- Arbitrary file names can now be represented as a `BIDSPath`` by passing the entire name as ``suffix`` and setting ``check=False``, by `Adam Li`_ (:gh:`729`)
+- Arbitrary file names can now be represented as a :class:`~mne_bids.BIDSPath` by passing the entire name as ``suffix`` and setting ``check=False``, by `Adam Li`_ (:gh:`729`)
 - Add support for MNE's flux excitation channel (``exci``), by `Maximilien Chaumon`_ (:gh:`728`)
 - :meth:`mne_bids.BIDSPath.match` gained a new parameter ``check``; when setting ``check=True``, ``match()`` will only return paths that conform to BIDS, by `Richard Höchenberger`_ (:gh:`726`)
 - ``BIDSPath.root`` now automatically expands ``~`` to the user's home directory, by `Richard Höchenberger`_ (:gh:`725`)
@@ -1032,7 +1110,7 @@ Enhancements
 API changes
 ^^^^^^^^^^^
 
-- When passing event IDs to :func:`mne_bids.write_raw_bids` via ``events_data`` without an accompanying event description in ``event_id``, we will now raise a `ValueError`. This ensures that accidentally un-described events won't get written unnoticed, by `Richard Höchenberger`_ (:gh:`603`)
+- When passing event IDs to :func:`mne_bids.write_raw_bids` via ``events_data`` without an accompanying event description in ``event_id``, we will now raise a :py:exc:`python:ValueError`. This ensures that accidentally un-described events won't get written unnoticed, by `Richard Höchenberger`_ (:gh:`603`)
 - The :func:`mne_bids.get_head_mri_trans` now has a parameter ``extra_params`` to allow passing arguments specific to a file format, by `Mainak Jas`_ (:gh:`638`)
 - The first parameter of :func:`mne_bids.write_anat` is now called ``image`` and not ``t1w``, by `Alexandre Gramfort`_ (:gh:`641`)
 
@@ -1051,7 +1129,7 @@ Bug fixes
 - Fix a bug in :func:`mne_bids.write_raw_bids` when passing raw MEG data with Internal Active Shielding (IAS) from Triux system, by `Alexandre Gramfort`_ (:gh:`616`)
 - Fix a bug in :func:`mne_bids.write_raw_bids`, where original format of data was not kept when writing to FIFF, by `Alexandre Gramfort`_, `Stefan Appelhoff`_, and `Richard Höchenberger`_ (:gh:`610`)
 - Fix a bug where conversion to BrainVision format was done even when non-Volt channel types were present in the data (BrainVision conversion is done by ``pybv``, which currently only supports Volt channel types), by `Stefan Appelhoff`_ (:gh:`619`)
-- Ensure sidecar files (`.tsv` and `.json`) are always read and written in UTF-8, by `Richard Höchenberger`_ (:gh:`625`)
+- Ensure sidecar files (``.tsv`` and ``.json``) are always read and written in UTF-8, by `Richard Höchenberger`_ (:gh:`625`)
 - Fix a bug where ``participants.tsv`` was not being appended to correctly when it contained a subset of ``hand``, ``age`` and ``sex``, by `Adam Li`_ (:gh:`648`)
 - :func:`mne_bids.copyfiles.copyfile_eeglab` didn't handle certain EEGLAB files correctly, by `Richard Höchenberger`_ (:gh:`653`)
 - Fix bug where images with different orientations than the T1 used to define the landmarks were defaced improperly, by `Alex Rockhill`_ (:gh:`651`)
@@ -1197,15 +1275,15 @@ Changelog
 ~~~~~~~~~
 
 - Added automatic conversion of FIF to BrainVision format with warning for EEG only data and conversion to FIF for meg non-FIF data, by `Alex Rockhill`_ (:gh:`237`)
-- Add possibility to pass raw readers parameters (e.g. `allow_maxshield`) to :func:`read_raw_bids` to allow reading BIDS-formatted data before applying maxfilter, by  `Sophie Herbst`_
+- Add possibility to pass raw readers parameters (e.g. ``allow_maxshield``) to :func:`read_raw_bids` to allow reading BIDS-formatted data before applying maxfilter, by  `Sophie Herbst`_
 - New feature in :code:`mne_bids.write.write_anat` for shear deface of mri, by `Alex Rockhill`_ (:gh:`271`)
-- Added option to anonymize by shifting measurement date with `anonymize` parameter, in accordance with BIDS specifications, by `Alex Rockhill`_ (:gh:`280`)
+- Added option to anonymize by shifting measurement date with ``anonymize`` parameter, in accordance with BIDS specifications, by `Alex Rockhill`_ (:gh:`280`)
 - Added ``mne_bids.get_matched_empty_room`` to get empty room filename matching a data file, by `Mainak Jas`_ (:gh:`290`)
 - Add ability for :func:`mne_bids.get_head_mri_trans` to read fiducial points from fif data without applying maxfilter, by `Maximilien Chaumon`_ (:gh:`291`)
 - Added landmark argument to :func:`write_anat` to pass landmark location directly for deface, by `Alex Rockhill`_ (:gh:`292`)
-- Standardized `bids_root` and `output_path` arguments in :func:`read_raw_bids`, :func:`write_raw_bids`, and ``make_bids_folders`` to just `bids_root`, by `Adam Li`_ (:gh:`303`)
+- Standardized ``bids_root`` and ``output_path`` arguments in :func:`read_raw_bids`, :func:`write_raw_bids`, and ``make_bids_folders`` to just ``bids_root``, by `Adam Li`_ (:gh:`303`)
 - Add existence check for :func:`write_raw_bids` before :func:`make_dataset_description` is called, by `Adam Li`_ (:gh:`331`)
-- Update scans.tsv writer to adhere to MNE-Python v0.20+ where `meas_date` is stored as a `datetime` object, by `Adam Li`_ (:gh:`344`)
+- Update scans.tsv writer to adhere to MNE-Python v0.20+ where ``meas_date`` is stored as a :class:`python:datetime.datetime` object, by `Adam Li`_ (:gh:`344`)
 - :func:`read_raw_bids` now reads in sidecar json files to set, or estimate Power Line Frequency, by `Adam Li`_ (:gh:`341`)
 - Allow FIF files with multiple parts to be read using :func:`read_raw_bids`, by `Teon Brooks`_ (:gh:`346`)
 - Added handedness to participant files, by `Dominik Welke`_ (:gh:`354`)
@@ -1221,7 +1299,7 @@ Bug
 - Fix writing to scans.tsv file when anonymization is turned on, by `Adam Li`_ (:gh:`352`)
 - Fix :func:`read_raw_bids` to properly read in sidecar json even if a similarly named copy lives inside "derivatives/" sub-folder, by `Adam Li`_  (:gh:`350`)
 - Fix :func:`read_raw_bids` to properly read in events.tsv sidecar if the 'trial_type' description has a "#" character in it, by `Adam Li`_ (:gh:`355`)
-- Avoid cases in which NumPy would raise a `FutureWarning` when populating TSV files, by `Richard Höchenberger`_ (:gh:`372`)
+- Avoid cases in which NumPy would raise a :py:exc:`python:FutureWarning` when populating TSV files, by `Richard Höchenberger`_ (:gh:`372`)
 - Remove events with an unknown onset, and assume unknown event durations to be zero, when reading BIDS data via :func:`read_raw_bids`, by `Richard Höchenberger`_ (:gh:`375`)
 
 Authors
@@ -1309,13 +1387,13 @@ Bug
 - Fix the file naming for FIF files to only expose the part key-value pair when files are split, by `Teon Brooks`_ (:gh:`137`)
 - Allow files with no stim channel, which could be the case for example in resting state data, by `Mainak Jas`_ (:gh:`167`)
 - Better handling of unicode strings in TSV files, by `Mainak Jas`_ (:gh:`172`)
-- Fix separator in scans.tsv to always be `/`, by `Matt Sanderson`_ (:gh:`176`)
+- Fix separator in scans.tsv to always be ``/``, by `Matt Sanderson`_ (:gh:`176`)
 - Add seeg to :code:`mne_bids.utils._handle_datatype` when determining the kind of ieeg data, by `Ezequiel Mikulan`_ (:gh:`180`)
 - Fix problem in copying CTF files on Network File System due to a bug upstream in Python, by `Mainak Jas`_ (:gh:`174`)
 - Fix problem in copying BTi files. Now, a utility function ensures that all the related files
   such as config and headshape are copied correctly, by `Mainak Jas`_ (:gh:`135`)
 - Fix name of "sample" and "value" columns on events.tsv files, by `Ezequiel Mikulan`_ (:gh:`185`)
-- Update function to copy KIT files to the `meg` directory, by `Matt Sanderson`_ (:gh:`187`)
+- Update function to copy KIT files to the ``meg`` directory, by `Matt Sanderson`_ (:gh:`187`)
 
 API
 ~~~
@@ -1352,10 +1430,10 @@ Version 0.1 (2018-11-05)
 Changelog
 ~~~~~~~~~
 
-- Add example for how to rename BrainVision file triplets: `rename_brainvision_files.py`, by `Stefan Appelhoff`_ (:gh:`104`)
+- Add example for how to rename BrainVision file triplets: ``rename_brainvision_files.py``, by `Stefan Appelhoff`_ (:gh:`104`)
 - Add function to fetch BrainVision testing data ``mne_bids.datasets.fetch_brainvision_testing_data``, by `Stefan Appelhoff`_ (:gh:`104`)
-- Add support for EEG and a corresponding example: `make_eeg_bids.py`, by `Stefan Appelhoff`_ (:gh:`78`)
-- Update :code:`mne_bids.raw_to_bids` to work for KIT and BTi systems, by `Teon Brooks`_ (:gh:`16`)
+- Add support for EEG and a corresponding example: ``make_eeg_bids.py``, by `Stefan Appelhoff`_ (:gh:`78`)
+- Update ``mne_bids.raw_to_bids`` to work for KIT and BTi systems, by `Teon Brooks`_ (:gh:`16`)
 - Add support for iEEG and add ``mne_bids.make_bids_folders`` and ``mne_bids.make_bids_folders``, by `Chris Holdgraf`_ (:gh:`28` and :gh:`37`)
 - Add command line interface, by `Teon Brooks`_ (:gh:`31`)
 - Add :func:`mne_bids.print_dir_tree` for visualizing directory structures and restructuring package to be more

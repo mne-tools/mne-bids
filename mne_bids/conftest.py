@@ -2,8 +2,10 @@
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
+from datetime import datetime
 
 import mne
+import mne.datasets.utils
 import pytest
 
 
@@ -29,3 +31,19 @@ def monkeypatch_mne():
         "mne",
         "mne_bids",
     )
+
+
+class WindowsDatetime(datetime):
+    """Datetime obj that will raise on tz inference of pre-epoch naive timestamp."""
+
+    def astimezone(self, tz=None):
+        """Convert to specified timezone."""
+        if self.year < 1970 and self.tzinfo is None:
+            raise OSError("simulated Windows pre-epoch failure")
+        return super().astimezone(tz)
+
+
+@pytest.fixture(scope="session")
+def windows_datetime():
+    """Return WindowsDatime."""
+    return WindowsDatetime

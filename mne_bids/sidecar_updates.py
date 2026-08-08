@@ -25,7 +25,7 @@ from mne_bids.utils import _write_json
 
 # TODO: add support for tsv files
 @verbose
-def update_sidecar_json(bids_path, entries, verbose=None):
+def update_sidecar_json(bids_path, entries, *, verbose=None):
     """Update sidecar files using a dictionary or JSON file.
 
     Will update metadata fields inside the path defined by
@@ -56,6 +56,15 @@ def update_sidecar_json(bids_path, entries, verbose=None):
         sidecar fields and corresponding values to be updated to.
     %(verbose)s
 
+    Raises
+    ------
+    RuntimeError
+        If the specified ``bids_path.fpath`` cannot be found
+        in the dataset.
+    RuntimeError
+        If the ``bids_path.fpath`` does not have ``.json``
+        extension.
+
     Notes
     -----
     This function can only update JSON files.
@@ -69,16 +78,6 @@ def update_sidecar_json(bids_path, entries, verbose=None):
     the passed in dictionary overwriting any information that was
     previously there.
 
-    Raises
-    ------
-    RuntimeError
-        If the specified ``bids_path.fpath`` cannot be found
-        in the dataset.
-
-    RuntimeError
-        If the ``bids_path.fpath`` does not have ``.json``
-        extension.
-
     Examples
     --------
     Update a sidecar JSON file
@@ -90,7 +89,6 @@ def update_sidecar_json(bids_path, entries, verbose=None):
     ...                      root=root)
     >>> entries = {'PowerLineFrequency': 60}
     >>> update_sidecar_json(bids_path, entries, verbose=False)
-
     """
     # get all matching json files
     bids_path = bids_path.copy()
@@ -110,14 +108,14 @@ def update_sidecar_json(bids_path, entries, verbose=None):
     if isinstance(entries, dict):
         sidecar_tmp = entries
     else:
-        with _open_lock(entries, encoding="utf-8-sig") as tmp_f:
+        with _open_lock(entries, encoding="utf-8") as tmp_f:
             sidecar_tmp = json.load(tmp_f, object_pairs_hook=OrderedDict)
 
     logger.debug(sidecar_tmp)
     logger.debug(f"Updating {fpath}...")
 
     # load in sidecar filepath
-    with _open_lock(fpath, encoding="utf-8-sig") as tmp_f:
+    with _open_lock(fpath, encoding="utf-8") as tmp_f:
         sidecar_json = json.load(tmp_f, object_pairs_hook=OrderedDict)
 
     # update sidecar JSON file with the fields passed in
@@ -139,7 +137,7 @@ def _update_sidecar(sidecar_fname, key, val):
     val : str
         The corresponding value to change to in the sidecar JSON file.
     """
-    with _open_lock(sidecar_fname, encoding="utf-8-sig") as fin:
+    with _open_lock(sidecar_fname, encoding="utf-8") as fin:
         sidecar_json = json.load(fin)
     sidecar_json[key] = val
     _write_json(sidecar_fname, sidecar_json, overwrite=True)

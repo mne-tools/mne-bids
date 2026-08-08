@@ -156,7 +156,7 @@ def _summarize_dataset(root):
         return dict()
 
     # read file and 'REQUIRED' components of it
-    with _open_lock(dataset_descrip_fpath, encoding="utf-8-sig") as fin:
+    with _open_lock(dataset_descrip_fpath, encoding="utf-8") as fin:
         dataset_description = json.load(fin)
 
     # create dictionary to pass into template string
@@ -311,7 +311,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
         scans = scans_tsv["filename"]
         for scan in scans:
             # summarize metadata of recordings
-            bids_path, ext = _parse_ext(scan)
+            bids_path, _ = _parse_ext(scan)
             datatype = str(Path(scan).parent)
             if datatype not in ALLOWED_DATATYPES:
                 continue
@@ -330,7 +330,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
             sidecar_fname = _find_matching_sidecar(
                 bids_path=bids_path, suffix=datatype, extension=".json"
             )
-            with _open_lock(sidecar_fname, encoding="utf-8-sig") as fin:
+            with _open_lock(sidecar_fname, encoding="utf-8") as fin:
                 sidecar_json = json.load(fin)
 
             # aggregate metadata from each scan
