@@ -83,7 +83,7 @@ bids_path = BIDSPath(
 # ----------------------------
 #
 # To write eyetracking BIDS, you need to pass both the Raw object with the eytracking
-# data, and a `:class:~mne.preprocessing.eyetracking.Calibration` object that
+# data, and a :class:`~mne.preprocessing.eyetracking.Calibration` object that
 # contains necessary metadata about the presentation display used in the experiment.
 # MNE-BIDS will write one ``*_physio.tsv.gz`` + ``*_physio.json`` pair per eye,
 # with matching ``*_physioevents.tsv.gz`` files. Additionally, we are going to convert
