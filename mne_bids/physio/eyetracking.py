@@ -345,15 +345,15 @@ def write_eyetrack_calibration(
         directory (e.g. ``beh`` or ``eeg``) that contains ``<match>_physio.json``
         file(s). If the BIDSPath contains a ``recording`` entity (e.g. ``eye1``), it
         will be ignored (see the notes section).
-    calibration : CalibrationObject | list of CalibrationObject
+    calibrations : CalibrationObject | list of CalibrationObject
         Calibration instance(s) (e.g., an item returned by
         :func:`~mne.preprocessing.eyetracking.read_eyelink_calibration`). Each instance
-        must expose an ``eye`` attribute with value ``"left"`` or ``"right"``
+        must expose an ``eye`` attribute with value ``"left"`` or ``"right"``.
 
     Returns
     -------
     Updated sidecar filepaths : list of pathlib.Path
-        a list of filepaths pointing to the ``<match>_physio.tsv`` files that were
+        A list of filepaths pointing to the ``<match>_physio.tsv`` files that were
         updated with calibration information.
 
     Notes
@@ -366,7 +366,7 @@ def write_eyetrack_calibration(
       ``<match>_recording-eye1_physio.tsv``
 
     If more than one calibration was run on the participant, this function will write
-    the last calibration in the sequence passed to the ``calibration`` parameter.
+    the last calibration in the sequence passed to the ``calibrations`` parameter.
 
     See `The Eyetracking BIDS specification`_.
     """  # noqa: E501 FIXME: Can we use an alias to make the long line fit?
