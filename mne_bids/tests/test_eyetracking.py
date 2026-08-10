@@ -8,6 +8,7 @@ import pytest
 from mne.datasets import testing
 from mne.io import RawArray, read_raw_egi, read_raw_eyelink
 
+import mne_bids
 from mne_bids import BIDSPath, write_raw_bids
 from mne_bids.physio import _get_eyetrack_annotation_inds, write_eyetrack_calibration
 
@@ -18,7 +19,7 @@ def eyelink_fpath():
     return testing.data_path(download=False) / "eyetrack" / "test_eyelink.asc"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def raw_eye_and_cals(eyelink_fpath):
     """Get re-usable raw eyetracking object and calibrations."""
     raw = read_raw_eyelink(eyelink_fpath)
@@ -133,7 +134,7 @@ def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
 
 
 @testing.requires_testing_data
-def test_write_eyetracking(_bids_validate, raw_eye_and_cals, eyetrack_bpath):
+def test_write_eyetracking_bino(_bids_validate, raw_eye_and_cals, eyetrack_bpath):
     """Test writing eyetracking-only data to BIDS."""
     raw, cals = raw_eye_and_cals
 
@@ -145,6 +146,50 @@ def test_write_eyetracking(_bids_validate, raw_eye_and_cals, eyetrack_bpath):
         eyetrack_calibration=cals,
         overwrite=False,
     )
+    _bids_validate(eyetrack_bpath.root)
+
+
+@pytest.mark.parametrize("eye", ["left", "right"], ids=["left", "right"])
+def test_write_eyetracking_mono(_bids_validate, raw_eye_and_cals, eyetrack_bpath, eye):
+    """Test writing monocular eyetracking data."""
+    raw, cals = raw_eye_and_cals
+    raw.drop_channels([f"xpos_{eye}", f"ypos_{eye}", f"pupil_{eye}"])
+    cal = cals[0] if eye == "left" else cals[1]
+    write_raw_bids(
+        raw,
+        eyetrack_bpath,
+        allow_preload=True,
+        format="auto",
+        eyetrack_calibration=cal,
+        overwrite=False,
+    )
+    _bids_validate(eyetrack_bpath.root)
+
+
+def test_write_eyetrack_without_annotations(
+    _bids_validate, raw_eye_and_cals, eyetrack_bpath
+):
+    """Ensure ET data without annotations can be written and is complaint."""
+    raw, cals = raw_eye_and_cals
+    eye_annot_inds = [
+        ii
+        for ii, names in enumerate(raw.annotations.ch_names)
+        if (
+            names == ("xpos_left", "ypos_left", "pupil_left")
+            or names == ("xpos_right", "ypos_right", "pupil_right")
+        )
+    ]
+    raw.annotations.delete(eye_annot_inds)
+
+    with pytest.warns(match="No eyetracking annotations found."):
+        write_raw_bids(
+            raw,
+            eyetrack_bpath,
+            allow_preload=True,
+            format="auto",
+            eyetrack_calibration=cals,
+            overwrite=False,
+        )
     _bids_validate(eyetrack_bpath.root)
 
 
@@ -184,3 +229,78 @@ def test_write_eeg_eyetracking(_bids_validate, tmp_path, eyetrack_bpath):
         eyetrack_calibration=cals,
     )
     _bids_validate(eeg_bpath.root)
+
+
+@testing.requires_testing_data
+def test_write_raises(raw_eye_and_cals, eyetrack_bpath):
+    """Ensure that malformed raw objects hit our error messages when writing."""
+    # 1. We need the loc array to be properly set for eyetracking channels.
+    raw, cals = raw_eye_and_cals
+    orig_coord = raw.info["chs"][0]["loc"][4].copy()
+    raw.info["chs"][0]["loc"][4] = 4
+    with pytest.raises(match="Eyegaze channels must set"):
+        write_raw_bids(
+            raw,
+            eyetrack_bpath,
+            allow_preload=True,
+            format="auto",
+            eyetrack_calibration=cals,
+            overwrite=False,
+        )
+    raw.info["chs"][0]["loc"][4] = orig_coord
+
+    # 2: BIDS can't handle e.g. two x-coordinate channels for the left eye..
+    new_data = raw.get_data(picks="xpos_left").copy()
+    new_info = mne.create_info(
+        ch_names=["xpos_left_2"], sfreq=raw.info["sfreq"], ch_types=["eyegaze"]
+    )
+    new_channel = mne.io.RawArray(new_data, new_info)
+    new_channel = mne.preprocessing.eyetracking.set_channel_types_eyetrack(
+        new_channel, mapping={"xpos_left_2": ("eyegaze", "px", "left", "x")}
+    )
+    raw.add_channels([new_channel])
+    with pytest.raises(match="this will result in duplicate BIDS names"):
+        write_raw_bids(
+            raw,
+            eyetrack_bpath,
+            allow_preload=True,
+            format="auto",
+            eyetrack_calibration=cals,
+            overwrite=False,
+        )
+    raw.drop_channels("xpos_left_2")
+
+    # 3 The user needs to specify the datatype
+    eyetrack_bpath_bad = eyetrack_bpath.copy().update(datatype=None)
+    with pytest.raises(match="datatype must be specified"):
+        mne_bids.physio.eyetracking._write_eyetrack_tsvs(
+            raw=raw,
+            bids_path=eyetrack_bpath_bad,
+            overwrite=False,
+        )
+    del eyetrack_bpath_bad
+
+    # 4. Again, the loc array must be properly set for eyetrack channels
+    orig_eye = raw.info["chs"][0]["loc"][3].copy()
+    raw.info["chs"][0]["loc"][3] = 999.0
+    with pytest.raises(match="must specify the eye"):
+        mne_bids.physio.eyetracking._write_eyetrack_tsvs(
+            raw=raw,
+            bids_path=eyetrack_bpath,
+            overwrite=False,
+        )
+    raw.info["chs"][0]["loc"][3] = orig_eye
+
+    # 4. Calibraiton objects must contain 'left' or 'right' in their 'eye' key
+    cal_bad = cals[0].copy()
+    cal_bad["eye"] = "foo"
+    with pytest.raises(match="'left' or 'right' in its 'eye' key."):
+        write_raw_bids(
+            raw,
+            eyetrack_bpath,
+            allow_preload=True,
+            format="auto",
+            eyetrack_calibration=cal_bad,
+            overwrite=False,
+        )
+    del cal_bad

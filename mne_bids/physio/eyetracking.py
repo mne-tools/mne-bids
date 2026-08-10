@@ -68,7 +68,9 @@ def _get_eyetrack_annotation_inds(raw):
         [
             annot_idx
             for annot_idx, this_annot in enumerate(raw.annotations)
-            if any(ch_name in eye_ch_names for ch_name in this_annot["ch_names"])
+            if any(
+                ch_name in eye_ch_names for ch_name in this_annot.get("ch_names", [])
+            )
         ],
         dtype=int,
     )
@@ -378,10 +380,13 @@ def write_eyetrack_calibration(
     cals_by_eye = {"left": [], "right": []}
     for cal in calibrations:
         eye = cal["eye"]
+        if eye not in cals_by_eye.keys():
+            raise ValueError(
+                "Each mne.preprocessing.Calibration instance must contain either "
+                f"'left' or 'right' in its 'eye' key. Got {eye} "
+            )
         cals_by_eye[eye].append(cal)
     eyes_present = {eye for eye, cals in cals_by_eye.items() if len(cals)}
-    if not eyes_present:
-        raise ValueError("No calibration entries were provided.")
 
     # Determine monocular vs binocular mapping to the *_physio.tsv files
     if eyes_present == {"left", "right"}:
