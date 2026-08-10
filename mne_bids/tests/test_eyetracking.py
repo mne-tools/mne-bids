@@ -149,6 +149,7 @@ def test_write_eyetracking_bino(_bids_validate, raw_eye_and_cals, eyetrack_bpath
     _bids_validate(eyetrack_bpath.root)
 
 
+@testing.requires_testing_data
 @pytest.mark.parametrize("eye", ["left", "right"], ids=["left", "right"])
 def test_write_eyetracking_mono(_bids_validate, raw_eye_and_cals, eyetrack_bpath, eye):
     """Test writing monocular eyetracking data."""
@@ -166,6 +167,7 @@ def test_write_eyetracking_mono(_bids_validate, raw_eye_and_cals, eyetrack_bpath
     _bids_validate(eyetrack_bpath.root)
 
 
+@testing.requires_testing_data
 def test_write_eyetrack_without_annotations(
     _bids_validate, raw_eye_and_cals, eyetrack_bpath
 ):

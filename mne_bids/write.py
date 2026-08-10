@@ -80,7 +80,7 @@ from mne_bids.dig import (
 )
 from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
 from mne_bids.physio import (
-    EYETRACK_CALIBRATION_TO_STIMULUS_PRESENTATION,
+    _eyetrack_calibration_to_events_metadata,
     _get_eyetrack_annotation_inds,
     _get_eyetrack_ch_names,
     _write_eyetrack_tsvs,
@@ -612,56 +612,6 @@ def _events_json(
         new_data = {**orig_data, **new_data}
 
     _write_json(fname, new_data, overwrite=overwrite)
-
-
-def _eyetrack_calibration_to_events_metadata(eyetrack_calibration):
-    """Extract BIDS StimulusPresentation metadata from eyetracking calibration."""
-    if eyetrack_calibration is None:
-        raise ValueError(
-            "Writing eyetracking data requires `eyetrack_calibration`. The "
-            "calibration object must include screen_distance, screen_origin, "
-            "screen_resolution, and screen_size."
-        )
-    if isinstance(eyetrack_calibration, mne.preprocessing.eyetracking.Calibration):
-        calibrations = [eyetrack_calibration]
-    else:
-        _validate_type(
-            eyetrack_calibration, (list, tuple), item_name="eyetrack_calibration"
-        )
-        calibrations = list(eyetrack_calibration)
-    if len(calibrations) == 0:
-        raise ValueError(
-            "`eyetrack_calibration` must contain at least one calibration."
-        )
-
-    stimulus_presentation = {}
-    missing = []
-    for mne_key, bids_key in EYETRACK_CALIBRATION_TO_STIMULUS_PRESENTATION:
-        values = []
-        for calibration in calibrations:
-            value = calibration.get(mne_key)
-            if value is not None:
-                if isinstance(value, np.ndarray):
-                    value = value.tolist()
-                elif isinstance(value, tuple):
-                    value = list(value)
-                values.append(value)
-        if not values:
-            missing.append(mne_key)
-            continue
-        first_value = values[0]
-        if any(value != first_value for value in values[1:]):
-            raise ValueError(
-                f"`eyetrack_calibration` contains inconsistent values for {mne_key!r}."
-            )
-        stimulus_presentation[bids_key] = first_value
-
-    if missing:
-        raise ValueError(
-            "`eyetrack_calibration` is missing screen metadata required for "
-            "eyetracking BIDS: " + ", ".join(missing)
-        )
-    return {"StimulusPresentation": stimulus_presentation}
 
 
 def _readme(datatype, fname):
@@ -2388,7 +2338,6 @@ def write_raw_bids(
         events_json_metadata = _eyetrack_calibration_to_events_metadata(
             eyetrack_calibration
         )
-    if eyetrack_ch_names:
         _write_eyetrack_tsvs(raw, bids_path, overwrite=overwrite)
         write_eyetrack_calibration(bids_path, eyetrack_calibration)
         if not is_eyetracking_only:
