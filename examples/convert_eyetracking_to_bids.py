@@ -22,6 +22,8 @@ MNE-BIDS.
 # %%
 import json
 import shutil
+import tempfile
+from pathlib import Path
 from pprint import pprint
 
 import mne
@@ -62,9 +64,7 @@ raw.plot(scalings="auto")
 # writing of ``eye2`` data for us.)
 
 # %%
-bids_root = data_path.parent / "MNE-eyetrack-data-bids-example"
-if bids_root.exists():
-    shutil.rmtree(bids_root)
+bids_root = Path(tempfile.mkdtemp(prefix="mne_bids_eyetrack_"))
 
 bids_path = BIDSPath(
     root=bids_root,
@@ -177,9 +177,7 @@ del raw_eeg  # free up some memory
 # Write the merged EEG + eyetracking recording.
 
 # %%
-bids_root_simultaneous = eyelink_root.parent / "MNE-eyetrack-eeg-bids-example"
-if bids_root_simultaneous.exists():
-    shutil.rmtree(bids_root_simultaneous)
+bids_root_simultaneous = Path(tempfile.mkdtemp(prefix="mne_bids_eyetrack_eeg_"))
 
 bids_path_eeg = BIDSPath(
     root=bids_root_simultaneous,
@@ -214,3 +212,6 @@ print_dir_tree(bids_root_simultaneous)
 eye1_json = bids_path_eeg.find_matching_sidecar(suffix="physio", extension=".json")
 print(f"Filepath: {eye1_json}")
 pprint(json.loads(eye1_json.read_text()), indent=2)
+
+shutil.rmtree(bids_root)
+shutil.rmtree(bids_root_simultaneous)

@@ -76,14 +76,6 @@ def _get_eyetrack_annotation_inds(raw):
     )
 
 
-def _nan_to_na(values):
-    """Replace NaN samples with the BIDS missing-value marker."""
-    values = np.asarray(values)
-    out = values.astype(object)
-    out[np.isnan(values)] = "n/a"
-    return out
-
-
 def _write_single_eye_physio(
     *, raw, bids_path, eye_chs, eye_recording_tag, recorded_eye, overwrite
 ):
@@ -168,7 +160,7 @@ def _write_single_eye_physio(
                 f"mapping of your channel names to BIDS names:\n {raw_ch_names_to_bids}"
             )
 
-        data_dict[bids_ch_name] = _nan_to_na(data[ch_i])
+        data_dict[bids_ch_name] = data[ch_i]
         json_dict["Columns"].append(bids_ch_name)
         json_dict[bids_ch_name] = {
             "Description": description,
@@ -212,8 +204,7 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
     info_array = np.array([raw.ch_names, raw.get_channel_types()]).T
     eyegaze_ch_idx = np.where(info_array[:, 1] == "eyegaze")[0]
     pupil_ch_idx = np.where(info_array[:, 1] == "pupil")[0]
-    assert len(eyegaze_ch_idx)
-    assert len(pupil_ch_idx)
+
     # What eyes were recorded.
     left_eye_chs = []
     right_eye_chs = []
@@ -322,10 +313,19 @@ def _calibration_to_sidecar_updates(calibrations):
     """Convert calibration object(s) for one eye to sidecar updates."""
     updates = {}
     updates["CalibrationCount"] = len(calibrations)
-    # FIXME: BEP020 allows CalibrationCount (per session/run) yet only provides one set
+    # BEP020 allows CalibrationCount (per session/run) yet only provides one set
     # of Calibration* fields per physio sidecar. For now, if more than 1 calibrations
-    # were run, I guess it makes most sense to take the last calibration.
-    cal = calibrations[-1].copy()
+    # and the user passes a squence of calibrations in, I guess it makes most sense to
+    # take the last calibration collected.
+    if (n_cals := len(calibrations)) > 1:
+        most_recent = max(calibrations, key=lambda c: c["onset"])
+        logger.info(
+            f"{n_cals} calibrations were provided {most_recent['eye']} eye, writing "
+            f" the calibration collected at {most_recent['onset']} seconds."
+        )
+        cal = most_recent.copy()
+    else:
+        cal = calibrations[-1]
 
     for from_key, to_key in MNE_CALIBRATION_TO_BIDS.items():
         value = cal.get(from_key)
@@ -338,7 +338,7 @@ def write_eyetrack_calibration(
     bids_path: BIDSPath,
     calibrations: Calibration | list[Calibration],
 ) -> list[Path]:
-    """Write eyetracking calibration metadata into an existing ``*_physio.json`` sidecar.
+    """Write eyetrack calibration metadata into an existing ``*_physio.json`` sidecar.
 
     Parameters
     ----------
@@ -371,7 +371,7 @@ def write_eyetrack_calibration(
     the last calibration in the sequence passed to the ``calibrations`` parameter.
 
     See `The Eyetracking BIDS specification`_.
-    """  # noqa: E501 FIXME: Can we use an alias to make the long line fit?
+    """
     _validate_type(bids_path, BIDSPath, item_name="bids_path")
 
     if isinstance(calibrations, mne.preprocessing.eyetracking.Calibration):

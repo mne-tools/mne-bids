@@ -79,12 +79,12 @@ from mne_bids.dig import (
     _write_empty_ieeg_positions,
 )
 from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
-from mne_bids.physio import (
+from mne_bids.physio import write_eyetrack_calibration
+from mne_bids.physio.eyetracking import (
     _eyetrack_calibration_to_events_metadata,
     _get_eyetrack_annotation_inds,
     _get_eyetrack_ch_names,
     _write_eyetrack_tsvs,
-    write_eyetrack_calibration,
 )
 from mne_bids.pick import coil_type
 from mne_bids.read import _find_matching_sidecar, _read_events
@@ -2149,8 +2149,8 @@ def write_raw_bids(
     convert = False  # flag if converting not copying
 
     # Load file, filename, extension
-    raw_fname = raw.filenames[0]
     if not allow_preload:
+        raw_fname = raw.filenames[0]
         if ".ds" in op.dirname(raw.filenames[0]):
             raw_fname = op.dirname(raw.filenames[0])
         # point to file containing header info for multifile systems
@@ -2645,7 +2645,9 @@ def write_raw_bids(
     # raise error when trying to copy files (copyfile_*) into same location
     # (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)
     if (
-        bids_path.fpath.exists()
+        not allow_preload
+        and not is_eyetracking_only
+        and bids_path.fpath.exists()
         and not convert
         and bids_path.fpath.as_posix() == Path(raw_fname).as_posix()
     ):

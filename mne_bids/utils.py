@@ -516,7 +516,7 @@ def _check_datatype(raw, datatype):
             datatype_matches = True
     elif datatype == "beh":
         beh_types = ("eyegaze", "pupil")
-        if any(beh_type in raw for beh_type in beh_types):
+        if any(beh_type in raw.get_channel_types() for beh_type in beh_types):
             datatype_matches = True
     if not datatype_matches:
         raise ValueError(

@@ -10,7 +10,8 @@ from mne.io import RawArray, read_raw_egi, read_raw_eyelink
 
 import mne_bids
 from mne_bids import BIDSPath, write_raw_bids
-from mne_bids.physio import _get_eyetrack_annotation_inds, write_eyetrack_calibration
+from mne_bids.physio import write_eyetrack_calibration
+from mne_bids.physio.eyetracking import _get_eyetrack_annotation_inds
 
 
 @pytest.fixture(scope="module")
@@ -293,7 +294,7 @@ def test_write_raises(raw_eye_and_cals, eyetrack_bpath):
         )
     raw.info["chs"][0]["loc"][3] = orig_eye
 
-    # 4. Calibraiton objects must contain 'left' or 'right' in their 'eye' key
+    # 4. Calibration objects must contain 'left' or 'right' in their 'eye' key
     cal_bad = cals[0].copy()
     cal_bad["eye"] = "foo"
     with pytest.raises(match="'left' or 'right' in its 'eye' key."):
