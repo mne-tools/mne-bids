@@ -1986,7 +1986,13 @@ def write_raw_bids(
         ``"screen_origin"``, ``"screen_resolution"``, and ``"screen_size"`` so
         MNE-BIDS can write the BIDS-required ``"StimulusPresentation"`` metadata
         to ``*_events.json``. Calibration metadata is also written to the per-eye
-        ``*_physio.json`` sidecars.
+        ``*_physio.json`` sidecars. Examples of valid values for these keys are:
+
+        - ``screen_origin``: ``["top", "left"]``
+        - ``screen_resolution``: ``[1920, 1080]``
+        - ``screen_size``: ``[0.53, 0.3] # meters``
+        - ``screen_distance``: ``0.9 # meters``
+
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
