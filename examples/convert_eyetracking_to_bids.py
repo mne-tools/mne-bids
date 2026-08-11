@@ -122,6 +122,7 @@ eye1_json = bids_path.fpath.with_suffix("").with_suffix(".json")
 print(f"Filepath: {eye1_json}")
 pprint(json.loads(eye1_json.read_text()), indent=2)
 
+# %%
 # Convert simultaneous EEG + eyetracking data to BIDS
 # ---------------------------------------------------
 #
@@ -207,7 +208,8 @@ print_dir_tree(bids_root_simultaneous)
 
 # %%
 # Again, let's inspect the saved metadata for one eye. Note that the units for our
-# eyegaze channels are 'pixel', meaining these data are 'pixel-on-screen' coordinates.
+# eyegaze channels are 'pixel', meaning these data are 'pixel-on-screen' coordinates.
+
 # %%
 eye1_json = bids_path_eeg.find_matching_sidecar(suffix="physio", extension=".json")
 print(f"Filepath: {eye1_json}")
