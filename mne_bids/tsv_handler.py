@@ -4,12 +4,15 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import codecs
+import gzip
+import json
 import re
 from collections import OrderedDict
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
-from mne.utils import logger
+from mne.utils import _validate_type, logger
 
 from mne_bids._fileio import _open_lock
 
@@ -37,7 +40,9 @@ def _detect_file_encoding(fname, chunk_size=65536):
     file: enough to catch non-UTF-8 bytes in typical BIDS TSV files (e.g.
     ``µV`` in ``channels.tsv``).
     """
-    with open(fname, "rb") as f:
+    fname = Path(fname)
+    opener = gzip.open if fname.suffix == ".gz" else open
+    with opener(fname, "rb") as f:
         chunk = f.read(chunk_size)
     if chunk.startswith(codecs.BOM_UTF8):
         return "utf-8-sig"
@@ -176,16 +181,17 @@ def _from_tsv(fname, dtypes=None):
         Path to the file being loaded.
     dtypes : list, optional
         List of types to cast the values loaded as. This is specified column by
-        column.
-        Defaults to None. In this case all the data is loaded as strings.
+        column. Defaults to None. In this case all the data is loaded as strings.
 
     Returns
     -------
     data_dict : collections.OrderedDict
         Keys are the column names, and values are the column data.
-
     """
     from .utils import warn  # avoid circular import
+
+    fname = Path(fname)
+    compressed = fname.suffix == ".gz"
 
     encoding = _detect_file_encoding(fname)
     if not encoding.startswith("utf-8"):
@@ -201,21 +207,35 @@ def _from_tsv(fname, dtypes=None):
     # If data is 1-dimensional (only header), make it 2D
     data = np.atleast_2d(data)
 
-    column_names = data[0, :].tolist()  # cast to list to avoid `np.str_()` keys in dict
-    info = data[1:, :]
+    if compressed:
+        # Compressed TSVs are headerless
+        rows = data
+        column_names, json_fpath = _get_column_names_from_json(fname)
+
+        n_cols = rows.shape[1]
+        if len(column_names) != n_cols:
+            raise ValueError(
+                f"{fname.name} has {n_cols} columns but {json_fpath} "
+                f"lists {len(column_names)} column names in its 'Columns' field."
+            )
+
+    else:
+        # cast to list to avoid `np.str_()` keys in dict
+        column_names = data[0, :].tolist()
+        rows = data[1:, :]
     data_dict = OrderedDict()
     if dtypes is None:
-        dtypes = [str] * info.shape[1]
+        dtypes = [str] * rows.shape[1]
     if not isinstance(dtypes, list | tuple):
-        dtypes = [dtypes] * info.shape[1]
-    if not len(dtypes) == info.shape[1]:
+        dtypes = [dtypes] * rows.shape[1]
+    if not len(dtypes) == rows.shape[1]:
         raise ValueError(
             "dtypes length mismatch. "
-            f"Provided: {len(dtypes)}, Expected: {info.shape[1]}"
+            f"Provided: {len(dtypes)}, Expected: {rows.shape[1]}"
         )
     empty_cols = 0
     for i, name in enumerate(column_names):
-        cells = np.array([_normalize_tsv_cell(v) for v in info[:, i].tolist()])
+        cells = np.array([_normalize_tsv_cell(v) for v in rows[:, i].tolist()])
         values = cells.astype(dtypes[i]).tolist()
         data_dict[name] = values
         if len(values) == 0:
@@ -227,7 +247,24 @@ def _from_tsv(fname, dtypes=None):
     return data_dict
 
 
-def _to_tsv(data, fname, *, lock=True):
+def _get_column_names_from_json(fname, dtypes=None):
+    """Read column names for gzipped TSV files from corresponding JSON."""
+    fname = Path(fname)
+    sidecar_json = fname.with_suffix("").with_suffix(".json")
+
+    if not sidecar_json.exists():
+        raise ValueError(
+            f"To read {fname}, a corresponding sidecar JSON is needed. searched for:\n "
+            f"  {sidecar_json}"
+        )
+
+    sidecar = json.loads(sidecar_json.read_text(encoding="utf-8"))
+    column_names = sidecar["Columns"]
+    _validate_type(column_names, list)
+    return column_names, sidecar_json
+
+
+def _to_tsv(data, fname, *, compress=False, lock=True):
     """Write an OrderedDict into a tsv file.
 
     Parameters
@@ -237,15 +274,21 @@ def _to_tsv(data, fname, *, lock=True):
     fname : str
         Path to the file being written.
     """
+    include_header = False if compress else True
+
     n_rows = len(data[list(data.keys())[0]])
-    output = _tsv_to_str(data, n_rows)
+    output = _tsv_to_str(data, n_rows, include_header=include_header)
+    output = f"{output}\n"
 
-    with _open_lock(fname, "w", encoding="utf-8", lock=lock) as f:
-        f.write(output)
-        f.write("\n")
+    if compress:
+        with _open_lock(fname, "wb") as f:
+            f.write(gzip.compress(output.encode("utf-8")))
+    else:
+        with _open_lock(fname, "w", encoding="utf-8", lock=lock) as f:
+            f.write(output)
 
 
-def _tsv_to_str(data, rows=5):
+def _tsv_to_str(data, rows=5, *, include_header=True):
     """Return a string representation of the OrderedDict.
 
     Parameters
@@ -254,6 +297,9 @@ def _tsv_to_str(data, rows=5):
         OrderedDict to return string representation of.
     rows : int, optional
         Maximum number of rows of data to output.
+    include_header : bool
+        Whether to include the column names in the TSV file. For writing gzipped text
+        files, this should be False
 
     Returns
     -------
@@ -265,7 +311,8 @@ def _tsv_to_str(data, rows=5):
     n_rows = len(data[col_names[0]])
     output = list()
     # write headings.
-    output.append("\t".join(col_names))
+    if include_header:
+        output.append("\t".join(col_names))
 
     # write column data.
     max_rows = min(n_rows, rows)
