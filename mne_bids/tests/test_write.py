@@ -2164,8 +2164,7 @@ def test_write_anat(_bids_validate, tmp_path):
     # if deface is true but no landmarks provided, error should raise
     with pytest.raises(ValueError, match="must be provided to deface"):
         write_anat(
-            t1w_mgh, bids_path=bids_path, deface=True, verbose=True,
-            overwrite=True
+            t1w_mgh, bids_path=bids_path, deface=True, verbose=True, overwrite=True
         )
 
     # We already have some MRI data there
@@ -4622,4 +4621,3 @@ def test_deface_mri(t1_image, mri_landmarks):
     orig = t1_image.get_fdata().ravel()
     dfd = defaced_mri.get_fdata().ravel()
     assert np.isclose(orig, dfd).mean() > 0.95
-

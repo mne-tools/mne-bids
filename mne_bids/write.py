@@ -1361,16 +1361,13 @@ def deface_mri(image, landmarks, offset=-5, theta=15):
         )
 
     if not isinstance(offset, int):
-        raise TypeError(f"offset must be an integer, but got type "
-                        f"{type(offset)}.")
+        raise TypeError(f"offset must be an integer, but got type {type(offset)}.")
 
     if not isinstance(theta, int):
-        raise TypeError(f"theta must be an integer, but got type "
-                        f"{type(theta)}")
+        raise TypeError(f"theta must be an integer, but got type {type(theta)}")
 
     if not 0 <= theta < 90:
-        raise ValueError(f"theta should be between 0 and 90 degrees. "
-                         f"Got {theta}")
+        raise ValueError(f"theta should be between 0 and 90 degrees. Got {theta}")
 
     # get image data, make a copy
     image_data = image.get_fdata().copy()
@@ -2999,10 +2996,12 @@ def write_anat(
                 landmarks_deface = next(iter(landmarks.items()))[1]
             _, landmarks_deface = _get_landmarks(landmarks_deface, image_nii)
             if isinstance(deface, dict):
-                if not "offset" in deface.keys() or not "theta" in deface.keys():
-                    raise RuntimeError(f"When deface is a dict, keys must "
-                                       f"include offset and theta, but got "
-                                       f"{deface.keys()})")
+                if "offset" not in deface.keys() or "theta" not in deface.keys():
+                    raise RuntimeError(
+                        f"When deface is a dict, keys must "
+                        f"include offset and theta, but got "
+                        f"{deface.keys()})"
+                    )
                 offset = deface["offset"]
                 theta = deface["theta"]
             image_nii = deface_mri(image_nii, landmarks_deface, offset, theta)
