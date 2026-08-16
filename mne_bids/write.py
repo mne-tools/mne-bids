@@ -20,7 +20,6 @@ import mne.preprocessing
 import numpy as np
 from mne import Epochs, channel_type
 from mne.channels.channels import _get_meg_system, _unit2human
-from mne.chpi import get_chpi_info
 from mne.io import BaseRaw, read_fiducials
 from mne.io.constants import FIFF
 from mne.io.pick import _picks_to_idx
@@ -1224,6 +1223,8 @@ def _sidecar_json(
             n_active_hpi = mne.chpi.get_active_chpi(raw, on_missing="ignore")
             chpi = bool(n_active_hpi.sum() > 0)
             if chpi:
+                from mne.chpi import get_chpi_info
+
                 hpi_freqs, _, _ = get_chpi_info(info=raw.info, on_missing="ignore")
                 hpi_freqs = list(hpi_freqs)
 
