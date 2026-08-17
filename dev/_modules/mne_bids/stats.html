@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.stats &#8212; MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</title>
+    <title>mne_bids.stats &#8212; MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=e7d0f871"></script>
+    <script src="../../_static/documentation_options.js?v=5a098d7d"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev28+g1c22b05c6" />
+  <meta name="docsearch:version" content="0.20.0.dev29+g526ee9ddb" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</p>
   
 </a></div>
     
@@ -503,7 +503,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for mne_bids.stats</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Some functions to extract stats from a BIDS dataset.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Some functions to extract stats from a BIDS dataset."""</span>
 
 <span class="c1"># Authors: The MNE-BIDS developers</span>
 <span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
@@ -514,8 +514,8 @@
 
 <div class="viewcode-block" id="count_events">
 <a class="viewcode-back" href="../../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">count_events</span><span class="p">(</span><span class="n">root_or_path</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Count events present in dataset.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">count_events</span><span class="p">(</span><span class="n">root_or_path</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Count events present in dataset.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -543,7 +543,7 @@
 <span class="sd">    .. versionchanged:: 0.15</span>
 <span class="sd">       Table values were changed from floats (with NaN for missing values)</span>
 <span class="sd">       to Pandas nullable integer arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">root_or_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
@@ -551,29 +551,29 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">bids_path</span> <span class="o">=</span> <span class="n">root_or_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">)</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">"events"</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".tsv"</span><span class="p">)</span>
 
     <span class="n">datatypes</span> <span class="o">=</span> <span class="n">get_datatypes</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
     <span class="n">this_datatypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">datatypes</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">EPHY_ALLOWED_DATATYPES</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
         <span class="n">datatype</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
 
-    <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_datatypes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Multiple datatypes present (</span><span class="si">{</span><span class="n">this_datatypes</span><span class="si">}</span><span class="s2">).&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot; You need to specity datatype got: </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="sa">f</span><span class="s2">"Multiple datatypes present (</span><span class="si">{</span><span class="n">this_datatypes</span><span class="si">}</span><span class="s2">)."</span>
+                <span class="sa">f</span><span class="s2">" You need to specity datatype got: </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">)"</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_datatypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid datatype present.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No valid datatype present."</span><span class="p">)</span>
 
         <span class="n">datatype</span> <span class="o">=</span> <span class="n">this_datatypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">EPHY_ALLOWED_DATATYPES</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;datatype (</span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">) is not supported. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;It must be one of: </span><span class="si">{</span><span class="n">EPHY_ALLOWED_DATATYPES</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="sa">f</span><span class="s2">"datatype (</span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">) is not supported. "</span>
+            <span class="sa">f</span><span class="s2">"It must be one of: </span><span class="si">{</span><span class="n">EPHY_ALLOWED_DATATYPES</span><span class="si">}</span><span class="s2">)"</span>
         <span class="p">)</span>
 
     <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
@@ -587,40 +587,40 @@
 
         <span class="n">all_df</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">match</span><span class="p">():</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">subject</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">"subject"</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">subject</span>
             <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">df</span><span class="p">[</span><span class="s2">&quot;session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">session</span>
+                <span class="n">df</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">session</span>
             <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">df</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">run</span>
+                <span class="n">df</span><span class="p">[</span><span class="s2">"run"</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">run</span>
             <span class="n">all_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">all_df</span><span class="p">:</span>
             <span class="k">continue</span>
 
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_df</span><span class="p">)</span>
-        <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">]</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"subject"</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"session"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;run&quot;</span><span class="p">)</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"run"</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;stim_type&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"stim_type"</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="c1"># Deal with some old files that use stim_type rather than</span>
             <span class="c1"># trial_type</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;stim_type&quot;</span><span class="p">:</span> <span class="s2">&quot;trial_type&quot;</span><span class="p">})</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"stim_type"</span><span class="p">:</span> <span class="s2">"trial_type"</span><span class="p">})</span>
 
         <span class="c1"># There are datasets out there without a `trial_type` or `stim_type`</span>
         <span class="c1"># column.</span>
-        <span class="k">if</span> <span class="s2">&quot;trial_type&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;trial_type&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"trial_type"</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"trial_type"</span><span class="p">)</span>
 
         <span class="n">counts</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
         <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">fill_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">counts</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">NA</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;BAD_ACQ_SKIP&quot;</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;BAD_ACQ_SKIP&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"BAD_ACQ_SKIP"</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">"BAD_ACQ_SKIP"</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="n">counts</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
             <span class="p">[[</span><span class="n">task</span><span class="p">]</span> <span class="o">*</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">counts</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
@@ -629,7 +629,7 @@
         <span class="n">all_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">all_counts</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No events files found.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No events files found."</span><span class="p">)</span>
 
     <span class="n">counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_counts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 

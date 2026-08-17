@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.get_entity_vals &#8212; MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</title>
+    <title>mne_bids.get_entity_vals &#8212; MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=e7d0f871"></script>
+    <script src="../_static/documentation_options.js?v=5a098d7d"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev28+g1c22b05c6" />
+  <meta name="docsearch:version" content="0.20.0.dev29+g526ee9ddb" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</p>
   
 </a></div>
     
@@ -686,12 +686,12 @@ pointed to by <code class="docutils literal notranslate"><span class="pre">root<
 </div>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;./mne_bids/tests/data/tiny_bids&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">entity_key</span> <span class="o">=</span> <span class="s1">&#39;subject&#39;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'./mne_bids/tests/data/tiny_bids'</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">entity_key</span> <span class="o">=</span> <span class="s1">'subject'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_entity_vals</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">)</span>
-<span class="go">[&#39;01&#39;]</span>
+<span class="go">['01']</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_entity_vals</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">,</span> <span class="n">with_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">[&#39;sub-01&#39;]</span>
+<span class="go">['sub-01']</span>
 </pre></div>
 </div>
 </dd></dl>

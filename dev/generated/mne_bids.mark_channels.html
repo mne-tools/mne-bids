@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.mark_channels &#8212; MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</title>
+    <title>mne_bids.mark_channels &#8212; MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=e7d0f871"></script>
+    <script src="../_static/documentation_options.js?v=5a098d7d"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev28+g1c22b05c6" />
+  <meta name="docsearch:version" content="0.20.0.dev29+g526ee9ddb" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</p>
   
 </a></div>
     
@@ -611,25 +611,25 @@ values (‘good’ for status, ‘n/a’ for status_description) for all channel
 not differently specified (by using <code class="docutils literal notranslate"><span class="pre">ch_names</span></code>, <code class="docutils literal notranslate"><span class="pre">status</span></code>, and <code class="docutils literal notranslate"><span class="pre">descriptions</span></code>).</p>
 <p class="rubric">Examples</p>
 <p>Mark a single channel as bad.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;./mne_bids/tests/data/tiny_bids&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;rest&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span>
-<span class="gp">... </span>                     <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="s1">&#39;C4&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">,</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'./mne_bids/tests/data/tiny_bids'</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">'01'</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">'rest'</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">'eeg'</span><span class="p">,</span>
+<span class="gp">... </span>                     <span class="n">datatype</span><span class="o">=</span><span class="s1">'eeg'</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="s1">'C4'</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">'bad'</span><span class="p">,</span>
 <span class="gp">... </span>              <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Mark multiple channels as bad, and add a description as to why.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bads</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;PO10&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;very noisy&#39;</span><span class="p">,</span> <span class="s1">&#39;continuously flat&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">,</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bads</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'C3'</span><span class="p">,</span> <span class="s1">'PO10'</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'very noisy'</span><span class="p">,</span> <span class="s1">'continuously flat'</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">'bad'</span><span class="p">,</span>
 <span class="gp">... </span>              <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Mark all channels with a new description, while keeping them as a “good”
 channel.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;resected&#39;</span><span class="p">,</span> <span class="s1">&#39;resected&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">],</span>
-<span class="gp">... </span>              <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;good&#39;</span><span class="p">,</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'resected'</span><span class="p">,</span> <span class="s1">'resected'</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="p">[</span><span class="s1">'C3'</span><span class="p">,</span> <span class="s1">'C4'</span><span class="p">],</span>
+<span class="gp">... </span>              <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">'good'</span><span class="p">,</span>
 <span class="gp">... </span>              <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>

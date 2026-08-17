@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Read epoched BIDS data as MNE Epochs &#8212; MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</title>
+    <title>Read epoched BIDS data as MNE Epochs &#8212; MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=e7d0f871"></script>
+    <script src="../_static/documentation_options.js?v=5a098d7d"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev28+g1c22b05c6" />
+  <meta name="docsearch:version" content="0.20.0.dev29+g526ee9ddb" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</p>
   
 </a></div>
     
@@ -589,11 +589,11 @@ and “imagine moving the right fist” cues.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="mne.io.read_raw_edf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.standardize.html#mne.datasets.eegbci.standardize" title="mne.datasets.eegbci.standardize" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">standardize</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>  <span class="c1"># set channel names</span>
-<a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>
+<a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">"line_freq"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>
 
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># the EEGLAB exporter writes events, not annotations</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;left_fist&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;right_fist&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">"left_fist"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"right_fist"</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
 <span class="c1"># keep only the events we epoch on, so each exported epoch has exactly one event</span>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.isin.html#numpy.isin" title="numpy.isin" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">isin</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">.</span><span class="n">values</span><span class="p">()))]</span>
 <a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span> <span class="n">tmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -603,7 +603,7 @@ and “imagine moving the right fist” cues.</p>
 Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R04.edf...
 Setting channel info structure...
 Creating raw.info structure...
-Used Annotations descriptions: [np.str_(&#39;T0&#39;), np.str_(&#39;T1&#39;), np.str_(&#39;T2&#39;)]
+Used Annotations descriptions: [np.str_('T0'), np.str_('T1'), np.str_('T2')]
 Not setting metadata
 15 matching events found
 No baseline correction applied
@@ -616,47 +616,47 @@ Loading data for 15 events and 641 original time points ...
 together with the sidecar files. The important piece is
 <code class="docutils literal notranslate"><span class="pre">&quot;RecordingType&quot;:</span> <span class="pre">&quot;epoched&quot;</span></code> in the <code class="docutils literal notranslate"><span class="pre">*_eeg.json</span></code> sidecar, which is how
 BIDS marks a recording as epoched.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s2">&quot;MNE_DATASETS_EEGBCI_PATH&quot;</span><span class="p">))</span>
-<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">/</span> <span class="s2">&quot;eegmmidb_bids_epochs_example&quot;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s2">"MNE_DATASETS_EEGBCI_PATH"</span><span class="p">))</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">/</span> <span class="s2">"eegmmidb_bids_epochs_example"</span>
 <span class="k">if</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.exists" title="pathlib.Path.exists" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">bids_root</span><span class="o">.</span><span class="n">exists</span></a><span class="p">():</span>
     <a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 
 <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span>
-    <span class="n">subject</span><span class="o">=</span><span class="s2">&quot;01&quot;</span><span class="p">,</span>
-    <span class="n">task</span><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span>
-    <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span>
-    <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.set&quot;</span><span class="p">,</span>
-    <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span>
+    <span class="n">subject</span><span class="o">=</span><span class="s2">"01"</span><span class="p">,</span>
+    <span class="n">task</span><span class="o">=</span><span class="s2">"imagery"</span><span class="p">,</span>
+    <span class="n">suffix</span><span class="o">=</span><span class="s2">"eeg"</span><span class="p">,</span>
+    <span class="n">extension</span><span class="o">=</span><span class="s2">".set"</span><span class="p">,</span>
+    <span class="n">datatype</span><span class="o">=</span><span class="s2">"eeg"</span><span class="p">,</span>
     <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span>
 <span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
 <a href="https://mne.tools/stable/generated/mne.export.export_epochs.html#mne.export.export_epochs" title="mne.export.export_epochs" class="sphx-glr-backref-module-mne-export sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">export_epochs</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span></a><span class="p">,</span> <a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="mne.Epochs" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<a href="../generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_dataset_description</span></a><span class="p">(</span><span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;EEGBCI epoched example&quot;</span><span class="p">)</span>
+<a href="../generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_dataset_description</span></a><span class="p">(</span><span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"EEGBCI epoched example"</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sidecar</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;TaskName&quot;</span><span class="p">:</span> <span class="s2">&quot;imagery&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SamplingFrequency&quot;</span><span class="p">:</span> <a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
-    <span class="s2">&quot;PowerLineFrequency&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
-    <span class="s2">&quot;EEGReference&quot;</span><span class="p">:</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SoftwareFilters&quot;</span><span class="p">:</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;RecordingType&quot;</span><span class="p">:</span> <span class="s2">&quot;epoched&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;EpochLength&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs.times" title="mne.Epochs.times" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">epochs</span><span class="o">.</span><span class="n">times</span></a><span class="p">)</span> <span class="o">/</span> <a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+    <span class="s2">"TaskName"</span><span class="p">:</span> <span class="s2">"imagery"</span><span class="p">,</span>
+    <span class="s2">"SamplingFrequency"</span><span class="p">:</span> <a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">"sfreq"</span><span class="p">],</span>
+    <span class="s2">"PowerLineFrequency"</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="s2">"EEGReference"</span><span class="p">:</span> <span class="s2">"n/a"</span><span class="p">,</span>
+    <span class="s2">"SoftwareFilters"</span><span class="p">:</span> <span class="s2">"n/a"</span><span class="p">,</span>
+    <span class="s2">"RecordingType"</span><span class="p">:</span> <span class="s2">"epoched"</span><span class="p">,</span>
+    <span class="s2">"EpochLength"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs.times" title="mne.Epochs.times" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">epochs</span><span class="o">.</span><span class="n">times</span></a><span class="p">)</span> <span class="o">/</span> <a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">epochs</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">"sfreq"</span><span class="p">],</span>
 <span class="p">}</span>
-<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span></a><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
-    <a href="https://docs.python.org/3/library/json.html#json.dumps" title="json.dumps" class="sphx-glr-backref-module-json sphx-glr-backref-type-py-function"><span class="n">json</span><span class="o">.</span><span class="n">dumps</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sidecar</span></a><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span></a><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/json.html#json.dumps" title="json.dumps" class="sphx-glr-backref-module-json sphx-glr-backref-type-py-function"><span class="n">json</span><span class="o">.</span><span class="n">dumps</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sidecar</span></a><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span>
 <span class="p">)</span>
-<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">channels</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class"><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span></a><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs.ch_names" title="mne.Epochs.ch_names" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">epochs</span><span class="o">.</span><span class="n">ch_names</span></a><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;EEG&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;µV&quot;</span><span class="p">})</span>
+<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">channels</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class"><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span></a><span class="p">({</span><span class="s2">"name"</span><span class="p">:</span> <a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs.ch_names" title="mne.Epochs.ch_names" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-property"><span class="n">epochs</span><span class="o">.</span><span class="n">ch_names</span></a><span class="p">,</span> <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"EEG"</span><span class="p">,</span> <span class="s2">"units"</span><span class="p">:</span> <span class="s2">"µV"</span><span class="p">})</span>
 <a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html#pandas.DataFrame.to_csv" title="pandas.DataFrame.to_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">channels</span><span class="o">.</span><span class="n">to_csv</span></a><span class="p">(</span>
-    <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span></a><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;channels&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
-    <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+    <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span></a><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">"channels"</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".tsv"</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
+    <span class="n">sep</span><span class="o">=</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">,</span>
     <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">/</span> <span class="s2">&quot;participants.tsv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
-    <span class="s2">&quot;participant_id</span><span class="se">\n</span><span class="s2">sub-01</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span>
+<span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">/</span> <span class="s2">"participants.tsv"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
+    <span class="s2">"participant_id</span><span class="se">\n</span><span class="s2">sub-01</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span>
 <span class="p">)</span>
 <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing &#39;/home/circleci/mne_data/eegmmidb_bids_epochs_example/dataset_description.json&#39;...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/eegmmidb_bids_epochs_example/dataset_description.json'...
 |eegmmidb_bids_epochs_example/
 |--- dataset_description.json
 |--- participants.tsv
@@ -678,7 +678,7 @@ and refuses to load the file:</p>
     <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>RecordingType is &quot;epoched&quot;; use mne_bids.read_epochs_bids() instead of read_raw_bids().
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>RecordingType is "epoched"; use mne_bids.read_epochs_bids() instead of read_raw_bids().
 </pre></div>
 </div>
 <p><a class="reference internal" href="../generated/mne_bids.read_epochs_bids.html#mne_bids.read_epochs_bids" title="mne_bids.read_epochs_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_epochs_bids()</span></code></a> is the right tool for this recording:</p>
@@ -843,9 +843,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-eedd8709-318b-40c5-b347-a512247c1ea3"
+<tr class="mne-repr-section-header general-42eae5f2-528c-47a2-897d-964f712b7308"
      title="Hide section"
-    onclick="toggleVisibility('general-eedd8709-318b-40c5-b347-a512247c1ea3')">
+    onclick="toggleVisibility('general-42eae5f2-528c-47a2-897d-964f712b7308')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -857,7 +857,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-eedd8709-318b-40c5-b347-a512247c1ea3 ">
+<tr class="repr-element general-42eae5f2-528c-47a2-897d-964f712b7308 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -868,19 +868,19 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-eedd8709-318b-40c5-b347-a512247c1ea3 ">
+<tr class="repr-element general-42eae5f2-528c-47a2-897d-964f712b7308 ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>EpochsEEGLAB</td>
 </tr>
-<tr class="repr-element general-eedd8709-318b-40c5-b347-a512247c1ea3 ">
+<tr class="repr-element general-42eae5f2-528c-47a2-897d-964f712b7308 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-eedd8709-318b-40c5-b347-a512247c1ea3 ">
+<tr class="repr-element general-42eae5f2-528c-47a2-897d-964f712b7308 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
@@ -889,7 +889,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 </tr>
-<tr class="repr-element general-eedd8709-318b-40c5-b347-a512247c1ea3 ">
+<tr class="repr-element general-42eae5f2-528c-47a2-897d-964f712b7308 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -904,9 +904,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-699806bc-76a7-4328-b933-5646e496ecd4"
+<tr class="mne-repr-section-header acquisition-b8752e94-7121-45d9-bb05-06519682890b"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-699806bc-76a7-4328-b933-5646e496ecd4')">
+    onclick="toggleVisibility('acquisition-b8752e94-7121-45d9-bb05-06519682890b')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -921,14 +921,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-699806bc-76a7-4328-b933-5646e496ecd4 ">
+<tr class="repr-element acquisition-b8752e94-7121-45d9-bb05-06519682890b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Total number of events</td>
     <td>15</td>
 </tr>
 
 
-<tr class="repr-element acquisition-699806bc-76a7-4328-b933-5646e496ecd4 ">
+<tr class="repr-element acquisition-b8752e94-7121-45d9-bb05-06519682890b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Events counts</td>
 
@@ -945,35 +945,35 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-699806bc-76a7-4328-b933-5646e496ecd4 ">
+<tr class="repr-element acquisition-b8752e94-7121-45d9-bb05-06519682890b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time range</td>
     <td>-1.000 – 3.000 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-699806bc-76a7-4328-b933-5646e496ecd4 ">
+<tr class="repr-element acquisition-b8752e94-7121-45d9-bb05-06519682890b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Baseline</td>
     <td>off</td>
 </tr>
 
 
-<tr class="repr-element acquisition-699806bc-76a7-4328-b933-5646e496ecd4 ">
+<tr class="repr-element acquisition-b8752e94-7121-45d9-bb05-06519682890b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>160.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-699806bc-76a7-4328-b933-5646e496ecd4 ">
+<tr class="repr-element acquisition-b8752e94-7121-45d9-bb05-06519682890b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>641</td>
 </tr>
 
 
-<tr class="repr-element acquisition-699806bc-76a7-4328-b933-5646e496ecd4 ">
+<tr class="repr-element acquisition-b8752e94-7121-45d9-bb05-06519682890b ">
     <td class="mne-repr-section-toggle"></td>
     <td>Metadata</td>
     <td>No metadata set</td>
@@ -987,9 +987,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-14b85158-ea83-470e-8bb0-819f90749457"
+<tr class="mne-repr-section-header channels-8606755e-ae65-4ff7-98ef-0fbe5d96dee8"
      title="Hide section"
-    onclick="toggleVisibility('channels-14b85158-ea83-470e-8bb0-819f90749457')">
+    onclick="toggleVisibility('channels-8606755e-ae65-4ff7-98ef-0fbe5d96dee8')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1002,7 +1002,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-14b85158-ea83-470e-8bb0-819f90749457 ">
+<tr class="repr-element channels-8606755e-ae65-4ff7-98ef-0fbe5d96dee8 ">
     <td class="mne-repr-section-toggle"></td>
     <td>EEG</td>
     <td>
@@ -1015,7 +1015,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-14b85158-ea83-470e-8bb0-819f90749457 ">
+<tr class="repr-element channels-8606755e-ae65-4ff7-98ef-0fbe5d96dee8 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1030,9 +1030,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-598ca677-2325-45b1-872c-86ff900b1e0e"
+<tr class="mne-repr-section-header filters-6205d538-8338-457e-b97a-28204c907e4c"
      title="Hide section"
-    onclick="toggleVisibility('filters-598ca677-2325-45b1-872c-86ff900b1e0e')">
+    onclick="toggleVisibility('filters-6205d538-8338-457e-b97a-28204c907e4c')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1044,14 +1044,14 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-598ca677-2325-45b1-872c-86ff900b1e0e ">
+<tr class="repr-element filters-6205d538-8338-457e-b97a-28204c907e4c ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-598ca677-2325-45b1-872c-86ff900b1e0e ">
+<tr class="repr-element filters-6205d538-8338-457e-b97a-28204c907e4c ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>80.00 Hz</td>
@@ -1063,7 +1063,7 @@ this file apply (plus whatever default styling the IDE applies).
 <br />
 <br /><p>The event labels survived the round trip, so we can select conditions and
 average as usual:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">epochs_in</span><span class="p">[</span><span class="s2">&quot;left_fist&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">average</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">epochs_in</span><span class="p">[</span><span class="s2">"left_fist"</span><span class="p">]</span><span class="o">.</span><span class="n">average</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_read_epochs_bids_001.png" srcset="../_images/sphx_glr_read_epochs_bids_001.png" alt="EEG (64 channels)" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 640x300 with 1 Axes&gt;
@@ -1076,7 +1076,7 @@ average as usual:</p>
 them into trials of length <code class="docutils literal notranslate"><span class="pre">EpochLength</span></code> (from the sidecar), using the
 onsets in <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> when present.</p>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.752 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.846 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-epochs-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/69a75d47547d44e49e00ae087b868c51/read_epochs_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">read_epochs_bids.ipynb</span></code></a></p>

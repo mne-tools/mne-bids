@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert EMG data to BIDS format &#8212; MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</title>
+    <title>Convert EMG data to BIDS format &#8212; MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=e7d0f871"></script>
+    <script src="../_static/documentation_options.js?v=5a098d7d"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev28+g1c22b05c6" />
+  <meta name="docsearch:version" content="0.20.0.dev29+g526ee9ddb" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</p>
   
 </a></div>
     
@@ -565,15 +565,15 @@ channel type from EEG to EMG; this may not be necessary for your data.</p>
 <a class="reference external" href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">warnings.filterwarnings()</span></code></a> to ignore some warnings that are expected given what
 we (don’t) know about this dataset.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">known_warnings</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;The `doi` field in dataset_description should be&quot;</span><span class="p">:</span> <span class="s2">&quot;mne_bids&quot;</span><span class="p">,</span>  <span class="c1"># our DOI is n/a</span>
-    <span class="s2">&quot;Converting data files to EDF format&quot;</span><span class="p">:</span> <span class="s2">&quot;mne_bids&quot;</span><span class="p">,</span>  <span class="c1"># BIDS requires EDF/BDF for EMG</span>
-    <span class="s2">&quot;EDF format requires equal-length data blocks&quot;</span><span class="p">:</span> <span class="s2">&quot;mne&quot;</span><span class="p">,</span>  <span class="c1"># zero-padding the output</span>
-    <span class="s2">&quot;No electrode location info found&quot;</span><span class="p">:</span> <span class="s2">&quot;mne_bids&quot;</span><span class="p">,</span>  <span class="c1"># EMG sensor locations unknown</span>
-    <span class="sa">r</span><span class="s2">&quot;Channels contain different (low|high)pass filters\.&quot;</span><span class="p">:</span> <span class="s2">&quot;mne&quot;</span><span class="p">,</span>
+    <span class="s2">"The `doi` field in dataset_description should be"</span><span class="p">:</span> <span class="s2">"mne_bids"</span><span class="p">,</span>  <span class="c1"># our DOI is n/a</span>
+    <span class="s2">"Converting data files to EDF format"</span><span class="p">:</span> <span class="s2">"mne_bids"</span><span class="p">,</span>  <span class="c1"># BIDS requires EDF/BDF for EMG</span>
+    <span class="s2">"EDF format requires equal-length data blocks"</span><span class="p">:</span> <span class="s2">"mne"</span><span class="p">,</span>  <span class="c1"># zero-padding the output</span>
+    <span class="s2">"No electrode location info found"</span><span class="p">:</span> <span class="s2">"mne_bids"</span><span class="p">,</span>  <span class="c1"># EMG sensor locations unknown</span>
+    <span class="sa">r</span><span class="s2">"Channels contain different (low|high)pass filters\."</span><span class="p">:</span> <span class="s2">"mne"</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">msg</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mod</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">known_warnings</span></a><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <a href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="warnings.filterwarnings" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">filterwarnings</span></a><span class="p">(</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span>
         <span class="n">message</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">msg</span></a><span class="p">,</span>
         <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">,</span>
         <span class="n">module</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mod</span></a><span class="p">,</span>
@@ -582,16 +582,16 @@ we (don’t) know about this dataset.</p>
 </div>
 <p>First we’ll get the data. We’ll use <code class="docutils literal notranslate"><span class="pre">pooch</span></code> here, but the <code class="docutils literal notranslate"><span class="pre">requests</span></code> module
 would work just as well (or you could manually download the data of course).</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">remote_folder</span></a> <span class="o">=</span> <span class="s2">&quot;https://download.fieldtriptoolbox.org/example/bids_emg/original/&quot;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">remote_folder</span></a> <span class="o">=</span> <span class="s2">"https://download.fieldtriptoolbox.org/example/bids_emg/original/"</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">remote_files_and_hashes</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;nt05_EMG_SESS1_GABA_RAW.eeg&quot;</span><span class="p">:</span> <span class="s2">&quot;d4c62cec8abb57c64304685884e0181dffa03ba9ec7730730d4f7e5d5254a345&quot;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
-    <span class="s2">&quot;nt05_EMG_SESS1_GABA_RAW.vhdr&quot;</span><span class="p">:</span> <span class="s2">&quot;d1094625f9e80ff66c04dcc355e7afa929d496edcc8f206eab1c88fa05ebe7a3&quot;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
-    <span class="s2">&quot;nt05_EMG_SESS1_GABA_RAW.vmrk&quot;</span><span class="p">:</span> <span class="s2">&quot;73ab8da32c5f8938004fdee4145133f61843f69137d90ddfcdf9d8fc0380c7cd&quot;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
-    <span class="s2">&quot;nt05_EMG_SESS1_RS_RAW.eeg&quot;</span><span class="p">:</span> <span class="s2">&quot;016a3b1ad93b0c2c9d2c0aed67668127e98c76e63f7abe65c67839c2affcc2f0&quot;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
-    <span class="s2">&quot;nt05_EMG_SESS1_RS_RAW.vhdr&quot;</span><span class="p">:</span> <span class="s2">&quot;73d1d893635d6bec91e07dc2714a420d9b8abdb211cd2ec1fa3dc977b66ca6aa&quot;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
-    <span class="s2">&quot;nt05_EMG_SESS1_RS_RAW.vmrk&quot;</span><span class="p">:</span> <span class="s2">&quot;bdce8497ffd0ee65aed535c22afef988d41fdcba199f0b04cb5792acba10b22c&quot;</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
+    <span class="s2">"nt05_EMG_SESS1_GABA_RAW.eeg"</span><span class="p">:</span> <span class="s2">"d4c62cec8abb57c64304685884e0181dffa03ba9ec7730730d4f7e5d5254a345"</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
+    <span class="s2">"nt05_EMG_SESS1_GABA_RAW.vhdr"</span><span class="p">:</span> <span class="s2">"d1094625f9e80ff66c04dcc355e7afa929d496edcc8f206eab1c88fa05ebe7a3"</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
+    <span class="s2">"nt05_EMG_SESS1_GABA_RAW.vmrk"</span><span class="p">:</span> <span class="s2">"73ab8da32c5f8938004fdee4145133f61843f69137d90ddfcdf9d8fc0380c7cd"</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
+    <span class="s2">"nt05_EMG_SESS1_RS_RAW.eeg"</span><span class="p">:</span> <span class="s2">"016a3b1ad93b0c2c9d2c0aed67668127e98c76e63f7abe65c67839c2affcc2f0"</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
+    <span class="s2">"nt05_EMG_SESS1_RS_RAW.vhdr"</span><span class="p">:</span> <span class="s2">"73d1d893635d6bec91e07dc2714a420d9b8abdb211cd2ec1fa3dc977b66ca6aa"</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
+    <span class="s2">"nt05_EMG_SESS1_RS_RAW.vmrk"</span><span class="p">:</span> <span class="s2">"bdce8497ffd0ee65aed535c22afef988d41fdcba199f0b04cb5792acba10b22c"</span><span class="p">,</span>  <span class="c1"># noqa E501</span>
 <span class="p">}</span>
-<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">download_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><span class="s2">&quot;~/mne_data/MNE-fieldtrip_emg-data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">download_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><span class="s2">"~/mne_data/MNE-fieldtrip_emg-data"</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.mkdir" title="pathlib.Path.mkdir" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">download_dir</span><span class="o">.</span><span class="n">mkdir</span></a><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fname</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">known_hash</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">remote_files_and_hashes</span></a><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="n">pooch</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span>
@@ -600,10 +600,10 @@ would work just as well (or you could manually download the data of course).</p>
 </pre></div>
 </div>
 <p>Next we’ll set up the directory where we’ll store the BIDS-formatted dataset.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">download_dir</span></a> <span class="o">/</span> <span class="s2">&quot;bidsified&quot;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">download_dir</span></a> <span class="o">/</span> <span class="s2">"bidsified"</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.mkdir" title="pathlib.Path.mkdir" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">target_dir</span><span class="o">.</span><span class="n">mkdir</span></a><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">mne_bids</span><span class="o">.</span><span class="n">BIDSPath</span></a><span class="p">(</span>
-    <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_dir</span></a><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;emg&quot;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s2">&quot;nt05&quot;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;rest&quot;</span>
+    <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">target_dir</span></a><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s2">"emg"</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s2">"nt05"</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s2">"rest"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -611,66 +611,66 @@ would work just as well (or you could manually download the data of course).</p>
 of <code class="docutils literal notranslate"><span class="pre">n/a</span></code> fields.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">mne_bids</span><span class="o">.</span><span class="n">make_dataset_description</span></a><span class="p">(</span>
     <span class="n">path</span><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.root" title="mne_bids.BIDSPath.root" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span></a><span class="p">,</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;EMG example&quot;</span><span class="p">,</span>
-    <span class="n">dataset_type</span><span class="o">=</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span>
-    <span class="n">data_license</span><span class="o">=</span><span class="s2">&quot;n/a&quot;</span><span class="p">,</span>
-    <span class="n">authors</span><span class="o">=</span><span class="s2">&quot;n/a&quot;</span><span class="p">,</span>
-    <span class="n">funding</span><span class="o">=</span><span class="s2">&quot;n/a&quot;</span><span class="p">,</span>
-    <span class="n">acknowledgements</span><span class="o">=</span><span class="s2">&quot;n/a&quot;</span><span class="p">,</span>
-    <span class="n">references_and_links</span><span class="o">=</span><span class="s2">&quot;n/a&quot;</span><span class="p">,</span>
-    <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;n/a&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"EMG example"</span><span class="p">,</span>
+    <span class="n">dataset_type</span><span class="o">=</span><span class="s2">"raw"</span><span class="p">,</span>
+    <span class="n">data_license</span><span class="o">=</span><span class="s2">"n/a"</span><span class="p">,</span>
+    <span class="n">authors</span><span class="o">=</span><span class="s2">"n/a"</span><span class="p">,</span>
+    <span class="n">funding</span><span class="o">=</span><span class="s2">"n/a"</span><span class="p">,</span>
+    <span class="n">acknowledgements</span><span class="o">=</span><span class="s2">"n/a"</span><span class="p">,</span>
+    <span class="n">references_and_links</span><span class="o">=</span><span class="s2">"n/a"</span><span class="p">,</span>
+    <span class="n">doi</span><span class="o">=</span><span class="s2">"n/a"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json&#39;...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json'...
 </pre></div>
 </div>
 <p>Next we prepare the metadata that is common to both acquisition runs,
 then prepare the info about what is <em>different</em> between them.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emg_metadata</span></a> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">Manufacturer</span><span class="o">=</span><span class="s2">&quot;BrainProducts&quot;</span><span class="p">,</span>
-    <span class="n">ManufacturersModelName</span><span class="o">=</span><span class="s2">&quot;BrainAmp MR Plus&quot;</span><span class="p">,</span>
+    <span class="n">Manufacturer</span><span class="o">=</span><span class="s2">"BrainProducts"</span><span class="p">,</span>
+    <span class="n">ManufacturersModelName</span><span class="o">=</span><span class="s2">"BrainAmp MR Plus"</span><span class="p">,</span>
     <span class="n">EMGChannelCount</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span>
-    <span class="n">EMGGround</span><span class="o">=</span><span class="s2">&quot;unclear where the ground electrode was placed on the body&quot;</span><span class="p">,</span>
-    <span class="n">EMGPlacementScheme</span><span class="o">=</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span>
-    <span class="n">EMGPlacementSchemeDescription</span><span class="o">=</span><span class="s2">&quot;electrode pairs were placed over various muscles&quot;</span><span class="p">,</span>
-    <span class="n">EMGReference</span><span class="o">=</span><span class="s2">&quot;bipolar&quot;</span><span class="p">,</span>
+    <span class="n">EMGGround</span><span class="o">=</span><span class="s2">"unclear where the ground electrode was placed on the body"</span><span class="p">,</span>
+    <span class="n">EMGPlacementScheme</span><span class="o">=</span><span class="s2">"Other"</span><span class="p">,</span>
+    <span class="n">EMGPlacementSchemeDescription</span><span class="o">=</span><span class="s2">"electrode pairs were placed over various muscles"</span><span class="p">,</span>
+    <span class="n">EMGReference</span><span class="o">=</span><span class="s2">"bipolar"</span><span class="p">,</span>
 <span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_description</span></a> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;The subject was lying in the MRI scanner during a </span><span class="si">{}</span><span class="s2"> scan, &quot;</span>
-    <span class="s2">&quot;while EMG was being recorded.&quot;</span>
+    <span class="s2">"The subject was lying in the MRI scanner during a </span><span class="si">{}</span><span class="s2"> scan, "</span>
+    <span class="s2">"while EMG was being recorded."</span>
 <span class="p">)</span>
 <span class="c1"># distinguish the acquisitions</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acqs</span></a> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">GABA</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">descr</span><span class="o">=</span><span class="s2">&quot;GABA MRS&quot;</span><span class="p">,</span> <span class="n">entity_value</span><span class="o">=</span><span class="s2">&quot;GabaMrs&quot;</span><span class="p">),</span>
-    <span class="n">RS</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">descr</span><span class="o">=</span><span class="s2">&quot;resting-state BOLD&quot;</span><span class="p">,</span> <span class="n">entity_value</span><span class="o">=</span><span class="s2">&quot;Bold&quot;</span><span class="p">),</span>
+    <span class="n">GABA</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">descr</span><span class="o">=</span><span class="s2">"GABA MRS"</span><span class="p">,</span> <span class="n">entity_value</span><span class="o">=</span><span class="s2">"GabaMrs"</span><span class="p">),</span>
+    <span class="n">RS</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">descr</span><span class="o">=</span><span class="s2">"resting-state BOLD"</span><span class="p">,</span> <span class="n">entity_value</span><span class="o">=</span><span class="s2">"Bold"</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>Now it’s time to write out the data:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acq</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acq_dict</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acqs</span></a><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="c1"># read the data</span>
-    <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acq_dict</span></a><span class="p">[</span><span class="s2">&quot;entity_value&quot;</span><span class="p">])</span>
+    <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acq_dict</span></a><span class="p">[</span><span class="s2">"entity_value"</span><span class="p">])</span>
     <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
-    <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">source_fpath</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">download_dir</span></a> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;nt05_EMG_SESS1_</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acq</span></a><span class="si">}</span><span class="s2">_RAW.vhdr&quot;</span>
+    <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">source_fpath</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">download_dir</span></a> <span class="o">/</span> <span class="sa">f</span><span class="s2">"nt05_EMG_SESS1_</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acq</span></a><span class="si">}</span><span class="s2">_RAW.vhdr"</span>
     <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">source_fpath</span></a><span class="p">)</span>
     <span class="c1"># convert channel types</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">({</span><span class="n">ch</span><span class="p">:</span> <span class="s2">&quot;emg&quot;</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">})</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">({</span><span class="n">ch</span><span class="p">:</span> <span class="s2">"emg"</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">})</span>
     <span class="c1"># write to bids folder tree</span>
     <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">mne_bids</span><span class="o">.</span><span class="n">write_raw_bids</span></a><span class="p">(</span>
         <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
         <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;EDF&quot;</span><span class="p">,</span>
-        <span class="n">emg_placement</span><span class="o">=</span><span class="s2">&quot;Other&quot;</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">"EDF"</span><span class="p">,</span>
+        <span class="n">emg_placement</span><span class="o">=</span><span class="s2">"Other"</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># update the sidecar with acquisition-specific info</span>
-    <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bp</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span></a><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;emg&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
+    <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bp</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span></a><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">"emg"</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bp</span></a><span class="p">)</span>
     <a href="../generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">mne_bids</span><span class="o">.</span><span class="n">update_sidecar_json</span></a><span class="p">(</span>
         <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bp</span></a><span class="p">,</span>
         <span class="n">entries</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">TaskDescription</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_description</span></a><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acq_dict</span></a><span class="p">[</span><span class="s2">&quot;descr&quot;</span><span class="p">]),</span> <span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emg_metadata</span></a>
+            <span class="n">TaskDescription</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_description</span></a><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">acq_dict</span></a><span class="p">[</span><span class="s2">"descr"</span><span class="p">]),</span> <span class="o">**</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">emg_metadata</span></a>
         <span class="p">),</span>
     <span class="p">)</span>
 </pre></div>
@@ -680,37 +680,37 @@ Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_E
 Setting channel info structure...
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_GABA_RAW.vhdr...
 Setting channel info structure...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.tsv&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.json&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_channels.tsv&#39;...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.tsv'...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.json'...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json'...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json'...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_channels.tsv'...
 Reading 0 ... 7666299  =      0.000 ...  1533.260 secs...
 Converting data files to EDF format
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv&#39;...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv'...
 Wrote /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv entry with emg/sub-nt05_task-rest_acq-GabaMrs_emg.edf.
 /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json&#39;...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json'...
 /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.edf
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_RS_RAW.vhdr...
 Setting channel info structure...
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_RS_RAW.vhdr...
 Setting channel info structure...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.tsv&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.json&#39;...
-The provided raw data contains annotations, but you did not pass an &quot;event_id&quot; mapping from annotation descriptions to event codes. We will generate arbitrary event codes. To specify custom event codes, please pass &quot;event_id&quot;.
-Used Annotations descriptions: [np.str_(&#39;Response/R  1&#39;)]
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_events.tsv&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_events.json&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.json&#39;...
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_channels.tsv&#39;...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.tsv'...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.json'...
+The provided raw data contains annotations, but you did not pass an "event_id" mapping from annotation descriptions to event codes. We will generate arbitrary event codes. To specify custom event codes, please pass "event_id".
+Used Annotations descriptions: [np.str_('Response/R  1')]
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_events.tsv'...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_events.json'...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json'...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.json'...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_channels.tsv'...
 Reading 0 ... 3118199  =      0.000 ...   623.640 secs...
 Converting data files to EDF format
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv&#39;...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv'...
 Wrote /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv entry with emg/sub-nt05_task-rest_acq-Bold_emg.edf.
 /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.json
-Writing &#39;/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.json&#39;...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.json'...
 </pre></div>
 </div>
 <p>Note that in this dataset, only the BOLD acquisition had event markers in the raw
@@ -736,7 +736,7 @@ data file, so the GABA MRS run lacks <code class="docutils literal notranslate">
 |--------- sub-nt05_task-rest_acq-GabaMrs_emg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.254 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.764 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-fieldtrip-emg-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3be0d39829386dcc67fee90c7f6116c6/convert_fieldtrip_emg.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_fieldtrip_emg.ipynb</span></code></a></p>

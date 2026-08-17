@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.report._report &#8212; MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</title>
+    <title>mne_bids.report._report &#8212; MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../../_static/documentation_options.js?v=e7d0f871"></script>
+    <script src="../../../_static/documentation_options.js?v=5a098d7d"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev28+g1c22b05c6" />
+  <meta name="docsearch:version" content="0.20.0.dev29+g526ee9ddb" />
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev28+g1c22b05c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</p>
   
 </a></div>
     
@@ -503,7 +503,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for mne_bids.report._report</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Make BIDS report from dataset and sidecar files.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Make BIDS report from dataset and sidecar files."""</span>
 
 <span class="c1"># Authors: The MNE-BIDS developers</span>
 <span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
@@ -531,68 +531,68 @@
 
 <span class="n">jinja_env</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">Environment</span><span class="p">(</span>
     <span class="n">loader</span><span class="o">=</span><span class="n">jinja2</span><span class="o">.</span><span class="n">PackageLoader</span><span class="p">(</span>
-        <span class="n">package_name</span><span class="o">=</span><span class="s2">&quot;mne_bids.report&quot;</span><span class="p">,</span> <span class="n">package_path</span><span class="o">=</span><span class="s2">&quot;templates&quot;</span>
+        <span class="n">package_name</span><span class="o">=</span><span class="s2">"mne_bids.report"</span><span class="p">,</span> <span class="n">package_path</span><span class="o">=</span><span class="s2">"templates"</span>
     <span class="p">)</span>
 <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_pretty_str</span><span class="p">(</span><span class="n">listed</span><span class="p">):</span>
-    <span class="c1"># make strings a sequence of &#39;,&#39; and &#39;and&#39;</span>
+    <span class="c1"># make strings a sequence of ',' and 'and'</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">listed</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">listed</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">listed</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">listed</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">listed</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">, and </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">listed</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">listed</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">listed</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">, and </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">listed</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">listed</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_range_str</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">meanval</span><span class="p">,</span> <span class="n">stdval</span><span class="p">,</span> <span class="n">n_unknown</span><span class="p">,</span> <span class="n">typ</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">minval</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;ages all unknown&quot;</span>
+    <span class="k">if</span> <span class="n">minval</span> <span class="o">==</span> <span class="s2">"n/a"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"ages all unknown"</span>
 
     <span class="k">if</span> <span class="n">n_unknown</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">unknown_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;; </span><span class="si">{</span><span class="n">n_unknown</span><span class="si">}</span><span class="s2"> with unknown </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">unknown_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"; </span><span class="si">{</span><span class="n">n_unknown</span><span class="si">}</span><span class="s2"> with unknown </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">unknown_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">unknown_str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="k">return</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;ages ranged from </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">maxval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;(mean = </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">meanval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">, std = </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">stdval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}{</span><span class="n">unknown_str</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="sa">f</span><span class="s2">"ages ranged from </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">maxval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"(mean = </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">meanval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">, std = </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">stdval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}{</span><span class="n">unknown_str</span><span class="si">}</span><span class="s2">)"</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_participant_hand</span><span class="p">(</span><span class="n">hands</span><span class="p">):</span>
-    <span class="n">n_unknown</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">hand</span> <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">hands</span> <span class="k">if</span> <span class="n">hand</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">])</span>
+    <span class="n">n_unknown</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">hand</span> <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">hands</span> <span class="k">if</span> <span class="n">hand</span> <span class="o">==</span> <span class="s2">"n/a"</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">n_unknown</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">hands</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;handedness were all unknown&quot;</span>
+        <span class="k">return</span> <span class="s2">"handedness were all unknown"</span>
 
-    <span class="n">n_rhand</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">hand</span> <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">hands</span> <span class="k">if</span> <span class="n">hand</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;R&quot;</span><span class="p">])</span>
-    <span class="n">n_lhand</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">hand</span> <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">hands</span> <span class="k">if</span> <span class="n">hand</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">])</span>
-    <span class="n">n_ambidex</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">hand</span> <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">hands</span> <span class="k">if</span> <span class="n">hand</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">])</span>
+    <span class="n">n_rhand</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">hand</span> <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">hands</span> <span class="k">if</span> <span class="n">hand</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"R"</span><span class="p">])</span>
+    <span class="n">n_lhand</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">hand</span> <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">hands</span> <span class="k">if</span> <span class="n">hand</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"L"</span><span class="p">])</span>
+    <span class="n">n_ambidex</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">hand</span> <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">hands</span> <span class="k">if</span> <span class="n">hand</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"A"</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;comprised of </span><span class="si">{</span><span class="n">n_rhand</span><span class="si">}</span><span class="s2"> right hand, </span><span class="si">{</span><span class="n">n_lhand</span><span class="si">}</span><span class="s2"> left hand &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;and </span><span class="si">{</span><span class="n">n_ambidex</span><span class="si">}</span><span class="s2"> ambidextrous&quot;</span>
+        <span class="sa">f</span><span class="s2">"comprised of </span><span class="si">{</span><span class="n">n_rhand</span><span class="si">}</span><span class="s2"> right hand, </span><span class="si">{</span><span class="n">n_lhand</span><span class="si">}</span><span class="s2"> left hand "</span>
+        <span class="sa">f</span><span class="s2">"and </span><span class="si">{</span><span class="n">n_ambidex</span><span class="si">}</span><span class="s2"> ambidextrous"</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_participant_sex</span><span class="p">(</span><span class="n">sexs</span><span class="p">):</span>
-    <span class="n">n_unknown</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">sex</span> <span class="k">for</span> <span class="n">sex</span> <span class="ow">in</span> <span class="n">sexs</span> <span class="k">if</span> <span class="n">sex</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">])</span>
+    <span class="n">n_unknown</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">sex</span> <span class="k">for</span> <span class="n">sex</span> <span class="ow">in</span> <span class="n">sexs</span> <span class="k">if</span> <span class="n">sex</span> <span class="o">==</span> <span class="s2">"n/a"</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">n_unknown</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">sexs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;sex were all unknown&quot;</span>
+        <span class="k">return</span> <span class="s2">"sex were all unknown"</span>
 
-    <span class="n">n_males</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">sex</span> <span class="k">for</span> <span class="n">sex</span> <span class="ow">in</span> <span class="n">sexs</span> <span class="k">if</span> <span class="n">sex</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;M&quot;</span><span class="p">])</span>
-    <span class="n">n_females</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">sex</span> <span class="k">for</span> <span class="n">sex</span> <span class="ow">in</span> <span class="n">sexs</span> <span class="k">if</span> <span class="n">sex</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;F&quot;</span><span class="p">])</span>
+    <span class="n">n_males</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">sex</span> <span class="k">for</span> <span class="n">sex</span> <span class="ow">in</span> <span class="n">sexs</span> <span class="k">if</span> <span class="n">sex</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"M"</span><span class="p">])</span>
+    <span class="n">n_females</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">sex</span> <span class="k">for</span> <span class="n">sex</span> <span class="ow">in</span> <span class="n">sexs</span> <span class="k">if</span> <span class="n">sex</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"F"</span><span class="p">])</span>
 
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;comprised of </span><span class="si">{</span><span class="n">n_males</span><span class="si">}</span><span class="s2"> male and </span><span class="si">{</span><span class="n">n_females</span><span class="si">}</span><span class="s2"> female participants&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"comprised of </span><span class="si">{</span><span class="n">n_males</span><span class="si">}</span><span class="s2"> male and </span><span class="si">{</span><span class="n">n_females</span><span class="si">}</span><span class="s2"> female participants"</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_length_recording_str</span><span class="p">(</span><span class="n">length_recordings</span><span class="p">):</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
     <span class="k">if</span> <span class="n">length_recordings</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">""</span>
 
     <span class="n">min_record_length</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">length_recordings</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">max_record_length</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">length_recordings</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
@@ -601,42 +601,42 @@
     <span class="n">total_record_length</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">length_recordings</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Recording durations ranged from </span><span class="si">{</span><span class="n">min_record_length</span><span class="si">}</span><span class="s2"> to &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">max_record_length</span><span class="si">}</span><span class="s2"> seconds &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;(mean = </span><span class="si">{</span><span class="n">mean_record_length</span><span class="si">}</span><span class="s2">, std = </span><span class="si">{</span><span class="n">std_record_length</span><span class="si">}</span><span class="s2">), &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;for a total of </span><span class="si">{</span><span class="n">total_record_length</span><span class="si">}</span><span class="s2"> seconds of data recorded &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;over all scans.&quot;</span>
+        <span class="sa">f</span><span class="s2">"Recording durations ranged from </span><span class="si">{</span><span class="n">min_record_length</span><span class="si">}</span><span class="s2"> to "</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">max_record_length</span><span class="si">}</span><span class="s2"> seconds "</span>
+        <span class="sa">f</span><span class="s2">"(mean = </span><span class="si">{</span><span class="n">mean_record_length</span><span class="si">}</span><span class="s2">, std = </span><span class="si">{</span><span class="n">std_record_length</span><span class="si">}</span><span class="s2">), "</span>
+        <span class="sa">f</span><span class="s2">"for a total of </span><span class="si">{</span><span class="n">total_record_length</span><span class="si">}</span><span class="s2"> seconds of data recorded "</span>
+        <span class="sa">f</span><span class="s2">"over all scans."</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_software_filters</span><span class="p">(</span><span class="n">software_filters</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">software_filters</span> <span class="ow">in</span> <span class="p">[{},</span> <span class="s2">&quot;n/a&quot;</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">software_filters</span> <span class="ow">in</span> <span class="p">[{},</span> <span class="s2">"n/a"</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s2">""</span>
 
-    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">software_filters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="p">:</span>
             <span class="n">parameters</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">param_name</span> <span class="ow">and</span> <span class="n">param_value</span><span class="p">:</span>
-                    <span class="n">parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param_value</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">param_value</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">param_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; with parameters &quot;</span>
-                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">" with parameters "</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">msg</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_pretty_dict</span><span class="p">(</span><span class="n">template_dict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove problematic blank spaces.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Remove problematic blank spaces."""</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">template_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot; &quot;</span><span class="p">:</span>
-            <span class="n">template_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">" "</span><span class="p">:</span>
+            <span class="n">template_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"n/a"</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_dataset</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize the dataset_desecription.json file.</span>
+<span class="w">    </span><span class="sd">"""Summarize the dataset_desecription.json file.</span>
 
 <span class="sd">    Required dataset descriptors include:</span>
 <span class="sd">        - Name</span>
@@ -655,31 +655,31 @@
 <span class="sd">    -------</span>
 <span class="sd">    template_dict : dict</span>
 <span class="sd">        A dictionary of values for various template strings.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dataset_descrip_fpath</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;dataset_description.json&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">dataset_descrip_fpath</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="s2">"dataset_description.json"</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset_descrip_fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
 
-    <span class="c1"># read file and &#39;REQUIRED&#39; components of it</span>
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">dataset_descrip_fpath</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="c1"># read file and 'REQUIRED' components of it</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">dataset_descrip_fpath</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">dataset_description</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
 
     <span class="c1"># create dictionary to pass into template string</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">dataset_description</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span>
-    <span class="n">bids_version</span> <span class="o">=</span> <span class="n">dataset_description</span><span class="p">[</span><span class="s2">&quot;BIDSVersion&quot;</span><span class="p">]</span>
-    <span class="n">authors</span> <span class="o">=</span> <span class="n">dataset_description</span><span class="p">[</span><span class="s2">&quot;Authors&quot;</span><span class="p">]</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">dataset_description</span><span class="p">[</span><span class="s2">"Name"</span><span class="p">]</span>
+    <span class="n">bids_version</span> <span class="o">=</span> <span class="n">dataset_description</span><span class="p">[</span><span class="s2">"BIDSVersion"</span><span class="p">]</span>
+    <span class="n">authors</span> <span class="o">=</span> <span class="n">dataset_description</span><span class="p">[</span><span class="s2">"Authors"</span><span class="p">]</span>
     <span class="n">template_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-        <span class="s2">&quot;bids_version&quot;</span><span class="p">:</span> <span class="n">bids_version</span><span class="p">,</span>
-        <span class="s2">&quot;mne_bids_doi&quot;</span><span class="p">:</span> <span class="n">DOI</span><span class="p">,</span>
-        <span class="s2">&quot;authors&quot;</span><span class="p">:</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">authors</span><span class="p">),</span>
+        <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="s2">"bids_version"</span><span class="p">:</span> <span class="n">bids_version</span><span class="p">,</span>
+        <span class="s2">"mne_bids_doi"</span><span class="p">:</span> <span class="n">DOI</span><span class="p">,</span>
+        <span class="s2">"authors"</span><span class="p">:</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">authors</span><span class="p">),</span>
     <span class="p">}</span>
     <span class="n">_pretty_dict</span><span class="p">(</span><span class="n">template_dict</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">template_dict</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_participants_tsv</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize `participants.tsv` file in BIDS root directory.</span>
+<span class="w">    </span><span class="sd">"""Summarize `participants.tsv` file in BIDS root directory.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -690,61 +690,61 @@
 <span class="sd">    -------</span>
 <span class="sd">    template_dict : dict</span>
 <span class="sd">        A dictionary of values for various template strings.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">participants_tsv_fpath</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;participants.tsv&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">participants_tsv_fpath</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="s2">"participants.tsv"</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">participants_tsv_fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
 
     <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">participants_tsv_fpath</span><span class="p">))</span>
-    <span class="n">p_ids</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Summarizing participants.tsv </span><span class="si">{</span><span class="n">participants_tsv_fpath</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="n">p_ids</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s2">"participant_id"</span><span class="p">]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Summarizing participants.tsv </span><span class="si">{</span><span class="n">participants_tsv_fpath</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
 
     <span class="c1"># summarize sex count statistics</span>
-    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">]</span>
-    <span class="n">p_sex</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sex&quot;</span><span class="p">)</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"M"</span><span class="p">,</span> <span class="s2">"F"</span><span class="p">,</span> <span class="s2">"n/a"</span><span class="p">]</span>
+    <span class="n">p_sex</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sex"</span><span class="p">)</span>
     <span class="c1"># phrasing works for both sex and gender</span>
-    <span class="n">p_gender</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gender&quot;</span><span class="p">)</span>
-    <span class="n">sexs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span>
+    <span class="n">p_gender</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"gender"</span><span class="p">)</span>
+    <span class="n">sexs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"n/a"</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">p_sex</span> <span class="ow">or</span> <span class="n">p_gender</span><span class="p">:</span>
         <span class="c1"># only summarize sex if it conforms to `keys` referenced above</span>
         <span class="n">p_sex</span> <span class="o">=</span> <span class="n">p_gender</span> <span class="k">if</span> <span class="n">p_sex</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">p_sex</span>
-        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">sex</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">for</span> <span class="n">sex</span> <span class="ow">in</span> <span class="n">p_sex</span> <span class="k">if</span> <span class="n">sex</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">sex</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">for</span> <span class="n">sex</span> <span class="ow">in</span> <span class="n">p_sex</span> <span class="k">if</span> <span class="n">sex</span> <span class="o">!=</span> <span class="s2">"n/a"</span><span class="p">]):</span>
             <span class="n">sexs</span> <span class="o">=</span> <span class="n">p_sex</span>
 
     <span class="c1"># summarize hand count statistics</span>
-    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">]</span>
-    <span class="n">p_hands</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hand&quot;</span><span class="p">)</span>
-    <span class="n">hands</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"R"</span><span class="p">,</span> <span class="s2">"L"</span><span class="p">,</span> <span class="s2">"A"</span><span class="p">,</span> <span class="s2">"n/a"</span><span class="p">]</span>
+    <span class="n">p_hands</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hand"</span><span class="p">)</span>
+    <span class="n">hands</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"n/a"</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">p_hands</span><span class="p">:</span>
         <span class="c1"># only summarize handedness if it conforms to</span>
         <span class="c1"># mne-bids handedness</span>
-        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">hand</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">p_hands</span> <span class="k">if</span> <span class="n">hand</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">hand</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">p_hands</span> <span class="k">if</span> <span class="n">hand</span> <span class="o">!=</span> <span class="s2">"n/a"</span><span class="p">]):</span>
             <span class="n">hands</span> <span class="o">=</span> <span class="n">p_hands</span>
 
     <span class="c1"># summarize age statistics: mean, std, min, max</span>
-    <span class="n">p_ages</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;age&quot;</span><span class="p">)</span>
-    <span class="n">min_age</span><span class="p">,</span> <span class="n">max_age</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span>
-    <span class="n">mean_age</span><span class="p">,</span> <span class="n">std_age</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span>
+    <span class="n">p_ages</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"age"</span><span class="p">)</span>
+    <span class="n">min_age</span><span class="p">,</span> <span class="n">max_age</span> <span class="o">=</span> <span class="s2">"n/a"</span><span class="p">,</span> <span class="s2">"n/a"</span>
+    <span class="n">mean_age</span><span class="p">,</span> <span class="n">std_age</span> <span class="o">=</span> <span class="s2">"n/a"</span><span class="p">,</span> <span class="s2">"n/a"</span>
     <span class="n">n_age_unknown</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p_ages</span><span class="p">)</span> <span class="k">if</span> <span class="n">p_ages</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">p_ids</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">p_ages</span><span class="p">:</span>
         <span class="c1"># only summarize age if they are numerics</span>
-        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">age</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">()</span> <span class="k">for</span> <span class="n">age</span> <span class="ow">in</span> <span class="n">p_ages</span> <span class="k">if</span> <span class="n">age</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">]):</span>
-            <span class="n">age_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">age</span><span class="p">)</span> <span class="k">for</span> <span class="n">age</span> <span class="ow">in</span> <span class="n">p_ages</span> <span class="k">if</span> <span class="n">age</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">age</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">()</span> <span class="k">for</span> <span class="n">age</span> <span class="ow">in</span> <span class="n">p_ages</span> <span class="k">if</span> <span class="n">age</span> <span class="o">!=</span> <span class="s2">"n/a"</span><span class="p">]):</span>
+            <span class="n">age_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">age</span><span class="p">)</span> <span class="k">for</span> <span class="n">age</span> <span class="ow">in</span> <span class="n">p_ages</span> <span class="k">if</span> <span class="n">age</span> <span class="o">!=</span> <span class="s2">"n/a"</span><span class="p">]</span>
             <span class="n">n_age_unknown</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p_ids</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">age_list</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">age_list</span><span class="p">:</span>
                 <span class="n">min_age</span><span class="p">,</span> <span class="n">max_age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">age_list</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">age_list</span><span class="p">)</span>
                 <span class="n">mean_age</span><span class="p">,</span> <span class="n">std_age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">age_list</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">age_list</span><span class="p">)</span>
 
     <span class="n">template_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;sexs&quot;</span><span class="p">:</span> <span class="n">_summarize_participant_sex</span><span class="p">(</span><span class="n">sexs</span><span class="p">),</span>
-        <span class="s2">&quot;hands&quot;</span><span class="p">:</span> <span class="n">_summarize_participant_hand</span><span class="p">(</span><span class="n">hands</span><span class="p">),</span>
-        <span class="s2">&quot;ages&quot;</span><span class="p">:</span> <span class="n">_range_str</span><span class="p">(</span><span class="n">min_age</span><span class="p">,</span> <span class="n">max_age</span><span class="p">,</span> <span class="n">mean_age</span><span class="p">,</span> <span class="n">std_age</span><span class="p">,</span> <span class="n">n_age_unknown</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">),</span>
+        <span class="s2">"sexs"</span><span class="p">:</span> <span class="n">_summarize_participant_sex</span><span class="p">(</span><span class="n">sexs</span><span class="p">),</span>
+        <span class="s2">"hands"</span><span class="p">:</span> <span class="n">_summarize_participant_hand</span><span class="p">(</span><span class="n">hands</span><span class="p">),</span>
+        <span class="s2">"ages"</span><span class="p">:</span> <span class="n">_range_str</span><span class="p">(</span><span class="n">min_age</span><span class="p">,</span> <span class="n">max_age</span><span class="p">,</span> <span class="n">mean_age</span><span class="p">,</span> <span class="n">std_age</span><span class="p">,</span> <span class="n">n_age_unknown</span><span class="p">,</span> <span class="s2">"age"</span><span class="p">),</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">template_dict</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_scans</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize scans in BIDS root directory.</span>
+<span class="w">    </span><span class="sd">"""Summarize scans in BIDS root directory.</span>
 
 <span class="sd">    Summarizes scans only if there is a *_scans.tsv file.</span>
 
@@ -753,28 +753,28 @@
 <span class="sd">    root : path-like</span>
 <span class="sd">        The path of the root of the BIDS compatible folder.</span>
 <span class="sd">    session : str, optional</span>
-<span class="sd">        The session for a item. Corresponds to &quot;ses&quot;.</span>
+<span class="sd">        The session for a item. Corresponds to "ses".</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    template_dict : dict</span>
 <span class="sd">        A dictionary of values for various template strings.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">search_str</span> <span class="o">=</span> <span class="s2">&quot;*_scans.tsv&quot;</span>
+        <span class="n">search_str</span> <span class="o">=</span> <span class="s2">"*_scans.tsv"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;*ses-</span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s2">*_scans.tsv&quot;</span>
+        <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"*ses-</span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s2">*_scans.tsv"</span>
     <span class="n">scans_fpaths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scans_fpaths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;No *scans.tsv files found. Currently, &quot;</span>
-            <span class="s2">&quot;we do not generate a report without the scans.tsv files.&quot;</span>
+            <span class="s2">"No *scans.tsv files found. Currently, "</span>
+            <span class="s2">"we do not generate a report without the scans.tsv files."</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Summarizing scans.tsv files </span><span class="si">{</span><span class="n">scans_fpaths</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Summarizing scans.tsv files </span><span class="si">{</span><span class="n">scans_fpaths</span><span class="si">}</span><span class="s2">..."</span><span class="p">)</span>
 
     <span class="c1"># summarize sidecar.json, channels.tsv template</span>
     <span class="n">sidecar_dict</span> <span class="o">=</span> <span class="n">_summarize_sidecar_json</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">scans_fpaths</span><span class="p">)</span>
@@ -787,7 +787,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_sidecar_json</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">scans_fpaths</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize scans in BIDS root directory.</span>
+<span class="w">    </span><span class="sd">"""Summarize scans in BIDS root directory.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -802,7 +802,7 @@
 <span class="sd">    template_dict : dict</span>
 <span class="sd">        A dictionary of values for various template strings.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">n_scans</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">powerlinefreqs</span><span class="p">,</span> <span class="n">sfreqs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(),</span> <span class="nb">set</span><span class="p">()</span>
     <span class="n">manufacturers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -813,7 +813,7 @@
         <span class="c1"># load in the scans.tsv file</span>
         <span class="c1"># and read metadata for each scan</span>
         <span class="n">scans_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">scan_fpath</span><span class="p">)</span>
-        <span class="n">scans</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
+        <span class="n">scans</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s2">"filename"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="n">scans</span><span class="p">:</span>
             <span class="c1"># summarize metadata of recordings</span>
             <span class="n">bids_path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
@@ -829,50 +829,50 @@
             <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
 
             <span class="c1"># XXX: improve to allow emptyroom</span>
-            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s2">&quot;emptyroom&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s2">"emptyroom"</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
-                <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span>
+                <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span>
             <span class="p">)</span>
-            <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
                 <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
 
             <span class="c1"># aggregate metadata from each scan</span>
             <span class="c1"># REQUIRED kwargs</span>
-            <span class="n">sfreq</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="p">[</span><span class="s2">&quot;SamplingFrequency&quot;</span><span class="p">]</span>
-            <span class="n">powerlinefreq</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sidecar_json</span><span class="p">[</span><span class="s2">&quot;PowerLineFrequency&quot;</span><span class="p">])</span>
-            <span class="n">software_filters</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SoftwareFilters&quot;</span><span class="p">)</span>
+            <span class="n">sfreq</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="p">[</span><span class="s2">"SamplingFrequency"</span><span class="p">]</span>
+            <span class="n">powerlinefreq</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sidecar_json</span><span class="p">[</span><span class="s2">"PowerLineFrequency"</span><span class="p">])</span>
+            <span class="n">software_filters</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SoftwareFilters"</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">software_filters</span><span class="p">:</span>
-                <span class="n">software_filters</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
+                <span class="n">software_filters</span> <span class="o">=</span> <span class="s2">"n/a"</span>
 
             <span class="c1"># RECOMMENDED kwargs</span>
-            <span class="n">manufacturer</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Manufacturer&quot;</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
-            <span class="n">record_duration</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RecordingDuration&quot;</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
+            <span class="n">manufacturer</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Manufacturer"</span><span class="p">,</span> <span class="s2">"n/a"</span><span class="p">)</span>
+            <span class="n">record_duration</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"RecordingDuration"</span><span class="p">,</span> <span class="s2">"n/a"</span><span class="p">)</span>
 
             <span class="n">sfreqs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">sfreq</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
             <span class="n">powerlinefreqs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">powerlinefreq</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">manufacturer</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">manufacturer</span> <span class="o">!=</span> <span class="s2">"n/a"</span><span class="p">:</span>
                 <span class="n">manufacturers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">manufacturer</span><span class="p">)</span>
             <span class="n">length_recordings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record_duration</span><span class="p">)</span>
 
-    <span class="c1"># XXX: length summary is only allowed, if no &#39;n/a&#39; was found</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">dur</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">for</span> <span class="n">dur</span> <span class="ow">in</span> <span class="n">length_recordings</span><span class="p">]):</span>
+    <span class="c1"># XXX: length summary is only allowed, if no 'n/a' was found</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">dur</span> <span class="o">==</span> <span class="s2">"n/a"</span> <span class="k">for</span> <span class="n">dur</span> <span class="ow">in</span> <span class="n">length_recordings</span><span class="p">]):</span>
         <span class="n">length_recordings</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">template_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;n_scans&quot;</span><span class="p">:</span> <span class="n">n_scans</span><span class="p">,</span>
-        <span class="s2">&quot;manufacturer&quot;</span><span class="p">:</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">manufacturers</span><span class="p">),</span>
-        <span class="s2">&quot;sfreq&quot;</span><span class="p">:</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">sfreqs</span><span class="p">),</span>
-        <span class="s2">&quot;powerlinefreq&quot;</span><span class="p">:</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">powerlinefreqs</span><span class="p">),</span>
-        <span class="s2">&quot;software_filters&quot;</span><span class="p">:</span> <span class="n">_summarize_software_filters</span><span class="p">(</span><span class="n">software_filters</span><span class="p">),</span>
-        <span class="s2">&quot;length_recordings&quot;</span><span class="p">:</span> <span class="n">_length_recording_str</span><span class="p">(</span><span class="n">length_recordings</span><span class="p">),</span>
+        <span class="s2">"n_scans"</span><span class="p">:</span> <span class="n">n_scans</span><span class="p">,</span>
+        <span class="s2">"manufacturer"</span><span class="p">:</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">manufacturers</span><span class="p">),</span>
+        <span class="s2">"sfreq"</span><span class="p">:</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">sfreqs</span><span class="p">),</span>
+        <span class="s2">"powerlinefreq"</span><span class="p">:</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">powerlinefreqs</span><span class="p">),</span>
+        <span class="s2">"software_filters"</span><span class="p">:</span> <span class="n">_summarize_software_filters</span><span class="p">(</span><span class="n">software_filters</span><span class="p">),</span>
+        <span class="s2">"length_recordings"</span><span class="p">:</span> <span class="n">_length_recording_str</span><span class="p">(</span><span class="n">length_recordings</span><span class="p">),</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">template_dict</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_summarize_channels_tsv</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">scans_fpaths</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize channels.tsv data in BIDS root directory.</span>
+<span class="w">    </span><span class="sd">"""Summarize channels.tsv data in BIDS root directory.</span>
 
 <span class="sd">    Currently, summarizes all REQUIRED components of channels</span>
 <span class="sd">    data, and some RECOMMENDED and OPTIONAL components.</span>
@@ -889,11 +889,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    template_dict : dict</span>
 <span class="sd">        A dictionary of values for various template strings.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
 
     <span class="c1"># keep track of channel type, status</span>
-    <span class="n">ch_status_count</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bad&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;good&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="n">ch_status_count</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"bad"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"good"</span><span class="p">:</span> <span class="p">[]}</span>
     <span class="n">ch_count</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># loop through each scan</span>
@@ -901,12 +901,12 @@
         <span class="c1"># load in the scans.tsv file</span>
         <span class="c1"># and read metadata for each scan</span>
         <span class="n">scans_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">scan_fpath</span><span class="p">)</span>
-        <span class="n">scans</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
+        <span class="n">scans</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s2">"filename"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="n">scans</span><span class="p">:</span>
             <span class="c1"># summarize metadata of recordings</span>
             <span class="n">bids_path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
             <span class="n">datatype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"meg"</span><span class="p">,</span> <span class="s2">"eeg"</span><span class="p">,</span> <span class="s2">"ieeg"</span><span class="p">]:</span>
                 <span class="k">continue</span>
 
             <span class="c1"># convert to BIDSPath</span>
@@ -915,28 +915,28 @@
             <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
 
             <span class="c1"># XXX: improve to allow emptyroom</span>
-            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s2">&quot;emptyroom&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s2">"emptyroom"</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
-                <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;channels&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span>
+                <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">"channels"</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".tsv"</span>
             <span class="p">)</span>
 
             <span class="c1"># summarize channels.tsv</span>
             <span class="n">channels_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">ch_status_count</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">ch_status</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels_tsv</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">ch</span> <span class="o">==</span> <span class="n">status</span><span class="p">]</span>
+                <span class="n">ch_status</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels_tsv</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="k">if</span> <span class="n">ch</span> <span class="o">==</span> <span class="n">status</span><span class="p">]</span>
                 <span class="n">ch_status_count</span><span class="p">[</span><span class="n">status</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_status</span><span class="p">))</span>
-            <span class="n">ch_count</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">channels_tsv</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]))</span>
+            <span class="n">ch_count</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">channels_tsv</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]))</span>
 
     <span class="c1"># create summary template strings for status</span>
     <span class="n">template_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;mean_chs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ch_count</span><span class="p">),</span>
-        <span class="s2">&quot;std_chs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ch_count</span><span class="p">),</span>
-        <span class="s2">&quot;mean_good_chs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s2">&quot;good&quot;</span><span class="p">]),</span>
-        <span class="s2">&quot;std_good_chs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s2">&quot;good&quot;</span><span class="p">]),</span>
-        <span class="s2">&quot;mean_bad_chs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s2">&quot;bad&quot;</span><span class="p">]),</span>
-        <span class="s2">&quot;std_bad_chs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s2">&quot;bad&quot;</span><span class="p">]),</span>
+        <span class="s2">"mean_chs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ch_count</span><span class="p">),</span>
+        <span class="s2">"std_chs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ch_count</span><span class="p">),</span>
+        <span class="s2">"mean_good_chs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s2">"good"</span><span class="p">]),</span>
+        <span class="s2">"std_good_chs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s2">"good"</span><span class="p">]),</span>
+        <span class="s2">"mean_bad_chs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s2">"bad"</span><span class="p">]),</span>
+        <span class="s2">"std_bad_chs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s2">"bad"</span><span class="p">]),</span>
     <span class="p">}</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">template_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">template_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -947,7 +947,7 @@
 <a class="viewcode-back" href="../../../generated/mne_bids.make_report.html#mne_bids.make_report">[docs]</a>
 <span class="nd">@verbose</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">make_report</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a methods paragraph string from BIDS dataset.</span>
+<span class="w">    </span><span class="sd">"""Create a methods paragraph string from BIDS dataset.</span>
 
 <span class="sd">    Summarizes the REQUIRED components in the BIDS specification</span>
 <span class="sd">    and also some RECOMMENDED components. Currently, the methods</span>
@@ -963,7 +963,7 @@
 <span class="sd">    root : path-like</span>
 <span class="sd">        The path of the root of the BIDS compatible folder.</span>
 <span class="sd">    session : str | None</span>
-<span class="sd">            The (optional) session for a item. Corresponds to &quot;ses&quot;.</span>
+<span class="sd">            The (optional) session for a item. Corresponds to "ses".</span>
 <span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
@@ -971,20 +971,20 @@
 <span class="sd">    paragraph : str</span>
 <span class="sd">        The paragraph wrapped with 80 characters per line</span>
 <span class="sd">        describing the summary of the subjects.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
 
     <span class="c1"># high level summary</span>
-    <span class="n">subjects</span> <span class="o">=</span> <span class="n">get_entity_vals</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">entity_key</span><span class="o">=</span><span class="s2">&quot;subject&quot;</span><span class="p">)</span>
-    <span class="n">sessions</span> <span class="o">=</span> <span class="n">get_entity_vals</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">entity_key</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+    <span class="n">subjects</span> <span class="o">=</span> <span class="n">get_entity_vals</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">entity_key</span><span class="o">=</span><span class="s2">"subject"</span><span class="p">)</span>
+    <span class="n">sessions</span> <span class="o">=</span> <span class="n">get_entity_vals</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">entity_key</span><span class="o">=</span><span class="s2">"session"</span><span class="p">)</span>
     <span class="n">modalities</span> <span class="o">=</span> <span class="n">get_datatypes</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
 
     <span class="c1"># only summarize allowed modalities (MEG/EEG/iEEG) data</span>
     <span class="c1"># map them to a pretty looking string</span>
     <span class="n">datatype_map</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;meg&quot;</span><span class="p">:</span> <span class="s2">&quot;MEG&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;eeg&quot;</span><span class="p">:</span> <span class="s2">&quot;EEG&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ieeg&quot;</span><span class="p">:</span> <span class="s2">&quot;iEEG&quot;</span><span class="p">,</span>
+        <span class="s2">"meg"</span><span class="p">:</span> <span class="s2">"MEG"</span><span class="p">,</span>
+        <span class="s2">"eeg"</span><span class="p">:</span> <span class="s2">"EEG"</span><span class="p">,</span>
+        <span class="s2">"ieeg"</span><span class="p">:</span> <span class="s2">"iEEG"</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="n">modalities</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">datatype_map</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span>
@@ -1002,49 +1002,49 @@
     <span class="n">scans_summary</span> <span class="o">=</span> <span class="n">_summarize_scans</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
 
     <span class="n">dataset_agnostic_summary</span> <span class="o">=</span> <span class="n">scans_summary</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">dataset_agnostic_summary</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">modalities</span><span class="p">)</span>
+    <span class="n">dataset_agnostic_summary</span><span class="p">[</span><span class="s2">"system"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">modalities</span><span class="p">)</span>
 
-    <span class="c1"># turn off &#39;recommended&#39; report summary</span>
+    <span class="c1"># turn off 'recommended' report summary</span>
     <span class="c1"># if files are not available to summarize</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">participant_summary</span><span class="p">:</span>
-        <span class="n">participants_info</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">participants_info</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">particpants_info_template</span> <span class="o">=</span> <span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;participants.jinja&quot;</span><span class="p">)</span>
+        <span class="n">particpants_info_template</span> <span class="o">=</span> <span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">"participants.jinja"</span><span class="p">)</span>
         <span class="n">participants_info</span> <span class="o">=</span> <span class="n">particpants_info_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">participant_summary</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The participant template found: </span><span class="si">{</span><span class="n">participants_info</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The participant template found: </span><span class="si">{</span><span class="n">participants_info</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">scans_summary</span><span class="p">:</span>
-        <span class="n">datatype_agnostic_info</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">datatype_agnostic_info</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">datatype_agnostic_template</span> <span class="o">=</span> <span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;datatype_agnostic.jinja&quot;</span><span class="p">)</span>
+        <span class="n">datatype_agnostic_template</span> <span class="o">=</span> <span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">"datatype_agnostic.jinja"</span><span class="p">)</span>
         <span class="n">datatype_agnostic_info</span> <span class="o">=</span> <span class="n">datatype_agnostic_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
             <span class="o">**</span><span class="n">dataset_agnostic_summary</span>
         <span class="p">)</span>
 
     <span class="n">dataset_summary</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;n_subjects&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">subjects</span><span class="p">),</span>
-            <span class="s2">&quot;participants_info&quot;</span><span class="p">:</span> <span class="n">participants_info</span><span class="p">,</span>
-            <span class="s2">&quot;n_sessions&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">sessions</span><span class="p">),</span>
-            <span class="s2">&quot;sessions&quot;</span><span class="p">:</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">sessions</span><span class="p">),</span>
+            <span class="s2">"n_subjects"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">subjects</span><span class="p">),</span>
+            <span class="s2">"participants_info"</span><span class="p">:</span> <span class="n">participants_info</span><span class="p">,</span>
+            <span class="s2">"n_sessions"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">sessions</span><span class="p">),</span>
+            <span class="s2">"sessions"</span><span class="p">:</span> <span class="n">_pretty_str</span><span class="p">(</span><span class="n">sessions</span><span class="p">),</span>
         <span class="p">}</span>
     <span class="p">)</span>
 
     <span class="c1"># XXX: add channel summary for modalities (ieeg, meg, eeg)</span>
     <span class="c1"># create the content and mne Template</span>
-    <span class="c1"># lower-case templates are &quot;Recommended&quot;,</span>
-    <span class="c1"># while upper-case templates are &quot;Required&quot;.</span>
+    <span class="c1"># lower-case templates are "Recommended",</span>
+    <span class="c1"># while upper-case templates are "Required".</span>
 
-    <span class="n">dataset_summary_template</span> <span class="o">=</span> <span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;dataset_summary.jinja&quot;</span><span class="p">)</span>
+    <span class="n">dataset_summary_template</span> <span class="o">=</span> <span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">"dataset_summary.jinja"</span><span class="p">)</span>
     <span class="n">dataset_summary_info</span> <span class="o">=</span> <span class="n">dataset_summary_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">dataset_summary</span><span class="p">)</span>
 
     <span class="c1"># Concatenate info and clean the paragraph</span>
-    <span class="n">paragraph</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset_summary_info</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">datatype_agnostic_info</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="n">paragraph</span> <span class="o">=</span> <span class="n">paragraph</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
-    <span class="k">while</span> <span class="s2">&quot;  &quot;</span> <span class="ow">in</span> <span class="n">paragraph</span><span class="p">:</span>
-        <span class="n">paragraph</span> <span class="o">=</span> <span class="n">paragraph</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;  &quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+    <span class="n">paragraph</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dataset_summary_info</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">datatype_agnostic_info</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">paragraph</span> <span class="o">=</span> <span class="n">paragraph</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">)</span>
+    <span class="k">while</span> <span class="s2">"  "</span> <span class="ow">in</span> <span class="n">paragraph</span><span class="p">:</span>
+        <span class="n">paragraph</span> <span class="o">=</span> <span class="n">paragraph</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"  "</span><span class="p">,</span> <span class="s2">" "</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">))</span></div>
 
 </pre></div>
 
