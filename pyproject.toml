@@ -46,6 +46,7 @@ dev = ["mne_bids[test,doc,full]", "pre-commit"]
 # Dependencies for building the documentation
 doc = [
   "intersphinx_registry",
+  "joblib",  # for sphinx_gallery_conf["parallel"]
   "matplotlib",
   "mne-nirs",
   "nilearn",
@@ -76,7 +77,7 @@ full = [
   "pymatreader",
 ]
 # Dependencies for running the test infrastructure
-test = ["curryreader", "mne_bids[full]", "packaging", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "ruff"]
+test = ["curryreader", "mne_bids[full]", "packaging", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "pytest-xdist", "ruff"]
 
 [project.urls]
 "Bug Tracker" = "https://github.com/mne-tools/mne-bids/issues/"

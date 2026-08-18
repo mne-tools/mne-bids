@@ -90,6 +90,9 @@ jobs:
       TZ: Europe/Berlin
       FORCE_COLOR: true
       MNE_BIDS_FILELOCK_TIMEOUT: 5  # be more stringent than it would be for end-users
+      # Explicit worker counts (in the spirit of SciPy's CI) rather than "auto":
+      # the Linux and Windows runners have 4 cores, the macOS ones fewer and less RAM
+      PYTEST_XDIST_N: ${{ startsWith(matrix.os, 'macos') && 2 || 4 }}
     strategy:
       fail-fast: false
       matrix:
@@ -231,7 +234,7 @@ jobs:
 
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
-      run: make test
+      run: make test JOBS="$PYTEST_XDIST_N"
       if: ${{ matrix.test-with-no-testing-data }}
 
     # Get testing data
@@ -258,7 +261,7 @@ jobs:
       working-directory: mne-python
       name: 'Get testing data and set it read-only'
 
-    - run: make test ARGS="${{ matrix.test-mode }}"
+    - run: make test JOBS="$PYTEST_XDIST_N" ARGS="${{ matrix.test-mode }}"
 
     - uses: codecov/codecov-action@v7
       with:

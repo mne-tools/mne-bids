@@ -1,4 +1,8 @@
 ARGS=
+# pytest-xdist workers; JOBS=0 runs in-process, e.g. for --pdb. Beyond ~4 the
+# bids-validator subprocesses contend and per-worker startup dominates, so this is a
+# fixed number rather than "auto" (CI overrides it per runner image).
+JOBS=4
 
 .PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e clean inplace test ruff-check ruff-format pep build-doc dist-build
 
@@ -29,7 +33,7 @@ inplace:
 	@python -m pip install -e ".[dev]"
 
 test:
-	pytest mne_bids -v ${ARGS}
+	pytest mne_bids -v -n ${JOBS} ${ARGS}
 
 build-doc:
 	@echo "Building documentation"
