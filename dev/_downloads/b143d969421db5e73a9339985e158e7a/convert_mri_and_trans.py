@@ -68,7 +68,7 @@ event_id = {
 }
 raw_fname = data_path / "MEG" / "sample" / "sample_audvis_raw.fif"
 events_fname = data_path / "MEG" / "sample" / "sample_audvis_raw-eve.fif"
-output_path = data_path.parent / "MNE-sample-data-bids"
+output_path = data_path.parent / "MNE-sample-data-bids-mri-and-trans"
 fs_subjects_dir = data_path / "subjects"  # FreeSurfer subjects dir
 
 # %%

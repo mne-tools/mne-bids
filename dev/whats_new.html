@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.20.0.dev30+g1a8ae9d36 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="_static/documentation_options.js?v=8084f548"></script>
+    <script src="_static/documentation_options.js?v=06ef9a9c"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev30+g1a8ae9d36" />
+  <meta name="docsearch:version" content="0.20.0.dev31+g00d02f1c6" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev30+g1a8ae9d36 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</p>
   
 </a></div>
     
@@ -569,6 +569,7 @@
 <h4>⚕️ Code health<a class="headerlink" href="#code-health" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Sped up writing of recordings with many channels by avoiding redundant per-channel work in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> (single-pass channel-type counting, cached coil-type lookup, and a fixed quadratic loop when writing BrainVision units), by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1620">#1620</a>)</p></li>
+<li><p>Run the test suite with <code class="docutils literal notranslate"><span class="pre">pytest-xdist</span></code> and build the documentation with parallel Sphinx and Sphinx-Gallery workers, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1648">#1648</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>

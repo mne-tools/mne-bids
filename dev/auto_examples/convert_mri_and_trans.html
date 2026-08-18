@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS &#8212; MNE-BIDS 0.20.0.dev30+g1a8ae9d36 documentation</title>
+    <title>Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS &#8212; MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=8084f548"></script>
+    <script src="../_static/documentation_options.js?v=06ef9a9c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev30+g1a8ae9d36" />
+  <meta name="docsearch:version" content="0.20.0.dev31+g00d02f1c6" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev30+g1a8ae9d36 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</p>
   
 </a></div>
     
@@ -609,7 +609,7 @@ BIDS dataset. For more information, you can checkout the respective
 <span class="p">}</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">"MEG"</span> <span class="o">/</span> <span class="s2">"sample"</span> <span class="o">/</span> <span class="s2">"sample_audvis_raw.fif"</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">"MEG"</span> <span class="o">/</span> <span class="s2">"sample"</span> <span class="o">/</span> <span class="s2">"sample_audvis_raw-eve.fif"</span>
-<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.parent" title="pathlib.PurePath.parent" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-attribute"><span class="n">data_path</span><span class="o">.</span><span class="n">parent</span></a> <span class="o">/</span> <span class="s2">"MNE-sample-data-bids"</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.parent" title="pathlib.PurePath.parent" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-attribute"><span class="n">data_path</span><span class="o">.</span><span class="n">parent</span></a> <span class="o">/</span> <span class="s2">"MNE-sample-data-bids-mri-and-trans"</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fs_subjects_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">"subjects"</span>  <span class="c1"># FreeSurfer subjects dir</span>
 </pre></div>
 </div>
@@ -649,26 +649,26 @@ Opening raw data file /home/circleci/mne_data/MNE-sample-data/MEG/sample/sample_
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-Writing '/home/circleci/mne_data/MNE-sample-data-bids/README'...
-Writing '/home/circleci/mne_data/MNE-sample-data-bids/participants.tsv'...
-Writing '/home/circleci/mne_data/MNE-sample-data-bids/participants.json'...
-Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json'...
+Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/README'...
+Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/participants.tsv'...
+Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/participants.json'...
+Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json'...
 Used Annotations descriptions: [np.str_('Auditory/Left'), np.str_('Auditory/Right'), np.str_('Button'), np.str_('Smiley'), np.str_('Visual/Left'), np.str_('Visual/Right')]
-Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv'...
-Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.json'...
-Writing '/home/circleci/mne_data/MNE-sample-data-bids/dataset_description.json'...
-Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json'...
+Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv'...
+Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.json'...
+Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/dataset_description.json'...
+Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json'...
 Copying data files to sub-01_ses-01_task-audiovisual_run-01_meg.fif
-Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv'...
+Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv'...
 Reserving possible split file sub-01_ses-01_task-audiovisual_run-01_split-01_meg.fif
-Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
-Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+Writing /home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+Closing /home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
 [done]
-Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
-Wrote /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv entry with meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif.
+Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+Wrote /home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/sub-01_ses-01_scans.tsv entry with meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif.
 
 BIDSPath(
-root: /home/circleci/mne_data/MNE-sample-data-bids
+root: /home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans
 datatype: meg
 basename: sub-01_ses-01_task-audiovisual_run-01_meg.fif)
 </pre></div>
@@ -677,7 +677,7 @@ basename: sub-01_ses-01_task-audiovisual_run-01_meg.fif)
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids-mri-and-trans/
 |--- README
 |--- dataset_description.json
 |--- participants.json
@@ -745,14 +745,14 @@ w.r.t. the T1 image.</p>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">anat_dir</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.directory" title="mne_bids.BIDSPath.directory" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">t1w_bids_path</span><span class="o">.</span><span class="n">directory</span></a>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_T1w.json'...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/anat/sub-01_ses-01_T1w.json'...
 </pre></div>
 </div>
 <p>Let’s have another look at our BIDS directory</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids-mri-and-trans/
 |--- README
 |--- dataset_description.json
 |--- participants.json
@@ -790,14 +790,14 @@ the T1 image as input for the FreeSurfer recon-all, see
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
     Read a total of 3 projection items:
         PCA-v1 (1 x 102)  idle
         PCA-v2 (1 x 102)  idle
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-Reading channel info from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+Reading channel info from /home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 </pre></div>
 </div>
 <p>Finally, let’s use the T1 weighted MRI image and plot the anatomical
@@ -848,7 +848,7 @@ transformation matrix <code class="code docutils literal notranslate"><span clas
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BIDSPath(
-root: /home/circleci/mne_data/MNE-sample-data-bids
+root: /home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans
 datatype: anat
 basename: sub-01_ses-01_FLASH.nii.gz)
 </pre></div>
@@ -876,7 +876,7 @@ basename: sub-01_ses-01_FLASH.nii.gz)
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_convert_mri_and_trans_002.png" srcset="../_images/sphx_glr_convert_mri_and_trans_002.png" alt="convert mri and trans" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_T1w.json'...
+<img src="../_images/sphx_glr_convert_mri_and_trans_002.png" srcset="../_images/sphx_glr_convert_mri_and_trans_002.png" alt="convert mri and trans" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/anat/sub-01_ses-01_T1w.json'...
 </pre></div>
 </div>
 </section>
@@ -911,7 +911,7 @@ basename: sub-01_ses-01_FLASH.nii.gz)
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_convert_mri_and_trans_003.png" srcset="../_images/sphx_glr_convert_mri_and_trans_003.png" alt="convert mri and trans" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_FLASH.json'...
+<img src="../_images/sphx_glr_convert_mri_and_trans_003.png" srcset="../_images/sphx_glr_convert_mri_and_trans_003.png" alt="convert mri and trans" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/anat/sub-01_ses-01_FLASH.json'...
 </pre></div>
 </div>
 </section>
@@ -959,10 +959,10 @@ are integers and so not as precise as the “RAS” decimal numbers.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_convert_mri_and_trans_004.png" srcset="../_images/sphx_glr_convert_mri_and_trans_004.png" alt="convert mri and trans" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_FLASH.json'...
+<img src="../_images/sphx_glr_convert_mri_and_trans_004.png" srcset="../_images/sphx_glr_convert_mri_and_trans_004.png" alt="convert mri and trans" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/MNE-sample-data-bids-mri-and-trans/sub-01/ses-01/anat/sub-01_ses-01_FLASH.json'...
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 23.525 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 39.747 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mri-and-trans-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9160181635ad137cb4a8a5779295596c/convert_mri_and_trans.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_mri_and_trans.ipynb</span></code></a></p>
