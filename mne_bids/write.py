@@ -1321,32 +1321,61 @@ def _sidecar_json(
     return fname
 
 
-def _deface(image, landmarks, deface):
+def deface_mri(image, landmarks, offset=-5, theta=15):
+    """Remove identifying facial detail from an MRI.
+
+    This function blacks out MRI voxels anterior to a nearly vertical plane
+    set by the nasion location. Watershed surfaces made using a defaced
+    MRI will also have no identifying facial detail.
+
+    Parameters
+    ----------
+    image : MRI object
+        Anatomical image as a nibabel object.
+    landmarks : array-like
+       X / y / z coordinates of left pre-auricular, nasion, and right
+       pre-auricular points in MRI (voxel) coordinate space (3x3 list of
+       lists or array with nasion coords in the middle).
+    offset : int
+        Controls how close the blackout plane sits to the nasion point
+        in mm (an offset value of 5 will set the blackout plane 5 mm anterior
+        to the nasion, whereas -5 will move the plane posterior to the nasion).
+        Defaults to -5.
+    theta : int
+        Controls the angle of the blackout plane with respect to vertical
+        (expressed in degrees from 0 to 90). Defaults to 15.
+
+    """
     nib = _import_nibabel("deface MRIs")
 
-    inset, theta = (5, 15.0)
-    if isinstance(deface, dict):
-        if "inset" in deface:
-            inset = deface["inset"]
-        if "theta" in deface:
-            theta = deface["theta"]
+    if not isinstance(image, nib.spatialimages.SpatialImage):
+        raise TypeError(
+            f"image must be an instance of "
+            f"nibabel.spatialimages.SpatialImage. "
+            f"Got {type(image)}"
+        )
 
-    if not _is_numeric(inset):
-        raise ValueError(f"inset must be numeric (float, int). Got {type(inset)}")
+    if not isinstance(landmarks, (list, np.ndarray)):
+        raise TypeError(
+            f"landmarks must be a 3x3 set of coordinates as a "
+            f"list of list or array. Got {type(landmarks)}."
+        )
 
-    if not _is_numeric(theta):
-        raise ValueError(f"theta must be numeric (float, int). Got {type(theta)}")
+    if not isinstance(offset, int):
+        raise TypeError(f"offset must be an integer, but got type {type(offset)}.")
 
-    if inset < 0:
-        raise ValueError("inset should be positive, Got {inset}")
+    if not isinstance(theta, int):
+        raise TypeError(f"theta must be an integer, but got type {type(theta)}")
 
     if not 0 <= theta < 90:
-        raise ValueError("theta should be between 0 and 90 degrees. Got {theta}")
+        raise ValueError(f"theta should be between 0 and 90 degrees. Got {theta}")
 
     # get image data, make a copy
     image_data = image.get_fdata().copy()
 
-    # make indices to move around so that the image doesn't have to
+    # Voxel coordinate spaces depend on the acquisition device and are quite
+    # diverse, so we start by converting everything to an RAS coordinate system
+    # Construct an image index array in RAS space
     idxs = np.meshgrid(
         np.arange(image_data.shape[0]),
         np.arange(image_data.shape[1]),
@@ -1357,14 +1386,19 @@ def _deface(image, landmarks, deface):
     idxs = np.transpose(idxs, [1, 2, 3, 0])  # (*image_data.shape, 3)
     idxs = idxs.reshape(-1, 3)  # (n_voxels, 3)
 
+    # image.affine is the voxel to RAS transform given the original MRI
     # convert to RAS by applying affine
     idxs = nib.affines.apply_affine(image.affine, idxs)
 
-    # now comes the actual defacing
-    # 1. move center of voxels to (nasion - inset)
-    # 2. rotate the head by theta from vertical
+    # get nasion into RAS
     x, y, z = nib.affines.apply_affine(image.affine, landmarks)[1]
-    idxs = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs)
+
+    # now comes the actual defacing
+    # defacing is performed by blacking out voxels ahead of a plane
+    # defined by the nasion.
+    # 1. move center of voxels to (nasion + offset)
+    # 2. rotate the head by theta from vertical
+    idxs = apply_trans(translation(x=-x, y=-y - offset, z=-z), idxs)
     idxs = apply_trans(rotation(x=-np.pi / 2 + np.deg2rad(theta)), idxs)
     idxs = idxs.reshape(image_data.shape + (3,))
     mask = idxs[..., 2] < 0  # z < middle
@@ -2876,8 +2910,8 @@ def write_anat(
         suffix exist, will use the first ones in the ``landmarks`` dictionary.
         If dict, accepts the following keys:
 
-        - ``inset``: how far back in voxels to start defacing
-          relative to the nasion (default 5)
+        - `offset`: how far back in mm to start defacing
+          relative to the nasion (default -5)
 
         - ``theta``: is the angle of the defacing shear in degrees relative
           to vertical (default 15).
@@ -2956,11 +2990,22 @@ def write_anat(
 
         if deface:
             landmarks_deface = landmarks.get("deface")
+            offset = -5
+            theta = 15
             if landmarks_deface is None:
                 # Take first one if none is specified for defacing.
                 landmarks_deface = next(iter(landmarks.items()))[1]
             _, landmarks_deface = _get_landmarks(landmarks_deface, image_nii)
-            image_nii = _deface(image_nii, landmarks_deface, deface)
+            if isinstance(deface, dict):
+                if "offset" not in deface.keys() or "theta" not in deface.keys():
+                    raise RuntimeError(
+                        f"When deface is a dict, keys must "
+                        f"include offset and theta, but got "
+                        f"{deface.keys()})"
+                    )
+                offset = deface["offset"]
+                theta = deface["theta"]
+            image_nii = deface_mri(image_nii, landmarks_deface, offset, theta)
 
     # Save anatomical data
     if op.exists(bids_path):
