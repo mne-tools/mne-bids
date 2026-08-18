@@ -60,7 +60,7 @@ event_id = {
 raw_fname = data_path / "MEG" / "sample" / "sample_audvis_raw.fif"
 er_fname = data_path / "MEG" / "sample" / "ernoise_raw.fif"  # empty room
 events_fname = data_path / "MEG" / "sample" / "sample_audvis_raw-eve.fif"
-output_path = data_path.parent / "MNE-sample-data-bids"
+output_path = data_path.parent / "MNE-sample-data-bids-convert"
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous

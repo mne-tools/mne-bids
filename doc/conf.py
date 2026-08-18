@@ -213,6 +213,7 @@ sphinx_gallery_conf = {
     "within_subsection_order": "mne_bids.utils._example_sorter",
     "gallery_dirs": "auto_examples",
     "filename_pattern": "^((?!sgskip).)*$",
+    "parallel": True,  # use sphinx-build's -j value
 }
 
 assert is_serializable(sphinx_gallery_conf)

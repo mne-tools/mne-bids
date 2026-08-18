@@ -34,4 +34,4 @@ def gh_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
 def setup(app):
     """Do setup."""
     app.add_role("gh", gh_role)
-    return
+    return {"parallel_read_safe": True, "parallel_write_safe": True}

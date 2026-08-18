@@ -55,5 +55,6 @@ Detailed list of changes
 ^^^^^^^^^^^^^^
 
 - Sped up writing of recordings with many channels by avoiding redundant per-channel work in :func:`mne_bids.write_raw_bids` (single-pass channel-type counting, cached coil-type lookup, and a fixed quadratic loop when writing BrainVision units), by `Stefan Appelhoff`_ (:gh:`1620`)
+- Run the test suite with ``pytest-xdist`` and build the documentation with parallel Sphinx and Sphinx-Gallery workers, by `Eric Larson`_ (:gh:`1648`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
