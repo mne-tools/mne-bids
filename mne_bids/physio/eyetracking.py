@@ -57,10 +57,10 @@ def _get_eyetrack_ch_names(raw):
     return eye_chs
 
 
-def _get_eyetrack_annotation_inds(raw):
+def _get_eyetrack_annotation_inds(raw, eye_chs=None):
     """Get indices of annotations associated with eyetracking channels."""
     _validate_type(raw, mne.io.BaseRaw, item_name="raw")
-    eye_ch_names = _get_eyetrack_ch_names(raw)
+    eye_ch_names = _get_eyetrack_ch_names(raw) if eye_chs is None else eye_chs
     if len(eye_ch_names) == 0:
         return np.array([], dtype=int)
 
@@ -99,7 +99,7 @@ def _write_single_eye_physio(
     phys_bpath = bids_path.copy().update(
         recording=eye_recording_tag,
         suffix="physio",
-        extension="tsv.gz",
+        extension=".tsv.gz",
     )
     fname_tsv = phys_bpath.fpath
 
@@ -190,10 +190,12 @@ def _write_single_eye_physio(
         )
         .fpath
     )
-    _write_eyetrack_events_tsv(raw=raw, fname_tsv=fname_events, overwrite=overwrite)
+    _write_eyetrack_events_tsv(
+        raw=raw, fname_tsv=fname_events, eye_chs=eye_chs, overwrite=overwrite
+    )
 
 
-def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
+def _write_eyetrack_tsvs(raw, bids_path, overwrite):
     """Write eyetracking physio files (per-eye TSV, JSON, and physioevents)."""
     logger.info("Writing eyetracking data to physio.tsv files.")
     # Write the physio files to the modality that eyetracking was collected with.
@@ -223,17 +225,17 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
                 f"Got {which_eye}."
             )
     # If we have data for both eyes, left eye is eye1 and right eye is eye2
-    if all([len(left_eye_chs) and len(right_eye_chs)]):
+    if left_eye_chs and right_eye_chs:
         eye1_chs = left_eye_chs
         eye2_chs = right_eye_chs
         recorded_eye_1 = "left"
         recorded_eye_2 = "right"
     # Otherwise, if we only have data for one eye, that eye is eye1
-    elif len(left_eye_chs):
+    elif left_eye_chs:
         eye1_chs = left_eye_chs
         eye2_chs = []
         recorded_eye_1 = "left"
-    elif len(right_eye_chs):
+    elif right_eye_chs:
         eye1_chs = right_eye_chs
         eye2_chs = []
         recorded_eye_1 = "right"
@@ -258,7 +260,7 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
         )
 
 
-def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
+def _write_eyetrack_events_tsv(*, raw, fname_tsv, eye_chs=None, overwrite):
     """Write a <match>_physioevents.tsv file."""
     from mne_bids.write import _events_json, _events_tsv
 
@@ -267,12 +269,13 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
     if "BAD_blink" in annotations.description:
         annotations.rename({"BAD_blink": "blink"})
     raw.set_annotations(annotations)
-    eye_annot_indices = _get_eyetrack_annotation_inds(raw)
+    eye_annot_indices = _get_eyetrack_annotation_inds(raw, eye_chs=eye_chs)
     if len(eye_annot_indices) == 0:
         warn(f"No eyetracking annotations found. {fname_tsv} will NOT be written.")
         return
-    # Get the descriptions of the eyetracking annotations
+    # Keep only this eye's annotations, so the eye1/eye2 files don't each get both eyes
     eye_annotations = annotations[eye_annot_indices]
+    raw.set_annotations(eye_annotations)
     descriptions = eye_annotations.description
     durations = eye_annotations.duration
     # Use mne.events_from_annotations to convert the annotations to events
@@ -320,8 +323,8 @@ def _calibration_to_sidecar_updates(calibrations):
     if (n_cals := len(calibrations)) > 1:
         most_recent = max(calibrations, key=lambda c: c["onset"])
         logger.info(
-            f"{n_cals} calibrations were provided {most_recent['eye']} eye, writing "
-            f" the calibration collected at {most_recent['onset']} seconds."
+            f"{n_cals} calibrations were provided for the {most_recent['eye']} eye, "
+            f"writing the calibration collected at {most_recent['onset']} seconds."
         )
         cal = most_recent.copy()
     else:
@@ -355,17 +358,17 @@ def write_eyetrack_calibration(
     Returns
     -------
     Updated sidecar filepaths : list of pathlib.Path
-        A list of filepaths pointing to the ``<match>_physio.tsv`` files that were
-        updated with calibration information.
+        A list of filepaths pointing to the ``<match>_physio.json`` sidecar files that
+        were updated with calibration information.
 
     Notes
     -----
     This function routes calibration metadata to the correct per-eye physio sidecar(s):
 
-    - Binocular recordings: left eye -> ``<match>_recording-eye1_physio.tsv``,
-      right eye -> ``<match>_recording-eye2_physio.tsv``
+    - Binocular recordings: left eye -> ``<match>_recording-eye1_physio.json``,
+      right eye -> ``<match>_recording-eye2_physio.json``
     - Monocular recordings: whichever eye was recorded ->
-      ``<match>_recording-eye1_physio.tsv``
+      ``<match>_recording-eye1_physio.json``
 
     If more than one calibration was run on the participant, this function will write
     the last calibration in the sequence passed to the ``calibrations`` parameter.

@@ -1,5 +1,6 @@
 """Tests for I/O of BIDS-compliant eyetracking data (BEP 020)."""
 
+import gzip
 import json
 
 import mne
@@ -148,6 +149,19 @@ def test_write_eyetracking_bino(_bids_validate, raw_eye_and_cals, eyetrack_bpath
         overwrite=False,
     )
     _bids_validate(eyetrack_bpath.root)
+
+    # each eye gets only its own annotations in *_physioevents.tsv.gz
+    events_bpath = eyetrack_bpath.copy().update(
+        suffix="physioevents", extension=".tsv.gz", check=False
+    )
+    n_events = []
+    for recording in ("eye1", "eye2"):
+        fpath = events_bpath.copy().update(recording=recording).fpath
+        with gzip.open(fpath, "rt") as fid:
+            n_events.append(len(fid.read().splitlines()))
+    n_annots = len(_get_eyetrack_annotation_inds(raw))
+    assert sum(n_events) == n_annots
+    assert min(n_events) > 0
 
 
 @testing.requires_testing_data

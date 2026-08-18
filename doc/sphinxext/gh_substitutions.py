@@ -14,8 +14,9 @@ from docutils.nodes import reference
 from docutils.parsers.rst.roles import set_classes
 
 
-def gh_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
+def gh_role(name, rawtext, text, lineno, inliner, options=None, content=None):
     """Link to a GitHub issue."""
+    options = {} if options is None else options
     try:
         # issue/PR mode (issues/PR-num will redirect to pull/PR-num)
         int(text)

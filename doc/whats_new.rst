@@ -33,6 +33,7 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^
 
 - Clarify that the ``tracking_system`` parameter of :class:`mne_bids.BIDSPath` and the ``tracking_systems`` parameter of :func:`mne_bids.find_matching_paths` correspond to the Motion-BIDS ``tracksys`` entity, by `Daria Agafonova`_ (:gh:`1562`)
+- Add support for writing eyetracking data with :func:`mne_bids.write_raw_bids` (new ``eyetrack_calibration`` parameter) and for updating calibration metadata with :func:`mne_bids.physio.write_eyetrack_calibration`, by `Scott Huberty`_ (:gh:`1642`)
 - Add :func:`mne_bids.read_epochs_bids` to read epoched BIDS recordings (``"RecordingType": "epoched"``) as :class:`mne.Epochs`; :func:`mne_bids.read_raw_bids` now raises a helpful error for such recordings, by `Bruno Aristimunha`_ (:gh:`1605`)
 
 🧐 API and behavior changes
