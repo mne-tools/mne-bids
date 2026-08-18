@@ -2,6 +2,7 @@
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
+import os
 from datetime import datetime
 
 import mne
@@ -13,6 +14,15 @@ def pytest_configure(config):
     """Configure pytest options."""
     # Fixtures
     config.addinivalue_line("usefixtures", "monkeypatch_mne")
+    # inspect_dataset() calls plt.show(block=True) on any backend but agg, so a test
+    # that reaches it before something else has switched backends hangs forever
+    os.environ.setdefault("MPLBACKEND", "Agg")
+    try:
+        import matplotlib
+    except ImportError:
+        pass
+    else:
+        matplotlib.use(os.environ["MPLBACKEND"], force=True)
 
 
 @pytest.fixture(autouse=True)

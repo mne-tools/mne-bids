@@ -82,7 +82,7 @@ jobs:
 
   test:
     name: test (${{ matrix.os }}, ${{ matrix.python-version }}, ${{ matrix.mne-version }}, ${{ matrix.mne-bids-install }}, validator-${{ matrix.bids-validator-version }})
-    timeout-minutes: 60
+    timeout-minutes: 20
     needs: style  # just to avoid CI overuse
     runs-on: ${{ matrix.os }}
     env:

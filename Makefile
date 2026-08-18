@@ -33,7 +33,7 @@ inplace:
 	@python -m pip install -e ".[dev]"
 
 test:
-	pytest mne_bids -v -n ${JOBS} ${ARGS}
+	pytest mne_bids -v -n ${JOBS} --timeout=180 --timeout-method=thread ${ARGS}
 
 build-doc:
 	@echo "Building documentation"
