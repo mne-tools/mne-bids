@@ -18,7 +18,6 @@ from pathlib import Path
 import numpy as np
 from mne.io import anonymize_info, read_raw_bdf, read_raw_brainvision, read_raw_edf
 from mne.utils import logger, verbose
-from scipy.io import loadmat, savemat
 
 from mne_bids._fileio import _chmod_rw_R, _open_lock
 from mne_bids.path import BIDSPath, _mkdir_p, _parse_ext
@@ -608,6 +607,8 @@ def copyfile_eeglab(src, dest):
         raise ValueError(
             f"Need to move data with same extension but got {ext_src}, {ext_dest}"
         )
+
+    from scipy.io import loadmat, savemat
 
     # Load the EEG struct
     # NOTE: do *not* simplify cells, because this changes the underlying

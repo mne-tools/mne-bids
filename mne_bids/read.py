@@ -14,7 +14,11 @@ from pathlib import Path
 import mne
 import numpy as np
 from mne import events_from_annotations, io, pick_channels_regexp, read_events
-from mne.coreg import fit_matched_points
+
+try:  # MNE 1.13+
+    from mne.transforms import fit_matched_points
+except ImportError:
+    from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 from mne.utils import _validate_type, check_version, get_subjects_dir, logger
 
