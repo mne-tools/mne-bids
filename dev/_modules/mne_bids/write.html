@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.20.0.dev30+g1a8ae9d36 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=5a098d7d"></script>
+    <script src="../../_static/documentation_options.js?v=8084f548"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev29+g526ee9ddb" />
+  <meta name="docsearch:version" content="0.20.0.dev30+g1a8ae9d36" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev30+g1a8ae9d36 documentation</p>
   
 </a></div>
     
@@ -525,7 +525,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">Epochs</span><span class="p">,</span> <span class="n">channel_type</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_meg_system</span><span class="p">,</span> <span class="n">_unit2human</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.chpi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_chpi_info</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_fiducials</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.pick</span><span class="w"> </span><span class="kn">import</span> <span class="n">_picks_to_idx</span>
@@ -1729,6 +1728,8 @@
             <span class="n">n_active_hpi</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">chpi</span><span class="o">.</span><span class="n">get_active_chpi</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">)</span>
             <span class="n">chpi</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">n_active_hpi</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">chpi</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">mne.chpi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_chpi_info</span>
+
                 <span class="n">hpi_freqs</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_chpi_info</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">)</span>
                 <span class="n">hpi_freqs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">hpi_freqs</span><span class="p">)</span>
 
@@ -4271,7 +4272,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-17.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-18.
       <br/>
     
   </p>

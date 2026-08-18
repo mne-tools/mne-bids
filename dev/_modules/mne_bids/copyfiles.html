@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</title>
+    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.20.0.dev30+g1a8ae9d36 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=5a098d7d"></script>
+    <script src="../../_static/documentation_options.js?v=8084f548"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev29+g526ee9ddb" />
+  <meta name="docsearch:version" content="0.20.0.dev30+g1a8ae9d36" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev29+g526ee9ddb documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev30+g1a8ae9d36 documentation</p>
   
 </a></div>
     
@@ -523,7 +523,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">anonymize_info</span><span class="p">,</span> <span class="n">read_raw_bdf</span><span class="p">,</span> <span class="n">read_raw_brainvision</span><span class="p">,</span> <span class="n">read_raw_edf</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids._fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">_chmod_rw_R</span><span class="p">,</span> <span class="n">_open_lock</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_parse_ext</span>
@@ -1131,6 +1130,8 @@
             <span class="sa">f</span><span class="s2">"Need to move data with same extension but got </span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
+
     <span class="c1"># Load the EEG struct</span>
     <span class="c1"># NOTE: do *not* simplify cells, because this changes the underlying</span>
     <span class="c1"># structure and potentially breaks re-reading of the file</span>
@@ -1262,7 +1263,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-17.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-18.
       <br/>
     
   </p>
