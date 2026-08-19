@@ -317,7 +317,14 @@ def _tsv_to_str(data, rows=5, *, include_header=True):
     # write column data.
     max_rows = min(n_rows, rows)
     for idx in range(max_rows):
-        row_data = list(str(data[key][idx]) for key in data)
+        row_data = list(_nansafe_to_str(data[key][idx]) for key in data)
         output.append("\t".join(row_data))
 
     return "\n".join(output)
+
+
+def _nansafe_to_str(value):
+    """Convert np.nan to 'n/a, which BIDS tsv files require."""
+    if isinstance(value, float | np.floating) and np.isnan(value):
+        return "n/a"
+    return str(value)

@@ -18,6 +18,7 @@ from mne.utils import hashfunc, run_subprocess
 def setup(app):
     """Set up the app."""
     app.connect("builder-inited", generate_cli_rst)
+    return {"parallel_read_safe": True, "parallel_write_safe": True}
 
 
 # Header markings go:

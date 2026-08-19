@@ -20,7 +20,6 @@ import mne.preprocessing
 import numpy as np
 from mne import Epochs, channel_type
 from mne.channels.channels import _get_meg_system, _unit2human
-from mne.chpi import get_chpi_info
 from mne.io import BaseRaw, read_fiducials
 from mne.io.constants import FIFF
 from mne.io.pick import _picks_to_idx
@@ -79,7 +78,9 @@ from mne_bids.dig import (
     _write_empty_ieeg_positions,
 )
 from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
-from mne_bids.physio import (
+from mne_bids.physio import write_eyetrack_calibration
+from mne_bids.physio.eyetracking import (
+    _eyetrack_calibration_to_events_metadata,
     _get_eyetrack_annotation_inds,
     _get_eyetrack_ch_names,
     _write_eyetrack_tsvs,
@@ -495,6 +496,7 @@ def _events_tsv(
         data[key] = values
 
     _write_tsv(fname, data, compress=compress, overwrite=overwrite)
+    return data
 
 
 def _extract_hed_for_write(raw, *, n_events):
@@ -1239,6 +1241,8 @@ def _sidecar_json(
             n_active_hpi = mne.chpi.get_active_chpi(raw, on_missing="ignore")
             chpi = bool(n_active_hpi.sum() > 0)
             if chpi:
+                from mne.chpi import get_chpi_info
+
                 hpi_freqs, _, _ = get_chpi_info(info=raw.info, on_missing="ignore")
                 hpi_freqs = list(hpi_freqs)
 
@@ -1787,6 +1791,7 @@ def write_raw_bids(
     acpc_aligned=False,
     electrodes_tsv_task=False,
     emg_placement=None,
+    eyetrack_calibration=None,
     overwrite=False,
     readme=True,
     verbose=None,
@@ -1976,6 +1981,19 @@ def write_raw_bids(
     emg_placement : "Measured" | "ChannelSpecific" | "Other" | None
         How the EMG sensor locations were determined. Must be one of the literal strings
         if datatype is "emg" and should be ``None`` for all other datatypes.
+    eyetrack_calibration : mne.preprocessing.eyetracking.Calibration | list | None
+        Eyetracking calibration metadata. Required when writing eyetracking data.
+        The calibration object(s) must include ``"screen_distance"``,
+        ``"screen_origin"``, ``"screen_resolution"``, and ``"screen_size"`` so
+        MNE-BIDS can write the BIDS-required ``"StimulusPresentation"`` metadata
+        to ``*_events.json``. Calibration metadata is also written to the per-eye
+        ``*_physio.json`` sidecars. Examples of valid values for these keys are:
+
+        - ``screen_origin``: ``["top", "left"]``
+        - ``screen_resolution``: ``[1920, 1080]``
+        - ``screen_size``: ``[0.53, 0.3] # meters``
+        - ``screen_distance``: ``0.9 # meters``
+
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -2054,7 +2072,6 @@ def write_raw_bids(
     """
     if not isinstance(raw, BaseRaw):
         raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
-    # TODO: Maybe this should generalize to physio data.
     is_eyetracking_only = all(
         [ch in ["eyegaze", "pupil"] for ch in raw.get_channel_types()]
     )
@@ -2165,7 +2182,9 @@ def write_raw_bids(
 
         raw_orig = _reader_for_raw(raw, ext)(**raw._init_kwargs)
     else:
-        if format in FORMAT_EXTENSIONS:
+        if is_eyetracking_only and format == "auto":
+            ext = bids_path.extension or ".tsv.gz"
+        elif format in FORMAT_EXTENSIONS:
             ext = FORMAT_EXTENSIONS[format]
         else:
             msg = (
@@ -2321,14 +2340,20 @@ def write_raw_bids(
 
     # If eyetrack channels are alongside eeg, meg etc. Then
     eyetrack_ch_names = _get_eyetrack_ch_names(raw)
+    events_json_metadata = None
     if eyetrack_ch_names:
+        events_json_metadata = _eyetrack_calibration_to_events_metadata(
+            eyetrack_calibration
+        )
         _write_eyetrack_tsvs(raw, bids_path, overwrite=overwrite)
+        write_eyetrack_calibration(bids_path, eyetrack_calibration)
         if not is_eyetracking_only:
+            # ET data were written to TSVs, so don't save them to binary file.
             logger.debug(f"Dropping eyetracking channels from raw: {eyetrack_ch_names}")
             raw = raw.copy()
             raw.drop_channels(eyetrack_ch_names)
         # Now delete annotations tied to eyetracking channels so they aren't written
-        # to the main *_events files.
+        # to the <match>_events files.
         ocular_event_inds = _get_eyetrack_annotation_inds(raw)
         raw.annotations.delete(ocular_event_inds)
 
@@ -2518,6 +2543,7 @@ def write_raw_bids(
                 extra_columns=events_extra_columns,
                 has_trial_type=has_trial_type,
                 hed_by_trial_type=hed["sidecar_map"] if hed else None,
+                metadata=events_json_metadata,
                 overwrite=overwrite,
             )
         # Kepp events_array around for BrainVision writing below.
@@ -2534,7 +2560,7 @@ def write_raw_bids(
         overwrite=False,
     )
 
-    # This function is specifically for writing sidecar for datatype with channel info
+    # This func is specifically for writing sidecar for datatypes with channel info
     if bids_path.datatype in EPHY_ALLOWED_DATATYPES:
         _sidecar_json(
             raw,
@@ -2609,17 +2635,20 @@ def write_raw_bids(
         bids_path.update(extension=FORMAT_EXTENSIONS[write_format])
 
     # this can't happen until after value of `convert` has been determined
-    _channels_tsv(
-        raw,
-        channels_path.fpath,
-        convert_fmt=write_format if convert else None,
-        overwrite=overwrite,
-    )
+    if not is_eyetracking_only:
+        _channels_tsv(
+            raw,
+            channels_path.fpath,
+            convert_fmt=write_format if convert else None,
+            overwrite=overwrite,
+        )
 
     # raise error when trying to copy files (copyfile_*) into same location
     # (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)
     if (
-        bids_path.fpath.exists()
+        not allow_preload
+        and not is_eyetracking_only
+        and bids_path.fpath.exists()
         and not convert
         and bids_path.fpath.as_posix() == Path(raw_fname).as_posix()
     ):
@@ -2631,7 +2660,6 @@ def write_raw_bids(
 
     # otherwise if the BIDSPath currently exists, check if we
     # would like to overwrite the existing dataset
-    # TODO: Why did I gatekeep eyetracking from this path. Remove and see if it breaks.
     if bids_path.fpath.exists() and not is_eyetracking_only:
         if overwrite:
             # Need to load data before removing its source

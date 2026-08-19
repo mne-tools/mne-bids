@@ -42,6 +42,14 @@ def _has_eyetracking(bids_path):
     return True if phys_type == "eyetrack" else False
 
 
+EYETRACK_CALIBRATION_TO_STIMULUS_PRESENTATION = (
+    ("screen_distance", "ScreenDistance"),
+    ("screen_origin", "ScreenOrigin"),
+    ("screen_resolution", "ScreenResolution"),
+    ("screen_size", "ScreenSize"),
+)
+
+
 def _get_eyetrack_ch_names(raw):
     """Check if the raw object contains eyetracking data.
 
@@ -65,10 +73,10 @@ def _get_eyetrack_ch_names(raw):
     return eye_chs
 
 
-def _get_eyetrack_annotation_inds(raw):
+def _get_eyetrack_annotation_inds(raw, eye_chs=None):
     """Get indices of annotations associated with eyetracking channels."""
     _validate_type(raw, mne.io.BaseRaw, item_name="raw")
-    eye_ch_names = _get_eyetrack_ch_names(raw)
+    eye_ch_names = _get_eyetrack_ch_names(raw) if eye_chs is None else eye_chs
     if len(eye_ch_names) == 0:
         return np.array([], dtype=int)
 
@@ -76,7 +84,9 @@ def _get_eyetrack_annotation_inds(raw):
         [
             annot_idx
             for annot_idx, this_annot in enumerate(raw.annotations)
-            if any(ch_name in eye_ch_names for ch_name in this_annot["ch_names"])
+            if any(
+                ch_name in eye_ch_names for ch_name in this_annot.get("ch_names", [])
+            )
         ],
         dtype=int,
     )
@@ -105,7 +115,7 @@ def _write_single_eye_physio(
     phys_bpath = bids_path.copy().update(
         recording=eye_recording_tag,
         suffix="physio",
-        extension="tsv.gz",
+        extension=".tsv.gz",
     )
     fname_tsv = phys_bpath.fpath
 
@@ -183,7 +193,7 @@ def _write_single_eye_physio(
         )
         .fpath
     )
-    _write_json(fname_json, json_dict, overwrite)
+    _write_json(fname_json, json_dict, overwrite=overwrite)
 
     # Write physioevents TSV
     fname_events = (
@@ -196,10 +206,12 @@ def _write_single_eye_physio(
         )
         .fpath
     )
-    _write_eyetrack_events_tsv(raw=raw, fname_tsv=fname_events, overwrite=overwrite)
+    _write_eyetrack_events_tsv(
+        raw=raw, fname_tsv=fname_events, eye_chs=eye_chs, overwrite=overwrite
+    )
 
 
-def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
+def _write_eyetrack_tsvs(raw, bids_path, overwrite):
     """Write eyetracking physio files (per-eye TSV, JSON, and physioevents)."""
     logger.info("Writing eyetracking data to physio.tsv files.")
     # Write the physio files to the modality that eyetracking was collected with.
@@ -210,8 +222,6 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
     info_array = np.array([raw.ch_names, raw.get_channel_types()]).T
     eyegaze_ch_idx = np.where(info_array[:, 1] == "eyegaze")[0]
     pupil_ch_idx = np.where(info_array[:, 1] == "pupil")[0]
-    assert len(eyegaze_ch_idx)
-    assert len(pupil_ch_idx)
     # What eyes were recorded.
     left_eye_chs = []
     right_eye_chs = []
@@ -230,17 +240,17 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
                 f"Got {which_eye}."
             )
     # If we have data for both eyes, left eye is eye1 and right eye is eye2
-    if all([len(left_eye_chs) and len(right_eye_chs)]):
+    if left_eye_chs and right_eye_chs:
         eye1_chs = left_eye_chs
         eye2_chs = right_eye_chs
         recorded_eye_1 = "left"
         recorded_eye_2 = "right"
     # Otherwise, if we only have data for one eye, that eye is eye1
-    elif len(left_eye_chs):
+    elif left_eye_chs:
         eye1_chs = left_eye_chs
         eye2_chs = []
         recorded_eye_1 = "left"
-    elif len(right_eye_chs):
+    elif right_eye_chs:
         eye1_chs = right_eye_chs
         eye2_chs = []
         recorded_eye_1 = "right"
@@ -265,7 +275,7 @@ def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
         )
 
 
-def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
+def _write_eyetrack_events_tsv(*, raw, fname_tsv, eye_chs=None, overwrite):
     """Write a <match>_physioevents.tsv file."""
     from mne_bids.write import _events_json, _events_tsv
 
@@ -274,12 +284,13 @@ def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
     if "BAD_blink" in annotations.description:
         annotations.rename({"BAD_blink": "blink"})
     raw.set_annotations(annotations)
-    eye_annot_indices = _get_eyetrack_annotation_inds(raw)
+    eye_annot_indices = _get_eyetrack_annotation_inds(raw, eye_chs=eye_chs)
     if len(eye_annot_indices) == 0:
         warn(f"No eyetracking annotations found. {fname_tsv} will NOT be written.")
         return
-    # Get the descriptions of the eyetracking annotations
+    # Keep only this eye's annotations, so the eye1/eye2 files don't each get both eyes
     eye_annotations = annotations[eye_annot_indices]
+    raw.set_annotations(eye_annotations)
     descriptions = eye_annotations.description
     durations = eye_annotations.duration
     # Use mne.events_from_annotations to convert the annotations to events
@@ -320,10 +331,19 @@ def _calibration_to_sidecar_updates(calibrations):
     """Convert calibration object(s) for one eye to sidecar updates."""
     updates = {}
     updates["CalibrationCount"] = len(calibrations)
-    # FIXME: BEP020 allows CalibrationCount (per session/run) yet only provides one set
+    # BEP020 allows CalibrationCount (per session/run) yet only provides one set
     # of Calibration* fields per physio sidecar. For now, if more than 1 calibrations
-    # were run, I guess it makes most sense to take the last calibration.
-    cal = calibrations[-1].copy()
+    # and the user passes a squence of calibrations in, I guess it makes most sense to
+    # take the last calibration collected.
+    if (n_cals := len(calibrations)) > 1:
+        most_recent = max(calibrations, key=lambda c: c["onset"])
+        logger.info(
+            f"{n_cals} calibrations were provided for the {most_recent['eye']} eye, "
+            f"writing the calibration collected at {most_recent['onset']} seconds."
+        )
+        cal = most_recent.copy()
+    else:
+        cal = calibrations[-1]
 
     for from_key, to_key in MNE_CALIBRATION_TO_BIDS.items():
         value = cal.get(from_key)
@@ -336,7 +356,7 @@ def write_eyetrack_calibration(
     bids_path: BIDSPath,
     calibrations: Calibration | list[Calibration],
 ) -> list[Path]:
-    """Write eyetracking calibration metadata into an existing ``*_physio.json`` sidecar.
+    """Write eyetrack calibration metadata into an existing ``*_physio.json`` sidecar.
 
     Parameters
     ----------
@@ -345,31 +365,31 @@ def write_eyetrack_calibration(
         directory (e.g. ``beh`` or ``eeg``) that contains ``<match>_physio.json``
         file(s). If the BIDSPath contains a ``recording`` entity (e.g. ``eye1``), it
         will be ignored (see the notes section).
-    calibration : CalibrationObject | list of CalibrationObject
+    calibrations : CalibrationObject | list of CalibrationObject
         Calibration instance(s) (e.g., an item returned by
         :func:`~mne.preprocessing.eyetracking.read_eyelink_calibration`). Each instance
-        must expose an ``eye`` attribute with value ``"left"`` or ``"right"``
+        must expose an ``eye`` attribute with value ``"left"`` or ``"right"``.
 
     Returns
     -------
     Updated sidecar filepaths : list of pathlib.Path
-        a list of filepaths pointing to the ``<match>_physio.tsv`` files that were
-        updated with calibration information.
+        A list of filepaths pointing to the ``<match>_physio.json`` sidecar files that
+        were updated with calibration information.
 
     Notes
     -----
     This function routes calibration metadata to the correct per-eye physio sidecar(s):
 
-    - Binocular recordings: left eye -> ``<match>_recording-eye1_physio.tsv``,
-      right eye -> ``<match>_recording-eye2_physio.tsv``
+    - Binocular recordings: left eye -> ``<match>_recording-eye1_physio.json``,
+      right eye -> ``<match>_recording-eye2_physio.json``
     - Monocular recordings: whichever eye was recorded ->
-      ``<match>_recording-eye1_physio.tsv``
+      ``<match>_recording-eye1_physio.json``
 
     If more than one calibration was run on the participant, this function will write
-    the last calibration in the sequence passed to the ``calibration`` parameter.
+    the last calibration in the sequence passed to the ``calibrations`` parameter.
 
     See `The Eyetracking BIDS specification`_.
-    """  # noqa: E501 FIXME: Can we use an alias to make the long line fit?
+    """
     _validate_type(bids_path, BIDSPath, item_name="bids_path")
 
     if isinstance(calibrations, mne.preprocessing.eyetracking.Calibration):
@@ -378,10 +398,13 @@ def write_eyetrack_calibration(
     cals_by_eye = {"left": [], "right": []}
     for cal in calibrations:
         eye = cal["eye"]
+        if eye not in cals_by_eye.keys():
+            raise ValueError(
+                "Each mne.preprocessing.Calibration instance must contain either "
+                f"'left' or 'right' in its 'eye' key. Got {eye} "
+            )
         cals_by_eye[eye].append(cal)
     eyes_present = {eye for eye, cals in cals_by_eye.items() if len(cals)}
-    if not eyes_present:
-        raise ValueError("No calibration entries were provided.")
 
     # Determine monocular vs binocular mapping to the *_physio.tsv files
     if eyes_present == {"left", "right"}:
@@ -804,3 +827,53 @@ def merge_binocular_physioevents(
         description=de[order],
         ch_names=ch[order],
     )
+
+
+def _eyetrack_calibration_to_events_metadata(eyetrack_calibration):
+    """Extract BIDS StimulusPresentation metadata from eyetracking calibration."""
+    if eyetrack_calibration is None:
+        raise ValueError(
+            "Writing eyetracking data requires `eyetrack_calibration`. The "
+            "calibration object must include screen_distance, screen_origin, "
+            "screen_resolution, and screen_size."
+        )
+    if isinstance(eyetrack_calibration, mne.preprocessing.eyetracking.Calibration):
+        calibrations = [eyetrack_calibration]
+    else:
+        _validate_type(
+            eyetrack_calibration, (list, tuple), item_name="eyetrack_calibration"
+        )
+        calibrations = list(eyetrack_calibration)
+    if len(calibrations) == 0:
+        raise ValueError(
+            "`eyetrack_calibration` must contain at least one calibration."
+        )
+
+    stimulus_presentation = {}
+    missing = []
+    for mne_key, bids_key in EYETRACK_CALIBRATION_TO_STIMULUS_PRESENTATION:
+        values = []
+        for calibration in calibrations:
+            value = calibration.get(mne_key)
+            if value is not None:
+                if isinstance(value, np.ndarray):
+                    value = value.tolist()
+                elif isinstance(value, tuple):
+                    value = list(value)
+                values.append(value)
+        if not values:
+            missing.append(mne_key)
+            continue
+        first_value = values[0]
+        if any(value != first_value for value in values[1:]):
+            raise ValueError(
+                f"`eyetrack_calibration` contains inconsistent values for {mne_key!r}."
+            )
+        stimulus_presentation[bids_key] = first_value
+
+    if missing:
+        raise ValueError(
+            "`eyetrack_calibration` is missing screen metadata required for "
+            "eyetracking BIDS: " + ", ".join(missing)
+        )
+    return {"StimulusPresentation": stimulus_presentation}

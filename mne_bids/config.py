@@ -672,7 +672,6 @@ REFERENCES = {
     "Pollonini, L. (2023). fNIRS-BIDS, the Brain Imaging Data Structure "
     "Extended to Functional Near-Infrared Spectroscopy. PsyArXiv. "
     "https://doi.org/10.31219/osf.io/7nmcp",
-    # TODO: really this entry should be eyetrack, but lets circle back on that.
     "beh": "Szinte, M., Bach, DR., Draschkow, D., Esteban, O., Gagle, B., "
     "Gau, R., Gregorova, K., Halchenko, Y.O., Huberty, S., Kling, S., Kulkarni, S., "
     "Markiewicz, C., Mikkelsen, M., Oostenveld, R., Pfarr, JK. (2026). "

@@ -1,5 +1,6 @@
 """Tests for I/O of BIDS-compliant eyetracking data (BEP 020)."""
 
+import gzip
 import json
 
 import mne
@@ -7,10 +8,11 @@ import numpy as np
 import pytest
 from mne.datasets import testing
 from mne.io import RawArray, read_raw_egi, read_raw_eyelink
-from numpy.testing import assert_allclose
 
-from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
-from mne_bids.physio import _get_eyetrack_annotation_inds, write_eyetrack_calibration
+import mne_bids
+from mne_bids import BIDSPath, write_raw_bids
+from mne_bids.physio import write_eyetrack_calibration
+from mne_bids.physio.eyetracking import _get_eyetrack_annotation_inds
 
 
 @pytest.fixture(scope="module")
@@ -19,11 +21,12 @@ def eyelink_fpath():
     return testing.data_path(download=False) / "eyetrack" / "test_eyelink.asc"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def raw_eye_and_cals(eyelink_fpath):
     """Get re-usable raw eyetracking object and calibrations."""
     raw = read_raw_eyelink(eyelink_fpath)
     cals = mne.preprocessing.eyetracking.read_eyelink_calibration(eyelink_fpath)
+    cals = _add_screen_metadata(cals)
     return raw, cals
 
 
@@ -43,41 +46,15 @@ def eyetrack_bpath(tmp_path):
     )
 
 
-def _assert_roundtrip_raw(raw_in, raw):
-    """Assert basic roundtrip equivalence for raw objects."""
-    assert raw_in.get_channel_types() == raw.get_channel_types()
-    assert raw_in.info["sfreq"] == raw.info["sfreq"]
-    for ch_orig, ch_in in zip(raw.info["chs"], raw_in.info["chs"]):
-        np.testing.assert_array_equal(ch_orig["loc"], ch_in["loc"])
-    np.testing.assert_array_equal(raw.get_data(), raw_in.get_data())
-
-
-def _assert_roundtrip_annotations(annots_in, annots):
-    def _get_physio_annots(annots):
-        physio_annot_inds = np.where(np.isin(annots.description, EYE_DESCS))[0]
-        return annots[physio_annot_inds]
-
-    def _get_event_annots(annots):
-        event_annot_inds = np.where(~np.isin(annots.description, EYE_DESCS))[0]
-        return annots[event_annot_inds]
-
-    EYE_DESCS = ("BAD_blink", "fixation", "saccade")
-    atol = 1e-3
-
-    assert all(annots.description == annots_in.description)
-    raw_annots = {
-        "physio": _get_physio_annots(annots),
-        "events": _get_event_annots(annots),
-    }
-    raw_in_annots = {
-        "physio": _get_physio_annots(annots_in),
-        "events": _get_event_annots(annots_in),
-    }
-    for key in {"physio", "events"}:
-        assert_allclose(
-            raw_annots[key].duration, raw_in_annots[key].duration, atol=atol
-        )
-        assert_allclose(raw_annots[key].onset, raw_in_annots[key].onset, atol=atol)
+def _add_screen_metadata(calibrations):
+    """Add BIDS-required screen metadata to eyetracking calibrations."""
+    calibrations = [cal.copy() for cal in calibrations]
+    for cal in calibrations:
+        cal["screen_distance"] = 0.9
+        cal["screen_origin"] = ["top", "left"]
+        cal["screen_resolution"] = [1920, 1080]
+        cal["screen_size"] = [0.53, 0.3]
+    return calibrations
 
 
 def test_get_eyetrack_annotation_inds():
@@ -120,6 +97,9 @@ def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
             "model": "HV3",
             "positions": np.array([[0.0, 1.0], [2.0, 3.0], [4.0, 5.0]]),
             "screen_distance": 0.6,
+            "screen_origin": ["top", "left"],
+            "screen_resolution": [1920, 1080],
+            "screen_size": [0.53, 0.3],
         },
         {
             "eye": "right",
@@ -128,6 +108,9 @@ def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
             "model": "HV3",
             "positions": np.array([[1.0, 1.0], [3.0, 3.0], [5.0, 5.0]]),
             "screen_distance": 0.6,
+            "screen_origin": ["top", "left"],
+            "screen_resolution": [1920, 1080],
+            "screen_size": [0.53, 0.3],
         },
     ]
     updated = write_eyetrack_calibration(eyetrack_bpath, calibrations)
@@ -153,85 +136,78 @@ def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
 
 
 @testing.requires_testing_data
-def test_eyetracking_io_roundtrip(_bids_validate, raw_eye_and_cals, eyetrack_bpath):
-    """Test eyetracking-only BIDS write/read roundtrip."""
-    raw, _ = raw_eye_and_cals
+def test_write_eyetracking_bino(_bids_validate, raw_eye_and_cals, eyetrack_bpath):
+    """Test writing eyetracking-only data to BIDS."""
+    raw, cals = raw_eye_and_cals
 
     write_raw_bids(
         raw,
         eyetrack_bpath,
         allow_preload=True,
         format="auto",
+        eyetrack_calibration=cals,
         overwrite=False,
     )
+    _bids_validate(eyetrack_bpath.root)
 
-    eye1_json = json.loads(
-        eyetrack_bpath.copy().update(extension=".json").fpath.read_text()
+    # each eye gets only its own annotations in *_physioevents.tsv.gz
+    events_bpath = eyetrack_bpath.copy().update(
+        suffix="physioevents", extension=".tsv.gz", check=False
     )
-    assert "x_coordinate" in eye1_json["Columns"]
-    assert "y_coordinate" in eye1_json["Columns"]
-
-    # The Physioevents TSV should be headerless
-    phys_ev_fpath = eyetrack_bpath.find_matching_sidecar(
-        suffix="physioevents", extension=".tsv.gz"
-    )
-    phys_ev = np.loadtxt(phys_ev_fpath, encoding="utf-8-sig", dtype=str, delimiter="\t")
-    first_line = phys_ev[0]
-    assert "onset" not in first_line
-    # Only ocular events should be in physioevents
-    trial_types = set(phys_ev[:, 2])
-    assert trial_types == {"blink", "fixation", "saccade"}
-
-    phys_ev_json = phys_ev_fpath.with_suffix("").with_suffix(".json")
-    assert phys_ev_json.exists()
-    assert json.loads(phys_ev_json.read_text()).get("Columns")
-
-    raw_in = read_raw_bids(eyetrack_bpath)
-
-    want_names = [
-        "x_coordinate_eye1",
-        "y_coordinate_eye1",
-        "pupil_size_eye1",
-        "x_coordinate_eye2",
-        "y_coordinate_eye2",
-        "pupil_size_eye2",
-    ]
-    assert raw_in.ch_names == want_names
-    _assert_roundtrip_raw(raw_in, raw)
-    _assert_roundtrip_annotations
-
-    assert len(raw.ch_names) == len(set(raw_in.ch_names))
-    assert "x_coordinate_eye1" in raw_in.ch_names
-    assert "y_coordinate_eye1" in raw_in.ch_names
-    assert "pupil_size_eye1" in raw_in.ch_names
-
-    # Eyetracking only Data should not have a *_channels.tsv file
-    with pytest.raises(RuntimeError, match="Did not find any"):
-        eyetrack_bpath.find_matching_sidecar(suffix="channels", extension=".tsv")
+    n_events = []
+    for recording in ("eye1", "eye2"):
+        fpath = events_bpath.copy().update(recording=recording).fpath
+        with gzip.open(fpath, "rt") as fid:
+            n_events.append(len(fid.read().splitlines()))
+    n_annots = len(_get_eyetrack_annotation_inds(raw))
+    assert sum(n_events) == n_annots
+    assert min(n_events) > 0
 
 
 @testing.requires_testing_data
-def test_write_raw_bids_does_not_mutate_raw(raw_eye_and_cals, eyetrack_bpath):
-    """write_raw_bids should not mutate source raw object.
-
-    Writing Eyetracking BIDS involves copying the Raw object, then deleting channels and
-    Annotations. So this is a safeguard to make sure that our code does not mutate the
-    input Raw object.
-    """
-    raw, _ = raw_eye_and_cals
-    ch_names_before = raw.ch_names.copy()
-    desc_before = raw.annotations.description.copy()
-
+@pytest.mark.parametrize("eye", ["left", "right"], ids=["left", "right"])
+def test_write_eyetracking_mono(_bids_validate, raw_eye_and_cals, eyetrack_bpath, eye):
+    """Test writing monocular eyetracking data."""
+    raw, cals = raw_eye_and_cals
+    raw.drop_channels([f"xpos_{eye}", f"ypos_{eye}", f"pupil_{eye}"])
+    cal = cals[0] if eye == "left" else cals[1]
     write_raw_bids(
         raw,
         eyetrack_bpath,
         allow_preload=True,
         format="auto",
+        eyetrack_calibration=cal,
         overwrite=False,
     )
+    _bids_validate(eyetrack_bpath.root)
 
-    assert raw.ch_names == ch_names_before
-    np.testing.assert_array_equal(raw.annotations.description, desc_before)
+
+@testing.requires_testing_data
+def test_write_eyetrack_without_annotations(
+    _bids_validate, raw_eye_and_cals, eyetrack_bpath
+):
+    """Ensure ET data without annotations can be written and is complaint."""
+    raw, cals = raw_eye_and_cals
+    eye_annot_inds = [
+        ii
+        for ii, names in enumerate(raw.annotations.ch_names)
+        if (
+            names == ("xpos_left", "ypos_left", "pupil_left")
+            or names == ("xpos_right", "ypos_right", "pupil_right")
+        )
+    ]
+    raw.annotations.delete(eye_annot_inds)
+
+    with pytest.warns(match="No eyetracking annotations found."):
+        write_raw_bids(
+            raw,
+            eyetrack_bpath,
+            allow_preload=True,
+            format="auto",
+            eyetrack_calibration=cals,
+            overwrite=False,
+        )
+    _bids_validate(eyetrack_bpath.root)
 
 
 @testing.requires_testing_data
@@ -239,13 +215,14 @@ def test_write_raw_bids_does_not_mutate_raw(raw_eye_and_cals, eyetrack_bpath):
 @pytest.mark.filterwarnings(
     "ignore:Encountered unsupported non-voltage units:UserWarning"
 )
-def test_eeg_eyetracking_io_roundtrip(_bids_validate, tmp_path, eyetrack_bpath):
-    """Test simultaneous EEG+eyetracking write and readback."""
+def test_write_eeg_eyetracking(_bids_validate, tmp_path, eyetrack_bpath):
+    """Test writing simultaneous EEG+eyetracking data to BIDS."""
     eyetrack_fpath = testing.data_path(download=False) / "eyetrack" / "test_eyelink.asc"
     egi_fpath = testing.data_path(download=False) / "EGI" / "test_egi.mff"
     raw_eye = read_raw_eyelink(eyetrack_fpath)
     raw_egi = read_raw_egi(egi_fpath, events_as_annotations=False).load_data()
     cals = mne.preprocessing.eyetracking.read_eyelink_calibration(eyetrack_fpath)
+    cals = _add_screen_metadata(cals)
 
     # Hack together the raws
     raw_eye.crop(tmax=raw_egi.times[-1]).resample(100, method="polyphase")
@@ -261,23 +238,86 @@ def test_eeg_eyetracking_io_roundtrip(_bids_validate, tmp_path, eyetrack_bpath):
         recording=None, datatype="eeg", suffix="eeg", extension=".vhdr"
     )
 
-    write_raw_bids(raw, eeg_bpath, allow_preload=True, format="BrainVision")
-    write_eyetrack_calibration(eyetrack_bpath, cals)
-
-    assert eyetrack_bpath.fpath.parent.name == "eeg"
-
-    # e.g. in EEG-eytracking, the recording-eye{1,2} entity is only for the physio files
-    for suffix, ext in zip(("channels", "eeg", "events"), (".tsv", ".json", ".tsv")):
-        sidecar_fname = eeg_bpath.find_matching_sidecar(suffix=suffix, extension=ext)
-        assert sidecar_fname.exists()
-        assert "recording-eye" not in str(sidecar_fname.name)
-
-    eye1_json = json.loads(
-        eyetrack_bpath.fpath.with_suffix("").with_suffix(".json").read_text()
+    write_raw_bids(
+        raw,
+        eeg_bpath,
+        allow_preload=True,
+        format="BrainVision",
+        eyetrack_calibration=cals,
     )
-    assert eye1_json["RecordedEye"] == "left"
+    _bids_validate(eeg_bpath.root)
 
-    raw_eye_in = read_raw_bids(eyetrack_bpath)
-    _assert_roundtrip_raw(raw_eye_in, raw_eye)
-    assert all(raw_eye.annotations.description == raw_eye_in.annotations.description)
-    assert len(raw_eye_in.ch_names) == len(set(raw_eye_in.ch_names))
+
+@testing.requires_testing_data
+def test_write_raises(raw_eye_and_cals, eyetrack_bpath):
+    """Ensure that malformed raw objects hit our error messages when writing."""
+    # 1. We need the loc array to be properly set for eyetracking channels.
+    raw, cals = raw_eye_and_cals
+    orig_coord = raw.info["chs"][0]["loc"][4].copy()
+    raw.info["chs"][0]["loc"][4] = 4
+    with pytest.raises(match="Eyegaze channels must set"):
+        write_raw_bids(
+            raw,
+            eyetrack_bpath,
+            allow_preload=True,
+            format="auto",
+            eyetrack_calibration=cals,
+            overwrite=False,
+        )
+    raw.info["chs"][0]["loc"][4] = orig_coord
+
+    # 2: BIDS can't handle e.g. two x-coordinate channels for the left eye..
+    new_data = raw.get_data(picks="xpos_left").copy()
+    new_info = mne.create_info(
+        ch_names=["xpos_left_2"], sfreq=raw.info["sfreq"], ch_types=["eyegaze"]
+    )
+    new_channel = mne.io.RawArray(new_data, new_info)
+    new_channel = mne.preprocessing.eyetracking.set_channel_types_eyetrack(
+        new_channel, mapping={"xpos_left_2": ("eyegaze", "px", "left", "x")}
+    )
+    raw.add_channels([new_channel])
+    with pytest.raises(match="this will result in duplicate BIDS names"):
+        write_raw_bids(
+            raw,
+            eyetrack_bpath,
+            allow_preload=True,
+            format="auto",
+            eyetrack_calibration=cals,
+            overwrite=False,
+        )
+    raw.drop_channels("xpos_left_2")
+
+    # 3 The user needs to specify the datatype
+    eyetrack_bpath_bad = eyetrack_bpath.copy().update(datatype=None)
+    with pytest.raises(match="datatype must be specified"):
+        mne_bids.physio.eyetracking._write_eyetrack_tsvs(
+            raw=raw,
+            bids_path=eyetrack_bpath_bad,
+            overwrite=False,
+        )
+    del eyetrack_bpath_bad
+
+    # 4. Again, the loc array must be properly set for eyetrack channels
+    orig_eye = raw.info["chs"][0]["loc"][3].copy()
+    raw.info["chs"][0]["loc"][3] = 999.0
+    with pytest.raises(match="must specify the eye"):
+        mne_bids.physio.eyetracking._write_eyetrack_tsvs(
+            raw=raw,
+            bids_path=eyetrack_bpath,
+            overwrite=False,
+        )
+    raw.info["chs"][0]["loc"][3] = orig_eye
+
+    # 4. Calibration objects must contain 'left' or 'right' in their 'eye' key
+    cal_bad = cals[0].copy()
+    cal_bad["eye"] = "foo"
+    with pytest.raises(match="'left' or 'right' in its 'eye' key."):
+        write_raw_bids(
+            raw,
+            eyetrack_bpath,
+            allow_preload=True,
+            format="auto",
+            eyetrack_calibration=cal_bad,
+            overwrite=False,
+        )
+    del cal_bad

@@ -5,9 +5,9 @@
 
 import json
 import textwrap
+from functools import cache
 from pathlib import Path
 
-import jinja2
 import numpy as np
 from mne.utils import logger, verbose
 
@@ -24,11 +24,17 @@ from mne_bids.path import (
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import warn
 
-jinja_env = jinja2.Environment(
-    loader=jinja2.PackageLoader(
-        package_name="mne_bids.report", package_path="templates"
+
+@cache
+def _jinja_env():
+    """Build the template environment lazily, to keep jinja2 off the import path."""
+    import jinja2
+
+    return jinja2.Environment(
+        loader=jinja2.PackageLoader(
+            package_name="mne_bids.report", package_path="templates"
+        )
     )
-)
 
 
 def _pretty_str(listed):
@@ -502,14 +508,16 @@ def make_report(root, session=None, verbose=None):
     if not participant_summary:
         participants_info = ""
     else:
-        particpants_info_template = jinja_env.get_template("participants.jinja")
+        particpants_info_template = _jinja_env().get_template("participants.jinja")
         participants_info = particpants_info_template.render(**participant_summary)
         logger.info(f"The participant template found: {participants_info}")
 
     if not scans_summary:
         datatype_agnostic_info = ""
     else:
-        datatype_agnostic_template = jinja_env.get_template("datatype_agnostic.jinja")
+        datatype_agnostic_template = _jinja_env().get_template(
+            "datatype_agnostic.jinja"
+        )
         datatype_agnostic_info = datatype_agnostic_template.render(
             **dataset_agnostic_summary
         )
@@ -528,7 +536,7 @@ def make_report(root, session=None, verbose=None):
     # lower-case templates are "Recommended",
     # while upper-case templates are "Required".
 
-    dataset_summary_template = jinja_env.get_template("dataset_summary.jinja")
+    dataset_summary_template = _jinja_env().get_template("dataset_summary.jinja")
     dataset_summary_info = dataset_summary_template.render(**dataset_summary)
 
     # Concatenate info and clean the paragraph

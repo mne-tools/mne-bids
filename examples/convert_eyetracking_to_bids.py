@@ -22,6 +22,8 @@ MNE-BIDS.
 # %%
 import json
 import shutil
+import tempfile
+from pathlib import Path
 from pprint import pprint
 
 import mne
@@ -30,7 +32,7 @@ from mne.datasets.eyelink import data_path as eyelink_data_path
 from mne.preprocessing.eyetracking import read_eyelink_calibration
 
 from mne_bids import BIDSPath, print_dir_tree, read_raw_bids, write_raw_bids
-from mne_bids.physio import read_eyetrack_calibration, write_eyetrack_calibration
+from mne_bids.physio import read_eyetrack_calibration
 
 # %%
 # Load example eyetracking data
@@ -42,6 +44,8 @@ data_path = testing.data_path(download=False)
 eyetrack_fpath = data_path / "eyetrack" / "test_eyelink.asc"
 raw = mne.io.read_raw_eyelink(eyetrack_fpath)
 cals = read_eyelink_calibration(eyetrack_fpath)
+for cal in cals:
+    cal["screen_origin"] = ["top", "left"]
 raw
 
 # %%
@@ -53,18 +57,15 @@ raw.plot(scalings="auto")
 #
 # Eyetracking-only data is stored in the ``'beh'`` modality directory. Eyetracking data
 # that was collected alongside another modality (``eeg``, ``meg``, etc) will be stored
-# in the same directory as that modality (``'eeg'``, ``'meg'``, etc). As such, when
-# defining a BIDSPath instance to read or write eyetracking data, pass
-# ``datatype="beh"`` for eyetracking-only data. If the data were collected alongside
-# EEG data, then you would pass ``datatype='eeg'``. Either way, you should also pass
-# ``suffix="physio"``, and ``recording='eye1'`` to the BIDSPath constructor
-# (even for binocular data, where there is also a ``<match>_recording-eye2.tsv.gz``
-# file. MNE-BIDS will handle reading and writing of ``eye2`` data for us.)
+# in the same directory as that modality. When defining a BIDSPath instance to read or
+# write eyetracking data, pass ``datatype="beh"`` for eyetracking-only data, and for
+# example ``datatype='eeg'`` if data were collected simultaneously with EEG data.
+# Either way, you should also pass ``suffix="physio"``, and ``recording='eye1'`` to the
+# BIDSPath constructor (even for binocular data, MNE-BIDS will handle reading and
+# writing of ``eye2`` data for us.)
 
 # %%
-bids_root = data_path.parent / "MNE-eyetrack-data-bids-example"
-if bids_root.exists():
-    shutil.rmtree(bids_root)
+bids_root = Path(tempfile.mkdtemp(prefix="mne_bids_eyetrack_"))
 
 bids_path = BIDSPath(
     root=bids_root,
@@ -82,8 +83,11 @@ bids_path = BIDSPath(
 # Write BIDS eyetracking files
 # ----------------------------
 #
+# To write eyetracking BIDS, you need to pass both the Raw object with the eytracking
+# data, and a :class:`~mne.preprocessing.eyetracking.Calibration` object that
+# contains necessary metadata about the presentation display used in the experiment.
 # MNE-BIDS will write one ``*_physio.tsv.gz`` + ``*_physio.json`` pair per eye,
-# and matching ``*_physioevents.tsv.gz`` files. Additionally, we are going to convert
+# with matching ``*_physioevents.tsv.gz`` files. Additionally, we are going to convert
 # our eyetracking eyegaze channels from pixels-on-screen to radians-of-visual-angle, to
 # demonstrate how BIDS stores the units.
 
@@ -93,18 +97,13 @@ cal["screen_size"] = (0.53, 0.3)
 cal["screen_distance"] = 0.9
 mne.preprocessing.eyetracking.convert_units(raw, calibration=cal, to="radians")
 
-
-write_raw_bids(raw=raw, bids_path=bids_path, allow_preload=True, overwrite=True)
-
-# %%
-# Add calibration metadata to the eyetracking sidecar
-# ---------------------------------------------------
-#
-# We can update the ``*_physio.json`` sidecar with calibration eyetracking
-# calibration information.
-
-# %%
-write_eyetrack_calibration(bids_path, cals)
+write_raw_bids(
+    raw=raw,
+    bids_path=bids_path,
+    allow_preload=True,
+    eyetrack_calibration=cals,
+    overwrite=True,
+)
 
 # %%
 # Inspect the generated BIDS directory tree.
@@ -155,6 +154,11 @@ cals_in = read_eyetrack_calibration(bids_path)
 eyelink_root = eyelink_data_path()
 et_fpath = eyelink_root / "eeg-et" / "sub-01_task-plr_eyetrack.asc"
 eeg_fpath = eyelink_root / "eeg-et" / "sub-01_task-plr_eeg.mff"
+cals = mne.preprocessing.eyetracking.read_eyelink_calibration(et_fpath)
+cals[0]["screen_origin"] = ["top", "left"]
+cals[0]["screen_resolution"] = (1920, 1080)
+cals[0]["screen_size"] = (0.53, 0.3)
+cals[0]["screen_distance"] = 0.9
 
 raw_et = mne.io.read_raw_eyelink(et_fpath)
 raw_eeg = mne.io.read_raw_egi(eeg_fpath, events_as_annotations=True).load_data()
@@ -190,9 +194,7 @@ del raw_eeg  # free up some memory
 # Write the merged EEG + eyetracking recording.
 
 # %%
-bids_root_simultaneous = eyelink_root.parent / "MNE-eyetrack-eeg-bids-example"
-if bids_root_simultaneous.exists():
-    shutil.rmtree(bids_root_simultaneous)
+bids_root_simultaneous = Path(tempfile.mkdtemp(prefix="mne_bids_eyetrack_eeg_"))
 
 bids_path_eeg = BIDSPath(
     root=bids_root_simultaneous,
@@ -204,7 +206,12 @@ bids_path_eeg = BIDSPath(
     suffix="eeg",
 )
 write_raw_bids(
-    raw_et, bids_path_eeg, allow_preload=True, format="BrainVision", verbose="error"
+    raw_et,
+    bids_path_eeg,
+    allow_preload=True,
+    format="BrainVision",
+    eyetrack_calibration=cals,
+    verbose="error",
 )
 
 # %%
@@ -216,7 +223,8 @@ print_dir_tree(bids_root_simultaneous)
 
 # %%
 # Again, let's inspect the saved metadata for one eye. Note that the units for our
-# eyegaze channels are 'pixel', meaining these data are 'pixel-on-screen' coordinates.
+# eyegaze channels are 'pixel', meaning these data are 'pixel-on-screen' coordinates.
+
 # %%
 eye1_json = bids_path_eeg.find_matching_sidecar(suffix="physio", extension=".json")
 print(f"Filepath: {eye1_json}")
@@ -238,3 +246,7 @@ bids_path_eye1 = bids_path_eeg.copy().update(
 )
 raw_eye1 = read_raw_bids(bids_path_eye1)
 raw_eye1
+
+# %%
+shutil.rmtree(bids_root)
+shutil.rmtree(bids_root_simultaneous)

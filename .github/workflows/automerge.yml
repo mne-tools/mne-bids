@@ -8,6 +8,7 @@ permissions:
 jobs:
   autobot:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: (github.event.pull_request.user.login == 'dependabot[bot]' || github.event.pull_request.user.login == 'pre-commit-ci[bot]') && github.repository == 'mne-tools/mne-bids'
     steps:
       - name: Enable auto-merge for bot PRs

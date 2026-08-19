@@ -5,6 +5,7 @@ permissions: read-all
 jobs:
   circleci_artifacts_redirector_job:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: "${{ startsWith(github.event.context, 'ci/circleci: docs-build') }}"
     permissions:
       statuses: write
