@@ -878,6 +878,20 @@ def _participants_json(fname, overwrite=False):
         fid.write("\n")
         logger.info(f"Writing '{fname}'...")
 
+def _check_fif_splits(raw_fname, fdir, datatype):
+    """Check for split fif files and if split, return all file names."""
+    raw_fnames = [op.join(datatype, raw_fname)]
+    raw_files = [f for f in os.listdir(fdir) if f.endswith(".fif")]
+    if raw_fname not in raw_files:
+        raw_fnames = []
+        split_base = raw_fname.replace("_meg.fif", "_split-{}")
+        for raw_f in raw_files:
+            if len(raw_f.split("_split-")) == 2:
+                if split_base.format(raw_f.split("_split-")[1]) == raw_f:
+                    raw_fnames.append(op.join(datatype, raw_f))
+        raw_fnames.sort()
+    return raw_fnames
+
 
 def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     """Create a scans.tsv file and save it.
@@ -909,20 +923,9 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     # for fif files check whether raw file is likely to be split
     raw_fnames = [raw_fname]
     if raw_fname.endswith(".fif"):
-        # check whether fif files were split when saved
-        # use the files in the target directory what should be written
-        # to scans.tsv
         datatype, basename = raw_fname.split(os.sep)
         raw_dir = op.join(op.dirname(fname), datatype)
-        raw_files = [f for f in os.listdir(raw_dir) if f.endswith(".fif")]
-        if basename not in raw_files:
-            raw_fnames = []
-            split_base = basename.replace("_meg.fif", "_split-{}")
-            for raw_f in raw_files:
-                if len(raw_f.split("_split-")) == 2:
-                    if split_base.format(raw_f.split("_split-")[1]) == raw_f:
-                        raw_fnames.append(op.join(datatype, raw_f))
-            raw_fnames.sort()
+        raw_fnames = _check_fif_splits(basename, raw_dir, datatype)
 
     data = OrderedDict(
         [
@@ -1116,7 +1119,7 @@ def _sidecar_json(
     emg_placement : "Measured" | "ChannelSpecific" | "Other" | None
         How the EMG sensor locations were determined. Must be one of the literal strings
         if ``datatype="emg"`` and should be ``None`` for all other datatypes.
-    emptyroom_fname : str | mne_bids.BIDSPath
+    emptyroom_fname : str | list of str | mne_bids.BIDSPath
         For MEG recordings, the path to an empty-room data file to be
         associated with ``raw``. Only supported for MEG.
     overwrite : bool
@@ -1775,6 +1778,7 @@ def write_raw_bids(
     overwrite=False,
     readme=True,
     verbose=None,
+    extra_params=None
 ):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1980,6 +1984,8 @@ def write_raw_bids(
 
         .. versionadded:: 0.19
     %(verbose)s
+    extra_params : None | dict
+        Extra parameters to be passed.
 
     Returns
     -------
@@ -2235,6 +2241,7 @@ def write_raw_bids(
                 )
 
     associated_er_path = None
+    check_splits = []
 
     if isinstance(empty_room, mne.io.BaseRaw):
         er_date = empty_room.info["meas_date"]
@@ -2261,8 +2268,13 @@ def write_raw_bids(
             overwrite=overwrite,
             verbose=verbose,
         )
+
+        check_splits = [er_bids_path.directory / cs.strip("meg/")
+                        for cs in _check_fif_splits(er_bids_path.basename,
+                                                    er_bids_path.directory,
+                                                    er_bids_path.datatype)]
         associated_er_path = er_bids_path.fpath
-        del er_bids_path, er_date, er_session
+        #del er_bids_path, er_date, er_session
     elif isinstance(empty_room, BIDSPath):
         if bids_path.datatype != "meg":
             raise ValueError('"empty_room" is only supported for MEG data.')
@@ -2276,15 +2288,19 @@ def write_raw_bids(
                 "The MEG data and its associated empty-room "
                 "recording must share the same BIDS root."
             )
+        check_splits = [er_bids_path.directory / cs.strip("meg/")
+                        for cs in _check_fif_splits(er_bids_path.basename,
+                                                    er_bids_path.directory,
+                                                    er_bids_path.datatype)]
         associated_er_path = empty_room.fpath
 
     if associated_er_path is not None:
-        if not associated_er_path.exists():
-            raise FileNotFoundError(
-                f"Empty-room data file not found: {associated_er_path}"
-            )
+        for ai, aep in enumerate(check_splits):
+            if not aep.exists():
+                raise FileNotFoundError(
+                    f"Empty-room data file not found: {aep}"
+                )
 
-        # Turn it into a path relative to the BIDS root
         associated_er_path = associated_er_path.relative_to(bids_path.root)
         # Ensure it works on Windows too
         associated_er_path = associated_er_path.as_posix()
