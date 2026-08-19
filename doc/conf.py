@@ -5,8 +5,8 @@
 
 import os
 import sys
-from pathlib import Path
 from datetime import date
+from pathlib import Path
 
 from intersphinx_registry import get_intersphinx_mapping
 from sphinx.config import is_serializable
@@ -63,6 +63,7 @@ numpydoc_xref_aliases = {
     "list": ":class:`list <python:list>`",
     "tuple": ":class:`tuple <python:tuple>`",
     "NibabelImageObject": "nibabel.spatialimages.SpatialImage",
+    "CalibrationObject": "mne.preprocessing.eyetracking.Calibration",
 }
 numpydoc_xref_ignore = {
     # words
@@ -217,3 +218,9 @@ sphinx_gallery_conf = {
 }
 
 assert is_serializable(sphinx_gallery_conf)
+
+# Reusable hyperlink targets that can be referenced in our Documentation/Docstrings
+rst_epilog = """
+.. _The Eyetracking BIDS specification:
+   https://bids-specification.readthedocs.io/en/stable/modality-specific-files/physiological-recordings.html#eye-tracking
+"""
