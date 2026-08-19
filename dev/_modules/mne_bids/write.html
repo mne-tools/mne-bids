@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=06ef9a9c"></script>
+    <script src="../../_static/documentation_options.js?v=2aee958c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev31+g00d02f1c6" />
+  <meta name="docsearch:version" content="0.20.0.dev32+g023e5f8a7" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</p>
   
 </a></div>
     
@@ -555,6 +555,7 @@
     <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span><span class="p">,</span>
     <span class="n">BIDS_VERSION</span><span class="p">,</span>
     <span class="n">CONVERT_FORMATS</span><span class="p">,</span>
+    <span class="n">EPHY_ALLOWED_DATATYPES</span><span class="p">,</span>
     <span class="n">EXT_TO_UNIT_MAP</span><span class="p">,</span>
     <span class="n">FORMAT_EXTENSIONS</span><span class="p">,</span>
     <span class="n">IGNORED_CHANNELS</span><span class="p">,</span>
@@ -582,6 +583,13 @@
     <span class="n">_write_empty_ieeg_positions</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_path_to_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.physio</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_eyetrack_calibration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.physio.eyetracking</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_eyetrack_calibration_to_events_metadata</span><span class="p">,</span>
+    <span class="n">_get_eyetrack_annotation_inds</span><span class="p">,</span>
+    <span class="n">_get_eyetrack_ch_names</span><span class="p">,</span>
+    <span class="n">_write_eyetrack_tsvs</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.pick</span><span class="w"> </span><span class="kn">import</span> <span class="n">coil_type</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.read</span><span class="w"> </span><span class="kn">import</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_read_events</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.sidecar_updates</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_sidecar_json</span>
@@ -899,8 +907,10 @@
     <span class="n">raw</span><span class="p">,</span>
     <span class="n">fname</span><span class="p">,</span>
     <span class="n">trial_type</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">event_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">extras_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">compress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Create an events.tsv file and save it.</span>
@@ -929,6 +939,8 @@
 <span class="sd">    event_metadata : pandas.DataFrame | None</span>
 <span class="sd">        Additional metadata to be stored in the events.tsv file. Must have one</span>
 <span class="sd">        row per event.</span>
+<span class="sd">    compress : bool</span>
+<span class="sd">        Whether to gzip the tsv file, e.g. for &lt;match&gt;_physioevents.tsv.gz files.</span>
 <span class="sd">    extras_columns : dict | None</span>
 <span class="sd">        Optional column data derived from annotation extras, mapping column name to</span>
 <span class="sd">        per-event values.</span>
@@ -988,7 +1000,8 @@
             <span class="k">continue</span>
         <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
 
-    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">compress</span><span class="o">=</span><span class="n">compress</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_extract_hed_for_write</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n_events</span><span class="p">):</span>
@@ -1029,6 +1042,7 @@
     <span class="n">extra_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">has_trial_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">hed_by_trial_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Create events.json for non-default columns in accompanying TSV.</span>
@@ -1049,6 +1063,8 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">extra_columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">extra_columns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
     <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">"onset"</span><span class="p">:</span> <span class="p">{</span>
@@ -1089,6 +1105,8 @@
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">new_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Description"</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
 
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">new_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
     <span class="c1"># make sure to append any JSON fields added by the user</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -1616,7 +1634,7 @@
 <span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Filename to save the sidecar json to.</span>
 <span class="sd">    datatype : str</span>
-<span class="sd">        Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.</span>
+<span class="sd">        Type of the data as in EPHY_ALLOWED_DATATYPES.</span>
 <span class="sd">    emg_placement : "Measured" | "ChannelSpecific" | "Other" | None</span>
 <span class="sd">        How the EMG sensor locations were determined. Must be one of the literal strings</span>
 <span class="sd">        if ``datatype="emg"`` and should be ``None`` for all other datatypes.</span>
@@ -2283,6 +2301,7 @@
     <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">electrodes_tsv_task</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">emg_placement</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">eyetrack_calibration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">readme</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2472,6 +2491,19 @@
 <span class="sd">    emg_placement : "Measured" | "ChannelSpecific" | "Other" | None</span>
 <span class="sd">        How the EMG sensor locations were determined. Must be one of the literal strings</span>
 <span class="sd">        if datatype is "emg" and should be ``None`` for all other datatypes.</span>
+<span class="sd">    eyetrack_calibration : mne.preprocessing.eyetracking.Calibration | list | None</span>
+<span class="sd">        Eyetracking calibration metadata. Required when writing eyetracking data.</span>
+<span class="sd">        The calibration object(s) must include ``"screen_distance"``,</span>
+<span class="sd">        ``"screen_origin"``, ``"screen_resolution"``, and ``"screen_size"`` so</span>
+<span class="sd">        MNE-BIDS can write the BIDS-required ``"StimulusPresentation"`` metadata</span>
+<span class="sd">        to ``*_events.json``. Calibration metadata is also written to the per-eye</span>
+<span class="sd">        ``*_physio.json`` sidecars. Examples of valid values for these keys are:</span>
+
+<span class="sd">        - ``screen_origin``: ``["top", "left"]``</span>
+<span class="sd">        - ``screen_resolution``: ``[1920, 1080]``</span>
+<span class="sd">        - ``screen_size``: ``[0.53, 0.3] # meters``</span>
+<span class="sd">        - ``screen_distance``: ``0.9 # meters``</span>
+
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to ``False``.</span>
@@ -2550,6 +2582,9 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"raw_file must be an instance of BaseRaw, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">is_eyetracking_only</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">ch</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"eyegaze"</span><span class="p">,</span> <span class="s2">"pupil"</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_channel_types</span><span class="p">()]</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">preload</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">allow_preload</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -2657,7 +2692,9 @@
 
         <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">_reader_for_raw</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">)(</span><span class="o">**</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">format</span> <span class="ow">in</span> <span class="n">FORMAT_EXTENSIONS</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_eyetracking_only</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="ow">or</span> <span class="s2">".tsv.gz"</span>
+        <span class="k">elif</span> <span class="nb">format</span> <span class="ow">in</span> <span class="n">FORMAT_EXTENSIONS</span><span class="p">:</span>
             <span class="n">ext</span> <span class="o">=</span> <span class="n">FORMAT_EXTENSIONS</span><span class="p">[</span><span class="nb">format</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
@@ -2703,7 +2740,9 @@
     <span class="c1"># Initialize BIDSPath</span>
     <span class="n">datatype</span> <span class="o">=</span> <span class="n">_handle_datatype</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-        <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">ext</span>
+        <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">"beh"</span> <span class="k">else</span> <span class="n">datatype</span><span class="p">,</span>
+        <span class="n">extension</span><span class="o">=</span><span class="n">ext</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">"emg"</span> <span class="ow">and</span> <span class="n">emg_placement</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
@@ -2809,6 +2848,25 @@
 
     <span class="n">data_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span><span class="o">.</span><span class="n">directory</span>
 
+    <span class="c1"># If eyetrack channels are alongside eeg, meg etc. Then</span>
+    <span class="n">eyetrack_ch_names</span> <span class="o">=</span> <span class="n">_get_eyetrack_ch_names</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+    <span class="n">events_json_metadata</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">eyetrack_ch_names</span><span class="p">:</span>
+        <span class="n">events_json_metadata</span> <span class="o">=</span> <span class="n">_eyetrack_calibration_to_events_metadata</span><span class="p">(</span>
+            <span class="n">eyetrack_calibration</span>
+        <span class="p">)</span>
+        <span class="n">_write_eyetrack_tsvs</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+        <span class="n">write_eyetrack_calibration</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">eyetrack_calibration</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_eyetracking_only</span><span class="p">:</span>
+            <span class="c1"># ET data were written to TSVs, so don't save them to binary file.</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dropping eyetracking channels from raw: </span><span class="si">{</span><span class="n">eyetrack_ch_names</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">(</span><span class="n">eyetrack_ch_names</span><span class="p">)</span>
+        <span class="c1"># Now delete annotations tied to eyetracking channels so they aren't written</span>
+        <span class="c1"># to the &lt;match&gt;_events files.</span>
+        <span class="n">ocular_event_inds</span> <span class="o">=</span> <span class="n">_get_eyetrack_annotation_inds</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">ocular_event_inds</span><span class="p">)</span>
+
     <span class="c1"># create *_scans.tsv</span>
     <span class="n">session_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
         <span class="n">subject</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
@@ -2842,6 +2900,8 @@
 
     <span class="n">sidecar_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">)</span>
     <span class="n">events_tsv_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">"events"</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".tsv"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_eyetracking_only</span><span class="p">:</span>
+        <span class="n">events_tsv_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">events_json_path</span> <span class="o">=</span> <span class="n">events_tsv_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">)</span>
     <span class="n">channels_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">"channels"</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".tsv"</span><span class="p">)</span>
 
@@ -2993,6 +3053,7 @@
                 <span class="n">extra_columns</span><span class="o">=</span><span class="n">events_extra_columns</span><span class="p">,</span>
                 <span class="n">has_trial_type</span><span class="o">=</span><span class="n">has_trial_type</span><span class="p">,</span>
                 <span class="n">hed_by_trial_type</span><span class="o">=</span><span class="n">hed</span><span class="p">[</span><span class="s2">"sidecar_map"</span><span class="p">]</span> <span class="k">if</span> <span class="n">hed</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="n">events_json_metadata</span><span class="p">,</span>
                 <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="c1"># Kepp events_array around for BrainVision writing below.</span>
@@ -3009,23 +3070,25 @@
         <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">_sidecar_json</span><span class="p">(</span>
-        <span class="n">raw</span><span class="p">,</span>
-        <span class="n">task</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="p">,</span>
-        <span class="n">manufacturer</span><span class="o">=</span><span class="n">manufacturer</span><span class="p">,</span>
-        <span class="n">fname</span><span class="o">=</span><span class="n">sidecar_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
-        <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
-        <span class="n">emptyroom_fname</span><span class="o">=</span><span class="n">associated_er_path</span><span class="p">,</span>
-        <span class="n">emg_placement</span><span class="o">=</span><span class="n">emg_placement</span><span class="p">,</span>
-        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="c1"># This func is specifically for writing sidecar for datatypes with channel info</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="n">EPHY_ALLOWED_DATATYPES</span><span class="p">:</span>
+        <span class="n">_sidecar_json</span><span class="p">(</span>
+            <span class="n">raw</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="p">,</span>
+            <span class="n">manufacturer</span><span class="o">=</span><span class="n">manufacturer</span><span class="p">,</span>
+            <span class="n">fname</span><span class="o">=</span><span class="n">sidecar_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
+            <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+            <span class="n">emptyroom_fname</span><span class="o">=</span><span class="n">associated_er_path</span><span class="p">,</span>
+            <span class="n">emg_placement</span><span class="o">=</span><span class="n">emg_placement</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># create parent directories if needed</span>
     <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">data_path</span><span class="p">))</span>
 
     <span class="c1"># If not already converting for anonymization, we may still need to do it</span>
     <span class="c1"># if current format not BIDS compliant</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_eyetracking_only</span><span class="p">:</span>
         <span class="n">convert</span> <span class="o">=</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">convert</span> <span class="ow">and</span> <span class="n">symlink</span><span class="p">:</span>
@@ -3082,17 +3145,20 @@
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="n">FORMAT_EXTENSIONS</span><span class="p">[</span><span class="n">write_format</span><span class="p">])</span>
 
     <span class="c1"># this can't happen until after value of `convert` has been determined</span>
-    <span class="n">_channels_tsv</span><span class="p">(</span>
-        <span class="n">raw</span><span class="p">,</span>
-        <span class="n">channels_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
-        <span class="n">convert_fmt</span><span class="o">=</span><span class="n">write_format</span> <span class="k">if</span> <span class="n">convert</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_eyetracking_only</span><span class="p">:</span>
+        <span class="n">_channels_tsv</span><span class="p">(</span>
+            <span class="n">raw</span><span class="p">,</span>
+            <span class="n">channels_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
+            <span class="n">convert_fmt</span><span class="o">=</span><span class="n">write_format</span> <span class="k">if</span> <span class="n">convert</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># raise error when trying to copy files (copyfile_*) into same location</span>
     <span class="c1"># (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="ow">not</span> <span class="n">allow_preload</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_eyetracking_only</span>
+        <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
         <span class="ow">and</span> <span class="ow">not</span> <span class="n">convert</span>
         <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span> <span class="o">==</span> <span class="n">Path</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
     <span class="p">):</span>
@@ -3104,7 +3170,7 @@
 
     <span class="c1"># otherwise if the BIDSPath currently exists, check if we</span>
     <span class="c1"># would like to overwrite the existing dataset</span>
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_eyetracking_only</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
             <span class="c1"># Need to load data before removing its source</span>
             <span class="n">raw</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
@@ -3143,6 +3209,8 @@
             <span class="n">_write_raw_brainvision</span><span class="p">(</span>
                 <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span>
             <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">is_eyetracking_only</span><span class="p">:</span>
+        <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">".fif"</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">symlink</span><span class="p">:</span>
             <span class="n">link_target</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -4272,7 +4340,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-18.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-19.
       <br/>
     
   </p>

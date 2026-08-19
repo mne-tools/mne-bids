@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.utils &#8212; MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</title>
+    <title>mne_bids.utils &#8212; MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=06ef9a9c"></script>
+    <script src="../../_static/documentation_options.js?v=2aee958c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev31+g00d02f1c6" />
+  <meta name="docsearch:version" content="0.20.0.dev32+g023e5f8a7" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</p>
   
 </a></div>
     
@@ -750,14 +750,16 @@
 
 
 <span class="nd">@verbose</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_tsv</span><span class="p">(</span>
+    <span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Write an ordered dictionary to a .tsv file."""</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">" already exists. Please set overwrite to True.'</span>
         <span class="p">)</span>
-    <span class="n">_to_tsv</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">)</span>
+    <span class="n">_to_tsv</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">,</span> <span class="n">compress</span><span class="o">=</span><span class="n">compress</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Writing '</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">'..."</span><span class="p">)</span>
 
@@ -999,7 +1001,7 @@
 <span class="sd">    datatype : str</span>
 <span class="sd">        Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.</span>
 <span class="sd">    """</span>
-    <span class="n">supported_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"eeg"</span><span class="p">,</span> <span class="s2">"emg"</span><span class="p">,</span> <span class="s2">"ieeg"</span><span class="p">,</span> <span class="s2">"meg"</span><span class="p">,</span> <span class="s2">"nirs"</span><span class="p">)</span>
+    <span class="n">supported_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"beh"</span><span class="p">,</span> <span class="s2">"eeg"</span><span class="p">,</span> <span class="s2">"emg"</span><span class="p">,</span> <span class="s2">"ieeg"</span><span class="p">,</span> <span class="s2">"meg"</span><span class="p">,</span> <span class="s2">"nirs"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">"The specified datatype </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> is currently not supported. "</span>
@@ -1019,6 +1021,10 @@
     <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">"ieeg"</span><span class="p">:</span>
         <span class="n">ieeg_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"seeg"</span><span class="p">,</span> <span class="s2">"ecog"</span><span class="p">,</span> <span class="s2">"dbs"</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ieeg_type</span> <span class="ow">in</span> <span class="n">raw</span> <span class="k">for</span> <span class="n">ieeg_type</span> <span class="ow">in</span> <span class="n">ieeg_types</span><span class="p">):</span>
+            <span class="n">datatype_matches</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">"beh"</span><span class="p">:</span>
+        <span class="n">beh_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"eyegaze"</span><span class="p">,</span> <span class="s2">"pupil"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">beh_type</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_channel_types</span><span class="p">()</span> <span class="k">for</span> <span class="n">beh_type</span> <span class="ow">in</span> <span class="n">beh_types</span><span class="p">):</span>
             <span class="n">datatype_matches</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">datatype_matches</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -1135,7 +1141,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-18.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-19.
       <br/>
     
   </p>

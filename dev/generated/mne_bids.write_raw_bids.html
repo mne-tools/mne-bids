@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</title>
+    <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=06ef9a9c"></script>
+    <script src="../_static/documentation_options.js?v=2aee958c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev31+g00d02f1c6" />
+  <meta name="docsearch:version" content="0.20.0.dev32+g023e5f8a7" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</p>
   
 </a></div>
     
@@ -507,6 +507,9 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html">mne_bids.copyfiles.copyfile_kit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_mef.html">mne_bids.copyfiles.copyfile_mef</a></li>
 </ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.physio.write_eyetrack_calibration.html">mne_bids.physio.write_eyetrack_calibration</a></li>
+</ul>
 </div>
 </nav></div>
     </div>
@@ -570,7 +573,7 @@
 <h1>mne_bids.write_raw_bids<a class="headerlink" href="#mne-bids-write-raw-bids" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.write_raw_bids">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">write_raw_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_columns_descriptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">physical_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_room</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_preload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">montage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acpc_aligned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electrodes_tsv_task</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emg_placement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">write_raw_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_columns_descriptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">physical_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_room</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_preload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">montage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acpc_aligned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electrodes_tsv_task</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emg_placement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eyetrack_calibration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Link to this definition">#</a></dt>
 <dd><p>Save raw data to a BIDS-compliant folder structure.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -764,6 +767,19 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">False</
 <dt><strong>emg_placement</strong><span class="classifier">“Measured” | “ChannelSpecific” | “Other” | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>How the EMG sensor locations were determined. Must be one of the literal strings
 if datatype is “emg” and should be <code class="docutils literal notranslate"><span class="pre">None</span></code> for all other datatypes.</p>
 </dd>
+<dt><strong>eyetrack_calibration</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.Calibration.html#mne.preprocessing.eyetracking.Calibration" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.preprocessing.eyetracking.Calibration</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Eyetracking calibration metadata. Required when writing eyetracking data.
+The calibration object(s) must include <code class="docutils literal notranslate"><span class="pre">&quot;screen_distance&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;screen_origin&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;screen_resolution&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;screen_size&quot;</span></code> so
+MNE-BIDS can write the BIDS-required <code class="docutils literal notranslate"><span class="pre">&quot;StimulusPresentation&quot;</span></code> metadata
+to <code class="docutils literal notranslate"><span class="pre">*_events.json</span></code>. Calibration metadata is also written to the per-eye
+<code class="docutils literal notranslate"><span class="pre">*_physio.json</span></code> sidecars. Examples of valid values for these keys are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">screen_origin</span></code>: <code class="docutils literal notranslate"><span class="pre">[&quot;top&quot;,</span> <span class="pre">&quot;left&quot;]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">screen_resolution</span></code>: <code class="docutils literal notranslate"><span class="pre">[1920,</span> <span class="pre">1080]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">screen_size</span></code>: <code class="docutils literal notranslate"><span class="pre">[0.53,</span> <span class="pre">0.3]</span> <span class="pre">#</span> <span class="pre">meters</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">screen_distance</span></code>: <code class="docutils literal notranslate"><span class="pre">0.9</span> <span class="pre">#</span> <span class="pre">meters</span></code></p></li>
+</ul>
+</dd>
 <dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any existing files with the same BIDS parameters
@@ -851,6 +867,9 @@ lower-case, in compliance with the BIDS specification.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data &quot;manually&quot; in the BIDS format and how to retrieve them."><img alt="" src="../_images/sphx_glr_convert_empty_room_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/convert_empty_room.html"><span class="doc">Manually storing empty room data</span></a></p>
   <div class="sphx-glr-thumbnail-title">Manually storing empty room data</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to convert Eyelink eyetracking data to BIDS using MNE-BIDS."><img alt="" src="../_images/sphx_glr_convert_eyetracking_to_bids_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/convert_eyetracking_to_bids.html"><span class="doc">Convert eyetracking data to BIDS Format</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Convert eyetracking data to BIDS Format</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EMG data. The data comes from the FieldTrip download server, and was recorded through an EEG amplifier in BrainVision format. Because of that, we&#x27;ll need to explicitly change the channel type from EEG to EMG; this may not be necessary for your data."><img alt="" src="../_images/sphx_glr_convert_fieldtrip_emg_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/convert_fieldtrip_emg.html"><span class="doc">Convert EMG data to BIDS format</span></a></p>
   <div class="sphx-glr-thumbnail-title">Convert EMG data to BIDS format</div>
@@ -952,7 +971,7 @@ lower-case, in compliance with the BIDS specification.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-18.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-19.
       <br/>
     
   </p>

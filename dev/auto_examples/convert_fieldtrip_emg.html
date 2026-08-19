@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert EMG data to BIDS format &#8212; MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</title>
+    <title>Convert EMG data to BIDS format &#8212; MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=06ef9a9c"></script>
+    <script src="../_static/documentation_options.js?v=2aee958c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -79,14 +79,14 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="API Documentation" href="../api.html" />
-    <link rel="prev" title="Anonymizing a BIDS dataset" href="anonymize_dataset.html" />
+    <link rel="prev" title="Convert eyetracking data to BIDS Format" href="convert_eyetracking_to_bids.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/auto_examples/convert_fieldtrip_emg.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev31+g00d02f1c6" />
+  <meta name="docsearch:version" content="0.20.0.dev32+g023e5f8a7" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</p>
   
 </a></div>
     
@@ -477,6 +477,7 @@
 <li class="toctree-l1"><a class="reference internal" href="create_bids_folder.html">Creating BIDS-compatible folder names and filenames</a></li>
 <li class="toctree-l1"><a class="reference internal" href="update_bids_datasets.html">Updating BIDS datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="anonymize_dataset.html">Anonymizing a BIDS dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_eyetracking_to_bids.html">Convert eyetracking data to BIDS Format</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Convert EMG data to BIDS format</a></li>
 </ul>
 </div>
@@ -675,23 +676,24 @@ then prepare the info about what is <em>different</em> between them.</p>
     <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.edf
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_GABA_RAW.vhdr...
 Setting channel info structure...
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_GABA_RAW.vhdr...
 Setting channel info structure...
+Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/README'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.tsv'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_channels.tsv'...
-Reading 0 ... 7666299  =      0.000 ...  1533.260 secs...
 Converting data files to EDF format
+Reading 0 ... 7666299  =      0.000 ...  1533.260 secs...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv'...
 Wrote /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv entry with emg/sub-nt05_task-rest_acq-GabaMrs_emg.edf.
 /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json'...
-/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.edf
+/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_RS_RAW.vhdr...
 Setting channel info structure...
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_RS_RAW.vhdr...
@@ -705,8 +707,8 @@ Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/s
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_channels.tsv'...
-Reading 0 ... 3118199  =      0.000 ...   623.640 secs...
 Converting data files to EDF format
+Reading 0 ... 3118199  =      0.000 ...   623.640 secs...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv'...
 Wrote /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv entry with emg/sub-nt05_task-rest_acq-Bold_emg.edf.
 /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.json
@@ -736,7 +738,7 @@ data file, so the GABA MRS run lacks <code class="docutils literal notranslate">
 |--------- sub-nt05_task-rest_acq-GabaMrs_emg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.772 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 23.363 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-fieldtrip-emg-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3be0d39829386dcc67fee90c7f6116c6/convert_fieldtrip_emg.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_fieldtrip_emg.ipynb</span></code></a></p>
@@ -762,12 +764,12 @@ data file, so the GABA MRS run lacks <code class="docutils literal notranslate">
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="anonymize_dataset.html"
+       href="convert_eyetracking_to_bids.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Anonymizing a BIDS dataset</p>
+        <p class="prev-next-title">Convert eyetracking data to BIDS Format</p>
       </div>
     </a>
     <a class="right-next"
@@ -809,7 +811,7 @@ data file, so the GABA MRS run lacks <code class="docutils literal notranslate">
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-18.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-19.
       <br/>
     
   </p>

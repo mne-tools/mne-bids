@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert NIRS data to BIDS format &#8212; MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</title>
+    <title>Convert NIRS data to BIDS format &#8212; MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=06ef9a9c"></script>
+    <script src="../_static/documentation_options.js?v=2aee958c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev31+g00d02f1c6" />
+  <meta name="docsearch:version" content="0.20.0.dev32+g023e5f8a7" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev31+g00d02f1c6 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</p>
   
 </a></div>
     
@@ -481,6 +481,7 @@
 <li class="toctree-l1"><a class="reference internal" href="create_bids_folder.html">Creating BIDS-compatible folder names and filenames</a></li>
 <li class="toctree-l1"><a class="reference internal" href="update_bids_datasets.html">Updating BIDS datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="anonymize_dataset.html">Anonymizing a BIDS dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_eyetracking_to_bids.html">Convert eyetracking data to BIDS Format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="convert_fieldtrip_emg.html">Convert EMG data to BIDS format</a></li>
 </ul>
 </div>
@@ -587,6 +588,42 @@ download openly available datasets.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for fnirs_motor_group...
+Fetching 1 file for the fnirs_motor_group dataset ...
+
+0.00B [00:00, ?B/s]
+5.12kB [00:00, 16.1kB/s]
+2.40MB [00:00, 7.45MB/s]
+4.59MB [00:00, 11.9MB/s]
+6.86MB [00:00, 15.2MB/s]
+9.29MB [00:00, 17.9MB/s]
+11.4MB [00:01, 11.0MB/s]
+13.0MB [00:01, 5.89MB/s]
+14.3MB [00:01, 6.73MB/s]
+15.6MB [00:01, 7.63MB/s]
+16.9MB [00:01, 8.62MB/s]
+18.3MB [00:02, 9.58MB/s]
+19.6MB [00:02, 10.4MB/s]
+20.9MB [00:02, 11.1MB/s]
+22.3MB [00:02, 11.7MB/s]
+23.6MB [00:02, 12.1MB/s]
+24.9MB [00:02, 12.5MB/s]
+26.3MB [00:02, 12.6MB/s]
+27.6MB [00:02, 12.9MB/s]
+28.9MB [00:02, 13.0MB/s]
+30.3MB [00:02, 13.1MB/s]
+31.6MB [00:03, 13.1MB/s]
+32.9MB [00:03, 13.2MB/s]
+34.3MB [00:03, 13.3MB/s]
+35.7MB [00:03, 13.4MB/s]
+37.0MB [00:03, 13.1MB/s]
+38.3MB [00:03, 13.1MB/s]
+39.7MB [00:03, 13.2MB/s]
+41.0MB [00:03, 13.2MB/s]
+42.3MB [00:03, 13.2MB/s]
+43.7MB [00:03, 13.2MB/s]
+0.00B [00:00, ?B/s]
+0.00B [00:00, ?B/s]
+Download complete in 05s (41.7 MB)
 |fNIRS-motor-group/
 |--- .gitignore
 |--- CITATION.cff
@@ -890,6 +927,19 @@ electrodes_tsv_task : bool
 emg_placement : "Measured" | "ChannelSpecific" | "Other" | None
     How the EMG sensor locations were determined. Must be one of the literal strings
     if datatype is "emg" and should be ``None`` for all other datatypes.
+eyetrack_calibration : mne.preprocessing.eyetracking.Calibration | list | None
+    Eyetracking calibration metadata. Required when writing eyetracking data.
+    The calibration object(s) must include ``"screen_distance"``,
+    ``"screen_origin"``, ``"screen_resolution"``, and ``"screen_size"`` so
+    MNE-BIDS can write the BIDS-required ``"StimulusPresentation"`` metadata
+    to ``*_events.json``. Calibration metadata is also written to the per-eye
+    ``*_physio.json`` sidecars. Examples of valid values for these keys are:
+
+    - ``screen_origin``: ``["top", "left"]``
+    - ``screen_resolution``: ``[1920, 1080]``
+    - ``screen_size``: ``[0.53, 0.3] # meters``
+    - ``screen_distance``: ``0.9 # meters``
+
 overwrite : bool
     Whether to overwrite existing files or data in files.
     Defaults to ``False``.
@@ -1145,7 +1195,7 @@ describe Authors.</p>
 directories called the “BIDS-validator”, available as a web version and
 on the command line:</p>
 <p><a class="github reference external" href="https://github.com/bids-standard/bids-validator">bids-standard/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.765 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.869 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-nirs-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b666106ea850b55fb6bc69db6fdda679/convert_nirs_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_nirs_to_bids.ipynb</span></code></a></p>
@@ -1239,7 +1289,7 @@ on the command line:</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-18.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-19.
       <br/>
     
   </p>

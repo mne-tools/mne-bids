@@ -1,0 +1,1052 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_bids.physio.eyetracking &#8212; MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=81d8d220" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=2aee958c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=fd10adb8"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('consent', 'default', {
+                    'ad_storage': 'denied',
+                    'ad_user_data': 'denied',
+                    'ad_personalization': 'denied',
+                    'analytics_storage': 'denied'
+                });
+            </script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_bids/physio/eyetracking';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.20.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/_modules/mne_bids/physio/eyetracking.html" />
+    <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../../../_static/scrollfix.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.20.0.dev32+g023e5f8a7" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev32+g023e5f8a7 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    News
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use.html">
+    Use
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../generated/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    News
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use.html">
+    Use
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../generated/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i><span class="visually-hidden">Discourse</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.physio.eyetracking</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_bids.physio.eyetracking</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Code to facilitate I/O of BIDS compliant eyetracking data (BEP 020)."""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.preprocessing.eyetracking</span><span class="w"> </span><span class="kn">import</span> <span class="n">Calibration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNITS_FIFF_TO_BIDS_MAP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSPath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span>
+
+<span class="c1"># Parameters accepted by MNE's Calibration class</span>
+<span class="n">BIDS_CALIBRATION_TO_MNE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"AverageCalibrationError"</span><span class="p">:</span> <span class="s2">"avg_error"</span><span class="p">,</span>
+    <span class="s2">"MaximalCalibrationError"</span><span class="p">:</span> <span class="s2">"max_error"</span><span class="p">,</span>
+    <span class="s2">"CalibrationType"</span><span class="p">:</span> <span class="s2">"model"</span><span class="p">,</span>
+    <span class="s2">"CalibrationPosition"</span><span class="p">:</span> <span class="s2">"positions"</span><span class="p">,</span>
+    <span class="s2">"CalibrationDistance"</span><span class="p">:</span> <span class="s2">"screen_distance"</span><span class="p">,</span>
+    <span class="c1"># FIXME: Add CalibrationUnit to MNE's Calibration constructor</span>
+    <span class="s2">"CalibrationUnit"</span><span class="p">:</span> <span class="s2">"unit"</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">MNE_CALIBRATION_TO_BIDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">bids_key</span><span class="p">:</span> <span class="n">mne_key</span> <span class="k">for</span> <span class="n">mne_key</span><span class="p">,</span> <span class="n">bids_key</span> <span class="ow">in</span> <span class="n">BIDS_CALIBRATION_TO_MNE</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="n">EYETRACK_CALIBRATION_TO_STIMULUS_PRESENTATION</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s2">"screen_distance"</span><span class="p">,</span> <span class="s2">"ScreenDistance"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"screen_origin"</span><span class="p">,</span> <span class="s2">"ScreenOrigin"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"screen_resolution"</span><span class="p">,</span> <span class="s2">"ScreenResolution"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"screen_size"</span><span class="p">,</span> <span class="s2">"ScreenSize"</span><span class="p">),</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_eyetrack_ch_names</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Check if the raw object contains eyetracking data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : mne.io.Raw</span>
+<span class="sd">        The raw object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list</span>
+<span class="sd">        A list with the names of the eyetracking channels, if any.</span>
+<span class="sd">    """</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">"raw"</span><span class="p">)</span>
+    <span class="n">ch_types</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_channel_types</span><span class="p">()</span>
+    <span class="n">eye_chs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">ch</span>
+        <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">ch_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">ch_types</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ch_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"eyegaze"</span><span class="p">,</span> <span class="s2">"pupil"</span><span class="p">]</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">eye_chs</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_eyetrack_annotation_inds</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">eye_chs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Get indices of annotations associated with eyetracking channels."""</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">"raw"</span><span class="p">)</span>
+    <span class="n">eye_ch_names</span> <span class="o">=</span> <span class="n">_get_eyetrack_ch_names</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="k">if</span> <span class="n">eye_chs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">eye_chs</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eye_ch_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">annot_idx</span>
+            <span class="k">for</span> <span class="n">annot_idx</span><span class="p">,</span> <span class="n">this_annot</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">eye_ch_names</span> <span class="k">for</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">this_annot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ch_names"</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="p">)</span>
+        <span class="p">],</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_single_eye_physio</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">eye_chs</span><span class="p">,</span> <span class="n">eye_recording_tag</span><span class="p">,</span> <span class="n">recorded_eye</span><span class="p">,</span> <span class="n">overwrite</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Write TSV, JSON, and physioevents for a single eye.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : mne.io.Raw</span>
+<span class="sd">        The raw data.</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">        The BIDSPath object.</span>
+<span class="sd">    eye_chs : list of str</span>
+<span class="sd">        Channel names corresponding to this eye.</span>
+<span class="sd">    eye_recording_tag : str</span>
+<span class="sd">        Recording entity value (e.g., "eye1" or "eye2").</span>
+<span class="sd">    recorded_eye : str</span>
+<span class="sd">        "left" or "right".</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Whether to overwrite existing files.</span>
+<span class="sd">    """</span>
+    <span class="n">phys_bpath</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="n">recording</span><span class="o">=</span><span class="n">eye_recording_tag</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="s2">"physio"</span><span class="p">,</span>
+        <span class="n">extension</span><span class="o">=</span><span class="s2">".tsv.gz"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fname_tsv</span> <span class="o">=</span> <span class="n">phys_bpath</span><span class="o">.</span><span class="n">fpath</span>
+
+    <span class="n">data</span><span class="p">,</span> <span class="n">times</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">picks</span><span class="o">=</span><span class="n">eye_chs</span><span class="p">,</span> <span class="n">return_times</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ch_types</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_channel_types</span><span class="p">(</span><span class="n">picks</span><span class="o">=</span><span class="n">eye_chs</span><span class="p">)</span>
+    <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"timestamp"</span><span class="p">:</span> <span class="n">times</span><span class="p">}</span>
+
+    <span class="c1"># Build sidecar JSON template</span>
+    <span class="n">json_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"SamplingFrequency"</span><span class="p">:</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"sfreq"</span><span class="p">],</span>
+        <span class="s2">"StartTime"</span><span class="p">:</span> <span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="s2">"Columns"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"timestamp"</span><span class="p">],</span>
+        <span class="s2">"PhysioType"</span><span class="p">:</span> <span class="s2">"eyetrack"</span><span class="p">,</span>
+        <span class="s2">"RecordedEye"</span><span class="p">:</span> <span class="n">recorded_eye</span><span class="p">,</span>
+        <span class="s2">"SampleCoordinateSystem"</span><span class="p">:</span> <span class="s2">"gaze-on-screen"</span><span class="p">,</span>
+        <span class="s2">"timestamp"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"Description"</span><span class="p">:</span> <span class="s2">"The timestamp of the data, in seconds."</span><span class="p">,</span>
+            <span class="s2">"Units"</span><span class="p">:</span> <span class="s2">"s"</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+    <span class="c1"># Update sidecar JSON with channels specific info</span>
+    <span class="n">raw_ch_names_to_bids</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ch_i</span><span class="p">,</span> <span class="p">(</span><span class="n">ch_name</span><span class="p">,</span> <span class="n">ch_type</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">eye_chs</span><span class="p">,</span> <span class="n">ch_types</span><span class="p">)):</span>
+        <span class="n">ch_idx</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch_name</span><span class="p">)</span>
+        <span class="n">bids_ch_name</span> <span class="o">=</span> <span class="n">ch_name</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">UNITS_FIFF_TO_BIDS_MAP</span><span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"chs"</span><span class="p">][</span><span class="n">ch_idx</span><span class="p">][</span><span class="s2">"unit"</span><span class="p">]]</span>
+        <span class="c1"># FIXME: Assumes only 1 x-coordinate and 1 y-coordinate eyegaze ch per eye</span>
+        <span class="k">if</span> <span class="n">ch_type</span> <span class="o">==</span> <span class="s2">"eyegaze"</span><span class="p">:</span>
+            <span class="n">axis_code</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"chs"</span><span class="p">][</span><span class="n">ch_idx</span><span class="p">][</span><span class="s2">"loc"</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">axis_code</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">bids_ch_name</span> <span class="o">=</span> <span class="s2">"x_coordinate"</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="s2">"The x-coordinate of the gaze on the screen."</span>
+            <span class="k">elif</span> <span class="n">axis_code</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">bids_ch_name</span> <span class="o">=</span> <span class="s2">"y_coordinate"</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="s2">"The y-coordinate of the gaze on the screen."</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"Eyegaze channels must set "</span>
+                    <span class="s2">"raw.info['chs'][channel_index]['loc'][4] to -1 for x-coordinate "</span>
+                    <span class="sa">f</span><span class="s2">"or 1 for y-coordinate. Got </span><span class="si">{</span><span class="n">axis_code</span><span class="si">}</span><span class="s2"> for channel </span><span class="si">{</span><span class="n">ch_name</span><span class="si">}</span><span class="s2">. "</span>
+                    <span class="s2">"Please use  "</span>
+                    <span class="s2">"`mne.preprocessing.eyetracking.set_channel_types_eyetrack` to "</span>
+                    <span class="s2">"Set eyetrack channel info according to MNE expectations."</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ch_type</span> <span class="o">==</span> <span class="s2">"pupil"</span><span class="p">:</span>
+            <span class="n">bids_ch_name</span> <span class="o">=</span> <span class="s2">"pupil_size"</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="s2">"Pupil size of the recorded eye"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="s2">"Additional Channel written by MNE-Python"</span>
+
+        <span class="n">raw_ch_names_to_bids</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">bids_ch_name</span>
+        <span class="k">if</span> <span class="n">bids_ch_name</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Trying to rename </span><span class="si">{</span><span class="n">ch_name</span><span class="si">}</span><span class="s2"> to a BIDS compliant eyetracking name of "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bids_ch_name</span><span class="si">}</span><span class="s2">, but this will result in duplicate BIDS names. Is it "</span>
+                <span class="s2">"possible that  you have more than 1 x-coordinate, y-coordinate, "</span>
+                <span class="s2">"and/or pupil size channel(s) for a single eye? Here is the current "</span>
+                <span class="sa">f</span><span class="s2">"mapping of your channel names to BIDS names:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">raw_ch_names_to_bids</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+
+        <span class="n">data_dict</span><span class="p">[</span><span class="n">bids_ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">ch_i</span><span class="p">]</span>
+        <span class="n">json_dict</span><span class="p">[</span><span class="s2">"Columns"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bids_ch_name</span><span class="p">)</span>
+        <span class="n">json_dict</span><span class="p">[</span><span class="n">bids_ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"Description"</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+            <span class="s2">"Units"</span><span class="p">:</span> <span class="n">unit</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname_tsv</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">,</span> <span class="n">compress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+
+    <span class="n">fname_json</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">recording</span><span class="o">=</span><span class="n">eye_recording_tag</span><span class="p">,</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="s2">"physio"</span><span class="p">,</span>
+            <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="o">.</span><span class="n">fpath</span>
+    <span class="p">)</span>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname_json</span><span class="p">,</span> <span class="n">json_dict</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+
+    <span class="c1"># Write physioevents TSV</span>
+    <span class="n">fname_events</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">recording</span><span class="o">=</span><span class="n">eye_recording_tag</span><span class="p">,</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="s2">"physioevents"</span><span class="p">,</span>
+            <span class="n">extension</span><span class="o">=</span><span class="s2">".tsv.gz"</span><span class="p">,</span>
+            <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># physioevents is not an allowed suffix</span>
+        <span class="p">)</span>
+        <span class="o">.</span><span class="n">fpath</span>
+    <span class="p">)</span>
+    <span class="n">_write_eyetrack_events_tsv</span><span class="p">(</span>
+        <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname_tsv</span><span class="o">=</span><span class="n">fname_events</span><span class="p">,</span> <span class="n">eye_chs</span><span class="o">=</span><span class="n">eye_chs</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_eyetrack_tsvs</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Write eyetracking physio files (per-eye TSV, JSON, and physioevents)."""</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Writing eyetracking data to physio.tsv files."</span><span class="p">)</span>
+    <span class="c1"># Write the physio files to the modality that eyetracking was collected with.</span>
+    <span class="n">datatype</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
+    <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"datatype must be specified in the BIDSPath object."</span><span class="p">)</span>
+    <span class="c1"># Find the eyetracking channels</span>
+    <span class="n">info_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_channel_types</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">eyegaze_ch_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">info_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"eyegaze"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pupil_ch_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">info_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"pupil"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># What eyes were recorded.</span>
+    <span class="n">left_eye_chs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">right_eye_chs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">eyegaze_ch_idx</span><span class="p">,</span> <span class="n">pupil_ch_idx</span><span class="p">]):</span>
+        <span class="c1"># index 3 the loc array specifies left/right eye</span>
+        <span class="n">which_eye</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"chs"</span><span class="p">][</span><span class="n">idx</span><span class="p">][</span><span class="s2">"loc"</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">which_eye</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">left_eye_chs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">which_eye</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">right_eye_chs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"A raw object with eyetrack channels must specify the eye that each "</span>
+                <span class="s2">"channel corresponds to in raw.info['chs'][channel_index]['loc'][3]. "</span>
+                <span class="s2">"This value must be -1 for the left eye, or 1 for the right eye. "</span>
+                <span class="sa">f</span><span class="s2">"Got </span><span class="si">{</span><span class="n">which_eye</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+    <span class="c1"># If we have data for both eyes, left eye is eye1 and right eye is eye2</span>
+    <span class="k">if</span> <span class="n">left_eye_chs</span> <span class="ow">and</span> <span class="n">right_eye_chs</span><span class="p">:</span>
+        <span class="n">eye1_chs</span> <span class="o">=</span> <span class="n">left_eye_chs</span>
+        <span class="n">eye2_chs</span> <span class="o">=</span> <span class="n">right_eye_chs</span>
+        <span class="n">recorded_eye_1</span> <span class="o">=</span> <span class="s2">"left"</span>
+        <span class="n">recorded_eye_2</span> <span class="o">=</span> <span class="s2">"right"</span>
+    <span class="c1"># Otherwise, if we only have data for one eye, that eye is eye1</span>
+    <span class="k">elif</span> <span class="n">left_eye_chs</span><span class="p">:</span>
+        <span class="n">eye1_chs</span> <span class="o">=</span> <span class="n">left_eye_chs</span>
+        <span class="n">eye2_chs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">recorded_eye_1</span> <span class="o">=</span> <span class="s2">"left"</span>
+    <span class="k">elif</span> <span class="n">right_eye_chs</span><span class="p">:</span>
+        <span class="n">eye1_chs</span> <span class="o">=</span> <span class="n">right_eye_chs</span>
+        <span class="n">eye2_chs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">recorded_eye_1</span> <span class="o">=</span> <span class="s2">"right"</span>
+    <span class="c1"># Write the *_physio.tsv/.json and *_physioevents.tsv files for each eye</span>
+    <span class="k">if</span> <span class="n">eye1_chs</span><span class="p">:</span>
+        <span class="n">_write_single_eye_physio</span><span class="p">(</span>
+            <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+            <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+            <span class="n">eye_chs</span><span class="o">=</span><span class="n">eye1_chs</span><span class="p">,</span>
+            <span class="n">eye_recording_tag</span><span class="o">=</span><span class="s2">"eye1"</span><span class="p">,</span>
+            <span class="n">recorded_eye</span><span class="o">=</span><span class="n">recorded_eye_1</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">eye2_chs</span><span class="p">:</span>
+        <span class="n">_write_single_eye_physio</span><span class="p">(</span>
+            <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+            <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+            <span class="n">eye_chs</span><span class="o">=</span><span class="n">eye2_chs</span><span class="p">,</span>
+            <span class="n">eye_recording_tag</span><span class="o">=</span><span class="s2">"eye2"</span><span class="p">,</span>
+            <span class="n">recorded_eye</span><span class="o">=</span><span class="n">recorded_eye_2</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_eyetrack_events_tsv</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname_tsv</span><span class="p">,</span> <span class="n">eye_chs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Write a &lt;match&gt;_physioevents.tsv file."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.write</span><span class="w"> </span><span class="kn">import</span> <span class="n">_events_json</span><span class="p">,</span> <span class="n">_events_tsv</span>
+
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">annotations</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">"BAD_blink"</span> <span class="ow">in</span> <span class="n">annotations</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+        <span class="n">annotations</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s2">"BAD_blink"</span><span class="p">:</span> <span class="s2">"blink"</span><span class="p">})</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
+    <span class="n">eye_annot_indices</span> <span class="o">=</span> <span class="n">_get_eyetrack_annotation_inds</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">eye_chs</span><span class="o">=</span><span class="n">eye_chs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eye_annot_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No eyetracking annotations found. </span><span class="si">{</span><span class="n">fname_tsv</span><span class="si">}</span><span class="s2"> will NOT be written."</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="c1"># Keep only this eye's annotations, so the eye1/eye2 files don't each get both eyes</span>
+    <span class="n">eye_annotations</span> <span class="o">=</span> <span class="n">annotations</span><span class="p">[</span><span class="n">eye_annot_indices</span><span class="p">]</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">eye_annotations</span><span class="p">)</span>
+    <span class="n">descriptions</span> <span class="o">=</span> <span class="n">eye_annotations</span><span class="o">.</span><span class="n">description</span>
+    <span class="n">durations</span> <span class="o">=</span> <span class="n">eye_annotations</span><span class="o">.</span><span class="n">duration</span>
+    <span class="c1"># Use mne.events_from_annotations to convert the annotations to events</span>
+    <span class="n">unique_descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">descriptions</span><span class="p">)</span>
+    <span class="n">event_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">desc</span><span class="p">:</span> <span class="n">ii</span> <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unique_descriptions</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">)}</span>
+    <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_ids</span><span class="p">)</span>
+    <span class="c1"># Let's use the _events_tsv function to write the file.</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">durations</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+    <span class="n">ev_dict</span> <span class="o">=</span> <span class="n">_events_tsv</span><span class="p">(</span>
+        <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+        <span class="n">durations</span><span class="o">=</span><span class="n">durations</span><span class="p">,</span>
+        <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+        <span class="n">fname</span><span class="o">=</span><span class="n">fname_tsv</span><span class="p">,</span>
+        <span class="n">trial_type</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
+        <span class="n">event_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">compress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Write the JSON file</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Columns"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">ev_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="s2">"OnsetSource"</span><span class="p">:</span> <span class="s2">"timestamp"</span><span class="p">}</span>
+    <span class="n">fname_json</span> <span class="o">=</span> <span class="n">fname_tsv</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".json"</span><span class="p">)</span>
+    <span class="n">_events_json</span><span class="p">(</span>
+        <span class="n">fname_json</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">has_trial_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_json_safe</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Convert values to JSON-serializable equivalents when needed."""</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
+        <span class="c1"># np.int32 etc</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_calibration_to_sidecar_updates</span><span class="p">(</span><span class="n">calibrations</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Convert calibration object(s) for one eye to sidecar updates."""</span>
+    <span class="n">updates</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">updates</span><span class="p">[</span><span class="s2">"CalibrationCount"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">calibrations</span><span class="p">)</span>
+    <span class="c1"># BEP020 allows CalibrationCount (per session/run) yet only provides one set</span>
+    <span class="c1"># of Calibration* fields per physio sidecar. For now, if more than 1 calibrations</span>
+    <span class="c1"># and the user passes a squence of calibrations in, I guess it makes most sense to</span>
+    <span class="c1"># take the last calibration collected.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">n_cals</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">calibrations</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">most_recent</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">calibrations</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="s2">"onset"</span><span class="p">])</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">n_cals</span><span class="si">}</span><span class="s2"> calibrations were provided for the </span><span class="si">{</span><span class="n">most_recent</span><span class="p">[</span><span class="s1">'eye'</span><span class="p">]</span><span class="si">}</span><span class="s2"> eye, "</span>
+            <span class="sa">f</span><span class="s2">"writing the calibration collected at </span><span class="si">{</span><span class="n">most_recent</span><span class="p">[</span><span class="s1">'onset'</span><span class="p">]</span><span class="si">}</span><span class="s2"> seconds."</span>
+        <span class="p">)</span>
+        <span class="n">cal</span> <span class="o">=</span> <span class="n">most_recent</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cal</span> <span class="o">=</span> <span class="n">calibrations</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">from_key</span><span class="p">,</span> <span class="n">to_key</span> <span class="ow">in</span> <span class="n">MNE_CALIBRATION_TO_BIDS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">cal</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">from_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">updates</span><span class="p">[</span><span class="n">to_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_json_safe</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">updates</span>
+
+
+<div class="viewcode-block" id="write_eyetrack_calibration">
+<a class="viewcode-back" href="../../../generated/mne_bids.physio.write_eyetrack_calibration.html#mne_bids.physio.write_eyetrack_calibration">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_eyetrack_calibration</span><span class="p">(</span>
+    <span class="n">bids_path</span><span class="p">:</span> <span class="n">BIDSPath</span><span class="p">,</span>
+    <span class="n">calibrations</span><span class="p">:</span> <span class="n">Calibration</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Calibration</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Write eyetrack calibration metadata into an existing ``*_physio.json`` sidecar.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">        BIDSPath for the eyetracking recording. The BIDSPath should point to a modality</span>
+<span class="sd">        directory (e.g. ``beh`` or ``eeg``) that contains ``&lt;match&gt;_physio.json``</span>
+<span class="sd">        file(s). If the BIDSPath contains a ``recording`` entity (e.g. ``eye1``), it</span>
+<span class="sd">        will be ignored (see the notes section).</span>
+<span class="sd">    calibrations : CalibrationObject | list of CalibrationObject</span>
+<span class="sd">        Calibration instance(s) (e.g., an item returned by</span>
+<span class="sd">        :func:`~mne.preprocessing.eyetracking.read_eyelink_calibration`). Each instance</span>
+<span class="sd">        must expose an ``eye`` attribute with value ``"left"`` or ``"right"``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Updated sidecar filepaths : list of pathlib.Path</span>
+<span class="sd">        A list of filepaths pointing to the ``&lt;match&gt;_physio.json`` sidecar files that</span>
+<span class="sd">        were updated with calibration information.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function routes calibration metadata to the correct per-eye physio sidecar(s):</span>
+
+<span class="sd">    - Binocular recordings: left eye -&gt; ``&lt;match&gt;_recording-eye1_physio.json``,</span>
+<span class="sd">      right eye -&gt; ``&lt;match&gt;_recording-eye2_physio.json``</span>
+<span class="sd">    - Monocular recordings: whichever eye was recorded -&gt;</span>
+<span class="sd">      ``&lt;match&gt;_recording-eye1_physio.json``</span>
+
+<span class="sd">    If more than one calibration was run on the participant, this function will write</span>
+<span class="sd">    the last calibration in the sequence passed to the ``calibrations`` parameter.</span>
+
+<span class="sd">    See `The Eyetracking BIDS specification`_.</span>
+<span class="sd">    """</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">"bids_path"</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">calibrations</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">eyetracking</span><span class="o">.</span><span class="n">Calibration</span><span class="p">):</span>
+        <span class="n">calibrations</span> <span class="o">=</span> <span class="p">[</span><span class="n">calibrations</span><span class="p">]</span>
+
+    <span class="n">cals_by_eye</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"left"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"right"</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">for</span> <span class="n">cal</span> <span class="ow">in</span> <span class="n">calibrations</span><span class="p">:</span>
+        <span class="n">eye</span> <span class="o">=</span> <span class="n">cal</span><span class="p">[</span><span class="s2">"eye"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">eye</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cals_by_eye</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"Each mne.preprocessing.Calibration instance must contain either "</span>
+                <span class="sa">f</span><span class="s2">"'left' or 'right' in its 'eye' key. Got </span><span class="si">{</span><span class="n">eye</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="p">)</span>
+        <span class="n">cals_by_eye</span><span class="p">[</span><span class="n">eye</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cal</span><span class="p">)</span>
+    <span class="n">eyes_present</span> <span class="o">=</span> <span class="p">{</span><span class="n">eye</span> <span class="k">for</span> <span class="n">eye</span><span class="p">,</span> <span class="n">cals</span> <span class="ow">in</span> <span class="n">cals_by_eye</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cals</span><span class="p">)}</span>
+
+    <span class="c1"># Determine monocular vs binocular mapping to the *_physio.tsv files</span>
+    <span class="k">if</span> <span class="n">eyes_present</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"left"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">}:</span>
+        <span class="n">eye_to_recording</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"left"</span><span class="p">:</span> <span class="s2">"eye1"</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">:</span> <span class="s2">"eye2"</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">only_eye</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">eyes_present</span><span class="p">))</span>
+        <span class="n">eye_to_recording</span> <span class="o">=</span> <span class="p">{</span><span class="n">only_eye</span><span class="p">:</span> <span class="s2">"eye1"</span><span class="p">}</span>
+
+    <span class="c1"># Construct base path eye1 and/or eye2 &lt;match&gt;_physio.tsv files</span>
+    <span class="n">base_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">"physio"</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">)</span>
+
+    <span class="n">updated_sidecar_fpaths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">eye</span><span class="p">,</span> <span class="n">recording_tag</span> <span class="ow">in</span> <span class="n">eye_to_recording</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">sidecar_fpath</span> <span class="o">=</span> <span class="n">base_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">recording</span><span class="o">=</span><span class="n">recording_tag</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sidecar_fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">"Eyetracking sidecar not found at "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sidecar_fpath</span><span class="si">}</span><span class="s2">. Write the BIDS dataset first using write_raw_bids."</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">updates</span> <span class="o">=</span> <span class="n">_calibration_to_sidecar_updates</span><span class="p">(</span><span class="n">cals_by_eye</span><span class="p">[</span><span class="n">eye</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">updates</span><span class="p">:</span>
+            <span class="n">sidecar</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">sidecar_fpath</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8-sig"</span><span class="p">))</span>
+            <span class="n">sidecar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">updates</span><span class="p">)</span>
+            <span class="n">_write_json</span><span class="p">(</span><span class="n">sidecar_fpath</span><span class="p">,</span> <span class="n">sidecar</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">updated_sidecar_fpaths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sidecar_fpath</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">updated_sidecar_fpaths</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_eyetrack_calibration_to_events_metadata</span><span class="p">(</span><span class="n">eyetrack_calibration</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Extract BIDS StimulusPresentation metadata from eyetracking calibration."""</span>
+    <span class="k">if</span> <span class="n">eyetrack_calibration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"Writing eyetracking data requires `eyetrack_calibration`. The "</span>
+            <span class="s2">"calibration object must include screen_distance, screen_origin, "</span>
+            <span class="s2">"screen_resolution, and screen_size."</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eyetrack_calibration</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">eyetracking</span><span class="o">.</span><span class="n">Calibration</span><span class="p">):</span>
+        <span class="n">calibrations</span> <span class="o">=</span> <span class="p">[</span><span class="n">eyetrack_calibration</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_validate_type</span><span class="p">(</span>
+            <span class="n">eyetrack_calibration</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">"eyetrack_calibration"</span>
+        <span class="p">)</span>
+        <span class="n">calibrations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">eyetrack_calibration</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">calibrations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"`eyetrack_calibration` must contain at least one calibration."</span>
+        <span class="p">)</span>
+
+    <span class="n">stimulus_presentation</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">missing</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">mne_key</span><span class="p">,</span> <span class="n">bids_key</span> <span class="ow">in</span> <span class="n">EYETRACK_CALIBRATION_TO_STIMULUS_PRESENTATION</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">calibration</span> <span class="ow">in</span> <span class="n">calibrations</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">calibration</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mne_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="p">:</span>
+            <span class="n">missing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mne_key</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">first_value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">value</span> <span class="o">!=</span> <span class="n">first_value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"`eyetrack_calibration` contains inconsistent values for </span><span class="si">{</span><span class="n">mne_key</span><span class="si">!r}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">stimulus_presentation</span><span class="p">[</span><span class="n">bids_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">first_value</span>
+
+    <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"`eyetrack_calibration` is missing screen metadata required for "</span>
+            <span class="s2">"eyetracking BIDS: "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"StimulusPresentation"</span><span class="p">:</span> <span class="n">stimulus_presentation</span><span class="p">}</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-19.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
