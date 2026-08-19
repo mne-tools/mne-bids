@@ -2288,10 +2288,10 @@ def write_raw_bids(
                 "The MEG data and its associated empty-room "
                 "recording must share the same BIDS root."
             )
-        check_splits = [er_bids_path.directory / cs.strip("meg/")
-                        for cs in _check_fif_splits(er_bids_path.basename,
-                                                    er_bids_path.directory,
-                                                    er_bids_path.datatype)]
+        check_splits = [empty_room.directory / cs.strip("meg/")
+                        for cs in _check_fif_splits(empty_room.basename,
+                                                    empty_room.directory,
+                                                    empty_room.datatype)]
         associated_er_path = empty_room.fpath
 
     if associated_er_path is not None:
