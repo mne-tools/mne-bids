@@ -2274,7 +2274,7 @@ def write_raw_bids(
                                                     er_bids_path.directory,
                                                     er_bids_path.datatype)]
         associated_er_path = er_bids_path.fpath
-        #del er_bids_path, er_date, er_session
+        del er_bids_path, er_date, er_session
     elif isinstance(empty_room, BIDSPath):
         if bids_path.datatype != "meg":
             raise ValueError('"empty_room" is only supported for MEG data.')
@@ -2300,8 +2300,8 @@ def write_raw_bids(
                 raise FileNotFoundError(
                     f"Empty-room data file not found: {aep}"
                 )
-
-        associated_er_path = associated_er_path.relative_to(bids_path.root)
+        associated_er_path = check_splits[0].relative_to(bids_path.root)
+        #associated_er_path = associated_er_path.relative_to(bids_path.root)
         # Ensure it works on Windows too
         associated_er_path = associated_er_path.as_posix()
 

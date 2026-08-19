@@ -1294,7 +1294,8 @@ class BIDSPath:
 
         if er_bids_path is not None and not er_bids_path.fpath.exists():
             # check for split files
-            er_bids_path = _find_empty_room_candidates(self)
+            #er_bids_path = _find_empty_room_candidates(self)
+            er_bids_path = []
             if len(er_bids_path)==1:
                 er_bids_path = er_bids_path[0]    # just return path, not list
             elif len(er_bids_path) > 1:
