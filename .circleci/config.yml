@@ -49,6 +49,15 @@ jobs:
               python -m pip install -e .[test,doc]
 
         - run:
+            name: Download datasets shared by multiple examples
+            # The gallery executes examples in parallel, so anything fetched by more
+            # than one of them has to be on disk before the build starts.
+            command: |
+              python -c "import mne; mne.datasets.sample.data_path()"
+              python -c "import mne; mne.datasets.testing.data_path()"
+              python -c "import mne; mne.datasets.eegbci.load_data(subjects=[1, 2], runs=[2, 4, 8, 12], update_path=True)"
+
+        - run:
             name: Build the documentation
             no_output_timeout: 30m
             command: |
