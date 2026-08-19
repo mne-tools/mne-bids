@@ -2300,9 +2300,8 @@ def write_raw_bids(
                 raise FileNotFoundError(
                     f"Empty-room data file not found: {aep}"
                 )
-        use_path = check_splits[0] if len(check_splits) > 1 else associated_er_path
-        associated_er_path = use_path.relative_to(bids_path.root)
-        #associated_er_path = associated_er_path.relative_to(bids_path.root)
+        use_er_path = check_splits[0] if len(check_splits) > 1 else associated_er_path
+        associated_er_path = use_er_path.relative_to(bids_path.root)
         # Ensure it works on Windows too
         associated_er_path = associated_er_path.as_posix()
 

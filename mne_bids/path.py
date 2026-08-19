@@ -1293,20 +1293,11 @@ class BIDSPath:
             er_bids_path = _find_matched_empty_room(self)
 
         if er_bids_path is not None and not er_bids_path.fpath.exists():
-            # check for split files
-            #er_bids_path = _find_empty_room_candidates(self)
-            er_bids_path = []
-            if len(er_bids_path)==1:
-                er_bids_path = er_bids_path[0]    # just return path, not list
-            elif len(er_bids_path) > 1:
-                raise RuntimeWarning("Multiple empty room candidates found; "
-                                     "returning all possible paths in a list.")
-            elif er_bids_path == []:
-                raise FileNotFoundError(
-                    f"Empty-room BIDS path resolved but not found:\n"
-                    f"{er_bids_path}\n"
-                    "Check your BIDS dataset for completeness."
-                )
+            raise FileNotFoundError(
+                f"Empty-room BIDS path resolved but not found:\n"
+                f"{er_bids_path}\n"
+                "Check your BIDS dataset for completeness."
+            )
 
         return er_bids_path
 
