@@ -64,7 +64,7 @@ from mne_bids.utils import (
     _write_json,
     get_anonymization_daysback,
 )
-from mne_bids.write import _get_fid_coords
+from mne_bids.write import _get_fid_coords, deface_mri
 
 base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
@@ -2161,6 +2161,12 @@ def test_write_anat(_bids_validate, tmp_path):
     _check_anat_json(bids_path)
 
     # Now try some anat writing that will fail
+    # if deface is true but no landmarks provided, error should raise
+    with pytest.raises(ValueError, match="must be provided to deface"):
+        write_anat(
+            t1w_mgh, bids_path=bids_path, deface=True, verbose=True, overwrite=True
+        )
+
     # We already have some MRI data there
     with pytest.raises(IOError, match="`overwrite` is set to False"):
         write_anat(t1w_mgh, **dict(kwargs, overwrite=False))
@@ -2187,49 +2193,6 @@ def test_write_anat(_bids_validate, tmp_path):
     anat_dir2 = bids_path.directory
     assert "ses-None" not in anat_dir2.as_posix()
     assert op.exists(op.join(anat_dir2, "sub-01_T1w.nii.gz"))
-
-    # test deface
-    bids_path = write_anat(t1w_mgh, **kwargs)
-    anat_dir = bids_path.directory
-    t1w = nib.load(op.join(anat_dir, "sub-01_T1w.nii.gz"))
-    vox_sum = t1w.get_fdata().sum()
-
-    _check_anat_json(bids_path)
-
-    # Check that increasing inset leads to more voxels at 0
-    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset=25.0)))
-    anat_dir2 = bids_path.directory
-    t1w2 = nib.load(op.join(anat_dir2, "sub-01_T1w.nii.gz"))
-    vox_sum2 = t1w2.get_fdata().sum()
-
-    _check_anat_json(bids_path)
-
-    assert vox_sum > vox_sum2
-
-    # Check that increasing theta leads to more voxels at 0
-    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=45)))
-    anat_dir3 = bids_path.directory
-    t1w3 = nib.load(op.join(anat_dir3, "sub-01_T1w.nii.gz"))
-    vox_sum3 = t1w3.get_fdata().sum()
-
-    assert vox_sum > vox_sum3
-
-    with pytest.raises(ValueError, match="must be provided to deface"):
-        write_anat(
-            t1w_mgh, bids_path=bids_path, deface=True, verbose=True, overwrite=True
-        )
-
-    with pytest.raises(ValueError, match="inset must be numeric"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset="small")))
-
-    with pytest.raises(ValueError, match="inset should be positive"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset=-2.0)))
-
-    with pytest.raises(ValueError, match="theta must be numeric"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta="big")))
-
-    with pytest.raises(ValueError, match="theta should be between 0 and 90"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=100)))
 
     # test using landmarks
     bids_path.update(acquisition=acq)
@@ -4598,3 +4561,63 @@ def test_reader_for_raw_ambiguous_extension():
         cnt_params = inspect.signature(reader[".cnt"]).parameters
         assert "fname" in ant_params
         assert "fname" not in cnt_params
+
+
+@testing.requires_testing_data
+def test_deface_mri_errors(t1_image, mri_landmarks):
+    """Test error raising for mri defacing function."""
+    bad_offset_type = "foo"
+    bad_theta_type = "foo"
+    bad_theta_val = -5
+
+    offset = -5
+    theta = 15
+
+    # image type error
+    with pytest.raises(TypeError, match="nibabel.spatialimages"):
+        deface_mri("foo", mri_landmarks, offset=offset, theta=theta)
+
+    # landmark type error
+    with pytest.raises(TypeError, match="landmarks"):
+        deface_mri(t1_image, "foo", offset=offset, theta=theta)
+
+    # offset errors
+    with pytest.raises(TypeError, match="offset must be an integer"):
+        deface_mri(t1_image, mri_landmarks, offset=bad_offset_type, theta=theta)
+
+    # theta errors
+    with pytest.raises(TypeError, match="theta must be an integer"):
+        deface_mri(t1_image, mri_landmarks, offset=offset, theta=bad_theta_type)
+
+    with pytest.raises(ValueError, match="theta should be between"):
+        deface_mri(t1_image, mri_landmarks, offset=offset, theta=bad_theta_val)
+
+
+@testing.requires_testing_data
+def test_deface_mri(t1_image, mri_landmarks):
+    """Test that defacing completes successfully."""
+    from nibabel.spatialimages import SpatialImage
+
+    # reference mri
+    vox_sum = t1_image.get_fdata().sum()
+
+    # Check that a more negative offset leads to more voxels at 0
+    off_df = deface_mri(t1_image, mri_landmarks, offset=-45, theta=15)
+    vox_sum2 = off_df.get_fdata().sum()
+
+    assert vox_sum > vox_sum2
+
+    # Check that increasing theta leads to more voxels at 0
+    tht_df = deface_mri(t1_image, mri_landmarks, offset=-5, theta=45)
+    vox_sum3 = tht_df.get_fdata().sum()
+
+    assert vox_sum > vox_sum3
+
+    # check default vals type output
+    defaced_mri = deface_mri(t1_image, mri_landmarks)
+    assert isinstance(defaced_mri, SpatialImage)
+
+    # check the proportion of changed voxels is under 5% for default vals
+    orig = t1_image.get_fdata().ravel()
+    dfd = defaced_mri.get_fdata().ravel()
+    assert np.isclose(orig, dfd).mean() > 0.95
