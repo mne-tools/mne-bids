@@ -21,15 +21,16 @@ jobs:
         - run:
             <<: *check_skip
 
-        # restore cache from last build. Unless __init__.py has changed since then
+        # Fixed key (bump by hand): the datasets are several GB, so a miss is costly
         - restore_cache:
             keys:
-              - data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+              - data-cache-1
 
         # Also restore pip cache to speed up installations
         - restore_cache:
             keys:
               - pip-cache-0-{{ checksum "./pyproject.toml" }}
+              - pip-cache-0-
 
         - run:
             name: Setup Python3 environment
@@ -77,15 +78,17 @@ jobs:
             path: doc/_build/html/
             destination: dev
 
-        # Store the data cache
+        # Store the data cache (after the build: some examples fetch as they run)
         - save_cache:
-            key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+            key: data-cache-1
+            when: always
             paths:
               - ~/mne_data
 
         # Store pip cache
         - save_cache:
             key: pip-cache-0-{{ checksum "./pyproject.toml" }}
+            when: always
             paths:
               - ~/.cache/pip
 
@@ -130,6 +133,7 @@ jobs:
       - restore_cache:
           keys:
             - pip-cache-0-{{ checksum "./pyproject.toml" }}
+            - pip-cache-0-
 
       - run:
           name: Setup Python3 environment
