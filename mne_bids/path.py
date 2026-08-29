@@ -232,6 +232,13 @@ def _find_matched_empty_room(bids_path):
     return best_er_bids_path
 
 
+# ``basename`` is built for every BIDSPath, so invert this once at import
+# rather than per entity per call
+LONG_TO_SHORT_ENTITY = {
+    long: short for short, long in ALLOWED_PATH_ENTITIES_SHORT.items()
+}
+
+
 class BIDSPath:
     """A BIDS path object.
 
@@ -494,11 +501,7 @@ class BIDSPath:
         for key, val in self.entities.items():
             if val is not None and key != "datatype":
                 # convert certain keys to shorthand
-                long_to_short_entity = {
-                    val: key for key, val in ALLOWED_PATH_ENTITIES_SHORT.items()
-                }
-                key = long_to_short_entity[key]
-                basename.append(f"{key}-{val}")
+                basename.append(f"{LONG_TO_SHORT_ENTITY[key]}-{val}")
 
         if self.suffix is not None:
             if self.extension is not None:
