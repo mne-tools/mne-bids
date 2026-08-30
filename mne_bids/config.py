@@ -68,6 +68,7 @@ UNITS_FIFF_TO_BIDS_MAP = {
 UNITS_BIDS_TO_FIFF_MAP = {
     "V": FIFF.FIFF_UNIT_V,
     "µV": FIFF.FIFF_UNIT_V,  # stored as V in FIFF, scaling handled separately
+    "uV": FIFF.FIFF_UNIT_V,
     "mV": FIFF.FIFF_UNIT_V,
     "T": FIFF.FIFF_UNIT_T,
     "T/m": FIFF.FIFF_UNIT_T_M,

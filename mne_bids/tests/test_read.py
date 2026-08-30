@@ -2138,6 +2138,11 @@ def test_channel_units_from_tsv(tmp_path):
     misc_ch_idx = raw_read.ch_names.index("MISC_RAD")
     assert raw_read.info["chs"][misc_ch_idx]["unit"] == FIFF.FIFF_UNIT_RAD
 
+    channels_tsv["units"][misc_idx] = "uV"
+    _to_tsv(channels_tsv, channels_fname)
+    raw_read = read_raw_bids(bids_path)
+    assert raw_read.info["chs"][misc_ch_idx]["unit"] == FIFF.FIFF_UNIT_V
+
 
 def test_events_file_to_annotation_kwargs(tmp_path):
     """Test that events file is read correctly."""
