@@ -901,6 +901,7 @@ def test_handle_scans_reading(tmp_path):
     new_acq_time = acq_time_str.split(".")[0] + "Z"
     assert acq_time == raw.info["meas_date"]
     scans_data["acq_time"][0] = new_acq_time
+    scans_data["split"] = ["train"] * len(scans_data["filename"])
     _to_tsv(scans_data, scans_path)
 
     # now re-load the data and it should be different
