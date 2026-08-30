@@ -458,14 +458,22 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     # apply nosub on find_matching_matchs with root level bids directory should
     # yield a performance boost of order of length from bids_subdirectories.
     setup = "import mne_bids\ntmp_bids_root=r'" + str(tmp_bids_root) + "'"
-    timed_all = timeit.timeit(
-        "mne_bids.find_matching_paths(tmp_bids_root)", setup=setup, number=1
+    timed_all = min(
+        timeit.repeat(
+            "mne_bids.find_matching_paths(tmp_bids_root)",
+            setup=setup,
+            number=1,
+            repeat=3,
+        )
     )
     assert path_counter.count == max_count
-    timed_ignored_nosub = timeit.timeit(
-        "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
-        setup=setup,
-        number=1,
+    timed_ignored_nosub = min(
+        timeit.repeat(
+            "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
+            setup=setup,
+            number=1,
+            repeat=3,
+        )
     )
     assert path_counter.count == 621
 
