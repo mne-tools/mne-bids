@@ -28,7 +28,7 @@ from numpy.testing import assert_almost_equal
 
 import mne_bids.utils
 import mne_bids.write
-from mne_bids import BIDSPath
+from mne_bids import BIDSPath, read_epochs_bids
 from mne_bids.config import (
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
@@ -46,7 +46,7 @@ from mne_bids.read import (
     get_head_mri_trans,
     read_raw_bids,
 )
-from mne_bids.sidecar_updates import _update_sidecar
+from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
 from mne_bids.tsv_handler import _drop, _from_tsv, _to_tsv
 from mne_bids.utils import _write_json
 from mne_bids.write import get_anat_landmarks, write_anat, write_raw_bids
@@ -1571,13 +1571,13 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     for digpoint in raw_test.info["dig"]:
         assert digpoint["coord_frame"] == coord_frame_int
 
-    # if we delete the coordsystem.json file, an error will be raised
+    # if we delete the coordsystem.json file, a warning is emitted
     os.remove(coordsystem_fname)
-    with pytest.raises(
-        RuntimeError,
+    with pytest.warns(
+        RuntimeWarning,
         match="coordsystem.json is REQUIRED whenever electrodes.tsv is present",
     ):
-        raw = read_raw_bids(bids_path=bids_fname, verbose=False)
+        read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # test error message if electrodes is not a subset of Raw
     bids_path.update(root=tmp_path)
@@ -2093,6 +2093,61 @@ def test_channel_mismatch_invalid_option(tmp_path):
         _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
 
 
+def test_channel_mismatch_warn(tmp_path):
+    """``on_ch_mismatch='warn'`` warns and leaves raw channel names intact."""
+    raw, ch_order_snirf, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(
+        tmp_path
+    )
+    with pytest.warns(RuntimeWarning, match="Channel mismatch"):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="warn"
+        )
+    assert out.ch_names == ch_order_snirf
+
+
+@pytest.mark.filterwarnings("ignore:.*loadtxt:UserWarning")
+@pytest.mark.parametrize(
+    "content,match",
+    [
+        ("", "TSV file is empty"),
+        ("channel_name\ttype\nA\tEEG\nB\tEEG\n", "has no 'name' column"),
+    ],
+    ids=["empty", "wrong-header"],
+)
+def test_channels_tsv_empty_or_missing_name(tmp_path, content, match):
+    """Empty channels.tsv or one without a 'name' column is skipped, not a crash."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    channels_fname.write_text(content, encoding="utf-8")
+    with pytest.warns(RuntimeWarning, match=match):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="rename"
+        )
+    assert out.ch_names == raw.ch_names
+
+
+def test_channels_tsv_duplicate_names(tmp_path):
+    """Dedupe only on ``on_ch_mismatch='rename'``; raise/warn otherwise."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    n_ch = len(raw.ch_names)
+    rows = "\n".join(["EEG\tNIRSCWAMPLITUDE"] * n_ch)
+    channels_fname.write_text(f"name\ttype\n{rows}\n", encoding="utf-8")
+
+    with pytest.warns(RuntimeWarning, match="Channel names are not unique"):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="rename"
+        )
+    assert out.ch_names == [f"EEG-{i}" for i in range(n_ch)]
+
+    with pytest.raises(RuntimeError, match="Duplicate channel names"):
+        _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="raise")
+
+    with pytest.warns(RuntimeWarning, match="Duplicate channel names"):
+        out = _handle_channels_reading(
+            channels_fname, raw.copy(), on_ch_mismatch="warn"
+        )
+    assert out.ch_names == raw.ch_names
+
+
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_channel_units_from_tsv(tmp_path):
     """Test that channel units are correctly read from channels.tsv."""
@@ -2473,3 +2528,77 @@ def test_read_hed_version_returns_none(tmp_path, bids_root):
     """_read_hed_version returns None for absent root / missing file."""
     root = None if bids_root is None else tmp_path / bids_root
     assert _read_hed_version(root) is None
+
+
+@testing.requires_testing_data
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_read_epochs_bids_eeglab(tmp_path):
+    """read_epochs_bids loads EEGLAB epoched data; read_raw_bids refuses it."""
+    src = data_path / "EEGLAB" / "test_epochs.set"
+    bp = BIDSPath(subject="01", task="t", datatype="eeg", root=tmp_path)
+    bp.directory.mkdir(parents=True)
+    sh.copy(src, bp.update(suffix="eeg", extension=".set").fpath)
+    sh.copy(src.with_suffix(".fdt"), bp.fpath.with_suffix(".fdt"))
+    expected = mne.io.read_epochs_eeglab(src, verbose=False)
+    bp.copy().update(extension=".json").fpath.write_text(
+        '{"TaskName": "t", "PowerLineFrequency": 60, "RecordingType": "epoched"}'
+    )
+    bp.copy().update(suffix="channels", extension=".tsv").fpath.write_text(
+        "name\ttype\tunits\n" + "".join(f"{c}\tEEG\tµV\n" for c in expected.ch_names),
+        encoding="utf-8",
+    )
+    (tmp_path / "dataset_description.json").write_text(
+        '{"Name": "x", "BIDSVersion": "1.8.0"}'
+    )
+    epochs = read_epochs_bids(bp)
+    assert epochs.ch_names == expected.ch_names
+    assert epochs.info["line_freq"] == 60
+    with pytest.raises(RuntimeError, match="read_epochs_bids"):
+        read_raw_bids(bp)
+
+
+@pytest.mark.parametrize(
+    ("ext", "fmt", "writer_pkg"),
+    [(".edf", "EDF", "edfio"), (".vhdr", "BrainVision", "pybv")],
+)
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_read_epochs_bids_continuous(tmp_path, ext, fmt, writer_pkg):
+    """read_epochs_bids slices a continuous-format epoched file."""
+    pytest.importorskip(writer_pkg)
+    sfreq, n_per, n_ep = 100.0, 100, 3
+    info = mne.create_info(["EEG1", "EEG2"], sfreq, ch_types="eeg")
+    data = np.repeat(np.arange(1, n_ep + 1) * 100e-6, n_per) * np.ones((2, 1))
+    raw = mne.io.RawArray(data, info, verbose=False)
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=UTC))
+    raw.info["line_freq"] = 60
+
+    bp = BIDSPath(subject="01", task="t", datatype="eeg", root=tmp_path / "bids")
+    write_raw_bids(raw, bp, overwrite=True, allow_preload=True, format=fmt)
+    update_sidecar_json(
+        bp.copy().update(suffix="eeg", extension=".json"),
+        {"RecordingType": "epoched", "EpochLength": n_per / sfreq},
+    )
+
+    bp_read = bp.copy().update(suffix="eeg", extension=ext)
+    epochs = read_epochs_bids(bp_read)
+    assert epochs.get_data().shape == (n_ep, 2, n_per)
+    assert np.all(np.diff(epochs.get_data().mean(axis=(1, 2))) > 0)
+    with pytest.raises(RuntimeError, match="read_epochs_bids"):
+        read_raw_bids(bp_read)
+
+    # When events.tsv is present, its onsets drive slicing; trial_type column
+    # supplies categorical labels; trials past the recording end are dropped.
+    events_tsv = bp.copy().update(suffix="events", extension=".tsv").fpath
+    _to_tsv(
+        OrderedDict(
+            onset=[str(i * n_per / sfreq) for i in range(n_ep + 1)],
+            duration=[str(n_per / sfreq)] * (n_ep + 1),
+            trial_type=["A", "B", "A", "B"],
+        ),
+        events_tsv,
+    )
+    with pytest.warns(RuntimeWarning, match="will be dropped"):
+        epochs = read_epochs_bids(bp_read)
+    assert epochs.get_data().shape == (n_ep, 2, n_per)
+    assert set(epochs.event_id) == {"A", "B"}
+    assert len(epochs["A"]) == 2 and len(epochs["B"]) == 1  # last 'B' was dropped

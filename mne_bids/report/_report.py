@@ -5,9 +5,9 @@
 
 import json
 import textwrap
+from functools import cache
 from pathlib import Path
 
-import jinja2
 import numpy as np
 from mne.utils import logger, verbose
 
@@ -24,11 +24,17 @@ from mne_bids.path import (
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import warn
 
-jinja_env = jinja2.Environment(
-    loader=jinja2.PackageLoader(
-        package_name="mne_bids.report", package_path="templates"
+
+@cache
+def _jinja_env():
+    """Build the template environment lazily, to keep jinja2 off the import path."""
+    import jinja2
+
+    return jinja2.Environment(
+        loader=jinja2.PackageLoader(
+            package_name="mne_bids.report", package_path="templates"
+        )
     )
-)
 
 
 def _pretty_str(listed):
@@ -156,7 +162,7 @@ def _summarize_dataset(root):
         return dict()
 
     # read file and 'REQUIRED' components of it
-    with _open_lock(dataset_descrip_fpath, encoding="utf-8-sig") as fin:
+    with _open_lock(dataset_descrip_fpath, encoding="utf-8") as fin:
         dataset_description = json.load(fin)
 
     # create dictionary to pass into template string
@@ -311,7 +317,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
         scans = scans_tsv["filename"]
         for scan in scans:
             # summarize metadata of recordings
-            bids_path, ext = _parse_ext(scan)
+            bids_path, _ = _parse_ext(scan)
             datatype = str(Path(scan).parent)
             if datatype not in ALLOWED_DATATYPES:
                 continue
@@ -330,7 +336,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
             sidecar_fname = _find_matching_sidecar(
                 bids_path=bids_path, suffix=datatype, extension=".json"
             )
-            with _open_lock(sidecar_fname, encoding="utf-8-sig") as fin:
+            with _open_lock(sidecar_fname, encoding="utf-8") as fin:
                 sidecar_json = json.load(fin)
 
             # aggregate metadata from each scan
@@ -502,14 +508,16 @@ def make_report(root, session=None, verbose=None):
     if not participant_summary:
         participants_info = ""
     else:
-        particpants_info_template = jinja_env.get_template("participants.jinja")
+        particpants_info_template = _jinja_env().get_template("participants.jinja")
         participants_info = particpants_info_template.render(**participant_summary)
         logger.info(f"The participant template found: {participants_info}")
 
     if not scans_summary:
         datatype_agnostic_info = ""
     else:
-        datatype_agnostic_template = jinja_env.get_template("datatype_agnostic.jinja")
+        datatype_agnostic_template = _jinja_env().get_template(
+            "datatype_agnostic.jinja"
+        )
         datatype_agnostic_info = datatype_agnostic_template.render(
             **dataset_agnostic_summary
         )
@@ -528,7 +536,7 @@ def make_report(root, session=None, verbose=None):
     # lower-case templates are "Recommended",
     # while upper-case templates are "Required".
 
-    dataset_summary_template = jinja_env.get_template("dataset_summary.jinja")
+    dataset_summary_template = _jinja_env().get_template("dataset_summary.jinja")
     dataset_summary_info = dataset_summary_template.render(**dataset_summary)
 
     # Concatenate info and clean the paragraph

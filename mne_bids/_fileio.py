@@ -95,7 +95,7 @@ def _get_lock_context(path, *, timeout=None, lock=True):
         try:
             # Ensure parent directory exists
             Path(lock_path).parent.mkdir(parents=True, exist_ok=True)
-            lock_context = filelock.FileLock(
+            lock_context = filelock.SoftFileLock(
                 str(lock_path),
                 timeout=timeout,
             )

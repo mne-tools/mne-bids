@@ -31,7 +31,7 @@ from mne_bids.config import (
     ENTITY_VALUE_TYPE,
     reader,
 )
-from mne_bids.tsv_handler import _drop, _from_tsv, _to_tsv
+from mne_bids.tsv_handler import _detect_file_encoding, _drop, _from_tsv, _to_tsv
 from mne_bids.utils import (
     _check_empty_room_basename,
     _check_key_val,
@@ -70,8 +70,6 @@ def _find_empty_room_candidates(bids_path):
     bids_path = bids_path.copy()
 
     datatype = "meg"  # We're only concerned about MEG data here
-    bids_fname = bids_path.update(suffix=datatype).fpath
-    _, ext = _parse_ext(bids_fname)
     # Create a path for the empty-room directory to be used for matching.
     emptyroom_dir = BIDSPath(root=bids_root, subject="emptyroom").directory
 
@@ -234,6 +232,13 @@ def _find_matched_empty_room(bids_path):
     return best_er_bids_path
 
 
+# ``basename`` is built for every BIDSPath, so invert this once at import
+# rather than per entity per call
+LONG_TO_SHORT_ENTITY = {
+    long: short for short, long in ALLOWED_PATH_ENTITIES_SHORT.items()
+}
+
+
 class BIDSPath:
     """A BIDS path object.
 
@@ -282,7 +287,10 @@ class BIDSPath:
 
         .. versionadded:: 0.11
     tracking_system : str | None
-        The motion tracking system.
+        The motion tracking system label for Motion-BIDS data. This corresponds
+        to the BIDS entity ``tracksys``. For example,
+        ``tracking_system="omcA"`` produces filenames containing
+        ``tracksys-omcA``.
 
         .. versionadded:: 0.18
     root : path-like | None
@@ -493,11 +501,7 @@ class BIDSPath:
         for key, val in self.entities.items():
             if val is not None and key != "datatype":
                 # convert certain keys to shorthand
-                long_to_short_entity = {
-                    val: key for key, val in ALLOWED_PATH_ENTITIES_SHORT.items()
-                }
-                key = long_to_short_entity[key]
-                basename.append(f"{key}-{val}")
+                basename.append(f"{LONG_TO_SHORT_ENTITY[key]}-{val}")
 
         if self.suffix is not None:
             if self.extension is not None:
@@ -1493,7 +1497,8 @@ def _print_lines_with_entry(file, entry, folder, is_tsv, line_numbers, outfile):
         prints to the console, else a string is printed to.
     """
     entry_lines = list()
-    with _open_lock(file, encoding="utf-8-sig") as fid:
+    encoding = _detect_file_encoding(file)
+    with _open_lock(file, encoding=encoding) as fid:
         if is_tsv:  # format tsv files nicely
             header = _truncate_tsv_line(fid.readline())
             if line_numbers:
@@ -1662,20 +1667,27 @@ def print_dir_tree(folder, max_depth=None, return_str=False):
 
 
 def _parse_ext(raw_fname):
-    """Split a filename into its name and extension."""
-    raw_fname = str(raw_fname)
-    fname, ext = os.path.splitext(raw_fname)
+    """Split a filename into its stem and extension."""
+    # Some callsites in our codebase pass _parse_ext(None)
+    if not raw_fname:
+        return None, None
+    raw_fname = Path(raw_fname)
+
+    fname, exts = raw_fname.with_suffix(""), raw_fname.suffixes
+    while fname.suffix:
+        fname = fname.with_suffix("")
+
     # BTi data is the only file format that does not have a file extension
-    if ext == "" or "c,rf" in fname:
+    if not exts or "c,rf" in fname.name:
         logger.info(
-            'Found no extension for raw file, assuming "BTi" format '
+            f"Found no extension for raw file {raw_fname}.\n assuming 'BTi' format "
             "and appending extension .pdf"
         )
         ext = ".pdf"
-    # If ending on .gz, check whether it is an .nii.gz file
-    elif ext == ".gz" and raw_fname.endswith(".nii.gz"):
-        ext = ".nii.gz"
-        fname = fname[:-4]  # cut off the .nii
+    elif len(exts) == 1:
+        ext = exts[0]
+    else:  # >1 extension e.g. .nii.gz, .tsv.gz
+        ext = "".join(raw_fname.suffixes)
     return fname, ext
 
 
@@ -2638,6 +2650,24 @@ def _path_to_str(var):
         return str(var)
 
 
+_RE_METACHARS = frozenset(r".^$*+?{}[]\|()")
+
+
+def _literal_suffix(pattern):
+    """Return the longest trailing run of ``pattern`` with no regexp meaning.
+
+    Used to derive a cheap ``str.endswith`` pre-filter from a regexp fragment.
+    The result is a suffix every match of ``pattern`` must literally end with,
+    so filtering on it can only reject names the regexp would reject too.
+    """
+    out = []
+    for char in reversed(pattern):
+        if char in _RE_METACHARS:
+            break
+        out.append(char)
+    return "".join(reversed(out))
+
+
 def _filter_fnames(
     fnames,
     *,
@@ -2730,6 +2760,15 @@ def _filter_fnames(
     # Convert to str so we can apply the regexp ...
     fnames = [str(f) for f in fnames]
 
+    # The regexp ends with the extension alternatives followed by ``$``, so
+    # every name it can match ends with one of their literal tails. Rejecting
+    # the rest with str.endswith first is exactly equivalent and much cheaper
+    # than letting the regexp backtrack over the leading path of every
+    # candidate (28x on a 4800-file tree).
+    tails = tuple(_literal_suffix(ext) for ext in extension)
+    if tails and all(tails):
+        fnames = [fname for fname in fnames if fname.endswith(tails)]
+
     # https://stackoverflow.com/a/51246151/1944216
     fnames_filtered = sorted(filter(re.compile(regexp).match, fnames))
 
@@ -2800,7 +2839,10 @@ def find_matching_paths(
 
         .. versionadded:: 0.11
     tracking_systems : str | array-like of str | None
-        The motion tracking systems used.
+        The motion tracking system labels to match for Motion-BIDS data. These
+        correspond to the BIDS entity ``tracksys``. For example,
+        ``tracking_systems="omcA"`` matches filenames containing
+        ``tracksys-omcA``.
 
         .. versionadded:: 0.19
     suffixes : str | array-like of str | None
@@ -3034,8 +3076,12 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     for fname in fnames:
         datatype = _infer_datatype_from_path(fname)
         bids_path = get_bids_path_from_fname(fname, check=False)
+        inferred_root = bids_path.root
         bids_path.root = root
         bids_path.datatype = datatype
+        expected_fpath = bids_path.directory / bids_path.basename
+        if expected_fpath != Path(fname):
+            bids_path.root = inferred_root
         bids_path.check = True
 
         try:

@@ -21,15 +21,16 @@ jobs:
         - run:
             <<: *check_skip
 
-        # restore cache from last build. Unless __init__.py has changed since then
+        # Fixed key (bump by hand): the datasets are several GB, so a miss is costly
         - restore_cache:
             keys:
-              - data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+              - data-cache-1
 
         # Also restore pip cache to speed up installations
         - restore_cache:
             keys:
               - pip-cache-0-{{ checksum "./pyproject.toml" }}
+              - pip-cache-0-
 
         - run:
             name: Setup Python3 environment
@@ -47,6 +48,15 @@ jobs:
               python -m pip install --upgrade --progress-bar off pip
               python -m pip install --upgrade https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip
               python -m pip install -e .[test,doc]
+
+        - run:
+            name: Download datasets shared by multiple examples
+            # The gallery executes examples in parallel, so anything fetched by more
+            # than one of them has to be on disk before the build starts.
+            command: |
+              python -c "import mne; mne.datasets.sample.data_path()"
+              python -c "import mne; mne.datasets.testing.data_path()"
+              python -c "import mne; mne.datasets.eegbci.load_data(subjects=[1, 2], runs=[2, 4, 8, 12], update_path=True)"
 
         - run:
             name: Build the documentation
@@ -68,15 +78,17 @@ jobs:
             path: doc/_build/html/
             destination: dev
 
-        # Store the data cache
+        # Store the data cache (after the build: some examples fetch as they run)
         - save_cache:
-            key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+            key: data-cache-1
+            when: always
             paths:
               - ~/mne_data
 
         # Store pip cache
         - save_cache:
             key: pip-cache-0-{{ checksum "./pyproject.toml" }}
+            when: always
             paths:
               - ~/.cache/pip
 
@@ -121,6 +133,7 @@ jobs:
       - restore_cache:
           keys:
             - pip-cache-0-{{ checksum "./pyproject.toml" }}
+            - pip-cache-0-
 
       - run:
           name: Setup Python3 environment

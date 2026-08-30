@@ -11,7 +11,7 @@ from pathlib import Path
 
 import numpy as np
 from mne import pick_types
-from mne.channels import make_standard_montage
+from mne.channels import get_builtin_montages, make_standard_montage
 from mne.io.kit.kit import get_kit_info
 from mne.utils import logger, verbose
 from mne.utils import warn as _warn
@@ -245,14 +245,16 @@ def _write_json(fname, dictionary, *, overwrite=False, lock=True):
 
 
 @verbose
-def _write_tsv(fname, dictionary, *, overwrite=False, lock=True, verbose=None):
+def _write_tsv(
+    fname, dictionary, *, overwrite=False, lock=True, compress=False, verbose=None
+):
     """Write an ordered dictionary to a .tsv file."""
     fname = Path(fname)
     if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    _to_tsv(dictionary, fname, lock=lock)
+    _to_tsv(dictionary, fname, lock=lock, compress=compress)
 
     logger.info(f"Writing '{fname}'...")
 
@@ -263,7 +265,7 @@ def _write_text(fname, text, overwrite=False, lock=True):
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    with _open_lock(fname, "w", encoding="utf-8-sig", lock=lock) as fid:
+    with _open_lock(fname, "w", encoding="utf-8", lock=lock) as fid:
         fid.write(text)
         fid.write("\n")
 
@@ -318,7 +320,12 @@ def _infer_eeg_placement_scheme(raw):
     sel = pick_types(raw.info, meg=False, eeg=True)
     ch_names = [raw.ch_names[i] for i in sel]
     channel_names = [ch.lower() for ch in ch_names]
-    montage1005 = make_standard_montage("standard_1005")
+
+    # TODO: Remove this comprehension once minimum supported MNE is 1.14
+    montage_name = (
+        "colin27_1005" if "colin27_1005" in get_builtin_montages() else "standard_1005"
+    )
+    montage1005 = make_standard_montage(montage_name)
     montage1005_names = [ch.lower() for ch in montage1005.ch_names]
 
     if set(channel_names).issubset(set(montage1005_names)):
@@ -486,7 +493,7 @@ def _check_datatype(raw, datatype):
     datatype : str
         Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.
     """
-    supported_types = ("eeg", "emg", "ieeg", "meg", "nirs")
+    supported_types = ("beh", "eeg", "emg", "ieeg", "meg", "nirs")
     if datatype not in supported_types:
         raise ValueError(
             f"The specified datatype {datatype} is currently not supported. "
@@ -506,6 +513,10 @@ def _check_datatype(raw, datatype):
     elif datatype == "ieeg":
         ieeg_types = ("seeg", "ecog", "dbs")
         if any(ieeg_type in raw for ieeg_type in ieeg_types):
+            datatype_matches = True
+    elif datatype == "beh":
+        beh_types = ("eyegaze", "pupil")
+        if any(beh_type in raw.get_channel_types() for beh_type in beh_types):
             datatype_matches = True
     if not datatype_matches:
         raise ValueError(
@@ -536,9 +547,8 @@ def _example_sorter(filename):
     function is defined here (instead of in `conf.py`) because it must be *importable*
     in order for the sphinx gallery config dict in `conf.py` to remain serializable.
     """
-    with _open_lock(
-        Path(__file__).parents[1] / "doc" / "example_order.json", encoding="utf-8"
-    ) as fid:
+    root = Path(__file__).parents[1]
+    with _open_lock(root / "doc" / "example_order.json", encoding="utf-8") as fid:
         EXAMPLE_ORDER = json.load(fid)
 
     if filename not in EXAMPLE_ORDER:

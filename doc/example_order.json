@@ -1,5 +1,6 @@
 [
     "read_bids_datasets.py",
+    "read_epochs_bids.py",
     "convert_mne_sample.py",
     "mark_bad_channels.py",
     "convert_eeg_to_bids.py",

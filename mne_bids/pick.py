@@ -3,9 +3,12 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+from functools import cache
+
 from mne.io.constants import FIFF
 
 
+@cache
 def get_coil_types():
     """Return all known coil types.
 

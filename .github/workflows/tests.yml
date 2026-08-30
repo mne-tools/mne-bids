@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-python@v6
+    - uses: actions/checkout@v7
+    - uses: actions/setup-python@v7
       with:
         python-version: '3.14'
     - uses: pre-commit/action@v3.0.1
@@ -37,10 +37,10 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0
-    - uses: astral-sh/setup-uv@v8.1.0
+    - uses: astral-sh/setup-uv@v10.0.1
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: true
@@ -82,7 +82,7 @@ jobs:
 
   test:
     name: test (${{ matrix.os }}, ${{ matrix.python-version }}, ${{ matrix.mne-version }}, ${{ matrix.mne-bids-install }}, validator-${{ matrix.bids-validator-version }})
-    timeout-minutes: 60
+    timeout-minutes: 20
     needs: style  # just to avoid CI overuse
     runs-on: ${{ matrix.os }}
     env:
@@ -90,6 +90,9 @@ jobs:
       TZ: Europe/Berlin
       FORCE_COLOR: true
       MNE_BIDS_FILELOCK_TIMEOUT: 5  # be more stringent than it would be for end-users
+      # Explicit worker counts (in the spirit of SciPy's CI) rather than "auto":
+      # the Linux and Windows runners have 4 cores, the macOS ones fewer and less RAM
+      PYTEST_XDIST_N: ${{ startsWith(matrix.os, 'macos') && 2 || 4 }}
     strategy:
       fail-fast: false
       matrix:
@@ -154,7 +157,7 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
@@ -162,7 +165,7 @@ jobs:
       with:
         deno-version: lts
 
-    - uses: astral-sh/setup-uv@v8.1.0
+    - uses: astral-sh/setup-uv@v10.0.1
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: true
@@ -176,7 +179,7 @@ jobs:
       run: echo "export PATH=\"${{ github.workspace }}/.venv/bin:$PATH\"" | tee -a ~/.bash_profile
 
     - name: Clone mne-python
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
         repository: mne-tools/mne-python
@@ -231,20 +234,26 @@ jobs:
 
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
-      run: make test
+      run: make test JOBS="$PYTEST_XDIST_N"
       if: ${{ matrix.test-with-no-testing-data }}
 
     # Get testing data
     - run: ./tools/get_testing_version.sh
       working-directory: mne-python
 
-    - uses: actions/cache@v5
+    # The trimming below is part of what ends up in the cache, so the key carries a
+    # suffix to bump when that list changes.
+    - uses: actions/cache@v6
       with:
-        key: testing_data-${{ env.TESTING_VERSION }}
+        key: testing_data-trimmed-1-${{ env.TESTING_VERSION }}
         path: ~/mne_data
       name: 'Cache testing data'
 
-    - run: |
+    # MNE-Python's download script fetches the misc dataset too by default; we have
+    # no use for it here, and it is not covered by the cache key above.
+    - env:
+        MNE_CI_DATASETS: testing
+      run: |
         ./tools/github_actions_download.sh
         # Trim some large files we don't need (speeds up caching)
         TEST_PATH=$(python -c "import mne; print(mne.datasets.testing.data_path(verbose=False))")
@@ -258,9 +267,9 @@ jobs:
       working-directory: mne-python
       name: 'Get testing data and set it read-only'
 
-    - run: make test ARGS="${{ matrix.test-mode }}"
+    - run: make test JOBS="$PYTEST_XDIST_N" ARGS="${{ matrix.test-mode }}"
 
-    - uses: codecov/codecov-action@v6
+    - uses: codecov/codecov-action@v7
       with:
         files: ./coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}

@@ -6,6 +6,7 @@
 import json
 import os
 import re
+from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
 from pathlib import Path
@@ -13,17 +14,24 @@ from pathlib import Path
 import mne
 import numpy as np
 from mne import events_from_annotations, io, pick_channels_regexp, read_events
-from mne.coreg import fit_matched_points
+
+try:  # MNE 1.13+
+    from mne.transforms import fit_matched_points
+except ImportError:
+    from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
-from mne.utils import check_version, get_subjects_dir, logger
+from mne.utils import _validate_type, check_version, get_subjects_dir, logger
 
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
+    _EPOCHED_EXTS,
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
+    _continuous_epoched_reader,
     _map_options,
+    epoch_reader,
     reader,
 )
 from mne_bids.dig import _read_dig_bids
@@ -490,7 +498,7 @@ def _handle_info_reading(sidecar_fname, raw):
 
     Handle PowerLineFrequency of recording.
     """
-    with _open_lock(sidecar_fname, encoding="utf-8-sig") as fin:
+    with _open_lock(sidecar_fname, encoding="utf-8") as fin:
         sidecar_json = json.load(fin)
 
     # read in the sidecar JSON's and raw object's line frequency
@@ -807,7 +815,7 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
         return None
 
     try:
-        with open(events_json_fname, encoding="utf-8-sig") as f:
+        with open(events_json_fname, encoding="utf-8") as f:
             sidecar = json.load(f)
     except FileNotFoundError:
         return None
@@ -862,7 +870,7 @@ def _read_hed_version(bids_root):
         return None
     desc_path = Path(bids_root) / "dataset_description.json"
     try:
-        with open(desc_path, encoding="utf-8-sig") as f:
+        with open(desc_path, encoding="utf-8") as f:
             return json.load(f).get("HEDVersion")
     except FileNotFoundError:
         return None
@@ -1007,13 +1015,19 @@ def _get_bads_from_tsv_data(tsv_data):
 
 
 def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
-    """Handle mismatch between channels.tsv and raw channel names."""
+    """Handle mismatch. Returns True if channels.tsv metadata can be applied."""
     if on_ch_mismatch == "raise":
         raise RuntimeError(
             f"Channel mismatch between {channels_fname} and the raw data file detected."
             f"Either align channel names in channels.tsv with the raw file, or call "
-            f"read_raw_bids(on_ch_mismatch='reorder'|'rename') to proceed."
+            f"read_raw_bids(on_ch_mismatch='reorder'|'rename'|'warn') to proceed."
         )
+    if on_ch_mismatch == "warn":
+        warn(
+            f"Channel mismatch between {channels_fname} and the raw data file. "
+            "Skipping channels.tsv-derived channel metadata."
+        )
+        return False
     logger.info(
         "Channel mismatch between "
         f"{channels_fname} and the raw data file detected. "
@@ -1024,7 +1038,94 @@ def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
     elif on_ch_mismatch == "rename":
         raw.rename_channels(dict(zip(raw.ch_names, ch_names_tsv)))
     else:
-        raise ValueError("on_ch_mismatch must be one of {'reorder','raise','rename'}")
+        raise ValueError(
+            "on_ch_mismatch must be one of {'reorder','raise','rename','warn'}"
+        )
+    return True
+
+
+def _dedupe_channel_names(ch_names):
+    """Rename duplicate channel names in place ."""
+    positions = defaultdict(list)
+    for i, name in enumerate(ch_names):
+        positions[name].append(i)
+    dups = {name for name, idxs in positions.items() if len(idxs) > 1}
+    if not dups:
+        return
+    warn(
+        f"Channel names are not unique, found duplicates for: {dups}. "
+        "Applying running numbers for duplicates."
+    )
+    for stem in dups:
+        for n, ch_idx in enumerate(positions[stem]):
+            for suffix in (n, *"abcdefghijklmnopqrstuvwxyz"):
+                candidate = f"{stem}-{suffix}"
+                if candidate not in ch_names:
+                    break
+            else:
+                raise ValueError(f"Could not find a unique suffix for {stem!r}")
+            ch_names[ch_idx] = candidate
+
+
+def _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname):
+    """Bring ``raw.ch_names`` and ``channels_dict['name']`` into agreement.
+
+    Handles, in order: duplicate names in channels.tsv, dropping a synthesized
+    ``STI 014`` not present in the sidecar, length mismatches between sidecar
+    and raw, and name-order mismatches. May mutate ``raw`` and/or
+    ``channels_dict['name']`` in place.
+
+    Returns ``True`` when the caller can proceed with applying
+    channels.tsv-derived metadata (types, units, bads), ``False`` when that
+    metadata should be skipped.
+    """
+    ch_names_tsv = channels_dict["name"]
+
+    if len(ch_names_tsv) != len(set(ch_names_tsv)):
+        if on_ch_mismatch == "rename":
+            _dedupe_channel_names(ch_names_tsv)
+        elif on_ch_mismatch == "warn":
+            warn(
+                f"Duplicate channel names in {channels_fname}; skipping "
+                "channels.tsv-derived channel metadata. Pass "
+                "on_ch_mismatch='rename' to deduplicate with -0/-1/... suffixes."
+            )
+            return False
+        else:
+            raise RuntimeError(
+                f"Duplicate channel names found in {channels_fname}. "
+                "Pass on_ch_mismatch='rename' to deduplicate, or "
+                "on_ch_mismatch='warn' to skip channels.tsv metadata."
+            )
+
+    # Special handling for (synthesized) stimulus channel
+    synthesized_stim_ch_name = "STI 014"
+    if (
+        synthesized_stim_ch_name in raw.ch_names
+        and synthesized_stim_ch_name not in ch_names_tsv
+    ):
+        logger.info(
+            f'The stimulus channel "{synthesized_stim_ch_name}" is present in '
+            f"the raw data, but not included in channels.tsv. Removing the "
+            f"channel."
+        )
+        raw.drop_channels([synthesized_stim_ch_name])
+
+    if len(ch_names_tsv) != len(raw.ch_names):
+        warn(
+            f"The number of channels in the channels.tsv sidecar file "
+            f"({len(ch_names_tsv)}) does not match the number of channels "
+            f"in the raw data file ({len(raw.ch_names)}). Will not try to "
+            f"set channel names."
+        )
+        return True
+
+    if list(raw.ch_names) != ch_names_tsv:
+        return _handle_channel_mismatch(
+            raw, on_ch_mismatch, ch_names_tsv, channels_fname
+        )
+
+    return True
 
 
 def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
@@ -1034,9 +1135,16 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     """
     logger.info(f"Reading channel info from {channels_fname}.")
     channels_dict = _from_tsv(channels_fname)
+    if not channels_dict.get("name"):
+        if len(channels_dict):
+            warn(f"{channels_fname} has no 'name' column; skipping channel metadata.")
+        return raw
+
+    if not _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname):
+        return raw
+
     ch_names_tsv = channels_dict["name"]
 
-    # Now we can do some work.
     # The "type" column is mandatory in BIDS. We can use it to set channel
     # types in the raw data using a mapping between channel types
     channel_type_bids_mne_map = dict()
@@ -1087,32 +1195,6 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
         else:
             # We found a mapping, so use it
             channel_type_bids_mne_map[ch_name] = updated_ch_type
-
-    # Special handling for (synthesized) stimulus channel
-    synthesized_stim_ch_name = "STI 014"
-    if (
-        synthesized_stim_ch_name in raw.ch_names
-        and synthesized_stim_ch_name not in ch_names_tsv
-    ):
-        logger.info(
-            f'The stimulus channel "{synthesized_stim_ch_name}" is present in '
-            f"the raw data, but not included in channels.tsv. Removing the "
-            f"channel."
-        )
-        raw.drop_channels([synthesized_stim_ch_name])
-
-    # Rename channels in loaded Raw to match those read from the BIDS sidecar
-    if len(ch_names_tsv) != len(raw.ch_names):
-        warn(
-            f"The number of channels in the channels.tsv sidecar file "
-            f"({len(ch_names_tsv)}) does not match the number of channels "
-            f"in the raw data file ({len(raw.ch_names)}). Will not try to "
-            f"set channel names."
-        )
-    else:
-        orig_names = list(raw.ch_names)
-        if orig_names != ch_names_tsv:
-            _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname)
 
     # Set the channel types in the raw data according to channels.tsv
     channel_type_bids_mne_map_available_channels = {
@@ -1199,13 +1281,21 @@ def read_raw_bids(
     on_ch_mismatch : str
         How to handle a mismatch between channel names in channels.tsv file
         and channel names in the raw data file.
-        Must be one of ``'raise'``, ``'reorder'``, ``'rename'`` (default ``'raise'``).
+        Must be one of ``'raise'``, ``'warn'``, ``'reorder'``, ``'rename'``
+        (default ``'raise'``).
 
         * ``'raise'`` will raise a RuntimeError if there is a channel mismatch.
+        * ``'warn'`` will emit a warning and leave the raw data unchanged,
+          skipping channels.tsv-derived channel metadata.
         * ``'reorder'`` will reorder the channels in the raw data file to match the
           channel order in the channels.tsv file.
         * ``'rename'`` will rename the channels in the raw data file to match the
           channel names in the channels.tsv file.
+
+        Duplicate channel names in channels.tsv are treated as a sub-type of
+        mismatch and obey the same setting: ``'rename'`` deduplicates the names
+        with ``-0/-1/...`` suffixes, ``'warn'`` skips channels.tsv metadata,
+        and ``'raise'``/``'reorder'`` raise.
     %(verbose)s
 
     Returns
@@ -1273,6 +1363,18 @@ def read_raw_bids(
         bids_path.update(datatype=datatype)
     if suffix is None:
         bids_path.update(suffix=datatype)
+
+    sidecar_json_fname = _find_matching_sidecar(
+        bids_path, suffix=datatype, extension=".json", on_error="ignore"
+    )
+    if sidecar_json_fname is not None:
+        with open(sidecar_json_fname, encoding="utf-8") as fin:
+            recording_type = json.load(fin).get("RecordingType")
+        if recording_type == "epoched" and bids_path.fpath.suffix in _EPOCHED_EXTS:
+            raise RuntimeError(
+                'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
+                "instead of read_raw_bids()."
+            )
 
     if bids_path.extension == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
@@ -1377,6 +1479,19 @@ def read_raw_bids(
             events_json_fname=events_json_fname,
         )
 
+    raw = _attach_sidecars(raw, bids_path, on_ch_mismatch=on_ch_mismatch)
+
+    assert raw.annotations.orig_time == raw.info["meas_date"]
+    if return_event_dict:
+        return raw, event_id
+    return raw
+
+
+def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
+    """Apply BIDS sidecars to a Raw or Epochs object."""
+    datatype = bids_path.datatype
+    bids_root = bids_path.root
+
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
     channels_fname = _find_matching_sidecar(
@@ -1407,8 +1522,6 @@ def read_raw_bids(
                     f"Please add coordsystem.json for {bids_path.basename} and "
                     "re-run the BIDS validator."
                 )
-                if datatype == "ieeg":
-                    raise RuntimeError(msg)
                 warn(msg + " Skipping reading electrode locations.")
             elif datatype in ("meg", "eeg", "ieeg"):
                 _read_dig_bids(
@@ -1435,7 +1548,8 @@ def read_raw_bids(
         root=bids_path.root,
     ).fpath
 
-    if scans_fname.exists():
+    # Epochs without annotations crash in set_meas_date; skip the scans path.
+    if scans_fname.exists() and getattr(raw, "annotations", None) is not None:
         raw = _handle_scans_reading(scans_fname, raw, bids_path)
 
     # read in associated subject info from participants.tsv
@@ -1446,13 +1560,133 @@ def read_raw_bids(
             participants_fname=participants_tsv_path, raw=raw, subject=subject
         )
     else:
-        warn(f"participants.tsv file not found for {raw_path}")
+        warn(f"participants.tsv file not found for {bids_path.fpath}")
         raw.info["subject_info"] = dict()
 
-    assert raw.annotations.orig_time == raw.info["meas_date"]
-    if return_event_dict:
-        return raw, event_id
     return raw
+
+
+@verbose
+def read_epochs_bids(
+    bids_path, extra_params=None, *, on_ch_mismatch="raise", verbose=None
+):
+    """Read epoched BIDS data (RecordingType="epoched") as :class:`mne.Epochs`.
+
+    EEGLAB ``.set`` files are read with the dedicated MNE epochs reader.
+    Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``"epoched"``
+    in the sidecar are sliced into trials of length ``EpochLength`` (from the
+    sidecar). When ``events.tsv`` is present its onsets give the trial starts
+    (``sample`` / ``begSample`` / ``onset`` columns are tried in that order;
+    trials extending past the recording are dropped with a warning); when
+    absent, the file is uniformly tiled.
+
+    Parameters
+    ----------
+    bids_path : BIDSPath
+        Same semantics as :func:`read_raw_bids`.
+    extra_params : None | dict
+        Forwarded to the underlying MNE reader.
+    on_ch_mismatch : str
+        See :func:`read_raw_bids`.
+    %(verbose)s
+
+    Returns
+    -------
+    epochs : mne.Epochs
+        The epoched data with BIDS sidecar metadata applied.
+
+    Notes
+    -----
+    This function applies the same sidecars as :func:`read_raw_bids`
+    (``channels.tsv``, ``electrodes.tsv``, ``coordsystem.json``,
+    ``scans.tsv``, ``participants.tsv``).
+    """
+    _validate_type(item=bids_path, types=BIDSPath, item_name="bids_path")
+    bids_path = bids_path.copy()
+    if bids_path.datatype is None:
+        bids_path.update(
+            datatype=_infer_datatype(
+                root=bids_path.root, sub=bids_path.subject, ses=bids_path.session
+            )
+        )
+    if bids_path.suffix is None:
+        bids_path.update(suffix=bids_path.datatype)
+
+    ext = bids_path.fpath.suffix
+    if ext in epoch_reader:
+        epochs = epoch_reader[ext](
+            bids_path.fpath, verbose=verbose, **(extra_params or {})
+        )
+    elif ext in _continuous_epoched_reader:
+        epochs = _read_epochs_from_continuous(
+            bids_path, extra_params=extra_params, verbose=verbose
+        )
+    else:
+        raise RuntimeError(
+            f"read_epochs_bids does not support {ext!r} epoched files; "
+            f"supported: {sorted(_EPOCHED_EXTS)}."
+        )
+    return _attach_sidecars(epochs, bids_path, on_ch_mismatch=on_ch_mismatch)
+
+
+@verbose
+def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
+    """Slice a continuous file flagged ``RecordingType="epoched"`` into Epochs."""
+    sidecar_fname = _find_matching_sidecar(
+        bids_path, suffix=bids_path.datatype, extension=".json"
+    )
+    with open(sidecar_fname, encoding="utf-8") as fp:
+        try:
+            duration = float(json.load(fp)["EpochLength"])
+        except KeyError:
+            raise RuntimeError(
+                f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
+                "required to slice an 'epoched' continuous file."
+            ) from None
+    raw = _continuous_epoched_reader[bids_path.fpath.suffix](
+        bids_path.fpath, preload=False, verbose=verbose, **(extra_params or {})
+    )
+    events_fname = _find_matching_sidecar(
+        bids_path, suffix="events", extension=".tsv", on_error="ignore"
+    )
+    if events_fname is None:
+        return mne.make_fixed_length_epochs(
+            raw, duration=duration, preload=True, verbose=verbose
+        )
+
+    # Delegate to mne-bids' events.tsv parser for descriptions/event_id (handles
+    # n/a, trial_type/stim_type/value, hierarchical event names); place onsets
+    # precisely from sample/begSample when available, else from onset (seconds).
+    info, rows = _make_annotation_kwargs(_from_tsv(events_fname), events_fname)
+    sfreq = raw.info["sfreq"]
+    if rows.get("sample"):
+        onsets = np.asarray(rows["sample"], dtype=np.int64)
+    elif rows.get("begSample"):  # 1-indexed inclusive (non-BIDS, observed)
+        onsets = np.asarray(rows["begSample"], dtype=np.int64) - 1
+    else:
+        onsets = np.round(info["onset"] * sfreq).astype(np.int64)
+    event_id = info["event_id"]
+    ids = np.array([event_id[d] for d in info["description"]], dtype=np.int64)
+
+    n_per = int(round(duration * sfreq))
+    fits = (onsets >= 0) & (onsets + n_per <= raw.n_times)
+    if not fits.all():
+        warn(
+            f"{Path(events_fname).name}: {(~fits).sum()} of {len(onsets)} "
+            "trials extend beyond the recording and will be dropped."
+        )
+        onsets, ids = onsets[fits], ids[fits]
+    events = np.column_stack([onsets, np.zeros_like(onsets), ids])
+    return mne.Epochs(
+        raw,
+        events=events,
+        event_id=event_id,
+        tmin=0.0,
+        tmax=duration - 1.0 / sfreq,
+        baseline=None,
+        preload=True,
+        verbose=verbose,
+    )
 
 
 @verbose

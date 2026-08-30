@@ -773,7 +773,7 @@ def test_fif(_bids_validate, tmp_path):
 
     # add some readme text
     readme = op.join(bids_root, "README")
-    with open(readme, "w", encoding="utf-8-sig") as fid:
+    with open(readme, "w", encoding="utf-8") as fid:
         fid.write("Welcome to my dataset\n")
 
     bids_path2 = bids_path_meg.copy().update(subject=subject_id2)
@@ -800,7 +800,7 @@ def test_fif(_bids_validate, tmp_path):
         )
 
     # assert README has references in it
-    with open(readme, encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8") as fid:
         text = fid.read()
         assert "Welcome to my dataset\n" in text
         assert REFERENCES["mne-bids"] in text
@@ -811,7 +811,7 @@ def test_fif(_bids_validate, tmp_path):
     # now force the overwrite
     write_raw_bids(raw, bids_path2, events=events, event_id=event_id, overwrite=True)
 
-    with open(readme, encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8") as fid:
         text = fid.read()
         assert "Welcome to my dataset\n" in text
         assert REFERENCES["mne-bids"] in text
@@ -1477,6 +1477,8 @@ def test_vhdr(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     """Test write_raw_bids conversion for EEG/iEEG data formats."""
+    if fname.endswith(".mff"):
+        pytest.importorskip("mffpy", minversion="0.11.0")
     bids_root = tmp_path / "bids1"
     raw_fname = data_path / dir_name / fname
 
@@ -1670,7 +1672,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # assert README has references in it
     readme = op.join(bids_root, "README")
-    with open(readme, encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8") as fid:
         text = fid.read()
         assert REFERENCES["ieeg"] in text
         assert REFERENCES["meg"] not in text
@@ -1875,7 +1877,7 @@ def test_bdf(_bids_validate, tmp_path):
 
     # assert README has references in it
     readme = op.join(tmp_path, "README")
-    with open(readme, encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8") as fid:
         text = fid.read()
         assert REFERENCES["eeg"] in text
         assert REFERENCES["meg"] not in text
@@ -3378,18 +3380,18 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     write_raw_bids(raw, bids_path=bids_path, verbose=False)
     _bids_validate(bids_root)
 
-    # TSV files should be written with a BOM
+    # TSV files should NOT be written with a BOM
     for tsv_file in bids_path.root.rglob("*.tsv"):
         with open(tsv_file, encoding="utf-8") as f:
             x = f.read()
-        assert x[0] == codecs.BOM_UTF8.decode("utf-8")
+        assert x[0] != codecs.BOM_UTF8.decode("utf-8")
 
-    # Readme should be written with a BOM
+    # Readme should NOT be written with a BOM
     with open(bids_path.root / "README", encoding="utf-8") as f:
         x = f.read()
-    assert x[0] == codecs.BOM_UTF8.decode("utf-8")
+    assert x[0] != codecs.BOM_UTF8.decode("utf-8")
 
-    # JSON files should be written without a BOM
+    # JSON files should NOT be written with a BOM
     for json_file in bids_path.root.rglob("*.json"):
         with open(json_file, encoding="utf-8") as f:
             x = f.read()
@@ -3399,7 +3401,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     events_tsv_fname = (
         bids_path.copy().update(suffix="events", extension=".tsv").match()[0]
     )
-    with open(str(events_tsv_fname), encoding="utf-8-sig") as f:
+    with open(str(events_tsv_fname), encoding="utf-8") as f:
         x = f.read()
     assert "döner" in x
     assert "bøfsandwich" in x
@@ -3677,6 +3679,8 @@ def test_convert_meg_formats(dir_name, fmt, fname, reader, tmp_path):
 @testing.requires_testing_data
 def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     """Test errors when converting raw file formats."""
+    if fname.endswith(".mff"):
+        pytest.importorskip("mffpy", minversion="0.11.0")
     bids_root = tmp_path / "bids_1"
 
     raw_fname = data_path / dir_name / fname
@@ -3738,7 +3742,7 @@ def test_write_extension_case_insensitive(_bids_validate, tmp_path, datatype):
 
     # rename extension to upper-case
     _fname, ext = _parse_ext(fname)
-    new_fname = _fname + ext.upper()
+    new_fname = _fname.with_suffix(ext.upper())
 
     # rename the file's extension
     raw_fname = dir_path / fname
@@ -4484,14 +4488,6 @@ def test_parallel_write_many_subjects(tmp_path):
     dataset_description = bids_root / "dataset_description.json"
     assert dataset_description.exists()
 
-    # Clean up remaining lock files created during parallel writes
-    for lock_file in bids_root.rglob("*.lock"):
-        try:
-            lock_file.unlink()
-        except OSError:
-            # In case lock is still held or file is in use, that's OK
-            pass
-
     # putting some sleep to make sure all file locks are released
     time.sleep(1)
     # No stale lock files should remain after the parallel writes complete.
@@ -4552,3 +4548,53 @@ def test_write_hed_annotations(tmp_path, _bids_validate):
     # Semantic HED validation against the declared HEDVersion schema.
     issues = BidsDataset(str(bids_root)).validate(check_for_warnings=True)
     assert issues == [], issues
+
+
+def test_reader_for_raw_ambiguous_extension():
+    """Re-reading picks the reader by raw class for ambiguous extensions.
+
+    Regression test for gh-1500: the ``.cnt`` extension is used by both
+    Neuroscan (read via ``read_raw_cnt``) and ANT Neuro eego (read via
+    ``read_raw_ant``) recordings. When ``write_raw_bids`` re-reads the original
+    file, the reader must be chosen from the class of the ``raw`` object, not
+    from the (ambiguous) extension: choosing by extension passed
+    ``read_raw_ant``'s ``_init_kwargs`` (which use ``fname``) to
+    ``read_raw_cnt`` (which expects ``input_fname``) and raised ``TypeError``.
+    """
+    import inspect
+
+    import mne.io as io
+
+    from mne_bids.config import _reader_for_raw, reader
+
+    # Unambiguous extensions resolve to the extension-based reader, regardless
+    # of the raw object's class.
+    class RawArray:
+        pass
+
+    assert _reader_for_raw(RawArray(), ".fif") is reader[".fif"]
+    assert _reader_for_raw(RawArray(), ".vhdr") is reader[".vhdr"]
+
+    # A Neuroscan ``.cnt`` recording uses ``read_raw_cnt`` ...
+    class RawCNT:
+        pass
+
+    assert _reader_for_raw(RawCNT(), ".cnt") is reader[".cnt"]
+    assert reader[".cnt"] is io.read_raw_cnt
+
+    # ... while an ANT Neuro ``.cnt`` recording must use ``read_raw_ant``.
+    if hasattr(io, "read_raw_ant"):
+
+        class RawANT:
+            pass
+
+        assert _reader_for_raw(RawANT(), ".cnt") is io.read_raw_ant
+        assert _reader_for_raw(RawANT(), ".cnt") is not reader[".cnt"]
+
+        # The extension-based reader would be passed ``read_raw_ant``'s init
+        # kwargs (which use ``fname``) and reject them: this is the original
+        # ``TypeError`` reported in gh-1500.
+        ant_params = inspect.signature(io.read_raw_ant).parameters
+        cnt_params = inspect.signature(reader[".cnt"]).parameters
+        assert "fname" in ant_params
+        assert "fname" not in cnt_params

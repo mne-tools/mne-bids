@@ -61,6 +61,9 @@ UNITS_MNE_TO_BIDS_MAP = {
 # Mapping from FIFF unit constants to BIDS unit strings for writing
 # This supplements MNE's _unit2human which doesn't include all FIFF units
 UNITS_FIFF_TO_BIDS_MAP = {
+    FIFF.FIFF_UNIT_M: "m",
+    FIFF.FIFF_UNIT_NONE: "arbitrary",
+    FIFF.FIFF_UNIT_PX: "pixel",
     FIFF.FIFF_UNIT_RAD: "rad",
 }
 
@@ -77,6 +80,8 @@ UNITS_BIDS_TO_FIFF_MAP = {
     "oC": FIFF.FIFF_UNIT_CEL,
     "M": FIFF.FIFF_UNIT_MOL,
     "px": FIFF.FIFF_UNIT_PX,
+    "pixel": FIFF.FIFF_UNIT_PX,
+    "arbitrary": FIFF.FIFF_UNIT_NONE,
 }
 
 meg_manufacturers = {
@@ -153,6 +158,55 @@ reader = {
 # MEF3 support requires MNE >= 1.12
 if hasattr(io, "read_raw_mef"):
     reader[".mefd"] = io.read_raw_mef
+
+
+epoch_reader = {".set": io.read_epochs_eeglab}
+
+# Continuous-format files where each "trial" is a fixed-length segment of the
+# file. Trial duration is read from the sidecar's ``EpochLength`` field.
+_continuous_epoched_reader = {
+    ".edf": io.read_raw_edf,
+    ".bdf": io.read_raw_bdf,
+    ".vhdr": io.read_raw_brainvision,
+}
+_EPOCHED_EXTS = frozenset(epoch_reader) | frozenset(_continuous_epoched_reader)
+# Some file extensions are ambiguous: more than one MNE reader can produce a
+# file with that extension. For example, ``.cnt`` is used both by Neuroscan,
+# read via :func:`mne.io.read_raw_cnt`, and by ANT Neuro eego recordings, read
+# via :func:`mne.io.read_raw_ant`. When re-reading the original file (e.g. to
+# obtain an unmodified copy), the extension alone is therefore not always enough
+# to pick the reader that produced a given ``raw`` object; using the wrong one
+# passes mismatched ``raw._init_kwargs`` (e.g. ``read_raw_cnt`` does not accept
+# the ``fname`` argument used by ``read_raw_ant``) and raises ``TypeError``.
+# This maps the class name of the ``raw`` object to the reader that created it,
+# taking precedence over the extension-based ``reader`` lookup.
+# See https://github.com/mne-tools/mne-bids/issues/1500
+reader_by_raw_class = dict()
+if hasattr(io, "read_raw_ant"):
+    reader_by_raw_class["RawANT"] = io.read_raw_ant
+
+
+def _reader_for_raw(raw, ext):
+    """Return the MNE reader function that produced ``raw``.
+
+    Most file extensions map to a single reader, but some are shared by multiple
+    readers (see :data:`reader_by_raw_class`). In that case the class of ``raw``
+    is used to disambiguate, so the original file is re-read with the same reader
+    that created it rather than one inferred from the (ambiguous) extension.
+
+    Parameters
+    ----------
+    raw : instance of mne.io.BaseRaw
+        The raw object whose original file should be re-read.
+    ext : str
+        The file extension (including the leading dot) of the original file.
+
+    Returns
+    -------
+    reader : callable
+        The ``mne.io.read_raw_*`` function to use.
+    """
+    return reader_by_raw_class.get(type(raw).__name__, reader[ext])
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
@@ -619,6 +673,11 @@ REFERENCES = {
     "Pollonini, L. (2023). fNIRS-BIDS, the Brain Imaging Data Structure "
     "Extended to Functional Near-Infrared Spectroscopy. PsyArXiv. "
     "https://doi.org/10.31219/osf.io/7nmcp",
+    "beh": "Szinte, M., Bach, DR., Draschkow, D., Esteban, O., Gagle, B., "
+    "Gau, R., Gregorova, K., Halchenko, Y.O., Huberty, S., Kling, S., Kulkarni, S., "
+    "Markiewicz, C., Mikkelsen, M., Oostenveld, R., Pfarr, JK. (2026). "
+    "Eye-Tracking-BIDS: the Brain Imaging Data Structure extended to gaze position "
+    "and pupil data. (In review).",
     "emg": "In preparation",
 }
 
