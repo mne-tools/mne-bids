@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.20.0.dev35+ge8ed8ad17 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.20.0.dev36+gde787e68a documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="_static/documentation_options.js?v=acf8a2ec"></script>
+    <script src="_static/documentation_options.js?v=b27eef89"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev35+ge8ed8ad17" />
+  <meta name="docsearch:version" content="0.20.0.dev36+gde787e68a" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev35+ge8ed8ad17 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev36+gde787e68a documentation</p>
   
 </a></div>
     
@@ -562,6 +562,8 @@
 <section id="bug-fixes">
 <h4>🪲 Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h4>
 <ul class="simple">
+<li><p>Accept the ASCII unit alias <code class="docutils literal notranslate"><span class="pre">uV</span></code> in <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> files, by
+<a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1654">#1654</a>)</p></li>
 <li><p>Preserve the actual root of files returned by <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.match()</span></code></a>, avoiding duplicate paths and paths that do not exist when matching inside nested BIDS roots, by <a class="reference external" href="https://github.com/viranovskaya">Daria Agafonova</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1637">#1637</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> no longer raises a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> when writing ANT Neuro eego recordings (<code class="docutils literal notranslate"><span class="pre">.cnt</span></code>), by <a class="reference external" href="https://github.com/gaoflow">Vincent Gao</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1617">#1617</a>)</p></li>
 </ul>
@@ -665,7 +667,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-30.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-31.
       <br/>
     
   </p>
