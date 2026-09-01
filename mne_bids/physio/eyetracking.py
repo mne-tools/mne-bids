@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import mne
 import numpy as np
@@ -11,11 +10,6 @@ from mne.utils import _validate_type, logger, warn
 from mne_bids.config import UNITS_FIFF_TO_BIDS_MAP
 from mne_bids.path import BIDSPath
 from mne_bids.utils import _write_json, _write_tsv
-
-if TYPE_CHECKING:
-    # importing this at runtime would eagerly import much of MNE (and SciPy),
-    # which makes `import mne_bids` an order of magnitude slower
-    from mne.preprocessing.eyetracking import Calibration
 
 # Parameters accepted by MNE's Calibration class
 BIDS_CALIBRATION_TO_MNE = {
@@ -344,7 +338,11 @@ def _calibration_to_sidecar_updates(calibrations):
 
 def write_eyetrack_calibration(
     bids_path: BIDSPath,
-    calibrations: "Calibration | list[Calibration]",
+    # spelled out rather than imported so that `import mne_bids` does not eagerly
+    # import mne.preprocessing.eyetracking (and hence SciPy), and so that Sphinx
+    # can still resolve the annotation
+    calibrations: "mne.preprocessing.eyetracking.Calibration"
+    " | list[mne.preprocessing.eyetracking.Calibration]",
 ) -> list[Path]:
     """Write eyetrack calibration metadata into an existing ``*_physio.json`` sidecar.
 
