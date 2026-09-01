@@ -29,7 +29,7 @@ from mne_bids.config import (
     ALLOWED_PATH_ENTITIES_SHORT,
     ALLOWED_SPACES,
     ENTITY_VALUE_TYPE,
-    reader,
+    _get_readers,
 )
 from mne_bids.tsv_handler import _detect_file_encoding, _drop, _from_tsv, _to_tsv
 from mne_bids.utils import (
@@ -78,7 +78,7 @@ def _find_empty_room_candidates(bids_path):
         split=None, run=None, task="noise", datatype=datatype, suffix=datatype
     )
 
-    allowed_extensions = list(reader.keys())
+    allowed_extensions = list(_get_readers("reader"))
 
     # Get possible noise task files in the same directory as the recording.
     noisetask_tmp = [

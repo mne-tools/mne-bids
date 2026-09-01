@@ -16,14 +16,9 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import mne
-import mne.preprocessing
 import numpy as np
-from mne import Epochs, channel_type
-from mne.channels.channels import _get_meg_system, _unit2human
-from mne.io import BaseRaw, read_fiducials
 from mne.io.constants import FIFF
 from mne.io.pick import _picks_to_idx
-from mne.transforms import _get_trans, apply_trans, rotation, translation
 from mne.utils import (
     Bunch,
     ProgressBar,
@@ -33,7 +28,6 @@ from mne.utils import (
     logger,
     verbose,
 )
-from scipy import linalg
 
 from mne_bids import (
     BIDSPath,
@@ -170,6 +164,10 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         Defaults to False.
 
     """
+    # hoisted out of the per-channel loop below
+    from mne import channel_type
+    from mne.channels.channels import _unit2human
+
     # Get channel type mappings between BIDS and MNE nomenclatures
     map_chs = _get_ch_type_mapping(fro="mne", to="bids")
 
@@ -1031,6 +1029,8 @@ def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
     mri_landmarks : np.ndarray, shape (3, 3)
         The mri RAS landmark data converted to from m to mm.
     """
+    from mne.transforms import apply_trans
+
     # Transform MEG landmarks into MRI space, adjust units by * 1e3
     return apply_trans(trans, meg_landmarks, move=True) * 1e3
 
@@ -1050,6 +1050,9 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
     vox_landmarks : np.ndarray, shape (3, 3)
         The MRI voxel-space landmark data.
     """
+    from mne.transforms import apply_trans
+    from scipy import linalg
+
     # Get landmarks in voxel space, using the T1 data
     vox2ras_tkr_t = t1_mgh.header.get_vox2ras_tkr()
     ras_tkr2vox_t = linalg.inv(vox2ras_tkr_t)
@@ -1073,6 +1076,8 @@ def _mri_voxels_to_mri_scanner_ras(mri_landmarks, img_mgh):
     ras_landmarks : np.ndarray, shape (3, 3)
         The MRI scanner RAS landmark data.
     """
+    from mne.transforms import apply_trans
+
     # Get landmarks in voxel space, using the T1 data
     vox2ras = img_mgh.header.get_vox2ras()
     ras_landmarks = apply_trans(vox2ras, mri_landmarks)  # in scanner RAS
@@ -1094,6 +1099,9 @@ def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
     vox_landmarks : np.ndarray, shape (3, 3)
         The MRI voxel-space landmark data.
     """
+    from mne.transforms import apply_trans
+    from scipy import linalg
+
     # Get landmarks in voxel space, using the T1 data
     vox2ras = img_mgh.header.get_vox2ras()
     ras2vox = linalg.inv(vox2ras)
@@ -1157,9 +1165,9 @@ def _sidecar_json(
             "is unknown, set it to None"
         )
 
-    if isinstance(raw, BaseRaw):
+    if isinstance(raw, mne.io.BaseRaw):
         rec_type = "continuous"
-    elif isinstance(raw, Epochs):
+    elif isinstance(raw, mne.Epochs):
         rec_type = "epoched"
     else:
         rec_type = "n/a"
@@ -1218,6 +1226,8 @@ def _sidecar_json(
     }
 
     # Compile cHPI information, if any.
+    from mne.channels.channels import _get_meg_system
+
     system, _ = _get_meg_system(raw.info)
     chpi = None
     hpi_freqs = []
@@ -1381,6 +1391,8 @@ def _deface(image, landmarks, deface):
     # now comes the actual defacing
     # 1. move center of voxels to (nasion - inset)
     # 2. rotate the head by theta from vertical
+    from mne.transforms import apply_trans, rotation, translation
+
     x, y, z = nib.affines.apply_affine(image.affine, landmarks)[1]
     idxs = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs)
     idxs = apply_trans(rotation(x=-np.pi / 2 + np.deg2rad(theta)), idxs)
@@ -1467,6 +1479,8 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
 
     # pybv needs to know the units of the data for appropriate scaling
     # get voltage units as micro-volts and all other units "as is"
+    from mne.channels.channels import _unit2human  # hoisted out of the loop
+
     unit = []
     for chs in raw.info["chs"]:
         if chs["unit"] == FIFF.FIFF_UNIT_V:
@@ -2070,7 +2084,7 @@ def write_raw_bids(
     When writing EDF or BDF files, all file extensions are forced to be
     lower-case, in compliance with the BIDS specification.
     """
-    if not isinstance(raw, BaseRaw):
+    if not isinstance(raw, mne.io.BaseRaw):
         raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
     is_eyetracking_only = all(
         [ch in ["eyegaze", "pupil"] for ch in raw.get_channel_types()]
@@ -2819,6 +2833,8 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     )
 
     # get trans and ensure it is from head to MRI
+    from mne.transforms import _get_trans
+
     trans, _ = _get_trans(trans, fro="head", to="mri")
     landmarks = _meg_landmarks_to_mri_landmarks(landmarks, trans)
 
@@ -2864,6 +2880,7 @@ def _get_t1w_mgh(fs_subject, fs_subjects_dir):
 
 def _get_landmarks(landmarks, image_nii, kind=""):
     import nibabel as nib
+    from mne.io import read_fiducials
 
     if isinstance(landmarks, str | Path):
         landmarks, coord_frame = read_fiducials(landmarks)
