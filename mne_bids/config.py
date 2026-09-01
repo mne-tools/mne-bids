@@ -3,7 +3,8 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-from mne import io
+import functools
+
 from mne.io.constants import FIFF
 
 BIDS_VERSION = "1.9.0"
@@ -134,42 +135,42 @@ emg_manufacturers = {
 
 nirs_manufacturers = {".snirf": "SNIRF"}
 
-# file-extension map to mne-python readers
-reader = {
-    ".con": io.read_raw_kit,
-    ".sqd": io.read_raw_kit,
-    ".fif": io.read_raw_fif,
-    ".pdf": io.read_raw_bti,
-    ".ds": io.read_raw_ctf,
-    ".vhdr": io.read_raw_brainvision,
-    ".edf": io.read_raw_edf,
-    ".EDF": io.read_raw_edf,
-    ".bdf": io.read_raw_bdf,
-    ".set": io.read_raw_eeglab,
-    ".lay": io.read_raw_persyst,
-    ".EEG": io.read_raw_nihon,
-    ".cnt": io.read_raw_cnt,
-    ".CNT": io.read_raw_cnt,
-    ".bin": io.read_raw_egi,
-    ".snirf": io.read_raw_snirf,
-    ".cdt": io.read_raw_curry,
+# file-extension map to the *names* of mne-python readers. Resolving a name to the
+# function imports that reader (and, transitively, much of MNE), so it is deferred
+# to _get_readers() rather than done when mne_bids is imported.
+_READER_NAMES = {
+    ".con": "read_raw_kit",
+    ".sqd": "read_raw_kit",
+    ".fif": "read_raw_fif",
+    ".pdf": "read_raw_bti",
+    ".ds": "read_raw_ctf",
+    ".vhdr": "read_raw_brainvision",
+    ".edf": "read_raw_edf",
+    ".EDF": "read_raw_edf",
+    ".bdf": "read_raw_bdf",
+    ".set": "read_raw_eeglab",
+    ".lay": "read_raw_persyst",
+    ".EEG": "read_raw_nihon",
+    ".cnt": "read_raw_cnt",
+    ".CNT": "read_raw_cnt",
+    ".bin": "read_raw_egi",
+    ".snirf": "read_raw_snirf",
+    ".cdt": "read_raw_curry",
+    ".mefd": "read_raw_mef",
 }
 
-# MEF3 support requires MNE >= 1.12
-if hasattr(io, "read_raw_mef"):
-    reader[".mefd"] = io.read_raw_mef
-
-
-epoch_reader = {".set": io.read_epochs_eeglab}
+_EPOCH_READER_NAMES = {".set": "read_epochs_eeglab"}
 
 # Continuous-format files where each "trial" is a fixed-length segment of the
 # file. Trial duration is read from the sidecar's ``EpochLength`` field.
-_continuous_epoched_reader = {
-    ".edf": io.read_raw_edf,
-    ".bdf": io.read_raw_bdf,
-    ".vhdr": io.read_raw_brainvision,
+_CONTINUOUS_EPOCHED_READER_NAMES = {
+    ".edf": "read_raw_edf",
+    ".bdf": "read_raw_bdf",
+    ".vhdr": "read_raw_brainvision",
 }
-_EPOCHED_EXTS = frozenset(epoch_reader) | frozenset(_continuous_epoched_reader)
+_EPOCHED_EXTS = frozenset(_EPOCH_READER_NAMES) | frozenset(
+    _CONTINUOUS_EPOCHED_READER_NAMES
+)
 # Some file extensions are ambiguous: more than one MNE reader can produce a
 # file with that extension. For example, ``.cnt`` is used both by Neuroscan,
 # read via :func:`mne.io.read_raw_cnt`, and by ANT Neuro eego recordings, read
@@ -181,9 +182,47 @@ _EPOCHED_EXTS = frozenset(epoch_reader) | frozenset(_continuous_epoched_reader)
 # This maps the class name of the ``raw`` object to the reader that created it,
 # taking precedence over the extension-based ``reader`` lookup.
 # See https://github.com/mne-tools/mne-bids/issues/1500
-reader_by_raw_class = dict()
-if hasattr(io, "read_raw_ant"):
-    reader_by_raw_class["RawANT"] = io.read_raw_ant
+_READER_BY_RAW_CLASS_NAMES = {"RawANT": "read_raw_ant"}
+
+_LAZY_READERS = {
+    "reader": _READER_NAMES,
+    "epoch_reader": _EPOCH_READER_NAMES,
+    "_continuous_epoched_reader": _CONTINUOUS_EPOCHED_READER_NAMES,
+    "reader_by_raw_class": _READER_BY_RAW_CLASS_NAMES,
+}
+
+
+@functools.cache
+def _get_readers(name):
+    """Get one of the ``_LAZY_READERS`` maps, with the names resolved (and cached).
+
+    Parameters
+    ----------
+    name : str
+        Which map to get.
+
+    Returns
+    -------
+    readers : dict
+        Maps file extensions (or ``raw`` class names) to ``mne.io`` functions.
+    """
+    from mne import io
+
+    # hasattr because a few readers need a newer MNE than we require: read_raw_mef
+    # (MNE >= 1.12) and read_raw_ant (MNE >= 1.9)
+    return {
+        key: getattr(io, func)
+        for key, func in _LAZY_READERS[name].items()
+        if hasattr(io, func)
+    }
+
+
+def __getattr__(name):
+    # PEP 562: keep ``from mne_bids.config import reader`` (etc.) working, without
+    # building the maps -- and thus importing mne.io -- at import time
+    if name in _LAZY_READERS:
+        return _get_readers(name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def _reader_for_raw(raw, ext):
@@ -206,7 +245,9 @@ def _reader_for_raw(raw, ext):
     reader : callable
         The ``mne.io.read_raw_*`` function to use.
     """
-    return reader_by_raw_class.get(type(raw).__name__, reader[ext])
+    return _get_readers("reader_by_raw_class").get(
+        type(raw).__name__, _get_readers("reader")[ext]
+    )
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way

@@ -33,6 +33,7 @@ from mne_bids.config import (
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
     MNE_STR_TO_FRAME,
+    _get_readers,
 )
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.read import (
@@ -186,11 +187,9 @@ def test_not_implemented(tmp_path):
 
 def test_mefd_requires_supported_mne(tmp_path, monkeypatch):
     """Test that reading .mefd requires a registered reader implementation."""
-    import mne_bids.read as read_module
-
     mefd_path = tmp_path / "test.mefd"
     mefd_path.mkdir()
-    monkeypatch.delitem(read_module.reader, ".mefd", raising=False)
+    monkeypatch.delitem(_get_readers("reader"), ".mefd", raising=False)
 
     with pytest.raises(ValueError, match="MEF3 support requires MNE-Python >= 1.12"):
         _read_raw(mefd_path)
@@ -198,8 +197,6 @@ def test_mefd_requires_supported_mne(tmp_path, monkeypatch):
 
 def test_mefd_read_uses_reader_registry(tmp_path, monkeypatch):
     """Test that reading .mefd uses the registered reader from config."""
-    import mne_bids.read as read_module
-
     mefd_path = tmp_path / "test.mefd"
     mefd_path.mkdir()
     sentinel = object()
@@ -211,7 +208,7 @@ def test_mefd_read_uses_reader_registry(tmp_path, monkeypatch):
         assert kwargs == {"preload": False}
         return sentinel
 
-    monkeypatch.setitem(read_module.reader, ".mefd", _fake_mefd_reader)
+    monkeypatch.setitem(_get_readers("reader"), ".mefd", _fake_mefd_reader)
 
     assert _read_raw(mefd_path, preload=False) is sentinel
 

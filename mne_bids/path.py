@@ -3,13 +3,13 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import copy
 import glob
 import inspect
 import json
 import os
 import re
 import shutil as sh
-from copy import deepcopy
 from datetime import datetime
 from io import StringIO
 from os import path as op
@@ -29,7 +29,7 @@ from mne_bids.config import (
     ALLOWED_PATH_ENTITIES_SHORT,
     ALLOWED_SPACES,
     ENTITY_VALUE_TYPE,
-    reader,
+    _get_readers,
 )
 from mne_bids.tsv_handler import _detect_file_encoding, _drop, _from_tsv, _to_tsv
 from mne_bids.utils import (
@@ -78,7 +78,7 @@ def _find_empty_room_candidates(bids_path):
         split=None, run=None, task="noise", datatype=datatype, suffix=datatype
     )
 
-    allowed_extensions = list(reader.keys())
+    allowed_extensions = list(_get_readers("reader"))
 
     # Get possible noise task files in the same directory as the recording.
     noisetask_tmp = [
@@ -700,6 +700,15 @@ class BIDSPath:
         """Compare str representations."""
         return str(self) == str(other)
 
+    def __copy__(self):
+        """Return a shallow copy of the instance."""
+        # All state is immutable (enforced by a test), so this is equivalent to a
+        # deepcopy while skipping the re-validation that __setstate__ (update) does
+        cls = self.__class__
+        new = cls.__new__(cls)
+        new.__dict__.update(self.__dict__)
+        return new
+
     def copy(self):
         """Copy the instance.
 
@@ -708,7 +717,7 @@ class BIDSPath:
         bidspath : BIDSPath
             The copied bidspath.
         """
-        return deepcopy(self)
+        return copy.copy(self)
 
     def mkdir(self, exist_ok=True):
         """Create the directory structure of the BIDS path.
@@ -1421,14 +1430,19 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
     sub, ses = bids_path.subject, bids_path.session
     datatype = bids_path.datatype
     basename, bids_root = bids_path.basename, bids_path.root
-    check = bids_path.check
 
     if datatype is None:
         datatype = _infer_datatype(root=bids_root, sub=sub, ses=ses)
 
-    data_dir = BIDSPath(
-        subject=sub, session=ses, datatype=datatype, root=bids_root, check=check
-    ).directory
+    # Same as BIDSPath(...).directory, but without paying for entity validation
+    parts = []
+    if sub is not None:
+        parts.append(f"sub-{sub}")
+    if ses is not None:
+        parts.append(f"ses-{ses}")
+    if datatype is not None:
+        parts.append(datatype)
+    data_dir = bids_root.joinpath(*parts)  # bids_root is a Path (set by update)
 
     # For BTi data, return the run directory (with or without '.pdf' suffix)
     bti_dir_with_ext = op.join(data_dir, f"{basename}")
@@ -1441,23 +1455,32 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
         matching_paths = [bti_dir]
     # otherwise, search for valid file paths
     else:
-        search_str = bids_root
-        # parse down the BIDS directory structure
-        if sub is not None:
-            search_str = op.join(search_str, f"sub-{sub}")
-        if ses is not None:
-            search_str = op.join(search_str, f"ses-{ses}")
-        if datatype is not None:
-            search_str = op.join(search_str, datatype)
-        else:
-            search_str = op.join(search_str, "**")
         # The basename should end with a separator "_" or a period "."
         # to avoid matching only the beggining of a value.
-        search_str = op.join(search_str, f"{basename}[_.]*")
+        if datatype is None:
+            # datatype unknown: one level of subdirectories below data_dir
+            matching_paths = glob.glob(str(data_dir / "**" / f"{basename}[_.]*"))
+        else:
+            # equivalent to glob.glob(str(data_dir / f"{basename}[_.]*")) but much
+            # cheaper; compared as str (normcase because glob/fnmatch ignore case
+            # on Windows) rather than building a Path per directory entry
+            normcase = op.normcase
+            base = normcase(basename)
+            n_char = len(base)
+            try:
+                with os.scandir(data_dir) as entries:
+                    matching_paths = [
+                        entry.path
+                        for entry in entries
+                        if (name := normcase(entry.name)).startswith(base)
+                        and len(name) > n_char
+                        and name[n_char] in "_."
+                    ]
+            except OSError:  # nonexistent (or unreadable) directory
+                matching_paths = []
 
         # Find all matching files in all supported formats.
         valid_exts = ALLOWED_FILENAME_EXTENSIONS
-        matching_paths = glob.glob(search_str)
         matching_paths = [p for p in matching_paths if _parse_ext(p)[1] in valid_exts]
     return matching_paths
 
@@ -1672,6 +1695,12 @@ def _parse_ext(raw_fname):
     if not raw_fname:
         return None, None
     raw_fname = Path(raw_fname)
+
+    # fast path for the common single-extension case (e.g. "..._meg.fif"), which
+    # avoids the repeated Path manipulations below
+    stem, _, ext = raw_fname.name.partition(".")
+    if stem and ext and "." not in ext and "c,rf" not in stem:
+        return raw_fname.with_name(stem), f".{ext}"
 
     fname, exts = raw_fname.with_suffix(""), raw_fname.suffixes
     while fname.suffix:

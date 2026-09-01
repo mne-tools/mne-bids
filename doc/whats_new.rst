@@ -59,5 +59,6 @@ Detailed list of changes
 
 - Sped up writing of recordings with many channels by avoiding redundant per-channel work in :func:`mne_bids.write_raw_bids` (single-pass channel-type counting, cached coil-type lookup, and a fixed quadratic loop when writing BrainVision units), by `Stefan Appelhoff`_ (:gh:`1620`)
 - Run the test suite with ``pytest-xdist`` and build the documentation with parallel Sphinx and Sphinx-Gallery workers, by `Eric Larson`_ (:gh:`1648`)
+- Sped up :meth:`mne_bids.BIDSPath.copy`, :attr:`mne_bids.BIDSPath.fpath` when the suffix or extension has to be inferred from the filesystem, and ``import mne_bids`` (roughly 2.5x faster), which no longer eagerly imports MNE's preprocessing, visualization, or file-format reader modules, nor SciPy, by `Eric Larson`_ (:gh:`1657`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`

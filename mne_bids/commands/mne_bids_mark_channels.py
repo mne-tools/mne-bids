@@ -15,7 +15,7 @@ from mne.utils import logger
 
 import mne_bids
 from mne_bids import BIDSPath, mark_channels
-from mne_bids.config import reader
+from mne_bids.config import _get_readers
 
 
 def run():
@@ -115,7 +115,7 @@ def run():
 
     bids_paths = bids_path.match()
     # Only keep data we can actually read & write.
-    allowed_extensions = list(reader.keys())
+    allowed_extensions = list(_get_readers("reader"))
     bids_paths = [p for p in bids_paths if p.extension in allowed_extensions]
 
     if not bids_paths:

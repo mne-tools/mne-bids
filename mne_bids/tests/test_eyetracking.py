@@ -2,12 +2,15 @@
 
 import gzip
 import json
+import subprocess
+import sys
 
 import mne
 import numpy as np
 import pytest
 from mne.datasets import testing
 from mne.io import RawArray, read_raw_egi, read_raw_eyelink
+from mne.utils import check_version
 
 import mne_bids
 from mne_bids import BIDSPath, write_raw_bids
@@ -321,3 +324,77 @@ def test_write_raises(raw_eye_and_cals, eyetrack_bpath):
             overwrite=False,
         )
     del cal_bad
+
+
+# The only parts of MNE that `import mne_bids` may pull in. Everything else -- a
+# file-format reader, mne.epochs, mne.preprocessing, mne.viz, ... -- costs every
+# user interpreter startup time and belongs inside the function that needs it.
+MNE_ALLOWED_PREFIXES = (
+    "mne._fiff",  # FIFF constants and Info, used by config/dig/pick/write
+    "mne.html_templates",  # pulled in by mne._fiff (the HTML repr of Info)
+    "mne.utils",  # logger/verbose/_validate_type, used throughout mne_bids
+)
+MNE_ALLOWED_EXACT = (
+    "mne",  # lazily loaded: attribute access is what does the real importing
+    "mne.annotations",  # pulled in by mne._fiff.meas_info
+    "mne.defaults",  # ditto
+    "mne.event",  # ditto
+    "mne.fixes",  # ditto
+    "mne.io",  # lazy-loader package init only: no reader below it may load
+    "mne.io.constants",  # FIFF constants, a shim for mne._fiff.constants
+    "mne.io.pick",  # _picks_to_idx, a shim for mne._fiff.pick
+)
+# Non-MNE packages that must stay lazy: optional dependencies (nibabel, pandas),
+# plotting (matplotlib), and scipy, which is only needed by a few MRI helpers.
+FORBIDDEN_IMPORTS = ("matplotlib", "nibabel", "pandas", "scipy")
+
+_IMPORT_CHECK = """\
+import sys
+import mne_bids
+from mne_bids.config import _get_readers
+
+allowed, prefixes, forbidden = {allowed!r}, {prefixes!r}, {forbidden!r}
+bad = [
+    m
+    for m in sys.modules
+    if (m == "mne" or m.startswith("mne."))
+    and m not in allowed
+    and not any(m == p or m.startswith(p + ".") for p in prefixes)
+]
+bad += [
+    m for m in sys.modules if any(m == f or m.startswith(f + ".") for f in forbidden)
+]
+# shallowest first: the roots of a cascade are the informative ones
+print(" ".join(sorted(bad, key=lambda m: (m.count("."), m))))
+print(_get_readers.cache_info().currsize)
+"""
+
+
+def test_no_eager_imports():
+    """Test that importing mne_bids does not import heavy or optional modules."""
+    forbidden = FORBIDDEN_IMPORTS
+    if not check_version("mne", "1.13"):
+        # before mne-tools/mne-python#14168, mne.annotations and mne._fiff.{tag,write}
+        # import scipy.{io,sparse} at module scope, which mne_bids cannot avoid; every
+        # other module below is still guarded on old MNE
+        forbidden = tuple(f for f in forbidden if f != "scipy")
+    # in a subprocess so that whatever pytest itself imported cannot mask a regression
+    script = _IMPORT_CHECK.format(
+        allowed=MNE_ALLOWED_EXACT,
+        prefixes=MNE_ALLOWED_PREFIXES,
+        forbidden=forbidden,
+    )
+    modules, n_reader_maps = subprocess.run(
+        [sys.executable, "-c", script], capture_output=True, text=True, check=True
+    ).stdout.splitlines()
+    bad = modules.split()
+    assert not bad, (
+        f"`import mne_bids` eagerly imported {len(bad)} module(s): "
+        f"{' '.join(bad[:12])}{' ...' if len(bad) > 12 else ''}. Move the import "
+        "inside the function that needs it, or, for an annotation, spell the type "
+        "out as a string (see mne_bids/physio/eyetracking.py)."
+    )
+    assert n_reader_maps == "0", (
+        "`import mne_bids` built a mne_bids.config reader map, which imports every "
+        "mne.io reader it names; call _get_readers where the readers are needed."
+    )
