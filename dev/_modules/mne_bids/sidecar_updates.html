@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.sidecar_updates &#8212; MNE-BIDS 0.20.0.dev37+g41fa378f2 documentation</title>
+    <title>mne_bids.sidecar_updates &#8212; MNE-BIDS 0.20.0.dev38+g6784b4c8e documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=02bb40f7"></script>
+    <script src="../../_static/documentation_options.js?v=f00167e9"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev37+g41fa378f2" />
+  <meta name="docsearch:version" content="0.20.0.dev38+g6784b4c8e" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev37+g41fa378f2 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev38+g6784b4c8e documentation</p>
   
 </a></div>
     
@@ -512,8 +512,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigMontage</span><span class="p">,</span> <span class="n">make_dig_montage</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_fiducials</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_check_on_missing</span><span class="p">,</span>
@@ -718,6 +716,8 @@
 <span class="sd">    -----</span>
 <span class="sd">    .. versionadded:: 0.8</span>
 <span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigMontage</span>
+
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">"bids_path"</span><span class="p">)</span>
     <span class="n">_validate_type</span><span class="p">(</span>
         <span class="n">item</span><span class="o">=</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">DigMontage</span><span class="p">,</span> <span class="s2">"path-like"</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">"landmarks"</span>
@@ -857,6 +857,9 @@
     <span class="o">*</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Get anatomical landmarks from fiducials file, in MRI voxel space."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_dig_montage</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_fiducials</span>
+
     <span class="c1"># avoid dicrular imports</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.write</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
         <span class="n">_get_fid_coords</span><span class="p">,</span>
@@ -941,7 +944,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-31.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-01.
       <br/>
     
   </p>

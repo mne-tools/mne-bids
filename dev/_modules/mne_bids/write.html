@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.20.0.dev37+g41fa378f2 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.20.0.dev38+g6784b4c8e documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=02bb40f7"></script>
+    <script src="../../_static/documentation_options.js?v=f00167e9"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev37+g41fa378f2" />
+  <meta name="docsearch:version" content="0.20.0.dev38+g6784b4c8e" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev37+g41fa378f2 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev38+g6784b4c8e documentation</p>
   
 </a></div>
     
@@ -521,14 +521,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">mne.preprocessing</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">Epochs</span><span class="p">,</span> <span class="n">channel_type</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_meg_system</span><span class="p">,</span> <span class="n">_unit2human</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_fiducials</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.pick</span><span class="w"> </span><span class="kn">import</span> <span class="n">_picks_to_idx</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_trans</span><span class="p">,</span> <span class="n">apply_trans</span><span class="p">,</span> <span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Bunch</span><span class="p">,</span>
     <span class="n">ProgressBar</span><span class="p">,</span>
@@ -538,7 +533,6 @@
     <span class="n">logger</span><span class="p">,</span>
     <span class="n">verbose</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BIDSPath</span><span class="p">,</span>
@@ -675,6 +669,10 @@
 <span class="sd">        Defaults to False.</span>
 
 <span class="sd">    """</span>
+    <span class="c1"># hoisted out of the per-channel loop below</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">channel_type</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">_unit2human</span>
+
     <span class="c1"># Get channel type mappings between BIDS and MNE nomenclatures</span>
     <span class="n">map_chs</span> <span class="o">=</span> <span class="n">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s2">"mne"</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">"bids"</span><span class="p">)</span>
 
@@ -1536,6 +1534,8 @@
 <span class="sd">    mri_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The mri RAS landmark data converted to from m to mm.</span>
 <span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_trans</span>
+
     <span class="c1"># Transform MEG landmarks into MRI space, adjust units by * 1e3</span>
     <span class="k">return</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">meg_landmarks</span><span class="p">,</span> <span class="n">move</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e3</span>
 
@@ -1555,6 +1555,9 @@
 <span class="sd">    vox_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The MRI voxel-space landmark data.</span>
 <span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_trans</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
+
     <span class="c1"># Get landmarks in voxel space, using the T1 data</span>
     <span class="n">vox2ras_tkr_t</span> <span class="o">=</span> <span class="n">t1_mgh</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras_tkr</span><span class="p">()</span>
     <span class="n">ras_tkr2vox_t</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">vox2ras_tkr_t</span><span class="p">)</span>
@@ -1578,6 +1581,8 @@
 <span class="sd">    ras_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The MRI scanner RAS landmark data.</span>
 <span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_trans</span>
+
     <span class="c1"># Get landmarks in voxel space, using the T1 data</span>
     <span class="n">vox2ras</span> <span class="o">=</span> <span class="n">img_mgh</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras</span><span class="p">()</span>
     <span class="n">ras_landmarks</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">vox2ras</span><span class="p">,</span> <span class="n">mri_landmarks</span><span class="p">)</span>  <span class="c1"># in scanner RAS</span>
@@ -1599,6 +1604,9 @@
 <span class="sd">    vox_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The MRI voxel-space landmark data.</span>
 <span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_trans</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
+
     <span class="c1"># Get landmarks in voxel space, using the T1 data</span>
     <span class="n">vox2ras</span> <span class="o">=</span> <span class="n">img_mgh</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras</span><span class="p">()</span>
     <span class="n">ras2vox</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">vox2ras</span><span class="p">)</span>
@@ -1662,9 +1670,9 @@
             <span class="s2">"is unknown, set it to None"</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">):</span>
         <span class="n">rec_type</span> <span class="o">=</span> <span class="s2">"continuous"</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">Epochs</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span><span class="p">):</span>
         <span class="n">rec_type</span> <span class="o">=</span> <span class="s2">"epoched"</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">rec_type</span> <span class="o">=</span> <span class="s2">"n/a"</span>
@@ -1723,6 +1731,8 @@
     <span class="p">}</span>
 
     <span class="c1"># Compile cHPI information, if any.</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_meg_system</span>
+
     <span class="n">system</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_meg_system</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
     <span class="n">chpi</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">hpi_freqs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1886,6 +1896,8 @@
     <span class="c1"># now comes the actual defacing</span>
     <span class="c1"># 1. move center of voxels to (nasion - inset)</span>
     <span class="c1"># 2. rotate the head by theta from vertical</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_trans</span><span class="p">,</span> <span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span>
+
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">affines</span><span class="o">.</span><span class="n">apply_affine</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">idxs</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">translation</span><span class="p">(</span><span class="n">x</span><span class="o">=-</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="n">y</span> <span class="o">+</span> <span class="n">inset</span><span class="p">,</span> <span class="n">z</span><span class="o">=-</span><span class="n">z</span><span class="p">),</span> <span class="n">idxs</span><span class="p">)</span>
     <span class="n">idxs</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">rotation</span><span class="p">(</span><span class="n">x</span><span class="o">=-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">)),</span> <span class="n">idxs</span><span class="p">)</span>
@@ -1972,6 +1984,8 @@
 
     <span class="c1"># pybv needs to know the units of the data for appropriate scaling</span>
     <span class="c1"># get voltage units as micro-volts and all other units "as is"</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">_unit2human</span>  <span class="c1"># hoisted out of the loop</span>
+
     <span class="n">unit</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">chs</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"chs"</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">chs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFF_UNIT_V</span><span class="p">:</span>
@@ -2580,7 +2594,7 @@
 <span class="sd">    When writing EDF or BDF files, all file extensions are forced to be</span>
 <span class="sd">    lower-case, in compliance with the BIDS specification.</span>
 <span class="sd">    """</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"raw_file must be an instance of BaseRaw, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">is_eyetracking_only</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
         <span class="p">[</span><span class="n">ch</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"eyegaze"</span><span class="p">,</span> <span class="s2">"pupil"</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_channel_types</span><span class="p">()]</span>
@@ -3332,6 +3346,8 @@
     <span class="p">)</span>
 
     <span class="c1"># get trans and ensure it is from head to MRI</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_trans</span>
+
     <span class="n">trans</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_trans</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">fro</span><span class="o">=</span><span class="s2">"head"</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">"mri"</span><span class="p">)</span>
     <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_meg_landmarks_to_mri_landmarks</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">trans</span><span class="p">)</span>
 
@@ -3378,6 +3394,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_landmarks</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">image_nii</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">nibabel</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nib</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_fiducials</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">):</span>
         <span class="n">landmarks</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">read_fiducials</span><span class="p">(</span><span class="n">landmarks</span><span class="p">)</span>
@@ -4340,7 +4357,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-31.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-01.
       <br/>
     
   </p>

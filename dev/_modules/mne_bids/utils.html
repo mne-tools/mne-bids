@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.utils &#8212; MNE-BIDS 0.20.0.dev37+g41fa378f2 documentation</title>
+    <title>mne_bids.utils &#8212; MNE-BIDS 0.20.0.dev38+g6784b4c8e documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=02bb40f7"></script>
+    <script src="../../_static/documentation_options.js?v=f00167e9"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev37+g41fa378f2" />
+  <meta name="docsearch:version" content="0.20.0.dev38+g6784b4c8e" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev37+g41fa378f2 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev38+g6784b4c8e documentation</p>
   
 </a></div>
     
@@ -515,9 +515,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">pick_types</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_builtin_montages</span><span class="p">,</span> <span class="n">make_standard_montage</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.kit.kit</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_kit_info</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span> <span class="k">as</span> <span class="n">_warn</span>
 
@@ -788,6 +785,8 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_mrk_meas_date</span><span class="p">(</span><span class="n">mrk</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Find the measurement date from a KIT marker file."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.kit.kit</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_kit_info</span>
+
     <span class="n">info</span> <span class="o">=</span> <span class="n">get_kit_info</span><span class="p">(</span><span class="n">mrk</span><span class="p">,</span> <span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">meas_date</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"meas_date"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -816,6 +815,9 @@
 <span class="sd">        extraction.</span>
 
 <span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">pick_types</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_builtin_montages</span><span class="p">,</span> <span class="n">make_standard_montage</span>
+
     <span class="n">placement_scheme</span> <span class="o">=</span> <span class="s2">"n/a"</span>
     <span class="c1"># Check if the raw data contains eeg data at all</span>
     <span class="k">if</span> <span class="s2">"eeg"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
@@ -1141,7 +1143,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-08-31.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-01.
       <br/>
     
   </p>
