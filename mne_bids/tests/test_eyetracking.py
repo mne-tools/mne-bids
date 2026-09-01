@@ -10,6 +10,7 @@ import numpy as np
 import pytest
 from mne.datasets import testing
 from mne.io import RawArray, read_raw_egi, read_raw_eyelink
+from mne.utils import check_version
 
 import mne_bids
 from mne_bids import BIDSPath, write_raw_bids
@@ -371,11 +372,17 @@ print(_get_readers.cache_info().currsize)
 
 def test_no_eager_imports():
     """Test that importing mne_bids does not import heavy or optional modules."""
+    forbidden = FORBIDDEN_IMPORTS
+    if not check_version("mne", "1.13"):
+        # before mne-tools/mne-python#14168, mne.annotations and mne._fiff.{tag,write}
+        # import scipy.{io,sparse} at module scope, which mne_bids cannot avoid; every
+        # other module below is still guarded on old MNE
+        forbidden = tuple(f for f in forbidden if f != "scipy")
     # in a subprocess so that whatever pytest itself imported cannot mask a regression
     script = _IMPORT_CHECK.format(
         allowed=MNE_ALLOWED_EXACT,
         prefixes=MNE_ALLOWED_PREFIXES,
-        forbidden=FORBIDDEN_IMPORTS,
+        forbidden=forbidden,
     )
     modules, n_reader_maps = subprocess.run(
         [sys.executable, "-c", script], capture_output=True, text=True, check=True
