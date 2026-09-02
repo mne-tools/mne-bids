@@ -135,7 +135,7 @@ def _find_empty_room_candidates(bids_path):
     candidate_er_fnames = []
     for session_dir in emptyroom_session_dirs:
         dir_contents = glob.iglob(
-            op.join(session_dir, datatype, f"sub-emptyroom_*_{datatype}*")
+            str(session_dir / datatype / f"sub-emptyroom_*_{datatype}*")
         )
         for item in dir_contents:
             item = Path(item)
@@ -530,15 +530,15 @@ class BIDSPath:
         """
         # Create the data path based on the available entities:
         # root, subject, session, and datatype
-        data_path = "" if self.root is None else self.root
+        data_path = Path() if self.root is None else self.root
         if self.subject is not None:
-            data_path = op.join(data_path, f"sub-{self.subject}")
+            data_path /= f"sub-{self.subject}"
         if self.session is not None:
-            data_path = op.join(data_path, f"ses-{self.session}")
+            data_path /= f"ses-{self.session}"
         # datatype will allow 'meg', 'eeg', 'ieeg', 'anat'
         if self.datatype is not None:
-            data_path = op.join(data_path, self.datatype)
-        return Path(data_path)
+            data_path /= self.datatype
+        return data_path
 
     @property
     def subject(self) -> str | None:
@@ -883,7 +883,7 @@ class BIDSPath:
             if not scans_fpath.exists():
                 continue
             # get the relative datatype of these bids files
-            bids_fnames = [op.join(p.datatype, p.fpath.name) for p in bids_paths]
+            bids_fnames = [str(Path(p.datatype) / p.fpath.name) for p in bids_paths]
 
             scans_tsv = _from_tsv(scans_fpath)
             scans_tsv = _drop(scans_tsv, bids_fnames, "filename")
@@ -922,11 +922,11 @@ class BIDSPath:
         # account for MEG data that are directory-based
         # else, all other file paths attempt to match
         if self.suffix == "meg" and self.extension == ".ds":
-            bids_fpath = op.join(data_path, self.basename)
+            bids_fpath = data_path / self.basename
         elif self.suffix == "meg" and self.extension == ".pdf":
-            bids_fpath = op.join(data_path, self.basename)
-            legacy_dir = op.join(data_path, op.splitext(self.basename)[0])
-            if not op.exists(bids_fpath) and op.isdir(legacy_dir):
+            bids_fpath = data_path / self.basename
+            legacy_dir = data_path / Path(self.basename).stem
+            if not bids_fpath.exists() and legacy_dir.is_dir():
                 bids_fpath = legacy_dir
         else:
             # if suffix and/or extension is missing, and root is
@@ -963,7 +963,7 @@ class BIDSPath:
 
                 # found no matching paths
                 if not matching_paths:
-                    bids_fpath = op.join(data_path, self.basename)
+                    bids_fpath = data_path / self.basename
                 # if paths still cannot be resolved, then there is an error
                 elif len(matching_paths) > 1:
                     matching_paths_str = "\n".join(sorted(matching_paths))
@@ -983,10 +983,9 @@ class BIDSPath:
                     bids_fpath = matching_paths[0]
 
             else:
-                bids_fpath = op.join(data_path, self.basename)
+                bids_fpath = data_path / self.basename
 
-        bids_fpath = Path(bids_fpath)
-        return bids_fpath
+        return Path(bids_fpath)
 
     def update(self, *, check=None, **kwargs):
         """Update in-place BIDS entity key/value pairs in object.
@@ -1445,14 +1444,14 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
     data_dir = bids_root.joinpath(*parts)  # bids_root is a Path (set by update)
 
     # For BTi data, return the run directory (with or without '.pdf' suffix)
-    bti_dir_with_ext = op.join(data_dir, f"{basename}")
-    bti_dir = op.join(data_dir, op.splitext(basename)[0])
-    if op.isdir(bti_dir_with_ext):
+    bti_dir_with_ext = data_dir / basename
+    bti_dir = data_dir / Path(basename).stem
+    if bti_dir_with_ext.is_dir():
         logger.info(f"Assuming BTi data in {bti_dir_with_ext}")
-        matching_paths = [bti_dir_with_ext]
-    elif op.isdir(bti_dir):
+        matching_paths = [str(bti_dir_with_ext)]
+    elif bti_dir.is_dir():
         logger.info(f"Assuming BTi data in {bti_dir}")
-        matching_paths = [bti_dir]
+        matching_paths = [str(bti_dir)]
     # otherwise, search for valid file paths
     else:
         # The basename should end with a separator "_" or a period "."
@@ -2633,9 +2632,9 @@ def _find_best_candidates(params, candidate_list):
 
 def _get_datatypes_for_sub(*, root, sub, ses=None):
     """Retrieve data modalities for a specific subject and session."""
-    subject_dir = op.join(root, f"sub-{sub}")
+    subject_dir = Path(root) / f"sub-{sub}"
     if ses is not None:
-        subject_dir = op.join(subject_dir, f"ses-{ses}")
+        subject_dir /= f"ses-{ses}"
 
     # TODO We do this to ensure we don't accidentally pick up any "spurious"
     # TODO sub-directories. But is that really necessary with valid BIDS data?

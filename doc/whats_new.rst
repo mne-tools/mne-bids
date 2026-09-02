@@ -20,6 +20,7 @@ Version 0.20 (unreleased)
 The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Daria Agafonova`_
+* `Jiayue Gu`_
 * `Vincent Gao`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
@@ -56,6 +57,10 @@ Detailed list of changes
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
+
+- Modernize path construction in :mod:`mne_bids.path` by replacing selected
+  ``os.path`` operations with ``pathlib.Path``, by `Jiayue Gu`_
+  (:gh:`1268`)
 
 - Sped up writing of recordings with many channels by avoiding redundant per-channel work in :func:`mne_bids.write_raw_bids` (single-pass channel-type counting, cached coil-type lookup, and a fixed quadratic loop when writing BrainVision units), by `Stefan Appelhoff`_ (:gh:`1620`)
 - Run the test suite with ``pytest-xdist`` and build the documentation with parallel Sphinx and Sphinx-Gallery workers, by `Eric Larson`_ (:gh:`1648`)
