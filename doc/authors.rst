@@ -31,6 +31,7 @@
 .. _Fu-Te Wong: https://github.com/zuxfoucault
 .. _Harrison Ritz: https://github.com/harrisonritz
 .. _Jean-Rémi King: https://kingjr.github.io
+.. _Jiayue Gu: https://github.com/gugu1031
 .. _Jonathan Vanhoecke: https://sfb-retune.de/people/jonathan-vanhoecke/
 .. _Julia Guiomar Niso Galán: https://github.com/guiomar
 .. _Julius Welzel: https://github.com/JuliusWelzel

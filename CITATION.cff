@@ -235,6 +235,8 @@ authors:
       orcid: 'https://orcid.org/0009-0005-1615-1369'
     - given-names: Daria
       family-names: Agafonova
+    - given-names: Jiayue
+      family-names: Gu
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'

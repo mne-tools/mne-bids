@@ -1557,6 +1557,21 @@ def test_bids_path(bids_root):
         assert getattr(bids_path, entity) == new_val
 
 
+def test_bids_path_legacy_bti_directory(tmp_path):
+    """Test inferring a legacy BTi directory without a .pdf suffix."""
+    bti_dir = tmp_path / "sub-01" / "meg" / "sub-01_task-rest_meg"
+    bti_dir.mkdir(parents=True)
+    bids_path = BIDSPath(
+        root=tmp_path,
+        subject="01",
+        task="rest",
+        datatype="meg",
+        suffix="meg",
+    )
+
+    assert bids_path.fpath == bti_dir
+
+
 def test_make_filenames():
     """Test that we create filenames according to the BIDS spec."""
     # All keys work
