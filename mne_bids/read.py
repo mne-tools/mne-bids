@@ -14,8 +14,6 @@ from pathlib import Path
 import mne
 import numpy as np
 from mne import events_from_annotations, io, pick_channels_regexp, read_events
-from mne.coreg import fit_matched_points
-from mne.transforms import apply_trans
 from mne.utils import _validate_type, check_version, get_subjects_dir, logger
 
 from mne_bids._fileio import _open_lock
@@ -25,10 +23,8 @@ from mne_bids.config import (
     ANNOTATIONS_TO_KEEP,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
-    _continuous_epoched_reader,
+    _get_readers,
     _map_options,
-    epoch_reader,
-    reader,
 )
 from mne_bids.dig import _read_dig_bids
 from mne_bids.path import (
@@ -61,6 +57,7 @@ def _read_raw(
 ):
     """Read a raw file into MNE, making inferences based on extension."""
     _, ext = _parse_ext(raw_path)
+    reader = _get_readers("reader")
 
     # KIT systems
     if ext in [".con", ".sqd"]:
@@ -1609,11 +1606,12 @@ def read_epochs_bids(
         bids_path.update(suffix=bids_path.datatype)
 
     ext = bids_path.fpath.suffix
+    epoch_reader = _get_readers("epoch_reader")
     if ext in epoch_reader:
         epochs = epoch_reader[ext](
             bids_path.fpath, verbose=verbose, **(extra_params or {})
         )
-    elif ext in _continuous_epoched_reader:
+    elif ext in _get_readers("_continuous_epoched_reader"):
         epochs = _read_epochs_from_continuous(
             bids_path, extra_params=extra_params, verbose=verbose
         )
@@ -1639,7 +1637,7 @@ def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
                 f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
                 "required to slice an 'epoched' continuous file."
             ) from None
-    raw = _continuous_epoched_reader[bids_path.fpath.suffix](
+    raw = _get_readers("_continuous_epoched_reader")[bids_path.fpath.suffix](
         bids_path.fpath, preload=False, verbose=verbose, **(extra_params or {})
     )
     events_fname = _find_matching_sidecar(
@@ -1756,6 +1754,13 @@ def get_head_mri_trans(
     trans : mne.transforms.Transform
         The data transformation matrix from head to MRI coordinates.
     """
+    from mne.transforms import apply_trans
+
+    try:  # MNE 1.13+
+        from mne.transforms import fit_matched_points
+    except ImportError:
+        from mne.coreg import fit_matched_points
+
     nib = _import_nibabel("get a head to MRI transform")
 
     if not isinstance(bids_path, BIDSPath):

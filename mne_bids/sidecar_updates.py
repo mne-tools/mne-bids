@@ -7,8 +7,6 @@ import json
 from collections import OrderedDict
 
 import numpy as np
-from mne.channels import DigMontage, make_dig_montage
-from mne.io import read_fiducials
 from mne.io.constants import FIFF
 from mne.utils import (
     _check_on_missing,
@@ -208,6 +206,8 @@ def update_anat_landmarks(
     -----
     .. versionadded:: 0.8
     """
+    from mne.channels import DigMontage
+
     _validate_type(item=bids_path, types=BIDSPath, item_name="bids_path")
     _validate_type(
         item=landmarks, types=(DigMontage, "path-like"), item_name="landmarks"
@@ -346,6 +346,9 @@ def _get_landmarks_from_fiducials_file(
     *, bids_path, fname, fs_subject, fs_subjects_dir
 ):
     """Get anatomical landmarks from fiducials file, in MRI voxel space."""
+    from mne.channels import make_dig_montage
+    from mne.io import read_fiducials
+
     # avoid dicrular imports
     from mne_bids.write import (
         _get_fid_coords,

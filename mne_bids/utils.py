@@ -10,9 +10,6 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
-from mne import pick_types
-from mne.channels import get_builtin_montages, make_standard_montage
-from mne.io.kit.kit import get_kit_info
 from mne.utils import logger, verbose
 from mne.utils import warn as _warn
 
@@ -245,14 +242,16 @@ def _write_json(fname, dictionary, *, overwrite=False, lock=True):
 
 
 @verbose
-def _write_tsv(fname, dictionary, *, overwrite=False, lock=True, verbose=None):
+def _write_tsv(
+    fname, dictionary, *, overwrite=False, lock=True, compress=False, verbose=None
+):
     """Write an ordered dictionary to a .tsv file."""
     fname = Path(fname)
     if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    _to_tsv(dictionary, fname, lock=lock)
+    _to_tsv(dictionary, fname, lock=lock, compress=compress)
 
     logger.info(f"Writing '{fname}'...")
 
@@ -281,6 +280,8 @@ def _check_key_val(key, val):
 
 def _get_mrk_meas_date(mrk):
     """Find the measurement date from a KIT marker file."""
+    from mne.io.kit.kit import get_kit_info
+
     info = get_kit_info(mrk, False)[0]
     meas_date = info.get("meas_date", None)
     if isinstance(meas_date, tuple | list | np.ndarray):
@@ -309,6 +310,9 @@ def _infer_eeg_placement_scheme(raw):
         extraction.
 
     """
+    from mne import pick_types
+    from mne.channels import get_builtin_montages, make_standard_montage
+
     placement_scheme = "n/a"
     # Check if the raw data contains eeg data at all
     if "eeg" not in raw:
@@ -491,7 +495,7 @@ def _check_datatype(raw, datatype):
     datatype : str
         Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.
     """
-    supported_types = ("eeg", "emg", "ieeg", "meg", "nirs")
+    supported_types = ("beh", "eeg", "emg", "ieeg", "meg", "nirs")
     if datatype not in supported_types:
         raise ValueError(
             f"The specified datatype {datatype} is currently not supported. "
@@ -511,6 +515,10 @@ def _check_datatype(raw, datatype):
     elif datatype == "ieeg":
         ieeg_types = ("seeg", "ecog", "dbs")
         if any(ieeg_type in raw for ieeg_type in ieeg_types):
+            datatype_matches = True
+    elif datatype == "beh":
+        beh_types = ("eyegaze", "pupil")
+        if any(beh_type in raw.get_channel_types() for beh_type in beh_types):
             datatype_matches = True
     if not datatype_matches:
         raise ValueError(

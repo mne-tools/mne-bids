@@ -16,9 +16,7 @@ import shutil as sh
 from pathlib import Path
 
 import numpy as np
-from mne.io import anonymize_info, read_raw_bdf, read_raw_brainvision, read_raw_edf
 from mne.utils import logger, verbose
-from scipy.io import loadmat, savemat
 
 from mne_bids._fileio import _chmod_rw_R, _open_lock
 from mne_bids.path import BIDSPath, _mkdir_p, _parse_ext
@@ -441,6 +439,8 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
                 fout.write(line)
 
     if anonymize is not None:
+        from mne.io import anonymize_info, read_raw_brainvision
+
         raw = read_raw_brainvision(vhdr_src, preload=False, verbose=verbose)
         daysback, keep_his, _ = _check_anonymize(anonymize, raw, ".vhdr")
         raw.info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
@@ -537,6 +537,8 @@ def copyfile_edf(src, dest, anonymize=None, *, verbose=None):
 
     # Anonymize EDF/BDF data, if requested
     if anonymize is not None:
+        from mne.io import anonymize_info, read_raw_bdf, read_raw_edf
+
         if ext_src in [".bdf", ".BDF"]:
             raw = read_raw_bdf(dest, preload=False, verbose=verbose)
         elif ext_src in [".edf", ".EDF"]:
@@ -608,6 +610,8 @@ def copyfile_eeglab(src, dest):
         raise ValueError(
             f"Need to move data with same extension but got {ext_src}, {ext_dest}"
         )
+
+    from scipy.io import loadmat, savemat
 
     # Load the EEG struct
     # NOTE: do *not* simplify cells, because this changes the underlying

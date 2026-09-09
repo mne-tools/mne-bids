@@ -11,6 +11,7 @@ except Exception:
     __version__ = "0.0.0"
 
 from mne_bids import commands
+from mne_bids import physio
 from mne_bids.report import make_report
 from mne_bids.path import (
     BIDSPath,

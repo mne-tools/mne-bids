@@ -16,15 +16,9 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import mne
-import mne.preprocessing
 import numpy as np
-from mne import Epochs, channel_type
-from mne.channels.channels import _get_meg_system, _unit2human
-from mne.chpi import get_chpi_info
-from mne.io import BaseRaw, read_fiducials
 from mne.io.constants import FIFF
 from mne.io.pick import _picks_to_idx
-from mne.transforms import _get_trans, apply_trans, rotation, translation
 from mne.utils import (
     Bunch,
     ProgressBar,
@@ -34,7 +28,6 @@ from mne.utils import (
     logger,
     verbose,
 )
-from scipy import linalg
 
 from mne_bids import (
     BIDSPath,
@@ -51,6 +44,7 @@ from mne_bids.config import (
     BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
     BIDS_VERSION,
     CONVERT_FORMATS,
+    EPHY_ALLOWED_DATATYPES,
     EXT_TO_UNIT_MAP,
     FORMAT_EXTENSIONS,
     IGNORED_CHANNELS,
@@ -78,6 +72,13 @@ from mne_bids.dig import (
     _write_empty_ieeg_positions,
 )
 from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
+from mne_bids.physio import write_eyetrack_calibration
+from mne_bids.physio.eyetracking import (
+    _eyetrack_calibration_to_events_metadata,
+    _get_eyetrack_annotation_inds,
+    _get_eyetrack_ch_names,
+    _write_eyetrack_tsvs,
+)
 from mne_bids.pick import coil_type
 from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.sidecar_updates import update_sidecar_json
@@ -163,6 +164,10 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         Defaults to False.
 
     """
+    # hoisted out of the per-channel loop below
+    from mne import channel_type
+    from mne.channels.channels import _unit2human
+
     # Get channel type mappings between BIDS and MNE nomenclatures
     map_chs = _get_ch_type_mapping(fro="mne", to="bids")
 
@@ -395,8 +400,10 @@ def _events_tsv(
     raw,
     fname,
     trial_type,
+    *,
     event_metadata=None,
     extras_columns=None,
+    compress=False,
     overwrite=False,
 ):
     """Create an events.tsv file and save it.
@@ -425,6 +432,8 @@ def _events_tsv(
     event_metadata : pandas.DataFrame | None
         Additional metadata to be stored in the events.tsv file. Must have one
         row per event.
+    compress : bool
+        Whether to gzip the tsv file, e.g. for <match>_physioevents.tsv.gz files.
     extras_columns : dict | None
         Optional column data derived from annotation extras, mapping column name to
         per-event values.
@@ -484,7 +493,8 @@ def _events_tsv(
             continue
         data[key] = values
 
-    _write_tsv(fname, data, overwrite=overwrite)
+    _write_tsv(fname, data, compress=compress, overwrite=overwrite)
+    return data
 
 
 def _extract_hed_for_write(raw, *, n_events):
@@ -525,6 +535,7 @@ def _events_json(
     extra_columns=None,
     has_trial_type=True,
     hed_by_trial_type=None,
+    metadata=None,
     overwrite=False,
 ):
     """Create events.json for non-default columns in accompanying TSV.
@@ -545,6 +556,8 @@ def _events_json(
     """
     if extra_columns is None:
         extra_columns = dict()
+    if metadata is None:
+        metadata = dict()
 
     new_data = {
         "onset": {
@@ -585,6 +598,8 @@ def _events_json(
     for key, value in extra_columns.items():
         new_data[key] = {"Description": value}
 
+    for key, val in metadata.items():
+        new_data[key] = val
     # make sure to append any JSON fields added by the user
     fname = Path(fname)
     if fname.exists():
@@ -1018,6 +1033,8 @@ def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
     mri_landmarks : np.ndarray, shape (3, 3)
         The mri RAS landmark data converted to from m to mm.
     """
+    from mne.transforms import apply_trans
+
     # Transform MEG landmarks into MRI space, adjust units by * 1e3
     return apply_trans(trans, meg_landmarks, move=True) * 1e3
 
@@ -1037,6 +1054,9 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
     vox_landmarks : np.ndarray, shape (3, 3)
         The MRI voxel-space landmark data.
     """
+    from mne.transforms import apply_trans
+    from scipy import linalg
+
     # Get landmarks in voxel space, using the T1 data
     vox2ras_tkr_t = t1_mgh.header.get_vox2ras_tkr()
     ras_tkr2vox_t = linalg.inv(vox2ras_tkr_t)
@@ -1060,6 +1080,8 @@ def _mri_voxels_to_mri_scanner_ras(mri_landmarks, img_mgh):
     ras_landmarks : np.ndarray, shape (3, 3)
         The MRI scanner RAS landmark data.
     """
+    from mne.transforms import apply_trans
+
     # Get landmarks in voxel space, using the T1 data
     vox2ras = img_mgh.header.get_vox2ras()
     ras_landmarks = apply_trans(vox2ras, mri_landmarks)  # in scanner RAS
@@ -1081,6 +1103,9 @@ def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
     vox_landmarks : np.ndarray, shape (3, 3)
         The MRI voxel-space landmark data.
     """
+    from mne.transforms import apply_trans
+    from scipy import linalg
+
     # Get landmarks in voxel space, using the T1 data
     vox2ras = img_mgh.header.get_vox2ras()
     ras2vox = linalg.inv(vox2ras)
@@ -1116,7 +1141,7 @@ def _sidecar_json(
     fname : str | mne_bids.BIDSPath
         Filename to save the sidecar json to.
     datatype : str
-        Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.
+        Type of the data as in EPHY_ALLOWED_DATATYPES.
     emg_placement : "Measured" | "ChannelSpecific" | "Other" | None
         How the EMG sensor locations were determined. Must be one of the literal strings
         if ``datatype="emg"`` and should be ``None`` for all other datatypes.
@@ -1144,9 +1169,9 @@ def _sidecar_json(
             "is unknown, set it to None"
         )
 
-    if isinstance(raw, BaseRaw):
+    if isinstance(raw, mne.io.BaseRaw):
         rec_type = "continuous"
-    elif isinstance(raw, Epochs):
+    elif isinstance(raw, mne.Epochs):
         rec_type = "epoched"
     else:
         rec_type = "n/a"
@@ -1205,6 +1230,8 @@ def _sidecar_json(
     }
 
     # Compile cHPI information, if any.
+    from mne.channels.channels import _get_meg_system
+
     system, _ = _get_meg_system(raw.info)
     chpi = None
     hpi_freqs = []
@@ -1228,6 +1255,8 @@ def _sidecar_json(
             n_active_hpi = mne.chpi.get_active_chpi(raw, on_missing="ignore")
             chpi = bool(n_active_hpi.sum() > 0)
             if chpi:
+                from mne.chpi import get_chpi_info
+
                 hpi_freqs, _, _ = get_chpi_info(info=raw.info, on_missing="ignore")
                 hpi_freqs = list(hpi_freqs)
 
@@ -1366,6 +1395,8 @@ def _deface(image, landmarks, deface):
     # now comes the actual defacing
     # 1. move center of voxels to (nasion - inset)
     # 2. rotate the head by theta from vertical
+    from mne.transforms import apply_trans, rotation, translation
+
     x, y, z = nib.affines.apply_affine(image.affine, landmarks)[1]
     idxs = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs)
     idxs = apply_trans(rotation(x=-np.pi / 2 + np.deg2rad(theta)), idxs)
@@ -1453,6 +1484,8 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
 
     # pybv needs to know the units of the data for appropriate scaling
     # get voltage units as micro-volts and all other units "as is"
+    from mne.channels.channels import _unit2human  # hoisted out of the loop
+
     unit = []
     for chs in raw.info["chs"]:
         if chs["unit"] == FIFF.FIFF_UNIT_V:
@@ -1777,6 +1810,7 @@ def write_raw_bids(
     acpc_aligned=False,
     electrodes_tsv_task=False,
     emg_placement=None,
+    eyetrack_calibration=None,
     overwrite=False,
     readme=True,
     verbose=None,
@@ -1967,6 +2001,19 @@ def write_raw_bids(
     emg_placement : "Measured" | "ChannelSpecific" | "Other" | None
         How the EMG sensor locations were determined. Must be one of the literal strings
         if datatype is "emg" and should be ``None`` for all other datatypes.
+    eyetrack_calibration : mne.preprocessing.eyetracking.Calibration | list | None
+        Eyetracking calibration metadata. Required when writing eyetracking data.
+        The calibration object(s) must include ``"screen_distance"``,
+        ``"screen_origin"``, ``"screen_resolution"``, and ``"screen_size"`` so
+        MNE-BIDS can write the BIDS-required ``"StimulusPresentation"`` metadata
+        to ``*_events.json``. Calibration metadata is also written to the per-eye
+        ``*_physio.json`` sidecars. Examples of valid values for these keys are:
+
+        - ``screen_origin``: ``["top", "left"]``
+        - ``screen_resolution``: ``[1920, 1080]``
+        - ``screen_size``: ``[0.53, 0.3] # meters``
+        - ``screen_distance``: ``0.9 # meters``
+
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -2045,8 +2092,11 @@ def write_raw_bids(
     When writing EDF or BDF files, all file extensions are forced to be
     lower-case, in compliance with the BIDS specification.
     """
-    if not isinstance(raw, BaseRaw):
+    if not isinstance(raw, mne.io.BaseRaw):
         raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
+    is_eyetracking_only = all(
+        [ch in ["eyegaze", "pupil"] for ch in raw.get_channel_types()]
+    )
 
     if raw.preload is not False and not allow_preload:
         raise ValueError(
@@ -2157,7 +2207,9 @@ def write_raw_bids(
 
         raw_orig = _reader_for_raw(raw, ext)(**raw._init_kwargs)
     else:
-        if format in FORMAT_EXTENSIONS:
+        if is_eyetracking_only and format == "auto":
+            ext = bids_path.extension or ".tsv.gz"
+        elif format in FORMAT_EXTENSIONS:
             ext = FORMAT_EXTENSIONS[format]
         else:
             msg = (
@@ -2203,7 +2255,9 @@ def write_raw_bids(
     # Initialize BIDSPath
     datatype = _handle_datatype(raw, bids_path.datatype)
     bids_path = bids_path.copy().update(
-        datatype=datatype, suffix=datatype, extension=ext
+        datatype=datatype,
+        suffix=bids_path.suffix if datatype == "beh" else datatype,
+        extension=ext,
     )
 
     if datatype == "emg" and emg_placement not in (
@@ -2321,6 +2375,25 @@ def write_raw_bids(
 
     data_path = bids_path.mkdir().directory
 
+    # If eyetrack channels are alongside eeg, meg etc. Then
+    eyetrack_ch_names = _get_eyetrack_ch_names(raw)
+    events_json_metadata = None
+    if eyetrack_ch_names:
+        events_json_metadata = _eyetrack_calibration_to_events_metadata(
+            eyetrack_calibration
+        )
+        _write_eyetrack_tsvs(raw, bids_path, overwrite=overwrite)
+        write_eyetrack_calibration(bids_path, eyetrack_calibration)
+        if not is_eyetracking_only:
+            # ET data were written to TSVs, so don't save them to binary file.
+            logger.debug(f"Dropping eyetracking channels from raw: {eyetrack_ch_names}")
+            raw = raw.copy()
+            raw.drop_channels(eyetrack_ch_names)
+        # Now delete annotations tied to eyetracking channels so they aren't written
+        # to the <match>_events files.
+        ocular_event_inds = _get_eyetrack_annotation_inds(raw)
+        raw.annotations.delete(ocular_event_inds)
+
     # create *_scans.tsv
     session_path = BIDSPath(
         subject=bids_path.subject, session=bids_path.session, root=bids_path.root
@@ -2354,6 +2427,8 @@ def write_raw_bids(
 
     sidecar_path = bids_path.copy().update(suffix=bids_path.datatype, extension=".json")
     events_tsv_path = bids_path.copy().update(suffix="events", extension=".tsv")
+    if is_eyetracking_only:
+        events_tsv_path.update(recording=None)
     events_json_path = events_tsv_path.copy().update(extension=".json")
     channels_path = bids_path.copy().update(suffix="channels", extension=".tsv")
 
@@ -2505,6 +2580,7 @@ def write_raw_bids(
                 extra_columns=events_extra_columns,
                 has_trial_type=has_trial_type,
                 hed_by_trial_type=hed["sidecar_map"] if hed else None,
+                metadata=events_json_metadata,
                 overwrite=overwrite,
             )
         # Kepp events_array around for BrainVision writing below.
@@ -2521,23 +2597,25 @@ def write_raw_bids(
         overwrite=False,
     )
 
-    _sidecar_json(
-        raw,
-        task=bids_path.task,
-        manufacturer=manufacturer,
-        fname=sidecar_path.fpath,
-        datatype=bids_path.datatype,
-        emptyroom_fname=associated_er_path,
-        emg_placement=emg_placement,
-        overwrite=overwrite,
-    )
+    # This func is specifically for writing sidecar for datatypes with channel info
+    if bids_path.datatype in EPHY_ALLOWED_DATATYPES:
+        _sidecar_json(
+            raw,
+            task=bids_path.task,
+            manufacturer=manufacturer,
+            fname=sidecar_path.fpath,
+            datatype=bids_path.datatype,
+            emptyroom_fname=associated_er_path,
+            emg_placement=emg_placement,
+            overwrite=overwrite,
+        )
 
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
 
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
-    if not convert:
+    if not convert and not is_eyetracking_only:
         convert = ext not in ALLOWED_DATATYPE_EXTENSIONS[bids_path.datatype]
 
         if convert and symlink:
@@ -2594,17 +2672,20 @@ def write_raw_bids(
         bids_path.update(extension=FORMAT_EXTENSIONS[write_format])
 
     # this can't happen until after value of `convert` has been determined
-    _channels_tsv(
-        raw,
-        channels_path.fpath,
-        convert_fmt=write_format if convert else None,
-        overwrite=overwrite,
-    )
+    if not is_eyetracking_only:
+        _channels_tsv(
+            raw,
+            channels_path.fpath,
+            convert_fmt=write_format if convert else None,
+            overwrite=overwrite,
+        )
 
     # raise error when trying to copy files (copyfile_*) into same location
     # (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)
     if (
-        bids_path.fpath.exists()
+        not allow_preload
+        and not is_eyetracking_only
+        and bids_path.fpath.exists()
         and not convert
         and bids_path.fpath.as_posix() == Path(raw_fname).as_posix()
     ):
@@ -2616,7 +2697,7 @@ def write_raw_bids(
 
     # otherwise if the BIDSPath currently exists, check if we
     # would like to overwrite the existing dataset
-    if bids_path.fpath.exists():
+    if bids_path.fpath.exists() and not is_eyetracking_only:
         if overwrite:
             # Need to load data before removing its source
             raw.load_data()
@@ -2659,6 +2740,8 @@ def write_raw_bids(
             _write_raw_brainvision(
                 raw, bids_path.fpath, events=events_array, overwrite=overwrite
             )
+    elif is_eyetracking_only:
+        pass
     elif ext == ".fif":
         if symlink:
             link_target = Path(raw.filenames[0])
@@ -2783,6 +2866,8 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     )
 
     # get trans and ensure it is from head to MRI
+    from mne.transforms import _get_trans
+
     trans, _ = _get_trans(trans, fro="head", to="mri")
     landmarks = _meg_landmarks_to_mri_landmarks(landmarks, trans)
 
@@ -2828,6 +2913,7 @@ def _get_t1w_mgh(fs_subject, fs_subjects_dir):
 
 def _get_landmarks(landmarks, image_nii, kind=""):
     import nibabel as nib
+    from mne.io import read_fiducials
 
     if isinstance(landmarks, str | Path):
         landmarks, coord_frame = read_fiducials(landmarks)

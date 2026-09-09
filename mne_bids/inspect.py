@@ -7,9 +7,7 @@ from pathlib import Path
 
 import mne
 import numpy as np
-from mne.preprocessing import annotate_amplitude
 from mne.utils import logger, verbose
-from mne.viz import use_browser_backend
 
 from mne_bids import mark_channels, read_raw_bids
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
@@ -133,6 +131,8 @@ def _inspect_raw(
     # Delay the import
     import matplotlib
     import matplotlib.pyplot as plt
+    from mne.preprocessing import annotate_amplitude
+    from mne.viz import use_browser_backend
 
     extra_params = dict()
     if bids_path.extension == ".fif":

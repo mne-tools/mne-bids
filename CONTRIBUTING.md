@@ -156,6 +156,14 @@ you can then simply use the following command from the root of the `mne-bids` re
 make test
 ```
 
+Tests are distributed over CPU cores with [pytest-xdist](https://pytest-xdist.readthedocs.io).
+Pass `JOBS=<n>` to pick the number of workers, or `JOBS=0` to run everything in a
+single process, which is what you want for `--pdb`:
+
+```Shell
+make test JOBS=0 ARGS="--pdb"
+```
+
 ## Building the documentation
 
 The documentation can be built using [Sphinx](https://www.sphinx-doc.org).

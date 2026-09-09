@@ -14,8 +14,9 @@ from docutils.nodes import reference
 from docutils.parsers.rst.roles import set_classes
 
 
-def gh_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
+def gh_role(name, rawtext, text, lineno, inliner, options=None, content=None):
     """Link to a GitHub issue."""
+    options = {} if options is None else options
     try:
         # issue/PR mode (issues/PR-num will redirect to pull/PR-num)
         int(text)
@@ -34,4 +35,4 @@ def gh_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
 def setup(app):
     """Do setup."""
     app.add_role("gh", gh_role)
-    return
+    return {"parallel_read_safe": True, "parallel_write_safe": True}

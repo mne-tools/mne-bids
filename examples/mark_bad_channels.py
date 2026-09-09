@@ -48,7 +48,7 @@ event_id = {
     "Smiley": 5,
     "Button": 32,
 }
-bids_root = data_path.parent / "MNE-sample-data-bids"
+bids_root = data_path.parent / "MNE-sample-data-bids-mark-bad-channels"
 bids_path = BIDSPath(
     subject="01", session="01", task="audiovisual", run="01", root=bids_root
 )

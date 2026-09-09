@@ -3,6 +3,7 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import copy
 import functools
 import glob
 import os
@@ -12,7 +13,7 @@ import shutil as sh
 import timeit
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from pathlib import Path
+from pathlib import Path, PurePath
 
 import mne
 import pytest
@@ -458,14 +459,22 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     # apply nosub on find_matching_matchs with root level bids directory should
     # yield a performance boost of order of length from bids_subdirectories.
     setup = "import mne_bids\ntmp_bids_root=r'" + str(tmp_bids_root) + "'"
-    timed_all = timeit.timeit(
-        "mne_bids.find_matching_paths(tmp_bids_root)", setup=setup, number=1
+    timed_all = min(
+        timeit.repeat(
+            "mne_bids.find_matching_paths(tmp_bids_root)",
+            setup=setup,
+            number=1,
+            repeat=3,
+        )
     )
     assert path_counter.count == max_count
-    timed_ignored_nosub = timeit.timeit(
-        "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
-        setup=setup,
-        number=1,
+    timed_ignored_nosub = min(
+        timeit.repeat(
+            "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
+            setup=setup,
+            number=1,
+            repeat=3,
+        )
     )
     assert path_counter.count == 621
 
@@ -757,11 +766,12 @@ def test_parse_ext():
     assert fname == f.with_suffix("")
     assert ext == ".vhdr"
 
-    # Test for case where no extension: assume BTi format
-    f = "sub-01_task-rest"
-    fname, ext = _parse_ext(f)
-    assert fname == Path(f)
-    assert ext == ".pdf"
+    # Test for case where no extension: assume BTi format (a leading period is
+    # not an extension)
+    for f in ("sub-01_task-rest", ".sub-01_task-rest"):
+        fname, ext = _parse_ext(f)
+        assert fname == Path(f)
+        assert ext == ".pdf"
 
     # Get a .nii.gz file, and pass str as input
     f = "sub-01_task-rest.nii.gz"
@@ -2368,8 +2378,24 @@ def test_fpath_common_prefix(tmp_path):
     )
 
 
+# Guard the shallow-copy contract of __copy__: every piece of instance state
+# must be immutable, otherwise a copy would share it with the original. If this
+# fails for an attribute you added, either use an immutable type (extending the
+# allowlist below), or give __copy__ special handling for it.
+def _assert_immutable(obj, name):
+    __tracebackhide__ = True  # report the failure at the caller, not in here
+    if isinstance(obj, tuple | frozenset):
+        for ii, item in enumerate(obj):
+            _assert_immutable(item, f"{name}[{ii}]")
+    else:
+        assert isinstance(obj, str | int | bytes | PurePath | None), (
+            f"Mutable (or unvetted) type {type(obj).__name__} in "
+            f"BIDSPath.__dict__[{name!r}] breaks BIDSPath.__copy__"
+        )
+
+
 def test_hash():
-    """Test that BIDSPath is hashable."""
+    """Test that BIDSPath is hashable, copyable, and picklable."""
     bp1 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"))
     bp2 = BIDSPath(subject="01", datatype="eeg", root=Path("foo"))
     # test standard hash properties:
@@ -2383,6 +2409,18 @@ def test_hash():
     bp3 = pickle.loads(pickle.dumps(bp1))  # test pickling
     assert bp1 == bp3
     assert hash(bp1) == hash(bp3)
+    for bp_copy in (bp1.copy(), copy.copy(bp1), copy.deepcopy(bp1)):  # test copying
+        assert bp_copy is not bp1
+        assert bp_copy.__dict__ == bp1.__dict__
+
+    for key, val in vars(bp1).items():
+        _assert_immutable(val, key)
+
+    class _SubPath(BIDSPath):  # copies of subclasses stay subclasses
+        pass
+
+    assert type(_SubPath(subject="01", root=Path("foo")).copy()) is _SubPath
+
     # equality and pickling
     assert bp1.__dict__ != bp_other.__dict__  # different content
     assert bp1.fpath == bp_other.fpath  # okay, I guess
