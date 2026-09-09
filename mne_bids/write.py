@@ -878,6 +878,7 @@ def _participants_json(fname, overwrite=False):
         fid.write("\n")
         logger.info(f"Writing '{fname}'...")
 
+
 def _check_fif_splits(raw_fname, fdir, datatype):
     """Check for split fif files and if split, return all file names."""
     raw_fnames = [op.join(datatype, raw_fname)]
@@ -1379,7 +1380,7 @@ def _deface(image, landmarks, deface):
     return image
 
 
-def _write_raw_fif(raw, bids_fname):
+def _write_raw_fif(raw, bids_fname, split_size=_FIFF_SPLIT_SIZE):
     """Save out the raw file in FIF.
 
     Parameters
@@ -1389,12 +1390,13 @@ def _write_raw_fif(raw, bids_fname):
     bids_fname : str | mne_bids.BIDSPath
         The name of the BIDS-specified file where the raw object
         should be saved.
+    split_size : str | int = _FIFF_SPLIT_SIZE,
 
     """
     raw.save(
         bids_fname,
         fmt=raw.orig_format,
-        split_size=_FIFF_SPLIT_SIZE,
+        split_size=split_size,
         split_naming="bids",
         overwrite=True,
     )
@@ -1778,7 +1780,7 @@ def write_raw_bids(
     overwrite=False,
     readme=True,
     verbose=None,
-    extra_params=None
+    extra_params=None,
 ):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -2116,6 +2118,9 @@ def write_raw_bids(
     _validate_type(montage, (mne.channels.DigMontage, None), "montage")
     _validate_type(acpc_aligned, bool, "acpc_aligned")
 
+    if extra_params is None:
+        extra_params = dict()
+
     raw = raw.copy()
     convert = False  # flag if converting not copying
 
@@ -2269,10 +2274,12 @@ def write_raw_bids(
             verbose=verbose,
         )
 
-        check_splits = [er_bids_path.directory / cs.strip("meg/")
-                        for cs in _check_fif_splits(er_bids_path.basename,
-                                                    er_bids_path.directory,
-                                                    er_bids_path.datatype)]
+        check_splits = [
+            er_bids_path.directory / cs.strip("meg/")
+            for cs in _check_fif_splits(
+                er_bids_path.basename, er_bids_path.directory, er_bids_path.datatype
+            )
+        ]
         associated_er_path = er_bids_path.fpath
         del er_bids_path, er_date, er_session
     elif isinstance(empty_room, BIDSPath):
@@ -2288,18 +2295,18 @@ def write_raw_bids(
                 "The MEG data and its associated empty-room "
                 "recording must share the same BIDS root."
             )
-        check_splits = [empty_room.directory / cs.strip("meg/")
-                        for cs in _check_fif_splits(empty_room.basename,
-                                                    empty_room.directory,
-                                                    empty_room.datatype)]
+        check_splits = [
+            empty_room.directory / cs.strip("meg/")
+            for cs in _check_fif_splits(
+                empty_room.basename, empty_room.directory, empty_room.datatype
+            )
+        ]
         associated_er_path = empty_room.fpath
 
     if associated_er_path is not None:
         for ai, aep in enumerate(check_splits):
             if not aep.exists():
-                raise FileNotFoundError(
-                    f"Empty-room data file not found: {aep}"
-                )
+                raise FileNotFoundError(f"Empty-room data file not found: {aep}")
         use_er_path = check_splits[0] if len(check_splits) > 1 else associated_er_path
         associated_er_path = use_er_path.relative_to(bids_path.root)
         # Ensure it works on Windows too
@@ -2625,6 +2632,9 @@ def write_raw_bids(
     # File saving branching logic
     if convert:
         if write_format == "FIF":
+            if "split_size" not in extra_params:
+                extra_params["split_size"] = _FIFF_SPLIT_SIZE
+
             _write_raw_fif(
                 raw,
                 (
@@ -2632,6 +2642,7 @@ def write_raw_bids(
                     if ext == ".pdf"
                     else bids_path.fpath
                 ),
+                extra_params["split_size"],
             )
         elif write_format in ("BDF", "EDF"):
             logger.info(f"Converting data files to {write_format} format")
@@ -2654,7 +2665,13 @@ def write_raw_bids(
             link_path = bids_path.fpath
             link_path.symlink_to(link_target)
         else:
-            _write_raw_fif(raw, bids_path)
+            if "split_size" not in extra_params:
+                extra_params["split_size"] = _FIFF_SPLIT_SIZE
+            _write_raw_fif(
+                raw,
+                bids_path,
+                extra_params["split_size"],
+            )
     # CTF data is saved and renamed in a directory
     elif ext == ".ds":
         copyfile_ctf(raw_fname, bids_path)
