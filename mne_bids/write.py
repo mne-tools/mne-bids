@@ -2036,6 +2036,8 @@ def write_raw_bids(
     extra_params : None | dict
         Extra parameters to be passed.
 
+        .. versionadded:: 0.20
+
     Returns
     -------
     bids_path : BIDSPath

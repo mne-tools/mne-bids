@@ -21,6 +21,7 @@
 .. _Diego Lozano-Soldevilla: https://orcid.org/0000-0003-1794-8204
 .. _Dominik Welke: https://github.com/dominikwelke
 .. _Eduard Ort: https://github.com/eort
+.. _Erica Peterson: https://github.com/nordme
 .. _Eric Larson: https://larsoner.com/
 .. _Ethan Knights: https://github.com/ethanknights
 .. _Evgenii Kalenkovich: https://github.com/kalenkovich
