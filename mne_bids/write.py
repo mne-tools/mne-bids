@@ -2326,10 +2326,11 @@ def write_raw_bids(
             acpc_aligned=acpc_aligned,
             overwrite=overwrite,
             verbose=verbose,
+            extra_params=extra_params,
         )
 
         check_splits = [
-            er_bids_path.directory / cs.strip("meg/")
+            er_bids_path.directory / cs.removeprefix("meg/")
             for cs in _check_fif_splits(
                 er_bids_path.basename, er_bids_path.directory, er_bids_path.datatype
             )
@@ -2350,7 +2351,7 @@ def write_raw_bids(
                 "recording must share the same BIDS root."
             )
         check_splits = [
-            empty_room.directory / cs.strip("meg/")
+            empty_room.directory / cs.removeprefix("meg/")
             for cs in _check_fif_splits(
                 empty_room.basename, empty_room.directory, empty_room.datatype
             )

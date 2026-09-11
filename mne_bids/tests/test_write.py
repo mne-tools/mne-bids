@@ -4598,3 +4598,32 @@ def test_reader_for_raw_ambiguous_extension():
         cnt_params = inspect.signature(reader[".cnt"]).parameters
         assert "fname" in ant_params
         assert "fname" not in cnt_params
+
+
+@testing.requires_testing_data
+def test_split_size_write(tmp_path):
+    """Test writing files with a user-specified split size."""
+    raw_path = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+
+    raw = _read_raw_fif(raw_path)
+    erm = raw.copy()
+
+    bids_root = tmp_path / "bids1"
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", suffix="meg")
+
+    extra_params = dict(split_size="10MB")
+
+    bp = write_raw_bids(raw, bids_path, empty_room=erm, extra_params=extra_params)
+
+    # check for saved splits in both task and empty room data
+    f_erm = bp.find_empty_room()
+    assert "split-01" in str(bids_path.fpath)
+    assert "split-01" in str(f_erm.fpath)
+
+    assert bids_path.fpath.exists()
+    assert f_erm.fpath.exists()
+
+    bp2 = bp2 = Path(str(bids_path.fpath).replace("split-01", "split-02"))
+    erm2 = f_erm.directory / f_erm.basename.replace("split-01", "split-02")
+    assert bp2.exists()
+    assert erm2.exists()
