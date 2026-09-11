@@ -4623,7 +4623,7 @@ def test_split_size_write(tmp_path):
     assert bids_path.fpath.exists()
     assert f_erm.fpath.exists()
 
-    bp2 = bp2 = Path(str(bids_path.fpath).replace("split-01", "split-02"))
+    bp2 = Path(str(bids_path.fpath).replace("split-01", "split-02"))
     erm2 = f_erm.directory / f_erm.basename.replace("split-01", "split-02")
     assert bp2.exists()
     assert erm2.exists()

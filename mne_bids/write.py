@@ -2329,8 +2329,9 @@ def write_raw_bids(
             extra_params=extra_params,
         )
 
+        pfx = f"{er_bids_path.datatype}{os.sep}"
         check_splits = [
-            er_bids_path.directory / cs.removeprefix("meg/")
+            er_bids_path.directory / cs.removeprefix(pfx)
             for cs in _check_fif_splits(
                 er_bids_path.basename, er_bids_path.directory, er_bids_path.datatype
             )
@@ -2350,8 +2351,9 @@ def write_raw_bids(
                 "The MEG data and its associated empty-room "
                 "recording must share the same BIDS root."
             )
+        pfx = f"{empty_room.datatype}{os.sep}"
         check_splits = [
-            empty_room.directory / cs.removeprefix("meg/")
+            empty_room.directory / cs.removeprefix(pfx)
             for cs in _check_fif_splits(
                 empty_room.basename, empty_room.directory, empty_room.datatype
             )
@@ -2359,7 +2361,7 @@ def write_raw_bids(
         associated_er_path = empty_room.fpath
 
     if associated_er_path is not None:
-        for ai, aep in enumerate(check_splits):
+        for aep in check_splits:
             if not aep.exists():
                 raise FileNotFoundError(f"Empty-room data file not found: {aep}")
         use_er_path = check_splits[0] if len(check_splits) > 1 else associated_er_path
