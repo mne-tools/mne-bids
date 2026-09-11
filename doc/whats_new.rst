@@ -40,7 +40,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Allow users to specify fif file split size passed through ``extra_params`` parameter to :func:`mne_bids.write_raw_bids`, by `Erica Peterson`_ (:gh:`1660`)
+- Added ``extra_params`` parameter to :func:`mne_bids.write_raw_bids`, allowing users to pass ``split size`` in the ``extra_params`` dictionary to control the size of split fif files by `Erica Peterson`_ (:gh:`1660`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
