@@ -21,6 +21,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Daria Agafonova`_
 * `Vincent Gao`_
+* `Erica Peterson`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -39,7 +40,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- None yet
+- Added ``extra_params`` parameter to :func:`mne_bids.write_raw_bids`, allowing users to pass ``split size`` in the ``extra_params`` dictionary to control the size of split fif files by `Erica Peterson`_ (:gh:`1660`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -53,6 +54,7 @@ Detailed list of changes
   `Bruno Aristimunha`_ (:gh:`1654`)
 - Preserve the actual root of files returned by :meth:`mne_bids.BIDSPath.match`, avoiding duplicate paths and paths that do not exist when matching inside nested BIDS roots, by `Daria Agafonova`_ (:gh:`1637`)
 - :func:`mne_bids.write_raw_bids` no longer raises a ``TypeError`` when writing ANT Neuro eego recordings (``.cnt``), by `Vincent Gao`_ (:gh:`1617`)
+- Allow empty room files over 2GB in size to be written with :func:`mne_bids.write_raw_bids`, by `Erica Peterson`_ (:gh:`1660`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
