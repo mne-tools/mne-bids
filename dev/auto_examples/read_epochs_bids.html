@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Read epoched BIDS data as MNE Epochs &#8212; MNE-BIDS 0.20.0.dev39+g5582f48e2 documentation</title>
+    <title>Read epoched BIDS data as MNE Epochs &#8212; MNE-BIDS 0.20.0.dev40+g42d7f6b38 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../_static/documentation_options.js?v=74b9100b"></script>
+    <script src="../_static/documentation_options.js?v=147fb05b"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev39+g5582f48e2" />
+  <meta name="docsearch:version" content="0.20.0.dev40+g42d7f6b38" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev39+g5582f48e2 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev40+g42d7f6b38 documentation</p>
   
 </a></div>
     
@@ -553,9 +553,9 @@ to download the full example code.</p>
 <p>Some BIDS datasets contain recordings that were already segmented into
 trials, marked with <code class="docutils literal notranslate"><span class="pre">&quot;RecordingType&quot;:</span> <span class="pre">&quot;epoched&quot;</span></code> in their JSON sidecar.
 <a class="reference internal" href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> refuses to load such recordings, because
-representing them as continuous <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> data would be wrong.
+representing them as continuous <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> data would be wrong.
 Instead, <a class="reference internal" href="../generated/mne_bids.read_epochs_bids.html#mne_bids.read_epochs_bids" title="mne_bids.read_epochs_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_epochs_bids()</span></code></a> reads them as
-<a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, applying the same sidecar metadata
+<a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>, applying the same sidecar metadata
 (<code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code>, <code class="docutils literal notranslate"><span class="pre">*_eeg.json</span></code>, <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code>, …).</p>
 <p>Since <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> only writes continuous data, we will
 first build a small epoched EEGLAB dataset ourselves, and then read it back.</p>
@@ -843,9 +843,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-fa21ea9c-e0f8-49a6-bf74-a7960917f112"
+<tr class="mne-repr-section-header general-eafa528a-7964-4565-aadc-b69b80f679e3"
      title="Hide section"
-    onclick="toggleVisibility('general-fa21ea9c-e0f8-49a6-bf74-a7960917f112')">
+    onclick="toggleVisibility('general-eafa528a-7964-4565-aadc-b69b80f679e3')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -857,7 +857,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-fa21ea9c-e0f8-49a6-bf74-a7960917f112 ">
+<tr class="repr-element general-eafa528a-7964-4565-aadc-b69b80f679e3 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -868,19 +868,19 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-fa21ea9c-e0f8-49a6-bf74-a7960917f112 ">
+<tr class="repr-element general-eafa528a-7964-4565-aadc-b69b80f679e3 ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>EpochsEEGLAB</td>
 </tr>
-<tr class="repr-element general-fa21ea9c-e0f8-49a6-bf74-a7960917f112 ">
+<tr class="repr-element general-eafa528a-7964-4565-aadc-b69b80f679e3 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-fa21ea9c-e0f8-49a6-bf74-a7960917f112 ">
+<tr class="repr-element general-eafa528a-7964-4565-aadc-b69b80f679e3 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
@@ -889,7 +889,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 </tr>
-<tr class="repr-element general-fa21ea9c-e0f8-49a6-bf74-a7960917f112 ">
+<tr class="repr-element general-eafa528a-7964-4565-aadc-b69b80f679e3 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -904,9 +904,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-4f09b925-1c98-46a3-8a39-3ab8d55544d3"
+<tr class="mne-repr-section-header acquisition-9d278a64-4341-44c2-8938-9bcd1d14ae6f"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-4f09b925-1c98-46a3-8a39-3ab8d55544d3')">
+    onclick="toggleVisibility('acquisition-9d278a64-4341-44c2-8938-9bcd1d14ae6f')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -921,14 +921,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-4f09b925-1c98-46a3-8a39-3ab8d55544d3 ">
+<tr class="repr-element acquisition-9d278a64-4341-44c2-8938-9bcd1d14ae6f ">
     <td class="mne-repr-section-toggle"></td>
     <td>Total number of events</td>
     <td>15</td>
 </tr>
 
 
-<tr class="repr-element acquisition-4f09b925-1c98-46a3-8a39-3ab8d55544d3 ">
+<tr class="repr-element acquisition-9d278a64-4341-44c2-8938-9bcd1d14ae6f ">
     <td class="mne-repr-section-toggle"></td>
     <td>Events counts</td>
 
@@ -945,35 +945,35 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-4f09b925-1c98-46a3-8a39-3ab8d55544d3 ">
+<tr class="repr-element acquisition-9d278a64-4341-44c2-8938-9bcd1d14ae6f ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time range</td>
     <td>-1.000 – 3.000 s</td>
 </tr>
 
 
-<tr class="repr-element acquisition-4f09b925-1c98-46a3-8a39-3ab8d55544d3 ">
+<tr class="repr-element acquisition-9d278a64-4341-44c2-8938-9bcd1d14ae6f ">
     <td class="mne-repr-section-toggle"></td>
     <td>Baseline</td>
     <td>off</td>
 </tr>
 
 
-<tr class="repr-element acquisition-4f09b925-1c98-46a3-8a39-3ab8d55544d3 ">
+<tr class="repr-element acquisition-9d278a64-4341-44c2-8938-9bcd1d14ae6f ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>160.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-4f09b925-1c98-46a3-8a39-3ab8d55544d3 ">
+<tr class="repr-element acquisition-9d278a64-4341-44c2-8938-9bcd1d14ae6f ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>641</td>
 </tr>
 
 
-<tr class="repr-element acquisition-4f09b925-1c98-46a3-8a39-3ab8d55544d3 ">
+<tr class="repr-element acquisition-9d278a64-4341-44c2-8938-9bcd1d14ae6f ">
     <td class="mne-repr-section-toggle"></td>
     <td>Metadata</td>
     <td>No metadata set</td>
@@ -987,9 +987,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-3272e2ac-0153-4c82-b571-b22072cd6516"
+<tr class="mne-repr-section-header channels-a6a93b3a-46f3-456c-94f7-f8177ab4a965"
      title="Hide section"
-    onclick="toggleVisibility('channels-3272e2ac-0153-4c82-b571-b22072cd6516')">
+    onclick="toggleVisibility('channels-a6a93b3a-46f3-456c-94f7-f8177ab4a965')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1002,7 +1002,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-3272e2ac-0153-4c82-b571-b22072cd6516 ">
+<tr class="repr-element channels-a6a93b3a-46f3-456c-94f7-f8177ab4a965 ">
     <td class="mne-repr-section-toggle"></td>
     <td>EEG</td>
     <td>
@@ -1015,7 +1015,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-3272e2ac-0153-4c82-b571-b22072cd6516 ">
+<tr class="repr-element channels-a6a93b3a-46f3-456c-94f7-f8177ab4a965 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1030,9 +1030,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-eecb52a3-45ba-4979-a405-557d14901aca"
+<tr class="mne-repr-section-header filters-d404bebc-d07d-45dd-914a-849c83fbba93"
      title="Hide section"
-    onclick="toggleVisibility('filters-eecb52a3-45ba-4979-a405-557d14901aca')">
+    onclick="toggleVisibility('filters-d404bebc-d07d-45dd-914a-849c83fbba93')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1044,14 +1044,14 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-eecb52a3-45ba-4979-a405-557d14901aca ">
+<tr class="repr-element filters-d404bebc-d07d-45dd-914a-849c83fbba93 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-eecb52a3-45ba-4979-a405-557d14901aca ">
+<tr class="repr-element filters-d404bebc-d07d-45dd-914a-849c83fbba93 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>80.00 Hz</td>
@@ -1076,7 +1076,7 @@ average as usual:</p>
 them into trials of length <code class="docutils literal notranslate"><span class="pre">EpochLength</span></code> (from the sidecar), using the
 onsets in <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> when present.</p>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.093 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.873 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-epochs-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/69a75d47547d44e49e00ae087b868c51/read_epochs_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">read_epochs_bids.ipynb</span></code></a></p>
@@ -1169,7 +1169,7 @@ onsets in <code class="docutils literal notranslate"><span class="pre">events.ts
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-07.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-12.
       <br/>
     
   </p>
