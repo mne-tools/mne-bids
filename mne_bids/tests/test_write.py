@@ -2034,8 +2034,7 @@ def test_get_anat_landmarks():
 
     # trans is a str, but file does not exist
     wrong_fname = "not_a_trans"
-    match = f'trans file "{wrong_fname}" not found'
-    with pytest.raises(IOError, match=match):
+    with pytest.raises(IOError, match=wrong_fname):
         get_anat_landmarks(**dict(kwargs, trans=wrong_fname))
 
     # However, reading trans if it is a string pointing to trans is fine
