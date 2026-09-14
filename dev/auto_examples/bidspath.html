@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>An introduction to BIDSPath &#8212; MNE-BIDS 0.20.0.dev40+g42d7f6b38 documentation</title>
+    <title>An introduction to BIDSPath &#8212; MNE-BIDS 0.20.0.dev41+gd0e2c896b documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../_static/documentation_options.js?v=147fb05b"></script>
+    <script src="../_static/documentation_options.js?v=475214fd"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev40+g42d7f6b38" />
+  <meta name="docsearch:version" content="0.20.0.dev41+gd0e2c896b" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev40+g42d7f6b38 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev41+gd0e2c896b documentation</p>
   
 </a></div>
     
@@ -587,14 +587,14 @@ BIDS root. We can then also query the <code class="docutils literal notranslate"
 <p>Great! But not really useful so far. BIDS also asks us to specify <strong>subject
 identifiers</strong>. We can either create a new <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>, or update our
 existing one. The value can be retrieved via the <code class="docutils literal notranslate"><span class="pre">.subject</span></code> attribute.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="s2">"01"</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="s2">"01"</span>
 
 <span class="c1"># Option 1: Create an entirely new BIDSPath.</span>
-<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path_new</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path_new</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.subject" title="mne_bids.BIDSPath.subject" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">bids_path_new</span><span class="o">.</span><span class="n">subject</span></a><span class="p">)</span>
 
 <span class="c1"># Option 2: Update the existing BIDSPath in-place.</span>
-<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">)</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.subject" title="mne_bids.BIDSPath.subject" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -624,8 +624,8 @@ iEEG data, or <code class="docutils literal notranslate"><span class="pre">anat<
 infer the data type of your data automatically, for example when writing data
 using <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>. For the sake of this example, however, we
 are going to specify the data type explicitly.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a> <span class="o">=</span> <span class="s2">"eeg"</span>
-<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a> <span class="o">=</span> <span class="s2">"eeg"</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="o">=</span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.datatype" title="mne_bids.BIDSPath.datatype" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -684,9 +684,9 @@ use of them. To get a list of all supported entities, use:</p>
 <p>As you can see, most entity keys are set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is the default
 and implies that no value has been set. Let us add a <code class="docutils literal notranslate"><span class="pre">run</span></code> entity, and
 remove the <code class="docutils literal notranslate"><span class="pre">session</span></code>:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a> <span class="o">=</span> <span class="s2">"01"</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a> <span class="o">=</span> <span class="s2">"01"</span>
 <span class="n">session</span> <span class="o">=</span> <span class="kc">None</span>
-<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="o">=</span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
 <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a>
 </pre></div>
 </div>
@@ -708,7 +708,7 @@ the path:</p>
 <p>However, for the sake of the present examples, let’s revert to the iteration
 of our <code class="docutils literal notranslate"><span class="pre">bids_path</span></code> instance with no <code class="docutils literal notranslate"><span class="pre">run</span></code> and <code class="docutils literal notranslate"><span class="pre">session=&quot;eeg&quot;</span></code>, as that
 file exists in the <code class="docutils literal notranslate"><span class="pre">tiny_bids</span></code> dataset.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s2">"eeg"</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/builtins/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s2">"eeg"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -817,7 +817,7 @@ manually.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-12.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-14.
       <br/>
     
   </p>

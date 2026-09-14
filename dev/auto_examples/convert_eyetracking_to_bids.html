@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert eyetracking data to BIDS Format &#8212; MNE-BIDS 0.20.0.dev40+g42d7f6b38 documentation</title>
+    <title>Convert eyetracking data to BIDS Format &#8212; MNE-BIDS 0.20.0.dev41+gd0e2c896b documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../_static/documentation_options.js?v=147fb05b"></script>
+    <script src="../_static/documentation_options.js?v=475214fd"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev40+g42d7f6b38" />
+  <meta name="docsearch:version" content="0.20.0.dev41+gd0e2c896b" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev40+g42d7f6b38 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev41+gd0e2c896b documentation</p>
   
 </a></div>
     
@@ -583,8 +583,8 @@ MNE-BIDS.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <span class="n">testing</span><span class="o">.</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">(</span><span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eyetrack_fpath</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">/</span> <span class="s2">"eyetrack"</span> <span class="o">/</span> <span class="s2">"test_eyelink.asc"</span>
 <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_eyelink.html#mne.io.read_raw_eyelink" title="mne.io.read_raw_eyelink" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_eyelink</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eyetrack_fpath</span></a><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.read_eyelink_calibration.html#mne.preprocessing.eyetracking.read_eyelink_calibration" title="mne.preprocessing.eyetracking.read_eyelink_calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-function"><span class="n">read_eyelink_calibration</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eyetrack_fpath</span></a><span class="p">)</span>
-<span class="k">for</span> <a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.Calibration.html#mne.preprocessing.eyetracking.Calibration" title="mne.preprocessing.eyetracking.Calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cal</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">:</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.read_eyelink_calibration.html#mne.preprocessing.eyetracking.read_eyelink_calibration" title="mne.preprocessing.eyetracking.read_eyelink_calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-function"><span class="n">read_eyelink_calibration</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eyetrack_fpath</span></a><span class="p">)</span>
+<span class="k">for</span> <a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.Calibration.html#mne.preprocessing.eyetracking.Calibration" title="mne.preprocessing.eyetracking.Calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cal</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">:</span>
     <a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.Calibration.html#mne.preprocessing.eyetracking.Calibration" title="mne.preprocessing.eyetracking.Calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cal</span></a><span class="p">[</span><span class="s2">"screen_origin"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"top"</span><span class="p">,</span> <span class="s2">"left"</span><span class="p">]</span>
 <span class="n">raw</span>
 </pre></div>
@@ -744,9 +744,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-0c728300-459f-40a1-acd8-9d6185787546"
+<tr class="mne-repr-section-header general-6918dbbe-a41e-4015-9d37-98441941f62e"
      title="Hide section"
-    onclick="toggleVisibility('general-0c728300-459f-40a1-acd8-9d6185787546')">
+    onclick="toggleVisibility('general-6918dbbe-a41e-4015-9d37-98441941f62e')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -758,7 +758,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-0c728300-459f-40a1-acd8-9d6185787546 ">
+<tr class="repr-element general-6918dbbe-a41e-4015-9d37-98441941f62e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -769,26 +769,26 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-0c728300-459f-40a1-acd8-9d6185787546 ">
+<tr class="repr-element general-6918dbbe-a41e-4015-9d37-98441941f62e ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>RawEyelink</td>
 </tr>
-<tr class="repr-element general-0c728300-459f-40a1-acd8-9d6185787546 ">
+<tr class="repr-element general-6918dbbe-a41e-4015-9d37-98441941f62e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>2022-03-10 at 11:38:16 UTC</td>
 
 </tr>
-<tr class="repr-element general-0c728300-459f-40a1-acd8-9d6185787546 ">
+<tr class="repr-element general-6918dbbe-a41e-4015-9d37-98441941f62e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-0c728300-459f-40a1-acd8-9d6185787546 ">
+<tr class="repr-element general-6918dbbe-a41e-4015-9d37-98441941f62e ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -803,9 +803,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-081a4d14-661c-4439-90c2-706efd315bb1"
+<tr class="mne-repr-section-header acquisition-8db416c4-2417-47d5-b46c-87c7e28005bf"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-081a4d14-661c-4439-90c2-706efd315bb1')">
+    onclick="toggleVisibility('acquisition-8db416c4-2417-47d5-b46c-87c7e28005bf')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -817,7 +817,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-081a4d14-661c-4439-90c2-706efd315bb1 ">
+<tr class="repr-element acquisition-8db416c4-2417-47d5-b46c-87c7e28005bf ">
     <td class="mne-repr-section-toggle"></td>
     <td>Duration</td>
     <td>00:01:01 (HH:MM:SS)</td>
@@ -830,14 +830,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-081a4d14-661c-4439-90c2-706efd315bb1 ">
+<tr class="repr-element acquisition-8db416c4-2417-47d5-b46c-87c7e28005bf ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>500.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-081a4d14-661c-4439-90c2-706efd315bb1 ">
+<tr class="repr-element acquisition-8db416c4-2417-47d5-b46c-87c7e28005bf ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>30,236</td>
@@ -852,9 +852,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-4ffe04c8-3a7c-442e-b0a5-b05d4d8e08b2"
+<tr class="mne-repr-section-header channels-abd1dfee-a18d-43dd-8a30-03284f684ac8"
      title="Hide section"
-    onclick="toggleVisibility('channels-4ffe04c8-3a7c-442e-b0a5-b05d4d8e08b2')">
+    onclick="toggleVisibility('channels-abd1dfee-a18d-43dd-8a30-03284f684ac8')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -867,7 +867,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-4ffe04c8-3a7c-442e-b0a5-b05d4d8e08b2 ">
+<tr class="repr-element channels-abd1dfee-a18d-43dd-8a30-03284f684ac8 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Eye-tracking (Gaze position)</td>
     <td>
@@ -880,7 +880,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-4ffe04c8-3a7c-442e-b0a5-b05d4d8e08b2 ">
+<tr class="repr-element channels-abd1dfee-a18d-43dd-8a30-03284f684ac8 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Eye-tracking (Pupil size)</td>
     <td>
@@ -893,7 +893,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-4ffe04c8-3a7c-442e-b0a5-b05d4d8e08b2 ">
+<tr class="repr-element channels-abd1dfee-a18d-43dd-8a30-03284f684ac8 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -908,9 +908,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-0eee56b1-848e-4c20-b880-0b32335d250e"
+<tr class="mne-repr-section-header filters-45328638-1691-45d6-a21e-1a1bf6fad5a5"
      title="Hide section"
-    onclick="toggleVisibility('filters-0eee56b1-848e-4c20-b880-0b32335d250e')">
+    onclick="toggleVisibility('filters-45328638-1691-45d6-a21e-1a1bf6fad5a5')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -922,14 +922,14 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-0eee56b1-848e-4c20-b880-0b32335d250e ">
+<tr class="repr-element filters-45328638-1691-45d6-a21e-1a1bf6fad5a5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-0eee56b1-848e-4c20-b880-0b32335d250e ">
+<tr class="repr-element filters-45328638-1691-45d6-a21e-1a1bf6fad5a5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>250.00 Hz</td>
@@ -984,7 +984,7 @@ MNE-BIDS will write one <code class="docutils literal notranslate"><span class="
 with matching <code class="docutils literal notranslate"><span class="pre">*_physioevents.tsv.gz</span></code> files. Additionally, we are going to convert
 our eyetracking eyegaze channels from pixels-on-screen to radians-of-visual-angle, to
 demonstrate how BIDS stores the units.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.Calibration.html#mne.preprocessing.eyetracking.Calibration" title="mne.preprocessing.eyetracking.Calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cal</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.Calibration.html#mne.preprocessing.eyetracking.Calibration" title="mne.preprocessing.eyetracking.Calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cal</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.Calibration.html#mne.preprocessing.eyetracking.Calibration" title="mne.preprocessing.eyetracking.Calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cal</span></a><span class="p">[</span><span class="s2">"screen_resolution"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">)</span>
 <a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.Calibration.html#mne.preprocessing.eyetracking.Calibration" title="mne.preprocessing.eyetracking.Calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cal</span></a><span class="p">[</span><span class="s2">"screen_size"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.53</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span>
 <a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.Calibration.html#mne.preprocessing.eyetracking.Calibration" title="mne.preprocessing.eyetracking.Calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cal</span></a><span class="p">[</span><span class="s2">"screen_distance"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9</span>
@@ -994,40 +994,40 @@ demonstrate how BIDS stores the units.</p>
     <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
     <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span>
     <span class="n">allow_preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">eyetrack_calibration</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">,</span>
+    <span class="n">eyetrack_calibration</span><span class="o">=</span><a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Converted ['xpos_left', 'ypos_left', 'xpos_right', 'ypos_right'] to radians.
 Writing eyetracking data to physio.tsv files.
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.tsv.gz'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.json'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.tsv.gz'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.json'...
 Used Annotations descriptions: ['blink', 'fixation', 'saccade']
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physioevents.tsv.gz'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physioevents.json'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye2_physio.tsv.gz'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye2_physio.json'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physioevents.tsv.gz'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physioevents.json'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye2_physio.tsv.gz'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye2_physio.json'...
 Used Annotations descriptions: ['blink', 'fixation', 'saccade']
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye2_physioevents.tsv.gz'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye2_physioevents.json'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.json'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye2_physio.json'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/README'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/participants.tsv'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/participants.json'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye2_physioevents.tsv.gz'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye2_physioevents.json'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.json'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye2_physio.json'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/README'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/participants.tsv'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/participants.json'...
 Writing of electrodes.tsv is not supported for data type "beh". Skipping ...
 The provided raw data contains annotations, but you did not pass an "event_id" mapping from annotation descriptions to event codes. We will generate arbitrary event codes. To specify custom event codes, please pass "event_id".
 Used Annotations descriptions: ['start/block', 'trigger: 110', 'trigger: 116', 'trigger: 200', 'trigger: 201', 'trigger: 202', 'trigger: 203', 'trigger: 204', 'trigger: 211', 'trigger: 222', 'trigger: 233']
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_events.tsv'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_events.json'...
-Writing '/tmp/mne_bids_eyetrack_crlehblo/dataset_description.json'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_events.tsv'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_events.json'...
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/dataset_description.json'...
 Copying data files to sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.tsv.gz
-Writing '/tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
-Wrote /tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/sub-01_ses-01_scans.tsv entry with beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.tsv.gz.
+Writing '/tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+Wrote /tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/sub-01_ses-01_scans.tsv entry with beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.tsv.gz.
 
 BIDSPath(
-root: /tmp/mne_bids_eyetrack_crlehblo
+root: /tmp/mne_bids_eyetrack_e_nz9h7w
 datatype: beh
 basename: sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.tsv.gz)
 </pre></div>
@@ -1036,7 +1036,7 @@ basename: sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.tsv.gz)
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|mne_bids_eyetrack_crlehblo/
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|mne_bids_eyetrack_e_nz9h7w/
 |--- README
 |--- dataset_description.json
 |--- participants.json
@@ -1068,7 +1068,7 @@ angle.”</p>
 <a href="https://docs.python.org/3/library/pprint.html#pprint.pprint" title="pprint.pprint" class="sphx-glr-backref-module-pprint sphx-glr-backref-type-py-function"><span class="n">pprint</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/json.html#json.loads" title="json.loads" class="sphx-glr-backref-module-json sphx-glr-backref-type-py-function"><span class="n">json</span><span class="o">.</span><span class="n">loads</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.read_text" title="pathlib.Path.read_text" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">eye1_json</span><span class="o">.</span><span class="n">read_text</span></a><span class="p">()),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Filepath: /tmp/mne_bids_eyetrack_crlehblo/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.json
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Filepath: /tmp/mne_bids_eyetrack_e_nz9h7w/sub-01/ses-01/beh/sub-01_ses-01_task-eyetrack_run-01_recording-eye1_physio.json
 { 'AverageCalibrationError': 0.3,
   'CalibrationCount': 1,
   'CalibrationDistance': 0.9,
@@ -1118,11 +1118,11 @@ keep the data as pixels-on-screen, and this will be reflected in the BIDS metada
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eyelink_root</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.eyelink.data_path.html#mne.datasets.eyelink.data_path" title="mne.datasets.eyelink.data_path" class="sphx-glr-backref-module-mne-datasets-eyelink sphx-glr-backref-type-py-function"><span class="n">eyelink_data_path</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">et_fpath</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eyelink_root</span></a> <span class="o">/</span> <span class="s2">"eeg-et"</span> <span class="o">/</span> <span class="s2">"sub-01_task-plr_eyetrack.asc"</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eeg_fpath</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eyelink_root</span></a> <span class="o">/</span> <span class="s2">"eeg-et"</span> <span class="o">/</span> <span class="s2">"sub-01_task-plr_eeg.mff"</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.read_eyelink_calibration.html#mne.preprocessing.eyetracking.read_eyelink_calibration" title="mne.preprocessing.eyetracking.read_eyelink_calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">eyetracking</span><span class="o">.</span><span class="n">read_eyelink_calibration</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">et_fpath</span></a><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"screen_origin"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"top"</span><span class="p">,</span> <span class="s2">"left"</span><span class="p">]</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"screen_resolution"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"screen_size"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.53</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"screen_distance"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.preprocessing.eyetracking.read_eyelink_calibration.html#mne.preprocessing.eyetracking.read_eyelink_calibration" title="mne.preprocessing.eyetracking.read_eyelink_calibration" class="sphx-glr-backref-module-mne-preprocessing-eyetracking sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">eyetracking</span><span class="o">.</span><span class="n">read_eyelink_calibration</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">et_fpath</span></a><span class="p">)</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"screen_origin"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"top"</span><span class="p">,</span> <span class="s2">"left"</span><span class="p">]</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"screen_resolution"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">)</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"screen_size"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.53</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"screen_distance"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9</span>
 
 <span class="n">raw_et</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_eyelink.html#mne.io.read_raw_eyelink" title="mne.io.read_raw_eyelink" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_eyelink</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">et_fpath</span></a><span class="p">)</span>
 <span class="n">raw_eeg</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_egi.html#mne.io.read_raw_egi" title="mne.io.read_raw_egi" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_egi</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">eeg_fpath</span></a><span class="p">,</span> <span class="n">events_as_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
@@ -1306,9 +1306,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header general-e3e9203f-aaa3-4cf9-9668-96e17645bba3"
+<tr class="mne-repr-section-header general-e0ee263b-a0b7-4e43-8db3-56691e9ae481"
      title="Hide section"
-    onclick="toggleVisibility('general-e3e9203f-aaa3-4cf9-9668-96e17645bba3')">
+    onclick="toggleVisibility('general-e0ee263b-a0b7-4e43-8db3-56691e9ae481')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1320,7 +1320,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element general-e3e9203f-aaa3-4cf9-9668-96e17645bba3 ">
+<tr class="repr-element general-e0ee263b-a0b7-4e43-8db3-56691e9ae481 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Filename(s)</td>
     <td>
@@ -1331,26 +1331,26 @@ this file apply (plus whatever default styling the IDE applies).
     </td>
 </tr>
 
-<tr class="repr-element general-e3e9203f-aaa3-4cf9-9668-96e17645bba3 ">
+<tr class="repr-element general-e0ee263b-a0b7-4e43-8db3-56691e9ae481 ">
     <td class="mne-repr-section-toggle"></td>
     <td>MNE object type</td>
     <td>RawEyelink</td>
 </tr>
-<tr class="repr-element general-e3e9203f-aaa3-4cf9-9668-96e17645bba3 ">
+<tr class="repr-element general-e0ee263b-a0b7-4e43-8db3-56691e9ae481 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Measurement date</td>
 
     <td>2023-06-29 at 20:07:21 UTC</td>
 
 </tr>
-<tr class="repr-element general-e3e9203f-aaa3-4cf9-9668-96e17645bba3 ">
+<tr class="repr-element general-e0ee263b-a0b7-4e43-8db3-56691e9ae481 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Participant</td>
 
     <td>Unknown</td>
 
 </tr>
-<tr class="repr-element general-e3e9203f-aaa3-4cf9-9668-96e17645bba3 ">
+<tr class="repr-element general-e0ee263b-a0b7-4e43-8db3-56691e9ae481 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Experimenter</td>
 
@@ -1365,9 +1365,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header acquisition-bb4871b4-4d2c-460b-ae83-cac78ef5ab98"
+<tr class="mne-repr-section-header acquisition-e282d1c2-e08d-49ba-a863-a528018f6cf5"
      title="Hide section"
-    onclick="toggleVisibility('acquisition-bb4871b4-4d2c-460b-ae83-cac78ef5ab98')">
+    onclick="toggleVisibility('acquisition-e282d1c2-e08d-49ba-a863-a528018f6cf5')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1379,7 +1379,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element acquisition-bb4871b4-4d2c-460b-ae83-cac78ef5ab98 ">
+<tr class="repr-element acquisition-e282d1c2-e08d-49ba-a863-a528018f6cf5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Duration</td>
     <td>00:02:23 (HH:MM:SS)</td>
@@ -1392,14 +1392,14 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element acquisition-bb4871b4-4d2c-460b-ae83-cac78ef5ab98 ">
+<tr class="repr-element acquisition-e282d1c2-e08d-49ba-a863-a528018f6cf5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Sampling frequency</td>
     <td>1000.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element acquisition-bb4871b4-4d2c-460b-ae83-cac78ef5ab98 ">
+<tr class="repr-element acquisition-e282d1c2-e08d-49ba-a863-a528018f6cf5 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Time points</td>
     <td>142,933</td>
@@ -1414,9 +1414,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header channels-cbab9e15-00c8-4774-a3e2-2e88c7be0ad0"
+<tr class="mne-repr-section-header channels-1563749a-b0cd-440d-9529-5904ebdd62e4"
      title="Hide section"
-    onclick="toggleVisibility('channels-cbab9e15-00c8-4774-a3e2-2e88c7be0ad0')">
+    onclick="toggleVisibility('channels-1563749a-b0cd-440d-9529-5904ebdd62e4')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1429,7 +1429,7 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="repr-element channels-cbab9e15-00c8-4774-a3e2-2e88c7be0ad0 ">
+<tr class="repr-element channels-1563749a-b0cd-440d-9529-5904ebdd62e4 ">
     <td class="mne-repr-section-toggle"></td>
     <td>misc</td>
     <td>
@@ -1442,7 +1442,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-cbab9e15-00c8-4774-a3e2-2e88c7be0ad0 ">
+<tr class="repr-element channels-1563749a-b0cd-440d-9529-5904ebdd62e4 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Stimulus</td>
     <td>
@@ -1455,7 +1455,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-cbab9e15-00c8-4774-a3e2-2e88c7be0ad0 ">
+<tr class="repr-element channels-1563749a-b0cd-440d-9529-5904ebdd62e4 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Eye-tracking (Gaze position)</td>
     <td>
@@ -1468,7 +1468,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-cbab9e15-00c8-4774-a3e2-2e88c7be0ad0 ">
+<tr class="repr-element channels-1563749a-b0cd-440d-9529-5904ebdd62e4 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Eye-tracking (Pupil size)</td>
     <td>
@@ -1481,7 +1481,7 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element channels-cbab9e15-00c8-4774-a3e2-2e88c7be0ad0 ">
+<tr class="repr-element channels-1563749a-b0cd-440d-9529-5904ebdd62e4 ">
     <td class="mne-repr-section-toggle"></td>
     <td>Head & sensor digitization</td>
 
@@ -1496,9 +1496,9 @@ this file apply (plus whatever default styling the IDE applies).
 
 
 
-<tr class="mne-repr-section-header filters-080f51fa-d958-426c-bd88-a38ccb0f3893"
+<tr class="mne-repr-section-header filters-337f3ed6-ab01-437e-880f-aecbc3a4f33d"
      title="Hide section"
-    onclick="toggleVisibility('filters-080f51fa-d958-426c-bd88-a38ccb0f3893')">
+    onclick="toggleVisibility('filters-337f3ed6-ab01-437e-880f-aecbc3a4f33d')">
     <th class="mne-repr-section-toggle">
         <button >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -1510,14 +1510,14 @@ this file apply (plus whatever default styling the IDE applies).
 </tr>
 
 
-<tr class="repr-element filters-080f51fa-d958-426c-bd88-a38ccb0f3893 ">
+<tr class="repr-element filters-337f3ed6-ab01-437e-880f-aecbc3a4f33d ">
     <td class="mne-repr-section-toggle"></td>
     <td>Highpass</td>
     <td>0.00 Hz</td>
 </tr>
 
 
-<tr class="repr-element filters-080f51fa-d958-426c-bd88-a38ccb0f3893 ">
+<tr class="repr-element filters-337f3ed6-ab01-437e-880f-aecbc3a4f33d ">
     <td class="mne-repr-section-toggle"></td>
     <td>Lowpass</td>
     <td>500.00 Hz</td>
@@ -1569,7 +1569,7 @@ Event IDs: [1]
     <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path_eeg</span></a><span class="p">,</span>
     <span class="n">allow_preload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="nb">format</span><span class="o">=</span><span class="s2">"BrainVision"</span><span class="p">,</span>
-    <span class="n">eyetrack_calibration</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">,</span>
+    <span class="n">eyetrack_calibration</span><span class="o">=</span><a href="https://docs.python.org/3/builtins/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cals</span></a><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="s2">"error"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -1579,7 +1579,7 @@ Note that the BrainVision format specification supports only µV.
   warn(msg)
 
 BIDSPath(
-root: /tmp/mne_bids_eyetrack_eeg_83xg7n0e
+root: /tmp/mne_bids_eyetrack_eeg_jeuf121u
 datatype: eeg
 basename: sub-01_ses-01_task-plr_run-01_eeg.vhdr)
 </pre></div>
@@ -1589,7 +1589,7 @@ eyetracking <code class="docutils literal notranslate"><span class="pre">*_physi
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_simultaneous</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|mne_bids_eyetrack_eeg_83xg7n0e/
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|mne_bids_eyetrack_eeg_jeuf121u/
 |--- README
 |--- dataset_description.json
 |--- participants.json
@@ -1621,7 +1621,7 @@ eyegaze channels are ‘pixel’, meaning these data are ‘pixel-on-screen’ c
 <a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_simultaneous</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Filepath: /tmp/mne_bids_eyetrack_eeg_83xg7n0e/sub-01/ses-01/eeg/sub-01_ses-01_task-plr_run-01_recording-eye1_physio.json
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Filepath: /tmp/mne_bids_eyetrack_eeg_jeuf121u/sub-01/ses-01/eeg/sub-01_ses-01_task-plr_run-01_recording-eye1_physio.json
 { 'AverageCalibrationError': 0.71,
   'CalibrationCount': 1,
   'CalibrationDistance': 0.9,
@@ -1650,7 +1650,7 @@ eyegaze channels are ‘pixel’, meaning these data are ‘pixel-on-screen’ c
                     'Units': 'pixel'}}
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.823 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.653 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eyetracking-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5f44b58a2aaa7f40479077007fc2cd23/convert_eyetracking_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_eyetracking_to_bids.ipynb</span></code></a></p>
@@ -1746,7 +1746,7 @@ eyegaze channels are ‘pixel’, meaning these data are ‘pixel-on-screen’ c
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-12.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-14.
       <br/>
     
   </p>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Anonymizing a BIDS dataset &#8212; MNE-BIDS 0.20.0.dev40+g42d7f6b38 documentation</title>
+    <title>Anonymizing a BIDS dataset &#8212; MNE-BIDS 0.20.0.dev41+gd0e2c896b documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../_static/documentation_options.js?v=147fb05b"></script>
+    <script src="../_static/documentation_options.js?v=475214fd"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -87,7 +87,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev40+g42d7f6b38" />
+  <meta name="docsearch:version" content="0.20.0.dev41+gd0e2c896b" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -156,7 +156,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev40+g42d7f6b38 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev41+gd0e2c896b documentation</p>
   
 </a></div>
     
@@ -582,7 +582,7 @@ to do the heavy lifting for you, automatically.</p>
 <span class="p">)</span>
 
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <span class="p">{</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"Auditory/Left"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">"Auditory/Right"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
     <span class="s2">"Visual/Left"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
@@ -635,7 +635,7 @@ tests and example runs, we simply delete it.</p>
     <a href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="o">=</span><a href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span>
     <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span>
     <span class="n">events</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events_path</span></a><span class="p">,</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
     <span class="n">empty_room</span><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path_er</span></a><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
@@ -673,7 +673,7 @@ Determining "daysback" for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids-anonymize
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon
 
-Shifting recording dates by 36785 days (100.8 years).
+Shifting recording dates by 32620 days (89.4 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-1
@@ -681,10 +681,10 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/5 [00:00&lt;?,       ?it/s]
- 20%|██        | Anonymizing : 1/5 [00:00&lt;00:01,    3.75it/s]
- 40%|████      | Anonymizing : 2/5 [00:02&lt;00:04,    1.45s/it]
+ 20%|██        | Anonymizing : 1/5 [00:00&lt;00:01,    3.57it/s]
+ 40%|████      | Anonymizing : 2/5 [00:02&lt;00:04,    1.47s/it]
+100%|██████████| Anonymizing : 5/5 [00:03&lt;00:00,    1.39it/s]
 100%|██████████| Anonymizing : 5/5 [00:03&lt;00:00,    1.37it/s]
-100%|██████████| Anonymizing : 5/5 [00:03&lt;00:00,    1.35it/s]
 Writing '/home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon/participants.tsv'...
 </pre></div>
 </div>
@@ -713,12 +713,12 @@ dataset.</p>
 |--------- sub-1_task-audiovisual_meg.fif
 |--------- sub-1_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19020321/
-|--------- sub-emptyroom_ses-19020321_scans.tsv
+|------ ses-19130815/
+|--------- sub-emptyroom_ses-19130815_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19020321_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19020321_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19020321_task-noise_meg.json
+|------------ sub-emptyroom_ses-19130815_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19130815_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19130815_task-noise_meg.json
 </pre></div>
 </div>
 <p>You can see that the subject ID was changed to a number (in this case, the
@@ -756,8 +756,8 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/1 [00:00&lt;?,       ?it/s]
-100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.56s/it]
-100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.56s/it]
+100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.63s/it]
+100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.63s/it]
 Writing '/home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon/participants.tsv'...
 |MNE-sample-data-bids-anonymize-anon/
 |--- README
@@ -801,9 +801,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.86it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.85it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.85it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.72it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.86it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.86it/s]
 Writing '/home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon/participants.tsv'...
 |sub-emptyroom/
 |--- ses-20021126/
@@ -825,13 +825,13 @@ subject IDs to the anonymize IDs. Lastly, you can also pass a function that
 accepts a list of original IDs and returns such a dictionary.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_anon</span></a><span class="p">)</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_mapping</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">"ABC123"</span><span class="p">:</span> <span class="s2">"anonymous"</span><span class="p">,</span> <span class="s2">"emptyroom"</span><span class="p">:</span> <span class="s2">"emptyroom"</span><span class="p">}</span>
+<a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_mapping</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">"ABC123"</span><span class="p">:</span> <span class="s2">"anonymous"</span><span class="p">,</span> <span class="s2">"emptyroom"</span><span class="p">:</span> <span class="s2">"emptyroom"</span><span class="p">}</span>
 
 <a href="../generated/mne_bids.anonymize_dataset.html#mne_bids.anonymize_dataset" title="mne_bids.anonymize_dataset" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">anonymize_dataset</span></a><span class="p">(</span>
     <span class="n">bids_root_in</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span>
     <span class="n">bids_root_out</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_anon</span></a><span class="p">,</span>
     <span class="n">datatypes</span><span class="o">=</span><span class="s2">"meg"</span><span class="p">,</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_mapping</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_mapping</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_mapping</span></a><span class="o">=</span><a href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_mapping</span></a><span class="p">,</span>
 <span class="p">)</span>
 <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_anon</span></a><span class="p">)</span>
 </pre></div>
@@ -842,7 +842,7 @@ Determining "daysback" for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids-anonymize
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon
 
-Shifting recording dates by 30490 days (83.5 years).
+Shifting recording dates by 34021 days (93.2 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-anonymous
@@ -850,9 +850,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.59it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.60it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.59it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.69it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.88it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.88it/s]
 Writing '/home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon/participants.tsv'...
 |MNE-sample-data-bids-anonymize-anon/
 |--- README
@@ -871,12 +871,12 @@ Writing '/home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon/participant
 |--------- sub-anonymous_task-audiovisual_meg.fif
 |--------- sub-anonymous_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19190615/
-|--------- sub-emptyroom_ses-19190615_scans.tsv
+|------ ses-19091014/
+|--------- sub-emptyroom_ses-19091014_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19190615_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19190615_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19190615_task-noise_meg.json
+|------------ sub-emptyroom_ses-19091014_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19091014_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19091014_task-noise_meg.json
 </pre></div>
 </div>
 </section>
@@ -912,8 +912,8 @@ remained unchanged. It does <strong>not</strong> allow you to incrementally add 
 dataset changes and you want the changes anonymized, you will need to
 anonymize the entire dataset again.</p>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Run </span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <a href="https://docs.python.org/3/builtins/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Run </span><span class="si">{</span><a href="https://docs.python.org/3/builtins/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
     <a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_anon</span></a><span class="p">)</span>
     <a href="../generated/mne_bids.anonymize_dataset.html#mne_bids.anonymize_dataset" title="mne_bids.anonymize_dataset" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">anonymize_dataset</span></a><span class="p">(</span>
         <span class="n">bids_root_in</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span>
@@ -941,9 +941,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.59it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.54it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.54it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.50it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.69it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.68it/s]
 Writing '/home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon/participants.tsv'...
 |MNE-sample-data-bids-anonymize-anon/
 |--- README
@@ -987,9 +987,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.51it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.59it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.59it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.43it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.56it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.56it/s]
 Writing '/home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon/participants.tsv'...
 |MNE-sample-data-bids-anonymize-anon/
 |--- README
@@ -1016,7 +1016,7 @@ Writing '/home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon/participant
 |------------ sub-emptyroom_ses-19030726_task-noise_meg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.901 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.916 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-anonymize-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/6a8efa177441ca0b84ef1b16e3806949/anonymize_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">anonymize_dataset.ipynb</span></code></a></p>
@@ -1112,7 +1112,7 @@ Writing '/home/circleci/mne_data/MNE-sample-data-bids-anonymize-anon/participant
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-12.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-14.
       <br/>
     
   </p>
