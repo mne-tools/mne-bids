@@ -3,7 +3,7 @@ build-backend = "hatchling.build"
 requires = ["hatch-vcs", "hatchling==1.26.3"]
 
 [project]
-authors = [{name = "The MNE-BIDS developers"}]
+authors = [{ name = "The MNE-BIDS developers" }]
 classifiers = [
   "Intended Audience :: Developers",
   "Intended Audience :: Science/Research",
@@ -11,11 +11,11 @@ classifiers = [
   "Operating System :: MacOS",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
-  "Programming Language :: Python",
   "Topic :: Scientific/Engineering",
   "Topic :: Software Development",
 ]
@@ -31,14 +31,14 @@ keywords = [
   "neuroimaging",
   "neuroscience",
 ]
-license = {text = "BSD-3-Clause"}
+license = { text = "BSD-3-Clause" }
 maintainers = [
-  {email = "stefan.appelhoff@mailbox.org", name = "Stefan Appelhoff"},
+  { email = "stefan.appelhoff@mailbox.org", name = "Stefan Appelhoff" },
 ]
 name = "mne-bids"
-readme = {content-type = "text/markdown", file = "README.md"}
+readme = { content-type = "text/markdown", file = "README.md" }
 requires-python = ">=3.11"
-scripts = {mne_bids = "mne_bids.commands.run:main"}
+scripts = { mne_bids = "mne_bids.commands.run:main" }
 
 [project.optional-dependencies]
 # Dependencies for developer installations
@@ -110,7 +110,7 @@ exclude = [
 allow-direct-references = true  # allow specifying URLs in our dependencies
 
 [tool.hatch.version]
-raw-options = {version_scheme = "release-branch-semver"}
+raw-options = { version_scheme = "release-branch-semver" }
 source = "vcs"
 
 [tool.numpydoc_validation]
