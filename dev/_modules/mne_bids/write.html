@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.20.0.dev42+g961b6c524 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.20.0.dev43+ge410bd6ae documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="../../_static/documentation_options.js?v=6aab01bc"></script>
+    <script src="../../_static/documentation_options.js?v=3b54d6eb"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev42+g961b6c524" />
+  <meta name="docsearch:version" content="0.20.0.dev43+ge410bd6ae" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev42+g961b6c524 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev43+ge410bd6ae documentation</p>
   
 </a></div>
     
@@ -1399,6 +1399,21 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Writing '</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">'..."</span><span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_fif_splits</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">fdir</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Check for split fif files and if split, return all file names."""</span>
+    <span class="n">raw_fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">)]</span>
+    <span class="n">raw_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">fdir</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".fif"</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">raw_fname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw_files</span><span class="p">:</span>
+        <span class="n">raw_fnames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">split_base</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"_meg.fif"</span><span class="p">,</span> <span class="s2">"_split-</span><span class="si">{}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">raw_f</span> <span class="ow">in</span> <span class="n">raw_files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_split-"</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">split_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_split-"</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="n">raw_f</span><span class="p">:</span>
+                    <span class="n">raw_fnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="n">raw_f</span><span class="p">))</span>
+        <span class="n">raw_fnames</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">raw_fnames</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">keep_source</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Create a scans.tsv file and save it.</span>
 
@@ -1429,20 +1444,9 @@
     <span class="c1"># for fif files check whether raw file is likely to be split</span>
     <span class="n">raw_fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw_fname</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".fif"</span><span class="p">):</span>
-        <span class="c1"># check whether fif files were split when saved</span>
-        <span class="c1"># use the files in the target directory what should be written</span>
-        <span class="c1"># to scans.tsv</span>
         <span class="n">datatype</span><span class="p">,</span> <span class="n">basename</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
         <span class="n">raw_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">datatype</span><span class="p">)</span>
-        <span class="n">raw_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">raw_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".fif"</span><span class="p">)]</span>
-        <span class="k">if</span> <span class="n">basename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw_files</span><span class="p">:</span>
-            <span class="n">raw_fnames</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">split_base</span> <span class="o">=</span> <span class="n">basename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"_meg.fif"</span><span class="p">,</span> <span class="s2">"_split-</span><span class="si">{}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">raw_f</span> <span class="ow">in</span> <span class="n">raw_files</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_split-"</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">split_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_split-"</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="n">raw_f</span><span class="p">:</span>
-                        <span class="n">raw_fnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="n">raw_f</span><span class="p">))</span>
-            <span class="n">raw_fnames</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">raw_fnames</span> <span class="o">=</span> <span class="n">_check_fif_splits</span><span class="p">(</span><span class="n">basename</span><span class="p">,</span> <span class="n">raw_dir</span><span class="p">,</span> <span class="n">datatype</span><span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
         <span class="p">[</span>
@@ -1646,7 +1650,7 @@
 <span class="sd">    emg_placement : "Measured" | "ChannelSpecific" | "Other" | None</span>
 <span class="sd">        How the EMG sensor locations were determined. Must be one of the literal strings</span>
 <span class="sd">        if ``datatype="emg"`` and should be ``None`` for all other datatypes.</span>
-<span class="sd">    emptyroom_fname : str | mne_bids.BIDSPath</span>
+<span class="sd">    emptyroom_fname : str | list of str | mne_bids.BIDSPath</span>
 <span class="sd">        For MEG recordings, the path to an empty-room data file to be</span>
 <span class="sd">        associated with ``raw``. Only supported for MEG.</span>
 <span class="sd">    overwrite : bool</span>
@@ -1912,7 +1916,7 @@
     <span class="k">return</span> <span class="n">image</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">split_size</span><span class="o">=</span><span class="n">_FIFF_SPLIT_SIZE</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Save out the raw file in FIF.</span>
 
 <span class="sd">    Parameters</span>
@@ -1922,12 +1926,13 @@
 <span class="sd">    bids_fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        The name of the BIDS-specified file where the raw object</span>
 <span class="sd">        should be saved.</span>
+<span class="sd">    split_size : str | int = _FIFF_SPLIT_SIZE,</span>
 
 <span class="sd">    """</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
         <span class="n">bids_fname</span><span class="p">,</span>
         <span class="n">fmt</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="p">,</span>
-        <span class="n">split_size</span><span class="o">=</span><span class="n">_FIFF_SPLIT_SIZE</span><span class="p">,</span>
+        <span class="n">split_size</span><span class="o">=</span><span class="n">split_size</span><span class="p">,</span>
         <span class="n">split_naming</span><span class="o">=</span><span class="s2">"bids"</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
@@ -2319,6 +2324,7 @@
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">readme</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Save raw data to a BIDS-compliant folder structure.</span>
 
@@ -2537,6 +2543,10 @@
 
 <span class="sd">        .. versionadded:: 0.19</span>
 <span class="sd">    %(verbose)s</span>
+<span class="sd">    extra_params : None | dict</span>
+<span class="sd">        Extra parameters to be passed.</span>
+
+<span class="sd">        .. versionadded:: 0.20</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2670,6 +2680,9 @@
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">montage</span><span class="p">,</span> <span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">DigMontage</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s2">"montage"</span><span class="p">)</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">acpc_aligned</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">"acpc_aligned"</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">extra_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
     <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">convert</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># flag if converting not copying</span>
 
@@ -2799,6 +2812,7 @@
                 <span class="p">)</span>
 
     <span class="n">associated_er_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">check_splits</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">):</span>
         <span class="n">er_date</span> <span class="o">=</span> <span class="n">empty_room</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"meas_date"</span><span class="p">]</span>
@@ -2824,7 +2838,16 @@
             <span class="n">acpc_aligned</span><span class="o">=</span><span class="n">acpc_aligned</span><span class="p">,</span>
             <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="n">pfx</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">er_bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="si">}{</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">check_splits</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">er_bids_path</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="n">cs</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="n">pfx</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">cs</span> <span class="ow">in</span> <span class="n">_check_fif_splits</span><span class="p">(</span>
+                <span class="n">er_bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">,</span> <span class="n">er_bids_path</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">er_bids_path</span><span class="o">.</span><span class="n">datatype</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
         <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">er_bids_path</span><span class="o">.</span><span class="n">fpath</span>
         <span class="k">del</span> <span class="n">er_bids_path</span><span class="p">,</span> <span class="n">er_date</span><span class="p">,</span> <span class="n">er_session</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
@@ -2840,16 +2863,21 @@
                 <span class="s2">"The MEG data and its associated empty-room "</span>
                 <span class="s2">"recording must share the same BIDS root."</span>
             <span class="p">)</span>
+        <span class="n">pfx</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">empty_room</span><span class="o">.</span><span class="n">datatype</span><span class="si">}{</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">check_splits</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">empty_room</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="n">cs</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="n">pfx</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">cs</span> <span class="ow">in</span> <span class="n">_check_fif_splits</span><span class="p">(</span>
+                <span class="n">empty_room</span><span class="o">.</span><span class="n">basename</span><span class="p">,</span> <span class="n">empty_room</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">empty_room</span><span class="o">.</span><span class="n">datatype</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
         <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">empty_room</span><span class="o">.</span><span class="n">fpath</span>
 
     <span class="k">if</span> <span class="n">associated_er_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Empty-room data file not found: </span><span class="si">{</span><span class="n">associated_er_path</span><span class="si">}</span><span class="s2">"</span>
-            <span class="p">)</span>
-
-        <span class="c1"># Turn it into a path relative to the BIDS root</span>
-        <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">aep</span> <span class="ow">in</span> <span class="n">check_splits</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">aep</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Empty-room data file not found: </span><span class="si">{</span><span class="n">aep</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">use_er_path</span> <span class="o">=</span> <span class="n">check_splits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">check_splits</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">associated_er_path</span>
+        <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">use_er_path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
         <span class="c1"># Ensure it works on Windows too</span>
         <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
 
@@ -3200,6 +3228,9 @@
     <span class="c1"># File saving branching logic</span>
     <span class="k">if</span> <span class="n">convert</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">write_format</span> <span class="o">==</span> <span class="s2">"FIF"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"split_size"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extra_params</span><span class="p">:</span>
+                <span class="n">extra_params</span><span class="p">[</span><span class="s2">"split_size"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_FIFF_SPLIT_SIZE</span>
+
             <span class="n">_write_raw_fif</span><span class="p">(</span>
                 <span class="n">raw</span><span class="p">,</span>
                 <span class="p">(</span>
@@ -3207,6 +3238,7 @@
                     <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">".pdf"</span>
                     <span class="k">else</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
                 <span class="p">),</span>
+                <span class="n">extra_params</span><span class="p">[</span><span class="s2">"split_size"</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">write_format</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"BDF"</span><span class="p">,</span> <span class="s2">"EDF"</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Converting data files to </span><span class="si">{</span><span class="n">write_format</span><span class="si">}</span><span class="s2"> format"</span><span class="p">)</span>
@@ -3231,7 +3263,13 @@
             <span class="n">link_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
             <span class="n">link_path</span><span class="o">.</span><span class="n">symlink_to</span><span class="p">(</span><span class="n">link_target</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"split_size"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extra_params</span><span class="p">:</span>
+                <span class="n">extra_params</span><span class="p">[</span><span class="s2">"split_size"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_FIFF_SPLIT_SIZE</span>
+            <span class="n">_write_raw_fif</span><span class="p">(</span>
+                <span class="n">raw</span><span class="p">,</span>
+                <span class="n">bids_path</span><span class="p">,</span>
+                <span class="n">extra_params</span><span class="p">[</span><span class="s2">"split_size"</span><span class="p">],</span>
+            <span class="p">)</span>
     <span class="c1"># CTF data is saved and renamed in a directory</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">".ds"</span><span class="p">:</span>
         <span class="n">copyfile_ctf</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
@@ -4357,7 +4395,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-14.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-15.
       <br/>
     
   </p>

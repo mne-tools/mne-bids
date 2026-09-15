@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.20.0.dev42+g961b6c524 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.20.0.dev43+ge410bd6ae documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
-    <script src="_static/documentation_options.js?v=6aab01bc"></script>
+    <script src="_static/documentation_options.js?v=3b54d6eb"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev42+g961b6c524" />
+  <meta name="docsearch:version" content="0.20.0.dev43+ge410bd6ae" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev42+g961b6c524 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev43+ge410bd6ae documentation</p>
   
 </a></div>
     
@@ -531,6 +531,7 @@
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/viranovskaya">Daria Agafonova</a></p></li>
 <li><p><a class="reference external" href="https://github.com/gaoflow">Vincent Gao</a></p></li>
+<li><p><a class="reference external" href="https://github.com/nordme">Erica Peterson</a></p></li>
 </ul>
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
 <ul class="simple">
@@ -550,7 +551,7 @@
 <section id="api-and-behavior-changes">
 <h4>🧐 API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Link to this heading">#</a></h4>
 <ul class="simple">
-<li><p>None yet</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">extra_params</span></code> parameter to <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, allowing users to pass <code class="docutils literal notranslate"><span class="pre">split</span> <span class="pre">size</span></code> in the <code class="docutils literal notranslate"><span class="pre">extra_params</span></code> dictionary to control the size of split fif files by <a class="reference external" href="https://github.com/nordme">Erica Peterson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1660">#1660</a>)</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -566,6 +567,7 @@
 <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1654">#1654</a>)</p></li>
 <li><p>Preserve the actual root of files returned by <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.match()</span></code></a>, avoiding duplicate paths and paths that do not exist when matching inside nested BIDS roots, by <a class="reference external" href="https://github.com/viranovskaya">Daria Agafonova</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1637">#1637</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> no longer raises a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> when writing ANT Neuro eego recordings (<code class="docutils literal notranslate"><span class="pre">.cnt</span></code>), by <a class="reference external" href="https://github.com/gaoflow">Vincent Gao</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1617">#1617</a>)</p></li>
+<li><p>Allow empty room files over 2GB in size to be written with <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, by <a class="reference external" href="https://github.com/nordme">Erica Peterson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1660">#1660</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">
@@ -668,7 +670,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-14.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-15.
       <br/>
     
   </p>
