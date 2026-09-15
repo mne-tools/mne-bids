@@ -235,6 +235,10 @@ authors:
       orcid: 'https://orcid.org/0009-0005-1615-1369'
     - given-names: Daria
       family-names: Agafonova
+    - given-names: Erica
+      family-names: Peterson
+      affiliation: 'Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA'
+      orcid: 'https://orcid.org/0009-0006-6058-947X'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
