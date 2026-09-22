@@ -1362,10 +1362,10 @@ def deface_mri(image, landmarks, offset=-5, theta=15):
 
     Parameters
     ----------
-    image : MRI object
+    image : nibabel.spatialimages.SpatialImage
         Anatomical image as a nibabel object.
     landmarks : array-like
-       x / y / z coordinates of left pre-auricular, nasion, and right
+       Coordinates (x / y / z) of left pre-auricular, nasion, and right
        pre-auricular points in MRI (voxel) coordinate space (3x3 list of
        lists or array with nasion coords in the middle).
     offset : int
@@ -1377,6 +1377,24 @@ def deface_mri(image, landmarks, offset=-5, theta=15):
         Controls the angle of the blackout plane with respect to vertical
         (expressed in degrees from 0 to 90). Defaults to 15.
 
+    Returns
+    -------
+    image : nibabel.spatialimages.SpatialImage
+        Defaced anatomical image as a nibabel object.
+
+    Raises
+    ------
+    TypeError
+        If image input is not an instance of
+        ``nibabel.spatialimages.SpatialImage``.
+    TypeError
+        If ``landmarks`` are not array-like (list of lists or array).
+    TypeError
+        If ``offset`` is not an integer.
+    TypeError
+        If ``theta`` is not an int or float.
+    ValueError
+        If ``theta`` is not between 0 and 90 degrees.
     """
     nib = _import_nibabel("deface MRIs")
 
