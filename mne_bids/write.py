@@ -1365,7 +1365,7 @@ def deface_mri(image, landmarks, offset=-5, theta=15):
     image : MRI object
         Anatomical image as a nibabel object.
     landmarks : array-like
-       X / y / z coordinates of left pre-auricular, nasion, and right
+       x / y / z coordinates of left pre-auricular, nasion, and right
        pre-auricular points in MRI (voxel) coordinate space (3x3 list of
        lists or array with nasion coords in the middle).
     offset : int
@@ -1373,7 +1373,7 @@ def deface_mri(image, landmarks, offset=-5, theta=15):
         in mm (an offset value of 5 will set the blackout plane 5 mm anterior
         to the nasion, whereas -5 will move the plane posterior to the nasion).
         Defaults to -5.
-    theta : int
+    theta : float | int
         Controls the angle of the blackout plane with respect to vertical
         (expressed in degrees from 0 to 90). Defaults to 15.
 
@@ -1396,8 +1396,8 @@ def deface_mri(image, landmarks, offset=-5, theta=15):
     if not isinstance(offset, int):
         raise TypeError(f"offset must be an integer, but got type {type(offset)}.")
 
-    if not isinstance(theta, int):
-        raise TypeError(f"theta must be an integer, but got type {type(theta)}")
+    if not isinstance(theta, (int, float)):
+        raise TypeError(f"theta must be a float or integer, but got type {type(theta)}")
 
     if not 0 <= theta < 90:
         raise ValueError(f"theta should be between 0 and 90 degrees. Got {theta}")
@@ -3033,7 +3033,7 @@ def write_anat(
         suffix exist, will use the first ones in the ``landmarks`` dictionary.
         If dict, accepts the following keys:
 
-        - `offset`: how far back in mm to start defacing
+        - ``offset``: how far back in voxels to start defacing
           relative to the nasion (default -5)
 
         - ``theta``: is the angle of the defacing shear in degrees relative
@@ -3120,7 +3120,9 @@ def write_anat(
                 landmarks_deface = next(iter(landmarks.items()))[1]
             _, landmarks_deface = _get_landmarks(landmarks_deface, image_nii)
             if isinstance(deface, dict):
-                if "offset" not in deface.keys() or "theta" not in deface.keys():
+                if "inset" in deface:  # make backwards compatible
+                    deface.update(offset=-deface["inset"])
+                if "offset" not in deface or "theta" not in deface:
                     raise RuntimeError(
                         f"When deface is a dict, keys must "
                         f"include offset and theta, but got "

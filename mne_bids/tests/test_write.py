@@ -4614,7 +4614,7 @@ def test_deface_mri_errors(t1_image, mri_landmarks):
         deface_mri(t1_image, mri_landmarks, offset=bad_offset_type, theta=theta)
 
     # theta errors
-    with pytest.raises(TypeError, match="theta must be an integer"):
+    with pytest.raises(TypeError, match="theta must be a float or integer"):
         deface_mri(t1_image, mri_landmarks, offset=offset, theta=bad_theta_type)
 
     with pytest.raises(ValueError, match="theta should be between"):
@@ -4629,23 +4629,24 @@ def test_deface_mri(t1_image, mri_landmarks):
     # reference mri
     vox_sum = t1_image.get_fdata().sum()
 
-    # Check that a more negative offset leads to more voxels at 0
-    off_df = deface_mri(t1_image, mri_landmarks, offset=-45, theta=15)
-    vox_sum2 = off_df.get_fdata().sum()
-
-    assert vox_sum > vox_sum2
-
-    # Check that increasing theta leads to more voxels at 0
-    tht_df = deface_mri(t1_image, mri_landmarks, offset=-5, theta=45)
-    vox_sum3 = tht_df.get_fdata().sum()
-
-    assert vox_sum > vox_sum3
-
     # check default vals type output
     defaced_mri = deface_mri(t1_image, mri_landmarks)
     assert isinstance(defaced_mri, SpatialImage)
+    vox_sum1 = defaced_mri.get_fdata().sum()
 
     # check the proportion of changed voxels is under 5% for default vals
     orig = t1_image.get_fdata().ravel()
     dfd = defaced_mri.get_fdata().ravel()
     assert np.isclose(orig, dfd).mean() > 0.95
+
+    # Check that a more negative offset leads to more voxels at 0
+    off_df = deface_mri(t1_image, mri_landmarks, offset=-45, theta=15)
+    vox_sum2 = off_df.get_fdata().sum()
+
+    assert vox_sum > vox_sum1 > vox_sum2
+
+    # Check that increasing theta leads to more voxels at 0
+    tht_df = deface_mri(t1_image, mri_landmarks, offset=-5, theta=45)
+    vox_sum3 = tht_df.get_fdata().sum()
+
+    assert vox_sum > vox_sum1 > vox_sum3
