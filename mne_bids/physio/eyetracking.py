@@ -354,7 +354,11 @@ def _calibration_to_sidecar_updates(calibrations):
 
 def write_eyetrack_calibration(
     bids_path: BIDSPath,
-    calibrations: Calibration | list[Calibration],
+    # spelled out rather than imported so that `import mne_bids` does not eagerly
+    # import mne.preprocessing.eyetracking (and hence SciPy), and so that Sphinx
+    # can still resolve the annotation
+    calibrations: "mne.preprocessing.eyetracking.Calibration"
+    " | list[mne.preprocessing.eyetracking.Calibration]",
 ) -> list[Path]:
     """Write eyetrack calibration metadata into an existing ``*_physio.json`` sidecar.
 

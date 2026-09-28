@@ -10,9 +10,6 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
-from mne import pick_types
-from mne.channels import get_builtin_montages, make_standard_montage
-from mne.io.kit.kit import get_kit_info
 from mne.utils import logger, verbose
 from mne.utils import warn as _warn
 
@@ -283,6 +280,8 @@ def _check_key_val(key, val):
 
 def _get_mrk_meas_date(mrk):
     """Find the measurement date from a KIT marker file."""
+    from mne.io.kit.kit import get_kit_info
+
     info = get_kit_info(mrk, False)[0]
     meas_date = info.get("meas_date", None)
     if isinstance(meas_date, tuple | list | np.ndarray):
@@ -311,6 +310,9 @@ def _infer_eeg_placement_scheme(raw):
         extraction.
 
     """
+    from mne import pick_types
+    from mne.channels import get_builtin_montages, make_standard_montage
+
     placement_scheme = "n/a"
     # Check if the raw data contains eeg data at all
     if "eeg" not in raw:

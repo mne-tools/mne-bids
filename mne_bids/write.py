@@ -16,14 +16,9 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import mne
-import mne.preprocessing
 import numpy as np
-from mne import Epochs, channel_type
-from mne.channels.channels import _get_meg_system, _unit2human
-from mne.io import BaseRaw, read_fiducials
 from mne.io.constants import FIFF
 from mne.io.pick import _picks_to_idx
-from mne.transforms import _get_trans, apply_trans, rotation, translation
 from mne.utils import (
     Bunch,
     ProgressBar,
@@ -33,7 +28,6 @@ from mne.utils import (
     logger,
     verbose,
 )
-from scipy import linalg
 
 from mne_bids import (
     BIDSPath,
@@ -170,6 +164,10 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         Defaults to False.
 
     """
+    # hoisted out of the per-channel loop below
+    from mne import channel_type
+    from mne.channels.channels import _unit2human
+
     # Get channel type mappings between BIDS and MNE nomenclatures
     map_chs = _get_ch_type_mapping(fro="mne", to="bids")
 
@@ -896,6 +894,21 @@ def _participants_json(fname, overwrite=False):
         logger.info(f"Writing '{fname}'...")
 
 
+def _check_fif_splits(raw_fname, fdir, datatype):
+    """Check for split fif files and if split, return all file names."""
+    raw_fnames = [op.join(datatype, raw_fname)]
+    raw_files = [f for f in os.listdir(fdir) if f.endswith(".fif")]
+    if raw_fname not in raw_files:
+        raw_fnames = []
+        split_base = raw_fname.replace("_meg.fif", "_split-{}")
+        for raw_f in raw_files:
+            if len(raw_f.split("_split-")) == 2:
+                if split_base.format(raw_f.split("_split-")[1]) == raw_f:
+                    raw_fnames.append(op.join(datatype, raw_f))
+        raw_fnames.sort()
+    return raw_fnames
+
+
 def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     """Create a scans.tsv file and save it.
 
@@ -926,20 +939,9 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     # for fif files check whether raw file is likely to be split
     raw_fnames = [raw_fname]
     if raw_fname.endswith(".fif"):
-        # check whether fif files were split when saved
-        # use the files in the target directory what should be written
-        # to scans.tsv
         datatype, basename = raw_fname.split(os.sep)
         raw_dir = op.join(op.dirname(fname), datatype)
-        raw_files = [f for f in os.listdir(raw_dir) if f.endswith(".fif")]
-        if basename not in raw_files:
-            raw_fnames = []
-            split_base = basename.replace("_meg.fif", "_split-{}")
-            for raw_f in raw_files:
-                if len(raw_f.split("_split-")) == 2:
-                    if split_base.format(raw_f.split("_split-")[1]) == raw_f:
-                        raw_fnames.append(op.join(datatype, raw_f))
-            raw_fnames.sort()
+        raw_fnames = _check_fif_splits(basename, raw_dir, datatype)
 
     data = OrderedDict(
         [
@@ -1031,6 +1033,8 @@ def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
     mri_landmarks : np.ndarray, shape (3, 3)
         The mri RAS landmark data converted to from m to mm.
     """
+    from mne.transforms import apply_trans
+
     # Transform MEG landmarks into MRI space, adjust units by * 1e3
     return apply_trans(trans, meg_landmarks, move=True) * 1e3
 
@@ -1050,6 +1054,9 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
     vox_landmarks : np.ndarray, shape (3, 3)
         The MRI voxel-space landmark data.
     """
+    from mne.transforms import apply_trans
+    from scipy import linalg
+
     # Get landmarks in voxel space, using the T1 data
     vox2ras_tkr_t = t1_mgh.header.get_vox2ras_tkr()
     ras_tkr2vox_t = linalg.inv(vox2ras_tkr_t)
@@ -1073,6 +1080,8 @@ def _mri_voxels_to_mri_scanner_ras(mri_landmarks, img_mgh):
     ras_landmarks : np.ndarray, shape (3, 3)
         The MRI scanner RAS landmark data.
     """
+    from mne.transforms import apply_trans
+
     # Get landmarks in voxel space, using the T1 data
     vox2ras = img_mgh.header.get_vox2ras()
     ras_landmarks = apply_trans(vox2ras, mri_landmarks)  # in scanner RAS
@@ -1094,6 +1103,9 @@ def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
     vox_landmarks : np.ndarray, shape (3, 3)
         The MRI voxel-space landmark data.
     """
+    from mne.transforms import apply_trans
+    from scipy import linalg
+
     # Get landmarks in voxel space, using the T1 data
     vox2ras = img_mgh.header.get_vox2ras()
     ras2vox = linalg.inv(vox2ras)
@@ -1133,7 +1145,7 @@ def _sidecar_json(
     emg_placement : "Measured" | "ChannelSpecific" | "Other" | None
         How the EMG sensor locations were determined. Must be one of the literal strings
         if ``datatype="emg"`` and should be ``None`` for all other datatypes.
-    emptyroom_fname : str | mne_bids.BIDSPath
+    emptyroom_fname : str | list of str | mne_bids.BIDSPath
         For MEG recordings, the path to an empty-room data file to be
         associated with ``raw``. Only supported for MEG.
     overwrite : bool
@@ -1157,9 +1169,9 @@ def _sidecar_json(
             "is unknown, set it to None"
         )
 
-    if isinstance(raw, BaseRaw):
+    if isinstance(raw, mne.io.BaseRaw):
         rec_type = "continuous"
-    elif isinstance(raw, Epochs):
+    elif isinstance(raw, mne.Epochs):
         rec_type = "epoched"
     else:
         rec_type = "n/a"
@@ -1218,6 +1230,8 @@ def _sidecar_json(
     }
 
     # Compile cHPI information, if any.
+    from mne.channels.channels import _get_meg_system
+
     system, _ = _get_meg_system(raw.info)
     chpi = None
     hpi_freqs = []
@@ -1381,6 +1395,8 @@ def _deface(image, landmarks, deface):
     # now comes the actual defacing
     # 1. move center of voxels to (nasion - inset)
     # 2. rotate the head by theta from vertical
+    from mne.transforms import apply_trans, rotation, translation
+
     x, y, z = nib.affines.apply_affine(image.affine, landmarks)[1]
     idxs = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs)
     idxs = apply_trans(rotation(x=-np.pi / 2 + np.deg2rad(theta)), idxs)
@@ -1395,7 +1411,7 @@ def _deface(image, landmarks, deface):
     return image
 
 
-def _write_raw_fif(raw, bids_fname):
+def _write_raw_fif(raw, bids_fname, split_size=_FIFF_SPLIT_SIZE):
     """Save out the raw file in FIF.
 
     Parameters
@@ -1405,12 +1421,13 @@ def _write_raw_fif(raw, bids_fname):
     bids_fname : str | mne_bids.BIDSPath
         The name of the BIDS-specified file where the raw object
         should be saved.
+    split_size : str | int = _FIFF_SPLIT_SIZE,
 
     """
     raw.save(
         bids_fname,
         fmt=raw.orig_format,
-        split_size=_FIFF_SPLIT_SIZE,
+        split_size=split_size,
         split_naming="bids",
         overwrite=True,
     )
@@ -1467,6 +1484,8 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
 
     # pybv needs to know the units of the data for appropriate scaling
     # get voltage units as micro-volts and all other units "as is"
+    from mne.channels.channels import _unit2human  # hoisted out of the loop
+
     unit = []
     for chs in raw.info["chs"]:
         if chs["unit"] == FIFF.FIFF_UNIT_V:
@@ -1795,6 +1814,7 @@ def write_raw_bids(
     overwrite=False,
     readme=True,
     verbose=None,
+    extra_params=None,
 ):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -2013,6 +2033,10 @@ def write_raw_bids(
 
         .. versionadded:: 0.19
     %(verbose)s
+    extra_params : None | dict
+        Extra parameters to be passed.
+
+        .. versionadded:: 0.20
 
     Returns
     -------
@@ -2070,7 +2094,7 @@ def write_raw_bids(
     When writing EDF or BDF files, all file extensions are forced to be
     lower-case, in compliance with the BIDS specification.
     """
-    if not isinstance(raw, BaseRaw):
+    if not isinstance(raw, mne.io.BaseRaw):
         raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
     is_eyetracking_only = all(
         [ch in ["eyegaze", "pupil"] for ch in raw.get_channel_types()]
@@ -2145,6 +2169,9 @@ def write_raw_bids(
     )
     _validate_type(montage, (mne.channels.DigMontage, None), "montage")
     _validate_type(acpc_aligned, bool, "acpc_aligned")
+
+    if extra_params is None:
+        extra_params = dict()
 
     raw = raw.copy()
     convert = False  # flag if converting not copying
@@ -2275,6 +2302,7 @@ def write_raw_bids(
                 )
 
     associated_er_path = None
+    check_splits = []
 
     if isinstance(empty_room, mne.io.BaseRaw):
         er_date = empty_room.info["meas_date"]
@@ -2300,7 +2328,16 @@ def write_raw_bids(
             acpc_aligned=acpc_aligned,
             overwrite=overwrite,
             verbose=verbose,
+            extra_params=extra_params,
         )
+
+        pfx = f"{er_bids_path.datatype}{os.sep}"
+        check_splits = [
+            er_bids_path.directory / cs.removeprefix(pfx)
+            for cs in _check_fif_splits(
+                er_bids_path.basename, er_bids_path.directory, er_bids_path.datatype
+            )
+        ]
         associated_er_path = er_bids_path.fpath
         del er_bids_path, er_date, er_session
     elif isinstance(empty_room, BIDSPath):
@@ -2316,16 +2353,21 @@ def write_raw_bids(
                 "The MEG data and its associated empty-room "
                 "recording must share the same BIDS root."
             )
+        pfx = f"{empty_room.datatype}{os.sep}"
+        check_splits = [
+            empty_room.directory / cs.removeprefix(pfx)
+            for cs in _check_fif_splits(
+                empty_room.basename, empty_room.directory, empty_room.datatype
+            )
+        ]
         associated_er_path = empty_room.fpath
 
     if associated_er_path is not None:
-        if not associated_er_path.exists():
-            raise FileNotFoundError(
-                f"Empty-room data file not found: {associated_er_path}"
-            )
-
-        # Turn it into a path relative to the BIDS root
-        associated_er_path = associated_er_path.relative_to(bids_path.root)
+        for aep in check_splits:
+            if not aep.exists():
+                raise FileNotFoundError(f"Empty-room data file not found: {aep}")
+        use_er_path = check_splits[0] if len(check_splits) > 1 else associated_er_path
+        associated_er_path = use_er_path.relative_to(bids_path.root)
         # Ensure it works on Windows too
         associated_er_path = associated_er_path.as_posix()
 
@@ -2676,6 +2718,9 @@ def write_raw_bids(
     # File saving branching logic
     if convert:
         if write_format == "FIF":
+            if "split_size" not in extra_params:
+                extra_params["split_size"] = _FIFF_SPLIT_SIZE
+
             _write_raw_fif(
                 raw,
                 (
@@ -2683,6 +2728,7 @@ def write_raw_bids(
                     if ext == ".pdf"
                     else bids_path.fpath
                 ),
+                extra_params["split_size"],
             )
         elif write_format in ("BDF", "EDF"):
             logger.info(f"Converting data files to {write_format} format")
@@ -2707,7 +2753,13 @@ def write_raw_bids(
             link_path = bids_path.fpath
             link_path.symlink_to(link_target)
         else:
-            _write_raw_fif(raw, bids_path)
+            if "split_size" not in extra_params:
+                extra_params["split_size"] = _FIFF_SPLIT_SIZE
+            _write_raw_fif(
+                raw,
+                bids_path,
+                extra_params["split_size"],
+            )
     # CTF data is saved and renamed in a directory
     elif ext == ".ds":
         copyfile_ctf(raw_fname, bids_path)
@@ -2819,6 +2871,8 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     )
 
     # get trans and ensure it is from head to MRI
+    from mne.transforms import _get_trans
+
     trans, _ = _get_trans(trans, fro="head", to="mri")
     landmarks = _meg_landmarks_to_mri_landmarks(landmarks, trans)
 
@@ -2864,6 +2918,7 @@ def _get_t1w_mgh(fs_subject, fs_subjects_dir):
 
 def _get_landmarks(landmarks, image_nii, kind=""):
     import nibabel as nib
+    from mne.io import read_fiducials
 
     if isinstance(landmarks, str | Path):
         landmarks, coord_frame = read_fiducials(landmarks)

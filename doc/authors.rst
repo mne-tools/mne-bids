@@ -22,6 +22,7 @@
 .. _Dominik Welke: https://github.com/dominikwelke
 .. _Eduard Ort: https://github.com/eort
 .. _Eric Larson: https://larsoner.com/
+.. _Erica Peterson: https://github.com/nordme
 .. _Ethan Knights: https://github.com/ethanknights
 .. _Evgenii Kalenkovich: https://github.com/kalenkovich
 .. _Ezequiel Mikulan: https://github.com/ezemikulan
