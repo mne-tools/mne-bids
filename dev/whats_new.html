@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.20.0.dev46+g3fe1c01f7 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.20.0.dev47+gb04910de4 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="_static/documentation_options.js?v=12b65623"></script>
+    <script src="_static/documentation_options.js?v=084c2ec4"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -69,10 +69,10 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'whats_new';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.22.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-bids/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
-            false;
+            true;
         </script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -85,7 +85,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev46+g3fe1c01f7" />
+  <meta name="docsearch:version" content="0.20.0.dev47+gb04910de4" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -154,7 +154,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev46+g3fe1c01f7 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.20.0.dev47+gb04910de4 documentation</p>
   
 </a></div>
     
@@ -522,8 +522,8 @@
                   
   <section id="what-s-new">
 <h1>What’s new?<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h1>
-<section id="version-0-20-unreleased">
-<span id="changes-0-20"></span><h2>Version 0.20 (unreleased)<a class="headerlink" href="#version-0-20-unreleased" title="Link to this heading">#</a></h2>
+<section id="version-0-20-2026-09-28">
+<span id="changes-0-20"></span><h2>Version 0.20 (2026-09-28)<a class="headerlink" href="#version-0-20-2026-09-28" title="Link to this heading">#</a></h2>
 <section id="authors">
 <h3>👩🏽‍💻 Authors<a class="headerlink" href="#authors" title="Link to this heading">#</a></h3>
 <p>The following authors contributed for the first time. Thank you so much! 🤩</p>
@@ -535,6 +535,10 @@
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a></p></li>
+<li><p><a class="reference external" href="http://dan.mccloy.info">Daniel McCloy</a></p></li>
+<li><p><a class="reference external" href="https://larsoner.com/">Eric Larson</a></p></li>
+<li><p><a class="reference external" href="https://github.com/scott-huberty">Scott Huberty</a></p></li>
+<li><p><a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a></p></li>
 </ul>
 </section>
 <section id="detailed-list-of-changes">
@@ -556,7 +560,7 @@
 <section id="requirements">
 <h4>🛠 Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h4>
 <ul class="simple">
-<li><p>None yet</p></li>
+<li><p>Building the documentation now requires <code class="docutils literal notranslate"><span class="pre">pydata-sphinx-theme</span></code> 0.22 or higher, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1669">#1669</a>)</p></li>
 </ul>
 </section>
 <section id="bug-fixes">
@@ -575,6 +579,7 @@
 <li><p>Sped up writing of recordings with many channels by avoiding redundant per-channel work in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> (single-pass channel-type counting, cached coil-type lookup, and a fixed quadratic loop when writing BrainVision units), by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1620">#1620</a>)</p></li>
 <li><p>Run the test suite with <code class="docutils literal notranslate"><span class="pre">pytest-xdist</span></code> and build the documentation with parallel Sphinx and Sphinx-Gallery workers, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1648">#1648</a>)</p></li>
 <li><p>Sped up <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.copy()</span></code></a>, <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.fpath</span></code></a> when the suffix or extension has to be inferred from the filesystem, and <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">mne_bids</span></code> (roughly 2.5x faster), which no longer eagerly imports MNE’s preprocessing, visualization, or file-format reader modules, nor SciPy, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1657">#1657</a>)</p></li>
+<li><p>Deploy the documentation with <a class="reference external" href="https://github.com/larsoner/docstacks">docstacks</a>: <code class="docutils literal notranslate"><span class="pre">maint/X.Y</span></code> branches now publish and promote their own docs, the version switcher is updated automatically, and the release workflow asks conda-forge for a version bump, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1669">#1669</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -629,7 +634,7 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-20-unreleased">Version 0.20 (unreleased)</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-20-2026-09-28">Version 0.20 (2026-09-28)</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#authors">👩🏽‍💻 Authors</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#detailed-list-of-changes">Detailed list of changes</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#enhancements">🚀 Enhancements</a></li>
