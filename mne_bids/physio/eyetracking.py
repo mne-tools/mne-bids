@@ -518,6 +518,8 @@ def read_eyetrack_calibration(bids_path: BIDSPath) -> list[dict]:
 def read_raw_bids_eyetrack(bids_path):
     """Read BIDS compliant eyetracking data from TSV sidecar files.
 
+    Parameters
+    ----------
     bids_path : mne_bids.BIDSPath
         the BIDSPath instance that points to the ``<match>_recording-eye1_physio.tsv``
         eyetracking file. You must specify the following entities in the BIDSPath
@@ -530,7 +532,7 @@ def read_raw_bids_eyetrack(bids_path):
     Returns
     -------
     raw : mne.io.Raw
-        The data as MNE-Python Raw object
+        The data as MNE-Python Raw object.
     """
     from mne.preprocessing.eyetracking import set_channel_types_eyetrack
 
