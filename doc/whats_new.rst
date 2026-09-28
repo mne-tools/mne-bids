@@ -45,7 +45,7 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- None yet
+- ``numpy >= 2.0`` is now required, by `Scott Huberty`_ (:gh:`1512`)
 
 🪲 Bug fixes
 ^^^^^^^^^^^^

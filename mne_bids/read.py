@@ -1029,7 +1029,7 @@ def _handle_physioevents_reading(bids_path, raw):
     if physio_json_fname is None:
         return raw
     # TODO: create annotations from generic physioevents files in a standalone PR
-    if _get_physio_type(physio_json_fname) != "eyetrack":
+    if _get_physio_type(physio_json_fname).lower() != "eyetrack":
         return raw
 
     # Eyetracking physioevents

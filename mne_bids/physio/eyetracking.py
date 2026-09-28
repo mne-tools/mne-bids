@@ -479,8 +479,13 @@ def read_eyetrack_calibration(bids_path: BIDSPath) -> list[dict]:
             if bids_key in sidecar:
                 value = sidecar[bids_key]
                 if bids_key == "CalibrationPosition":
-                    value = np.array(value)
+                    value = np.array(value, dtype=float)
                 calibration[mne_key] = value
+        if not calibration:
+            continue
+        # Calibration() does not accept unit, so set it on the dict afterward
+        unit = calibration.pop("unit", None)
+        calibration.setdefault("positions", np.empty((0, 2)))
         if "RecordedEye" in sidecar:
             calibration["eye"] = sidecar["RecordedEye"]
 
@@ -488,11 +493,12 @@ def read_eyetrack_calibration(bids_path: BIDSPath) -> list[dict]:
         onset = np.nan
         gaze = np.full_like(calibration["positions"], np.nan)
         offsets = np.full_like(calibration["positions"], np.nan)
-        if calibration:
-            mne_cal = mne.preprocessing.eyetracking.Calibration(
-                onset=onset, gaze=gaze, offsets=offsets, **calibration
-            )
-            calibrations.append(mne_cal)
+        mne_cal = mne.preprocessing.eyetracking.Calibration(
+            onset=onset, gaze=gaze, offsets=offsets, **calibration
+        )
+        if unit is not None:
+            mne_cal["unit"] = unit
+        calibrations.append(mne_cal)
 
     if not calibrations:
         raise ValueError(f"No calibration metadata found in {candidate_sidecars}.")
@@ -552,6 +558,7 @@ def read_raw_bids_eyetrack(bids_path):
     )
     ch_info.update(eye1_ch_info)
     eye1_array = np.array(list(eye1_data_dict.values()))
+    # TODO: Use timestamp to offset physioevents onsets when it does not start at 0
 
     json_sidecar_fpath = raw_path.with_suffix("").with_suffix(".json")
     physio_sidecar = json.loads(json_sidecar_fpath.read_text())
@@ -699,7 +706,9 @@ def _read_eyetrack_physioevents(bids_path, raw=None):
     eyes = set(ocular_events)
     if eyes == {"left", "right"}:
         merged = merge_binocular_physioevents(
-            ocular_events["left"], ocular_events["right"], sfreq=500.0
+            ocular_events["left"],
+            ocular_events["right"],
+            sfreq=eye1_info["SamplingFrequency"],
         )
         return _mark_blinks_bad(merged)
 
