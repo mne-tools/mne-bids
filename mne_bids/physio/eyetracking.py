@@ -506,7 +506,7 @@ def read_raw_bids_eyetrack(bids_path):
     Parameters
     ----------
     bids_path : mne_bids.BIDSPath
-        the BIDSPath instance that points to the ``<match>_recording-eye1_physio.tsv``
+        The BIDSPath instance that points to the ``<match>_recording-eye1_physio.tsv``
         eyetracking file. You must specify the following entities in the BIDSPath
         constructor: ``recording="eye1"``, ``suffix="physio"``, ``extension=".tsv.gz"``.
         If the eyetracking data was recorded without another modality, you must also
