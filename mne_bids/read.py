@@ -36,9 +36,9 @@ from mne_bids.path import (
     get_bids_path_from_fname,
 )
 from mne_bids.physio import (
-    _get_physio_type,
     read_raw_bids_eyetrack,
 )
+from mne_bids.physio.generic import _get_physio_type
 from mne_bids.tsv_handler import _drop, _from_tsv
 from mne_bids.utils import (
     _convert_dt_to_utc,
