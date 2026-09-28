@@ -53,8 +53,8 @@ cal_path = data_path / "SSS" / "sss_cal_mgh.dat"
 ct_path = data_path / "SSS" / "ct_sparse_mgh.fif"
 t1w_path = data_path / "subjects" / "sample" / "mri" / "T1.mgz"
 
-bids_root = data_path.parent / "MNE-sample-data-bids"
-bids_root_anon = data_path.parent / "MNE-sample-data-bids-anon"
+bids_root = data_path.parent / "MNE-sample-data-bids-anonymize"
+bids_root_anon = data_path.parent / "MNE-sample-data-bids-anonymize-anon"
 
 # %%
 # To ensure the output paths don't contain any leftover files from previous
