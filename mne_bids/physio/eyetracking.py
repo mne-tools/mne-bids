@@ -661,7 +661,7 @@ def _read_one_eye_physio(raw_tsv_fpath):
             ),
         )
 
-    data_dict = _from_tsv(raw_tsv_fpath)
+    data_dict = _from_tsv(raw_tsv_fpath, dtypes=float)
     # Append recording entity suffix to channel names.
     for col_name in list(data_dict.keys()):
         if col_name != "timestamp":

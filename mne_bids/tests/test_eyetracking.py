@@ -13,7 +13,7 @@ from mne.io import RawArray, read_raw_egi, read_raw_eyelink
 from mne.utils import check_version
 
 import mne_bids
-from mne_bids import BIDSPath, write_raw_bids
+from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
 from mne_bids.physio import write_eyetrack_calibration
 from mne_bids.physio.eyetracking import _get_eyetrack_annotation_inds
 
@@ -152,6 +152,10 @@ def test_write_eyetracking_bino(_bids_validate, raw_eye_and_cals, eyetrack_bpath
         overwrite=False,
     )
     _bids_validate(eyetrack_bpath.root)
+
+    raw_in = read_raw_bids(eyetrack_bpath)
+    # Make sure that missing data is handled correctly when writing to and fro
+    np.testing.assert_array_equal(np.isnan(raw_in.get_data()), np.isnan(raw.get_data()))
 
     # each eye gets only its own annotations in *_physioevents.tsv.gz
     events_bpath = eyetrack_bpath.copy().update(

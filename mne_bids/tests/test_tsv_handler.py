@@ -6,6 +6,7 @@
 import codecs
 from collections import OrderedDict as odict
 
+import numpy as np
 import pytest
 from mne.utils import catch_logging
 
@@ -172,6 +173,14 @@ def test_from_tsv_strips_whitespace_and_normalizes_decimal_commas(tmp_path):
     assert d["onset"] == ["0.5", "n/a", "1.0"]
     assert d["duration"] == ["1.25", "n/a", "1"]
     assert d["trial_type"] == ["stim", "stim", "rest, eyes-open"]
+
+
+def test_missing_data(tmp_path):
+    """Should Convert BIDS missing values ('n/a') to np.nan when requested."""
+    tsv = tmp_path / "physio.tsv"
+    tsv.write_text("signal\n1.5\nn/a\n", encoding="utf-8")
+    data = _from_tsv(tsv, dtypes=float)
+    np.testing.assert_equal(data["signal"], [1.5, np.nan])
 
 
 def test_drop_different_types():
