@@ -11,7 +11,7 @@ What's new?
 
 .. _changes_0_20:
 
-Version 0.20 (unreleased)
+Version 0.20 (2026-09-28)
 -------------------------
 
 👩🏽‍💻 Authors
@@ -26,6 +26,10 @@ The following authors contributed for the first time. Thank you so much! 🤩
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Bruno Aristimunha`_
+* `Daniel McCloy`_
+* `Eric Larson`_
+* `Scott Huberty`_
+* `Stefan Appelhoff`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -45,7 +49,7 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- None yet
+- Building the documentation now requires ``pydata-sphinx-theme`` 0.22 or higher, by `Eric Larson`_ (:gh:`1669`)
 
 🪲 Bug fixes
 ^^^^^^^^^^^^
@@ -62,5 +66,6 @@ Detailed list of changes
 - Sped up writing of recordings with many channels by avoiding redundant per-channel work in :func:`mne_bids.write_raw_bids` (single-pass channel-type counting, cached coil-type lookup, and a fixed quadratic loop when writing BrainVision units), by `Stefan Appelhoff`_ (:gh:`1620`)
 - Run the test suite with ``pytest-xdist`` and build the documentation with parallel Sphinx and Sphinx-Gallery workers, by `Eric Larson`_ (:gh:`1648`)
 - Sped up :meth:`mne_bids.BIDSPath.copy`, :attr:`mne_bids.BIDSPath.fpath` when the suffix or extension has to be inferred from the filesystem, and ``import mne_bids`` (roughly 2.5x faster), which no longer eagerly imports MNE's preprocessing, visualization, or file-format reader modules, nor SciPy, by `Eric Larson`_ (:gh:`1657`)
+- Deploy the documentation with `docstacks <https://github.com/larsoner/docstacks>`__: ``maint/X.Y`` branches now publish and promote their own docs, the version switcher is updated automatically, and the release workflow asks conda-forge for a version bump, by `Eric Larson`_ (:gh:`1669`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`

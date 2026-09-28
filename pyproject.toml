@@ -54,7 +54,7 @@ doc = [
   "openneuro-py",
   "pandas",
   "pillow",
-  "pydata-sphinx-theme",
+  "pydata-sphinx-theme>=0.22",  # version banner honors version_match
   "seaborn",
   "sphinx-copybutton",
   "sphinx>=7.4.7",
