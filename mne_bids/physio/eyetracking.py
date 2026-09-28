@@ -6,7 +6,6 @@ from pathlib import Path
 import mne
 import numpy as np
 from mne._fiff.constants import FIFF
-from mne.preprocessing.eyetracking import Calibration, set_channel_types_eyetrack
 from mne.utils import _check_option, _validate_type, logger, warn
 
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP, UNITS_FIFF_TO_BIDS_MAP
@@ -505,7 +504,7 @@ def read_eyetrack_calibration(bids_path: BIDSPath) -> list[dict]:
         gaze = np.full_like(calibration["positions"], np.nan)
         offsets = np.full_like(calibration["positions"], np.nan)
         if calibration:
-            mne_cal = Calibration(
+            mne_cal = mne.preprocessing.eyetracking.Calibration(
                 onset=onset, gaze=gaze, offsets=offsets, **calibration
             )
             calibrations.append(mne_cal)
@@ -533,6 +532,8 @@ def read_raw_bids_eyetrack(bids_path):
     raw : mne.io.Raw
         The data as MNE-Python Raw object
     """
+    from mne.preprocessing.eyetracking import set_channel_types_eyetrack
+
     ch_info = {}
     # Mapping from FIFF units to the str codes wanted by set_channel_types_eyetrack
     fiff_to_func = {
