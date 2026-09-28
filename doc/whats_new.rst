@@ -11,7 +11,7 @@ What's new?
 
 .. _changes_0_20:
 
-Version 0.20 (unreleased)
+Version 0.20 (2026-09-28)
 -------------------------
 
 👩🏽‍💻 Authors
@@ -26,6 +26,10 @@ The following authors contributed for the first time. Thank you so much! 🤩
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Bruno Aristimunha`_
+* `Daniel McCloy`_
+* `Eric Larson`_
+* `Scott Huberty`_
+* `Stefan Appelhoff`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -45,7 +49,7 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- None yet
+- Building the documentation now requires ``pydata-sphinx-theme`` 0.22 or higher, by `Eric Larson`_ (:gh:`1669`)
 
 🪲 Bug fixes
 ^^^^^^^^^^^^
