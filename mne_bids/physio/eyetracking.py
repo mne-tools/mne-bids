@@ -10,7 +10,6 @@ from mne.utils import _check_option, _validate_type, logger, warn
 
 from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP, UNITS_FIFF_TO_BIDS_MAP
 from mne_bids.path import BIDSPath
-from mne_bids.physio.generic import _get_physio_type
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import _write_json, _write_tsv
 
@@ -20,26 +19,12 @@ BIDS_CALIBRATION_TO_MNE = {
     "MaximalCalibrationError": "max_error",
     "CalibrationType": "model",
     "CalibrationPosition": "positions",
-    "CalibrationDistance": "screen_distance",
-    # FIXME: Add CalibrationUnit to MNE's Calibration constructor
+    # TODO: Add CalibrationUnit to MNE's Calibration constructor
     "CalibrationUnit": "unit",
 }
 MNE_CALIBRATION_TO_BIDS = {
     bids_key: mne_key for mne_key, bids_key in BIDS_CALIBRATION_TO_MNE.items()
 }
-
-
-def _has_eyetracking(bids_path):
-    directory = bids_path.directory
-    phys_files = directory.glob("*_physio.tsv")
-    try:
-        phys_tsv = next(phys_files)
-    except StopIteration:
-        return False
-    phys_json = phys_tsv.with_suffix(".json")
-    phys_type = _get_physio_type(phys_json)
-    return True if phys_type == "eyetrack" else False
-
 
 EYETRACK_CALIBRATION_TO_STIMULUS_PRESENTATION = (
     ("screen_distance", "ScreenDistance"),
