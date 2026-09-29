@@ -19,7 +19,7 @@ Version 0.21 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* None yet
+* `Shubham Padkonde`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -46,7 +46,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- None yet
+- Fix :func:`find_matching_paths` omitting files with a ``tracksys`` entity and returning no matches when ``tracking_systems`` is specified, by `Shubham Padkonde`_.
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

@@ -2764,9 +2764,9 @@ def _filter_fnames(
     suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
     ext_str = r"(" + "|".join(extension) + ")$" if extension else r"\.([^_]+)"
     tracksys_str = (
-        r"tracksys-(" + "|".join(tracking_system) + ")"
+        r"_tracksys-(" + "|".join(tracking_system) + ")"
         if tracking_system
-        else r"(|tracksys-([^_]+))"
+        else r"(|_tracksys-([^_]+))"
     )
 
     regexp = (
@@ -2781,9 +2781,9 @@ def _filter_fnames(
         + rec_str
         + split_str
         + desc_str
+        + tracksys_str
         + suffix_str
         + ext_str
-        + tracksys_str
     )
 
     # Convert to str so we can apply the regexp ...
