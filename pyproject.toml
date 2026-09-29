@@ -21,7 +21,6 @@ classifiers = [
 ]
 dependencies = ["mne>=1.8", "numpy>=1.23", "scipy>=1.9"]
 description = "MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS specification and facilitating their analysis with MNE-Python"
-dynamic = ["version"]
 keywords = [
   "bids",
   "brain imaging data structure",
@@ -39,6 +38,7 @@ name = "mne-bids"
 readme = { content-type = "text/markdown", file = "README.md" }
 requires-python = ">=3.11"
 scripts = { mne_bids = "mne_bids.commands.run:main" }
+version = "0.20.0"
 
 [project.optional-dependencies]
 # Dependencies for developer installations
