@@ -5,10 +5,14 @@
         "url": "https://mne.tools/mne-bids/dev/"
     },
     {
-        "name": "0.19 (stable)",
-        "version": "0.19",
+        "name": "0.20 (stable)",
+        "version": "0.20",
         "url": "https://mne.tools/mne-bids/stable/",
         "preferred": true
+    },
+    {
+        "version": "0.19",
+        "url": "https://mne.tools/mne-bids/0.19/"
     },
     {
         "name": "0.18",
