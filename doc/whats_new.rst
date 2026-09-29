@@ -9,9 +9,9 @@
 What's new?
 ===========
 
-.. _changes_0_20:
+.. _changes_0_21:
 
-Version 0.20 (2026-09-28)
+Version 0.21 (unreleased)
 -------------------------
 
 👩🏽‍💻 Authors
@@ -19,17 +19,11 @@ Version 0.20 (2026-09-28)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* `Daria Agafonova`_
-* `Vincent Gao`_
-* `Erica Peterson`_
+* None yet
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* `Bruno Aristimunha`_
-* `Daniel McCloy`_
-* `Eric Larson`_
-* `Scott Huberty`_
-* `Stefan Appelhoff`_
+* None yet
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,35 +31,26 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- Clarify that the ``tracking_system`` parameter of :class:`mne_bids.BIDSPath` and the ``tracking_systems`` parameter of :func:`mne_bids.find_matching_paths` correspond to the Motion-BIDS ``tracksys`` entity, by `Daria Agafonova`_ (:gh:`1562`)
-- Add support for writing eyetracking data with :func:`mne_bids.write_raw_bids` (new ``eyetrack_calibration`` parameter) and for updating calibration metadata with :func:`mne_bids.physio.write_eyetrack_calibration`, by `Scott Huberty`_ (:gh:`1642`)
-- Add :func:`mne_bids.read_epochs_bids` to read epoched BIDS recordings (``"RecordingType": "epoched"``) as :class:`mne.Epochs`; :func:`mne_bids.read_raw_bids` now raises a helpful error for such recordings, by `Bruno Aristimunha`_ (:gh:`1605`)
+- None yet
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Added ``extra_params`` parameter to :func:`mne_bids.write_raw_bids`, allowing users to pass ``split size`` in the ``extra_params`` dictionary to control the size of split fif files by `Erica Peterson`_ (:gh:`1660`)
+- None yet
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- Building the documentation now requires ``pydata-sphinx-theme`` 0.22 or higher, by `Eric Larson`_ (:gh:`1669`)
+- None yet
 
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Accept the ASCII unit alias ``uV`` in ``channels.tsv`` files, by
-  `Bruno Aristimunha`_ (:gh:`1654`)
-- Preserve the actual root of files returned by :meth:`mne_bids.BIDSPath.match`, avoiding duplicate paths and paths that do not exist when matching inside nested BIDS roots, by `Daria Agafonova`_ (:gh:`1637`)
-- :func:`mne_bids.write_raw_bids` no longer raises a ``TypeError`` when writing ANT Neuro eego recordings (``.cnt``), by `Vincent Gao`_ (:gh:`1617`)
-- Allow empty room files over 2GB in size to be written with :func:`mne_bids.write_raw_bids`, by `Erica Peterson`_ (:gh:`1660`)
+- None yet
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- Sped up writing of recordings with many channels by avoiding redundant per-channel work in :func:`mne_bids.write_raw_bids` (single-pass channel-type counting, cached coil-type lookup, and a fixed quadratic loop when writing BrainVision units), by `Stefan Appelhoff`_ (:gh:`1620`)
-- Run the test suite with ``pytest-xdist`` and build the documentation with parallel Sphinx and Sphinx-Gallery workers, by `Eric Larson`_ (:gh:`1648`)
-- Sped up :meth:`mne_bids.BIDSPath.copy`, :attr:`mne_bids.BIDSPath.fpath` when the suffix or extension has to be inferred from the filesystem, and ``import mne_bids`` (roughly 2.5x faster), which no longer eagerly imports MNE's preprocessing, visualization, or file-format reader modules, nor SciPy, by `Eric Larson`_ (:gh:`1657`)
-- Deploy the documentation with `docstacks <https://github.com/larsoner/docstacks>`__: ``maint/X.Y`` branches now publish and promote their own docs, the version switcher is updated automatically, and the release workflow asks conda-forge for a version bump, by `Eric Larson`_ (:gh:`1669`)
+- None yet
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
