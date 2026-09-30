@@ -461,6 +461,7 @@ class BIDSPath:
             "subject": self.subject,
             "session": self.session,
             "task": self.task,
+            "tracking_system": self.tracking_system,
             "acquisition": self.acquisition,
             "run": self.run,
             "processing": self.processing,
@@ -468,7 +469,6 @@ class BIDSPath:
             "recording": self.recording,
             "split": self.split,
             "description": self.description,
-            "tracking_system": self.tracking_system,
         }
 
     def __getstate__(self):
@@ -2762,7 +2762,11 @@ def _filter_fnames(
         r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"
     )
     suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
-    ext_str = r"(" + "|".join(extension) + ")$" if extension else r"\.([^_]+)"
+    ext_str = (
+        r"(" + "|".join(re.escape(ext) for ext in extension) + ")$"
+        if extension
+        else r"\.([^_]+)"
+    )
     tracksys_str = (
         r"_tracksys-(" + "|".join(tracking_system) + ")"
         if tracking_system
@@ -2774,6 +2778,7 @@ def _filter_fnames(
         + sub_str
         + ses_str
         + task_str
+        + tracksys_str
         + acq_str
         + run_str
         + proc_str
@@ -2781,7 +2786,6 @@ def _filter_fnames(
         + rec_str
         + split_str
         + desc_str
-        + tracksys_str
         + suffix_str
         + ext_str
     )
