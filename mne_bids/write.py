@@ -2177,8 +2177,8 @@ def write_raw_bids(
     convert = False  # flag if converting not copying
 
     # Load file, filename, extension
+    raw_fname = raw.filenames[0]
     if not allow_preload:
-        raw_fname = raw.filenames[0]
         if ".ds" in op.dirname(raw.filenames[0]):
             raw_fname = op.dirname(raw.filenames[0])
         # point to file containing header info for multifile systems

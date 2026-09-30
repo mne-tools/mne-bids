@@ -102,4 +102,6 @@ mne_bids.physio
 .. autosummary::
    :toctree: generated/
 
+   read_raw_bids_eyetrack
+   read_eyetrack_calibration
    write_eyetrack_calibration

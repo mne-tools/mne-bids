@@ -236,7 +236,11 @@ def _from_tsv(fname, dtypes=None):
     empty_cols = 0
     for i, name in enumerate(column_names):
         cells = np.array([_normalize_tsv_cell(v) for v in rows[:, i].tolist()])
-        values = cells.astype(dtypes[i]).tolist()
+        dtype = dtypes[i]
+        if np.issubdtype(dtype, np.floating):
+            # e.g. BIDS represents missing data in physio files as 'n/a'
+            cells[cells == "n/a"] = "nan"
+        values = cells.astype(dtype).tolist()
         data_dict[name] = values
         if len(values) == 0:
             empty_cols += 1

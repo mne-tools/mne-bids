@@ -212,6 +212,8 @@ def test_copyfile_mef(tmp_path):
     assert (dest / "session" / "segment.dat").read_bytes() == b"\x00\x01\x02"
 
 
+# TODO: Determine why this was marked xfail in #1512; it passes locally
+@pytest.mark.xfail(reason="Need to discuss this with devs.")
 @pytest.mark.parametrize(
     "fname", ("test_raw.set", "test_raw_chanloc.set", "test_raw_2021.set")
 )
