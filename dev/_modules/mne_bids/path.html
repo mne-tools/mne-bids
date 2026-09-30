@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.21.0.dev1+gac7efc510 documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.21.0.dev2+g6a86b1513 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../_static/documentation_options.js?v=424fec18"></script>
+    <script src="../../_static/documentation_options.js?v=94c3b34f"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -82,7 +82,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev1+gac7efc510" />
+  <meta name="docsearch:version" content="0.21.0.dev2+g6a86b1513" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -151,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev1+gac7efc510 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev2+g6a86b1513 documentation</p>
   
 </a></div>
     
@@ -967,6 +967,7 @@
             <span class="s2">"subject"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
             <span class="s2">"session"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
             <span class="s2">"task"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">,</span>
+            <span class="s2">"tracking_system"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracking_system</span><span class="p">,</span>
             <span class="s2">"acquisition"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">acquisition</span><span class="p">,</span>
             <span class="s2">"run"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">,</span>
             <span class="s2">"processing"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">processing</span><span class="p">,</span>
@@ -974,7 +975,6 @@
             <span class="s2">"recording"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">recording</span><span class="p">,</span>
             <span class="s2">"split"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">,</span>
             <span class="s2">"description"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-            <span class="s2">"tracking_system"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracking_system</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2434,14 +2434,14 @@
 <span class="sd">    {'subject': '01', \</span>
 <span class="sd">'session': 'exp', \</span>
 <span class="sd">'task': None, \</span>
+<span class="sd">'tracking_system': None, \</span>
 <span class="sd">'acquisition': None, \</span>
 <span class="sd">'run': '02', \</span>
 <span class="sd">'processing': None, \</span>
 <span class="sd">'space': None, \</span>
 <span class="sd">'recording': None, \</span>
 <span class="sd">'split': None, \</span>
-<span class="sd">'description': None, \</span>
-<span class="sd">'tracking_system': None}</span>
+<span class="sd">'description': None}</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">on_error</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"warn"</span><span class="p">,</span> <span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"ignore"</span><span class="p">,</span> <span class="s2">"autofix"</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -3314,11 +3314,15 @@
         <span class="sa">r</span><span class="s2">"_desc-("</span> <span class="o">+</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">description</span><span class="p">)</span> <span class="o">+</span> <span class="s2">")"</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="sa">r</span><span class="s2">"(|_desc-([^_]+))"</span>
     <span class="p">)</span>
     <span class="n">suffix_str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"_("</span> <span class="o">+</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span> <span class="o">+</span> <span class="s2">")"</span> <span class="k">if</span> <span class="n">suffix</span> <span class="k">else</span> <span class="sa">r</span><span class="s2">"_([^_]+)"</span>
-    <span class="n">ext_str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"("</span> <span class="o">+</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">extension</span><span class="p">)</span> <span class="o">+</span> <span class="s2">")$"</span> <span class="k">if</span> <span class="n">extension</span> <span class="k">else</span> <span class="sa">r</span><span class="s2">"\.([^_]+)"</span>
+    <span class="n">ext_str</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">r</span><span class="s2">"("</span> <span class="o">+</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span> <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">extension</span><span class="p">)</span> <span class="o">+</span> <span class="s2">")$"</span>
+        <span class="k">if</span> <span class="n">extension</span>
+        <span class="k">else</span> <span class="sa">r</span><span class="s2">"\.([^_]+)"</span>
+    <span class="p">)</span>
     <span class="n">tracksys_str</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sa">r</span><span class="s2">"tracksys-("</span> <span class="o">+</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tracking_system</span><span class="p">)</span> <span class="o">+</span> <span class="s2">")"</span>
+        <span class="sa">r</span><span class="s2">"_tracksys-("</span> <span class="o">+</span> <span class="s2">"|"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tracking_system</span><span class="p">)</span> <span class="o">+</span> <span class="s2">")"</span>
         <span class="k">if</span> <span class="n">tracking_system</span>
-        <span class="k">else</span> <span class="sa">r</span><span class="s2">"(|tracksys-([^_]+))"</span>
+        <span class="k">else</span> <span class="sa">r</span><span class="s2">"(|_tracksys-([^_]+))"</span>
     <span class="p">)</span>
 
     <span class="n">regexp</span> <span class="o">=</span> <span class="p">(</span>
@@ -3326,6 +3330,7 @@
         <span class="o">+</span> <span class="n">sub_str</span>
         <span class="o">+</span> <span class="n">ses_str</span>
         <span class="o">+</span> <span class="n">task_str</span>
+        <span class="o">+</span> <span class="n">tracksys_str</span>
         <span class="o">+</span> <span class="n">acq_str</span>
         <span class="o">+</span> <span class="n">run_str</span>
         <span class="o">+</span> <span class="n">proc_str</span>
@@ -3335,7 +3340,6 @@
         <span class="o">+</span> <span class="n">desc_str</span>
         <span class="o">+</span> <span class="n">suffix_str</span>
         <span class="o">+</span> <span class="n">ext_str</span>
-        <span class="o">+</span> <span class="n">tracksys_str</span>
     <span class="p">)</span>
 
     <span class="c1"># Convert to str so we can apply the regexp ...</span>
@@ -3720,7 +3724,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-29.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-30.
       <br/>
     
   </p>
