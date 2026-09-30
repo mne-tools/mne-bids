@@ -830,6 +830,7 @@ def test_get_entities_from_fname(fname):
         "subject",
         "session",
         "task",
+        "tracking_system",
         "acquisition",
         "run",
         "processing",
@@ -837,7 +838,6 @@ def test_get_entities_from_fname(fname):
         "recording",
         "split",
         "description",
-        "tracking_system",
     ]
 
 
@@ -868,6 +868,7 @@ def test_get_entities_from_fname_errors(fname):
         "subject",
         "session",
         "task",
+        "tracking_system",
         "acquisition",
         "run",
         "processing",
@@ -875,7 +876,6 @@ def test_get_entities_from_fname_errors(fname):
         "recording",
         "split",
         "description",
-        "tracking_system",
     ]
 
     assert params["subject"] == "01"
@@ -1667,6 +1667,46 @@ def test_filter_fnames(entities, expected_n_matches):
 
     output = _filter_fnames(fnames, **entities)
     assert len(output) == expected_n_matches
+
+
+@pytest.mark.parametrize("extension", [None, ".tsv"])
+@pytest.mark.parametrize("extra_entities", ["", "_acq-wrist_run-01"])
+@pytest.mark.parametrize(
+    "tracking_system, expected_indices",
+    [(None, [0, 1, 2]), ("imu", [0]), (["imu", "optical"], [0, 1]), ("missing", [])],
+)
+def test_filter_fnames_tracking_system(
+    tmp_path, extension, extra_entities, tracking_system, expected_indices
+):
+    """Match tracking-system entities before the suffix and extension."""
+    motion_dir = tmp_path / "sub-01" / "motion"
+    motion_dir.mkdir(parents=True)
+    fnames = [
+        motion_dir / f"sub-01_task-walk_tracksys-imu{extra_entities}_motion.tsv",
+        motion_dir / f"sub-01_task-walk_tracksys-optical{extra_entities}_motion.tsv",
+        motion_dir / f"sub-01_task-walk{extra_entities}_motion.tsv",
+    ]
+    for fname in fnames:
+        fname.touch()
+    expected = {fnames[index] for index in expected_indices}
+    assert (
+        set(
+            _filter_fnames(fnames, tracking_system=tracking_system, extension=extension)
+        )
+        == expected
+    )
+    matches = find_matching_paths(
+        tmp_path, tracking_systems=tracking_system, extensions=extension
+    )
+    assert {path.fpath for path in matches} == expected
+
+
+@pytest.mark.parametrize("extension", [".tsv", ".nii.gz"])
+def test_filter_fnames_literal_extension(extension):
+    """Extension dots must not match arbitrary filename characters."""
+    valid = Path(f"sub-01_task-walk_motion{extension}")
+    invalid = Path(f"sub-01_task-walk_motion{extension.replace('.', 'X')}")
+    assert _filter_fnames([valid, invalid], extension=extension) == [valid]
 
 
 def test_match_basic(bids_root):

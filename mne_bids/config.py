@@ -398,6 +398,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {
     "sub": "subject",
     "ses": "session",
     "task": "task",
+    "tracksys": "tracking_system",
     "acq": "acquisition",
     "run": "run",
     "proc": "processing",
@@ -405,7 +406,6 @@ ALLOWED_PATH_ENTITIES_SHORT = {
     "recording": "recording",
     "split": "split",
     "desc": "description",
-    "tracksys": "tracking_system",
 }
 
 # Annotations to never remove during reading or writing

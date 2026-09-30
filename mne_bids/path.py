@@ -461,6 +461,7 @@ class BIDSPath:
             "subject": self.subject,
             "session": self.session,
             "task": self.task,
+            "tracking_system": self.tracking_system,
             "acquisition": self.acquisition,
             "run": self.run,
             "processing": self.processing,
@@ -468,7 +469,6 @@ class BIDSPath:
             "recording": self.recording,
             "split": self.split,
             "description": self.description,
-            "tracking_system": self.tracking_system,
         }
 
     def __getstate__(self):
@@ -1889,14 +1889,14 @@ def get_entities_from_fname(fname, on_error="raise", *, verbose=None):
     {'subject': '01', \
 'session': 'exp', \
 'task': None, \
+'tracking_system': None, \
 'acquisition': None, \
 'run': '02', \
 'processing': None, \
 'space': None, \
 'recording': None, \
 'split': None, \
-'description': None, \
-'tracking_system': None}
+'description': None}
     """
     if on_error not in ("warn", "raise", "ignore", "autofix"):
         raise ValueError(
@@ -2762,11 +2762,15 @@ def _filter_fnames(
         r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"
     )
     suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
-    ext_str = r"(" + "|".join(extension) + ")$" if extension else r"\.([^_]+)"
+    ext_str = (
+        r"(" + "|".join(re.escape(ext) for ext in extension) + ")$"
+        if extension
+        else r"\.([^_]+)"
+    )
     tracksys_str = (
-        r"tracksys-(" + "|".join(tracking_system) + ")"
+        r"_tracksys-(" + "|".join(tracking_system) + ")"
         if tracking_system
-        else r"(|tracksys-([^_]+))"
+        else r"(|_tracksys-([^_]+))"
     )
 
     regexp = (
@@ -2774,6 +2778,7 @@ def _filter_fnames(
         + sub_str
         + ses_str
         + task_str
+        + tracksys_str
         + acq_str
         + run_str
         + proc_str
@@ -2783,7 +2788,6 @@ def _filter_fnames(
         + desc_str
         + suffix_str
         + ext_str
-        + tracksys_str
     )
 
     # Convert to str so we can apply the regexp ...
