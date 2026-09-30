@@ -1889,14 +1889,14 @@ def get_entities_from_fname(fname, on_error="raise", *, verbose=None):
     {'subject': '01', \
 'session': 'exp', \
 'task': None, \
+'tracking_system': None, \
 'acquisition': None, \
 'run': '02', \
 'processing': None, \
 'space': None, \
 'recording': None, \
 'split': None, \
-'description': None, \
-'tracking_system': None}
+'description': None}
     """
     if on_error not in ("warn", "raise", "ignore", "autofix"):
         raise ValueError(
