@@ -1353,7 +1353,7 @@ def _sidecar_json(
     return fname
 
 
-def deface_mri(image, landmarks, offset=-5, theta=15):
+def deface_mri(image, landmarks, *, offset=-5, theta=15):
     """Remove identifying facial detail from an MRI.
 
     This function blacks out MRI voxels anterior to a nearly vertical plane
@@ -1440,7 +1440,7 @@ def deface_mri(image, landmarks, offset=-5, theta=15):
     # convert to RAS by applying affine
     idxs = nib.affines.apply_affine(image.affine, idxs)
 
-    # get nasion into RAS
+    # get nasion into RAS (in mm, which is what nibabel uses)
     x, y, z = nib.affines.apply_affine(image.affine, landmarks)[1]
 
     # now comes the actual defacing
@@ -3148,7 +3148,7 @@ def write_anat(
                     )
                 offset = deface["offset"]
                 theta = deface["theta"]
-            image_nii = deface_mri(image_nii, landmarks_deface, offset, theta)
+            image_nii = deface_mri(image_nii, landmarks_deface, offset=offset, theta=theta)
 
     # Save anatomical data
     if op.exists(bids_path):
