@@ -1398,24 +1398,26 @@ def deface_mri(image, landmarks, *, offset=-5, theta=15):
     """
     nib = _import_nibabel("deface MRIs")
 
-    if not isinstance(image, nib.spatialimages.SpatialImage):
-        raise TypeError(
-            f"image must be an instance of "
-            f"nibabel.spatialimages.SpatialImage. "
-            f"Got {type(image)}"
-        )
+    _validate_type(
+        image,
+        types=nib.spatialimages.SpatialImage,
+        item_name="image",
+        type_name="nibabel.spatialimages.SpatialImage",
+    )
 
-    if not isinstance(landmarks, (list, np.ndarray)):
-        raise TypeError(
-            f"landmarks must be a 3x3 set of coordinates as a "
-            f"list of list or array. Got {type(landmarks)}."
-        )
+    _validate_type(
+        landmarks,
+        types=(list, np.ndarray),
+        item_name="landmarks",
+        type_name="list of lists or numpy array",
+        extra="3x3 set of coordinates as a ",
+    )
 
-    if not isinstance(offset, int):
-        raise TypeError(f"offset must be an integer, but got type {type(offset)}.")
+    _validate_type(offset, types=int, item_name="offset", type_name="integer")
 
-    if not isinstance(theta, (int, float)):
-        raise TypeError(f"theta must be a float or integer, but got type {type(theta)}")
+    _validate_type(
+        theta, types=(int, float), item_name="theta", type_name="float or integer"
+    )
 
     if not 0 <= theta < 90:
         raise ValueError(f"theta should be between 0 and 90 degrees. Got {theta}")
@@ -3148,7 +3150,9 @@ def write_anat(
                     )
                 offset = deface["offset"]
                 theta = deface["theta"]
-            image_nii = deface_mri(image_nii, landmarks_deface, offset=offset, theta=theta)
+            image_nii = deface_mri(
+                image_nii, landmarks_deface, offset=offset, theta=theta
+            )
 
     # Save anatomical data
     if op.exists(bids_path):
