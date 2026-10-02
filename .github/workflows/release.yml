@@ -22,7 +22,7 @@ jobs:
     - uses: actions/checkout@v7
       with:
         fetch-depth: 0
-    - uses: astral-sh/setup-uv@v10.1.0
+    - uses: astral-sh/setup-uv@v10.2.0
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: true
@@ -56,3 +56,20 @@ jobs:
           path: dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         if: github.event_name == 'release'
+
+  # Asks the conda-forge bot to open the version-bump PR on the feedstock right
+  # away rather than waiting for its next scheduled scan
+  conda-forge:
+    needs: pypi-upload
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'release'
+    permissions: {}
+    env:
+      GH_TOKEN: ${{ secrets.MNE_BOT_TOKEN }}
+      TAG: ${{ github.event.release.tag_name }}
+    steps:
+      - run: |
+          gh issue create --repo conda-forge/mne-bids-feedstock \
+            --title "@conda-forge-admin, please update version" \
+            --body "mne-tools/mne-bids ${TAG} has been released and uploaded to PyPI."

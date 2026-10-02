@@ -54,6 +54,7 @@
 .. _Robert Luke: https://github.com/rob-luke
 .. _Romain Quentin: https://github.com/romquentin
 .. _Scott Huberty: https://github.com/scott-huberty
+.. _Shubham Padkonde: https://github.com/Shubham-Padkonde
 .. _Simon Kern: https://github.com/skjerns
 .. _Sin Kim: https://ohbm.github.io/osr2020/volunteers/sin_kim.html
 .. _Sophie Herbst: https://github.com/SophieHerbst
