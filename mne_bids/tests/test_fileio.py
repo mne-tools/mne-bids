@@ -8,6 +8,7 @@ import os
 import sys
 import threading
 import time
+import warnings
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
@@ -317,8 +318,14 @@ def test_open_lock_readonly_parent_falls_back(tmp_path):
 
     with _readonly(ro_dir):
         with pytest.warns(RuntimeWarning, match="without a lock"):
+            with _open_lock(test_file):
+                pass
+        # reads take no lock, so a read-only dataset reads without warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
             with _open_lock(test_file, "r", encoding="utf-8") as fid:
                 assert fid.read() == "payload"
+    assert not (ro_dir / "file.json.lock").exists()
 
 
 def test_open_lock_custom_timeout(tmp_path):
@@ -384,3 +391,24 @@ def test_environment_variable_invalid_timeout(tmp_path, monkeypatch):
 
     # Should fall back to default
     assert mne_bids._fileio.DEFAULT_LOCK_TIMEOUT == 60.0
+
+
+def test_open_lock_write_is_atomic(tmp_path):
+    """Writes replace the file in one step: lock-free readers never see it partial."""
+    target = tmp_path / "sidecar.json"
+    target.write_text("old")
+    os.chmod(target, 0o640)
+
+    with pytest.raises(RuntimeError, match="boom"):
+        with _open_lock(target, "w", encoding="utf-8") as fid:
+            fid.write("partial")
+            assert target.read_text() == "old"
+            raise RuntimeError("boom")
+    assert target.read_text() == "old"
+
+    with _open_lock(target, "w", encoding="utf-8") as fid:
+        fid.write("new")
+    assert target.read_text() == "new"
+    if sys.platform != "win32":  # chmod only sets read-only on Windows
+        assert (target.stat().st_mode & 0o777) == 0o640
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["sidecar.json"]

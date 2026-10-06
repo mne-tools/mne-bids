@@ -8,12 +8,16 @@ from __future__ import annotations
 import contextlib
 import inspect
 import os
+import shutil
+import stat
 from contextlib import contextmanager
 from pathlib import Path
 
 from mne.utils import _soft_import, logger, warn
 
 _LOCK_TIMEOUT_FALLBACK = 60.0
+_READ_MODES = (None, "r", "rt", "rb")
+_REPLACE_MODES = ("w", "wt", "wb")
 _env_lock_timeout = os.getenv("MNE_BIDS_FILELOCK_TIMEOUT", "")
 try:
     DEFAULT_LOCK_TIMEOUT = (
@@ -116,6 +120,44 @@ def _get_lock_context(path, *, timeout=None, lock=True):
 
 
 @contextmanager
+def _atomic_open(path, mode, *args, **kwargs):
+    """Write to a temporary sibling of ``path`` and move it into place on success.
+
+    Readers then see either the previous or the new file, never a partially
+    written one, so they need no lock. The new file keeps the permissions of the
+    file it replaces. A symlink is written through in place, so datalad/git-annex
+    datasets behave as before (#1569), and on Windows a target held open by
+    another process is overwritten in place.
+    """
+    path = Path(path)
+    if path.is_symlink():
+        with open(path, mode, *args, **kwargs) as fid:
+            yield fid
+        return
+    tmp = path.with_name(f".{path.name}.{os.urandom(4).hex()}.tmp")
+    try:
+        fid = open(tmp, mode.replace("w", "x"), *args, **kwargs)
+    except PermissionError:  # writable file in a read-only directory
+        with open(path, mode, *args, **kwargs) as fid:
+            yield fid
+        return
+    try:
+        with fid:
+            if path.exists():
+                os.chmod(tmp, stat.S_IMODE(path.stat().st_mode))
+            yield fid
+        try:
+            os.replace(tmp, path)
+        except PermissionError:  # Windows: the target is open in another process
+            shutil.copyfile(tmp, path)
+            os.unlink(tmp)
+    except BaseException:
+        with contextlib.suppress(OSError):
+            os.unlink(tmp)
+        raise
+
+
+@contextmanager
 def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
     """Context manager that acquires a file lock with optional file opening.
 
@@ -127,7 +169,10 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
     reuse the existing lock instead of attempting to acquire it again.
 
     If file opening arguments (*args, **kwargs) are provided, the file is opened
-    in the specified mode. Otherwise, just the lock is acquired.
+    in the specified mode. Otherwise, just the lock is acquired. Files opened
+    for writing (``"w"``/``"wb"``) are replaced atomically (see
+    :func:`_atomic_open`), so files opened read-only are read without a lock:
+    a reader can never observe a partially written file.
 
     Parameters
     ----------
@@ -149,6 +194,11 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
         File object if file opening args were provided, None otherwise.
     """
     canonical_path = _canonical_lock_path(path)
+    mode = args[0] if args else kwargs.get("mode")
+    if (args or kwargs) and mode in _READ_MODES:
+        with open(canonical_path, *args, **kwargs) as fid:
+            yield fid
+        return
 
     with _get_lock_context(
         canonical_path,
@@ -164,7 +214,8 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
                     f"({exp}); proceeding without a lock."
                 )
             if args or kwargs:
-                fid = stack.enter_context(open(canonical_path, *args, **kwargs))
+                opener = _atomic_open if mode in _REPLACE_MODES else open
+                fid = stack.enter_context(opener(canonical_path, *args, **kwargs))
                 yield fid
             else:
                 yield None

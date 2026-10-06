@@ -19,6 +19,7 @@ Version 0.21 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
+* `Hamza Abdelhedi`_
 * `Shubham Padkonde`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
@@ -36,7 +37,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- None yet
+- Reading sidecar files no longer takes a file lock: files written by MNE-BIDS are now replaced atomically (written to a temporary file next to the target, then moved into place), so a reader always sees either the old or the new file. This makes reads several times faster on network filesystems and stops the lock warnings on read-only datasets, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^

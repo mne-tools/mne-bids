@@ -844,11 +844,12 @@ def _participants_json(fname, overwrite=False):
     fpath = Path(fname)
     fpath.parent.mkdir(parents=True, exist_ok=True)
 
-    # Use _open_lock for atomic read-modify-write operation
-    with _open_lock(fpath, "a+", encoding="utf-8") as fid:
-        # Move to beginning of file for reading
-        fid.seek(0)
-        file_content = fid.read().strip()
+    # Hold the lock across the read-modify-write so concurrent writers cannot
+    # interleave; the write itself replaces the file atomically.
+    with _open_lock(fpath):
+        file_content = (
+            fpath.read_text(encoding="utf-8").strip() if fpath.exists() else ""
+        )
 
         # Try to parse existing content
         orig_data = {}
@@ -883,15 +884,7 @@ def _participants_json(fname, overwrite=False):
                 if key not in new_data:
                     new_data[key] = orig_data[key]
 
-        # Write JSON data atomically within the lock context
-        # I could not use the _write_json helper here because it also
-        # handles file locking and I need to manage that manually
-        json_output = json.dumps(new_data, indent=4, ensure_ascii=False)
-        fid.seek(0)
-        fid.truncate()
-        fid.write(json_output)
-        fid.write("\n")
-        logger.info(f"Writing '{fname}'...")
+        _write_json(fpath, new_data, overwrite=True, lock=False)
 
 
 def _check_fif_splits(raw_fname, fdir, datatype):
