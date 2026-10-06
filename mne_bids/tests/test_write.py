@@ -499,6 +499,45 @@ def test_make_dataset_description_preserves_unknown_keys(tmp_path):
     assert final["Name"] == "enriched"
 
 
+def test_make_dataset_description_extra_fields(tmp_path):
+    """BIDS-extension keys survive make_dataset_description + round-trips."""
+    fname = tmp_path / "dataset_description.json"
+    make_dataset_description(
+        path=str(tmp_path),
+        name="t",
+        dataset_type="raw",
+        extra_fields={"PublicationYear": 2024, "CustomTag": ["a", "b"]},
+        overwrite=True,
+    )
+    desc = json.loads(fname.read_text())
+    assert desc["PublicationYear"] == 2024
+    assert desc["CustomTag"] == ["a", "b"]
+    # Unknown keys are preserved on a subsequent write even without passing
+    # them again (the generic unknown-key preservation path).
+    make_dataset_description(path=str(tmp_path), name="t", overwrite=True)
+    desc = json.loads(fname.read_text())
+    assert desc["PublicationYear"] == 2024
+    assert desc["CustomTag"] == ["a", "b"]
+    # Reserved keys cannot be overridden via extra_fields.
+    make_dataset_description(
+        path=str(tmp_path),
+        name="t",
+        extra_fields={"Name": "HIJACKED", "PublicationYear": 2025},
+        overwrite=True,
+    )
+    desc = json.loads(fname.read_text())
+    assert desc["Name"] == "t"
+    assert desc["PublicationYear"] == 2025
+    # Non-dict extra_fields is a TypeError.
+    with pytest.raises(TypeError, match="extra_fields must be a dict"):
+        make_dataset_description(
+            path=str(tmp_path),
+            name="t",
+            extra_fields=[("PublicationYear", 2024)],
+            overwrite=True,
+        )
+
+
 def test_stamp_to_dt():
     """Test conversions of meas_date to datetime objects."""
     meas_date = (1346981585, 835782)

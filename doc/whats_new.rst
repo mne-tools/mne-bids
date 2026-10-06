@@ -23,7 +23,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* None yet
+* `Bruno Aristimunha`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,7 +31,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- None yet
+- Add an ``extra_fields`` keyword argument to :func:`make_dataset_description` for merging non-standard top-level keys (e.g. BIDS-extension fields such as ``PublicationYear``) into ``dataset_description.json`` without a second read-modify-write pass. Reserved keys produced by the function itself cannot be overridden, by `Bruno Aristimunha`_.
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
