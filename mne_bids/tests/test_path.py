@@ -2511,6 +2511,15 @@ def test_acq_calibration_crosstalk_eeg_allowed_with_task():
             suffix="meg",
             check=True,
         )
+    # Without an explicit datatype the MEG rule still applies.
+    with pytest.raises(ValueError, match="task must be None"):
+        BIDSPath(
+            subject="01",
+            task="t",
+            acquisition="crosstalk",
+            suffix="meg",
+            check=True,
+        )
     # EEG / iEEG / NIRS datatypes must accept.
     for dt, suffix in (("eeg", "eeg"), ("ieeg", "ieeg"), ("nirs", "nirs")):
         BIDSPath(

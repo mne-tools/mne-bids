@@ -1190,10 +1190,11 @@ class BIDSPath:
             # crosstalk sidecar files (BIDS MEG appendix, "Cross-talk and
             # fine-calibration files"). For other datatypes they are plain
             # acq-labels with no reserved meaning, so a ``task`` entity is
-            # allowed alongside them.
+            # allowed alongside them. Without an explicit datatype the MEG
+            # rule still applies.
             if (
                 self.acquisition in ("calibration", "crosstalk")
-                and self.datatype == "meg"
+                and self.datatype in (None, "meg")
                 and self.task is not None
             ):
                 raise ValueError(
