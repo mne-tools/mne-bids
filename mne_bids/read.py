@@ -295,26 +295,26 @@ def _verbose_list_index(lst, val, *, allow_all=False):
         raise ValueError(f"{exc}{extra}") from None
 
 
-# Parsed participants.tsv per file version, so reading every recording of a
-# dataset parses it once instead of once per recording.
-_PARTICIPANTS_CACHE: dict[tuple, dict] = {}
+# Parsed participants.tsv per file, so reading every recording of a dataset
+# parses it once instead of once per recording.
+_PARTICIPANTS_CACHE: dict[str, tuple[bytes, dict]] = {}
 
 
 def _read_participants_tsv(participants_fname):
-    """Return the parsed participants.tsv, reusing it while the file is unchanged.
+    """Return the parsed participants.tsv, reusing it while its content is unchanged.
 
-    The file is identified by its path, inode, size and modification time, so a
-    rewritten or replaced file is parsed again.
+    The file's bytes are read on every call and compared with the cached ones,
+    which is much cheaper than parsing and, unlike file metadata, cannot miss a
+    rewrite (some network filesystems only store modification times in seconds).
     """
-    st = os.stat(participants_fname)
-    key = (str(participants_fname), st.st_ino, st.st_mtime_ns, st.st_size)
-    data = _PARTICIPANTS_CACHE.get(key)
-    if data is None:
-        data = _from_tsv(participants_fname)
-        if len(_PARTICIPANTS_CACHE) >= 8:
+    content = Path(participants_fname).read_bytes()
+    key = str(participants_fname)
+    cached = _PARTICIPANTS_CACHE.get(key)
+    if cached is None or cached[0] != content:
+        if key not in _PARTICIPANTS_CACHE and len(_PARTICIPANTS_CACHE) >= 8:
             _PARTICIPANTS_CACHE.pop(next(iter(_PARTICIPANTS_CACHE)))
-        _PARTICIPANTS_CACHE[key] = data
-    return data
+        cached = _PARTICIPANTS_CACHE[key] = (content, _from_tsv(participants_fname))
+    return cached[1]
 
 
 def _handle_participants_reading(participants_fname, raw, subject):
