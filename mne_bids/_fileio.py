@@ -130,7 +130,11 @@ def _atomic_open(path, mode, *args, **kwargs):
     another process is overwritten in place.
     """
     path = Path(path)
-    if path.is_symlink():
+    try:
+        target = os.lstat(path)
+    except FileNotFoundError:
+        target = None
+    if target is not None and stat.S_ISLNK(target.st_mode):
         with open(path, mode, *args, **kwargs) as fid:
             yield fid
         return
@@ -143,8 +147,10 @@ def _atomic_open(path, mode, *args, **kwargs):
         return
     try:
         with fid:
-            if path.exists():
-                os.chmod(tmp, stat.S_IMODE(path.stat().st_mode))
+            if target is not None:
+                wanted = stat.S_IMODE(target.st_mode)
+                if stat.S_IMODE(os.fstat(fid.fileno()).st_mode) != wanted:
+                    os.chmod(tmp, wanted)
             yield fid
         try:
             os.replace(tmp, path)
