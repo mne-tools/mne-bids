@@ -1320,6 +1320,10 @@ def _sidecar_json(
         ("EOGChannelCount", n_eogchan),
         ("ECGChannelCount", n_ecgchan),
         ("EMGChannelCount", n_emgchan),
+        ("MISCChannelCount", n_miscchan),
+        # Legacy misspelled key, kept alongside the spec-conformant one for
+        # one deprecation cycle so readers that look it up by the old name do
+        # not break.
         ("MiscChannelCount", n_miscchan),
         ("TriggerChannelCount", n_stimchan),
     ]

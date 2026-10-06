@@ -23,7 +23,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* None yet
+* `Bruno Aristimunha`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -47,6 +47,7 @@ Detailed list of changes
 ^^^^^^^^^^^^
 
 - Fix :func:`find_matching_paths` omitting files with a ``tracksys`` entity and returning no matches when ``tracking_systems`` is specified, by `Shubham Padkonde`_.
+- Write ``MISCChannelCount`` in ``*_eeg.json`` sidecars per the BIDS specification (previously written as ``MiscChannelCount``). The legacy misspelled key is kept alongside the spec-conformant key for one deprecation cycle, by `Bruno Aristimunha`_.
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

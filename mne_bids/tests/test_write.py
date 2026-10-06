@@ -4626,3 +4626,26 @@ def test_split_size_write(tmp_path):
     erm2 = f_erm.directory / f_erm.basename.replace("split-01", "split-02")
     assert bp2.exists()
     assert erm2.exists()
+
+
+def test_misc_channel_count_bids_casing(tmp_path):
+    """MISCChannelCount is written per BIDS spec; alias kept for one cycle."""
+    info = mne.create_info(["M1", "M2", "E1"], 100.0, ["misc", "misc", "eeg"])
+    raw = mne.io.RawArray(np.zeros((3, 500)), info)
+    raw.info["line_freq"] = 50
+    bp = BIDSPath(
+        subject="01",
+        task="t",
+        datatype="eeg",
+        suffix="eeg",
+        extension=".edf",
+        root=tmp_path,
+    )
+    write_raw_bids(raw, bp, format="EDF", allow_preload=True, overwrite=True)
+    sidecar = json.loads(
+        bp.copy().update(extension=".json").fpath.read_text(encoding="utf-8")
+    )
+    # Spec-conformant key (BIDS EEG sidecar).
+    assert sidecar.get("MISCChannelCount") == 2
+    # Legacy misspelled key, kept for one deprecation cycle.
+    assert sidecar.get("MiscChannelCount") == 2
