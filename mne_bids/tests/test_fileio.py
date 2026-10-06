@@ -384,3 +384,28 @@ def test_environment_variable_invalid_timeout(tmp_path, monkeypatch):
 
     # Should fall back to default
     assert mne_bids._fileio.DEFAULT_LOCK_TIMEOUT == 60.0
+
+
+def test_public_open_lock(tmp_path):
+    """mne_bids.open_lock is a public context manager wrapping the file lock.
+
+    Downstream users need the same cross-process lock mne-bids itself uses
+    for participants.tsv / dataset_description.json writes. Expose it as
+    a public re-export so callers do not have to import the private
+    ``mne_bids._fileio._open_lock``.
+    """
+    import mne_bids
+
+    # Public re-export is attached to the top-level namespace.
+    assert hasattr(mne_bids, "open_lock")
+    assert mne_bids.open_lock.__name__ == "_open_lock"
+
+    from mne_bids import open_lock
+
+    target = tmp_path / "x.json"
+    target.write_text("{}")
+    with open_lock(target):
+        assert target.exists()
+    # Context manager with a file-open mode yields a file handle.
+    with open_lock(target, "r", encoding="utf-8") as fid:
+        assert fid.read() == "{}"

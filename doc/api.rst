@@ -47,6 +47,7 @@ mne_bids
    anonymize_dataset
    find_matching_paths
    events_file_to_annotation_kwargs
+   open_lock
 
 mne_bids.stats
 --------------

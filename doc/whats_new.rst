@@ -23,7 +23,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* None yet
+* `Bruno Aristimunha`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,7 +31,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- None yet
+- Expose :func:`open_lock` as a public re-export of the cross-process file lock used internally for ``participants.tsv`` / ``dataset_description.json`` writes, so parallel downstream writers can share the same lock without importing a private symbol, by `Bruno Aristimunha`_.
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

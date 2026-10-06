@@ -40,6 +40,7 @@ from mne_bids.write import (
     get_anat_landmarks,
     anonymize_dataset,
 )
+from mne_bids._fileio import _open_lock as open_lock  # noqa: F401 (public re-export)
 from mne_bids.sidecar_updates import update_sidecar_json, update_anat_landmarks
 from mne_bids.inspect import inspect_dataset
 from mne_bids.dig import (
