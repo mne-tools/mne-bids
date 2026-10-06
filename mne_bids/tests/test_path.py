@@ -355,7 +355,16 @@ def path_counter(monkeypatch):
             )
             yield out
 
+    orig_scandir = mne_bids.path._scandir
+
+    def _scandir_count(path):
+        entries = orig_scandir(path)
+        path_counter.count += len(entries)
+        path_counter.files.extend(entry.path for entry in entries)
+        return entries
+
     monkeypatch.setattr(glob, "iglob", _iglob_count)
+    monkeypatch.setattr(mne_bids.path, "_scandir", _scandir_count)
     monkeypatch.setattr(mne_bids.path, "_path_glob", _path_glob_iglob)
     monkeypatch.setattr(mne_bids.path, "_path_rglob", _path_rglob_iglob)
     monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
@@ -507,7 +516,9 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     assert len(paths) == expected_n_paths
     assert len(set(paths)) == len(paths)
     assert all(path.fpath.exists() for path in paths)
-    assert path_counter.count == 3420
+    # every directory entry listed by the single scandir walk (iglob only
+    # counted the matches it yielded, not the directories it listed)
+    assert path_counter.count == 15253
     path.subject = "1"  # add subject
     paths = path.match()
     assert len(paths) == n_sessions

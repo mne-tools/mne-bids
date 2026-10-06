@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import copy
+import fnmatch
 import glob
 import inspect
 import json
@@ -3028,22 +3029,9 @@ def _return_root_paths(
             paths = _path_rglob(root, "*.*")
         else:
             if datatype is not None:
-                datatype = _ensure_tuple(datatype)
-                # If multiple datatypes are provided, search each separately
-                # (glob does not support alternation with '|').
-                paths = []
-                for dt in datatype:
-                    dt_search = f"**/{dt}/*.*"
-                    if ignore_nosub:
-                        dt_search = f"sub-*/{dt_search}"
-                    paths.extend(
-                        [
-                            Path(root, fn)
-                            for fn in glob.iglob(
-                                dt_search, root_dir=root, recursive=True
-                            )
-                        ]
-                    )
+                return _scan_datatype_dirs(
+                    root, _ensure_tuple(datatype), ignore_nosub, ignore_json
+                )
             else:
                 search_str = "**/*.*"
                 if ignore_nosub:
@@ -3056,6 +3044,65 @@ def _return_root_paths(
                 ]
 
     return _filter_paths_optimized(paths, ignore_json)
+
+
+def _scandir(path):
+    """List the non-hidden entries of ``path`` (empty if it cannot be listed)."""
+    try:
+        with os.scandir(path) as it:
+            return [entry for entry in it if not entry.name.startswith(".")]
+    except OSError:
+        return []
+
+
+def _entry_is(entry, kind):
+    try:
+        return entry.is_dir() if kind == "dir" else entry.is_file()
+    except OSError:
+        return False
+
+
+def _scan_datatype_dirs(root, datatypes, ignore_nosub, ignore_json):
+    """Find the files that ``**/<dt>/*.*`` globs plus a file-type filter would keep.
+
+    Gives the same paths in the same order as running
+    ``glob.iglob(f"[sub-*/]**/{dt}/*.*", recursive=True)`` for each datatype and
+    filtering the result, but lists every directory once and takes file types
+    from the directory listing, so it makes no ``stat`` call per file. On
+    network filesystems each listing and ``stat`` is a round trip to the server.
+    """
+    found = {dt: [] for dt in datatypes}
+    listings = {}
+
+    def visit(entries):
+        subdirs = [entry for entry in entries if _entry_is(entry, "dir")]
+        for entry in subdirs:
+            if entry.name in found:
+                listings[entry.path] = _scandir(entry.path)
+                found[entry.name].extend(
+                    child for child in listings[entry.path] if "." in child.name
+                )
+        for entry in subdirs:
+            visit(listings.pop(entry.path, None) or _scandir(entry.path))
+
+    top = _scandir(root)
+    if ignore_nosub:
+        for entry in top:
+            if fnmatch.fnmatch(entry.name, "sub-*") and _entry_is(entry, "dir"):
+                visit(_scandir(entry.path))
+    else:
+        visit(top)
+
+    paths = []
+    for entries in found.values():
+        for entry in entries:
+            path = Path(entry.path)
+            if _entry_is(entry, "file"):
+                if not (ignore_json and path.suffix == ".json"):
+                    paths.append(path)
+            elif path.suffix == ".ds" and _entry_is(entry, "dir"):
+                paths.append(path)
+    return paths
 
 
 def _filter_paths_optimized(paths, ignore_json):
