@@ -1185,8 +1185,15 @@ class BIDSPath:
         if self.check:
             _check_empty_room_basename(self)
 
+            # ``calibration`` and ``crosstalk`` are MEG-only reserved acq
+            # tokens that identify Elekta/Neuromag fine-calibration and
+            # crosstalk sidecar files (BIDS MEG appendix, "Cross-talk and
+            # fine-calibration files"). For other datatypes they are plain
+            # acq-labels with no reserved meaning, so a ``task`` entity is
+            # allowed alongside them.
             if (
                 self.acquisition in ("calibration", "crosstalk")
+                and self.datatype == "meg"
                 and self.task is not None
             ):
                 raise ValueError(
