@@ -295,8 +295,30 @@ def _verbose_list_index(lst, val, *, allow_all=False):
         raise ValueError(f"{exc}{extra}") from None
 
 
+# Parsed participants.tsv per file version, so reading every recording of a
+# dataset parses it once instead of once per recording.
+_PARTICIPANTS_CACHE: dict[tuple, dict] = {}
+
+
+def _read_participants_tsv(participants_fname):
+    """Return the parsed participants.tsv, reusing it while the file is unchanged.
+
+    The file is identified by its path, inode, size and modification time, so a
+    rewritten or replaced file is parsed again.
+    """
+    st = os.stat(participants_fname)
+    key = (str(participants_fname), st.st_ino, st.st_mtime_ns, st.st_size)
+    data = _PARTICIPANTS_CACHE.get(key)
+    if data is None:
+        data = _from_tsv(participants_fname)
+        if len(_PARTICIPANTS_CACHE) >= 8:
+            _PARTICIPANTS_CACHE.pop(next(iter(_PARTICIPANTS_CACHE)))
+        _PARTICIPANTS_CACHE[key] = data
+    return data
+
+
 def _handle_participants_reading(participants_fname, raw, subject):
-    participants_tsv = _from_tsv(participants_fname)
+    participants_tsv = _read_participants_tsv(participants_fname)
     subjects = participants_tsv["participant_id"]
     if subject not in subjects:
         warn(f"Subject {subject!r} is not listed in {participants_fname.name}")
