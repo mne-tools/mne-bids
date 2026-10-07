@@ -10,6 +10,7 @@ import inspect
 import os
 import shutil
 import stat
+import time
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -18,6 +19,7 @@ from mne.utils import _soft_import, logger, warn
 _LOCK_TIMEOUT_FALLBACK = 60.0
 _READ_MODES = (None, "r", "rt", "rb")
 _REPLACE_MODES = ("w", "wt", "wb")
+_STALE_TMP_SECONDS = 3600.0
 _env_lock_timeout = os.getenv("MNE_BIDS_FILELOCK_TIMEOUT", "")
 try:
     DEFAULT_LOCK_TIMEOUT = (
@@ -119,43 +121,75 @@ def _get_lock_context(path, *, timeout=None, lock=True):
         logger.debug(f"Lock: released  {canonical_path} from {stack}")
 
 
-@contextmanager
-def _atomic_open(path, mode, *args, **kwargs):
-    """Write to a temporary sibling of ``path`` and move it into place on success.
+def _has_text(path, text, encoding="utf-8"):
+    """Whether ``path`` already holds exactly ``text``."""
+    try:
+        with open(path, encoding=encoding, newline="") as fid:
+            return fid.read() == text.replace("\n", os.linesep)
+    except (OSError, UnicodeError):
+        return False
 
-    Readers then see either the previous or the new file, never a partially
-    written one, so they need no lock. The new file keeps the permissions of the
-    file it replaces. A symlink is written through in place, so datalad/git-annex
-    datasets behave as before (#1569), and on Windows a target held open by
-    another process is overwritten in place.
+
+def _open_replacement(path, mode, *args, **kwargs):
+    """Open a temporary sibling of ``path`` that will replace it.
+
+    Returns ``(fid, tmp)``, or ``None`` when ``path`` has to be written in place:
+    a symlink is written through, so datalad/git-annex datasets behave as before
+    (#1569), and so is a writable file in a read-only directory. The new file
+    gets the permissions of the file it replaces.
+
+    The sibling is ``.<name>.tmp``. If that name is taken, it belongs either to
+    another writer or to one that was killed, so a unique name is used instead,
+    and the leftover of a killed writer is removed once it is old enough.
     """
-    path = Path(path)
     try:
         target = os.lstat(path)
     except FileNotFoundError:
         target = None
     if target is not None and stat.S_ISLNK(target.st_mode):
-        with open(path, mode, *args, **kwargs) as fid:
-            yield fid
-        return
-    tmp = path.with_name(f".{path.name}.{os.urandom(4).hex()}.tmp")
+        return None
+    for name in (f".{path.name}.tmp", f".{path.name}.{os.urandom(4).hex()}.tmp"):
+        tmp = path.with_name(name)
+        try:
+            fid = open(tmp, mode.replace("w", "x"), *args, **kwargs)
+            break
+        except FileExistsError:
+            with contextlib.suppress(OSError):
+                if time.time() - os.lstat(tmp).st_mtime > _STALE_TMP_SECONDS:
+                    os.unlink(tmp)
+        except PermissionError:
+            return None
+    else:
+        raise FileExistsError(f"Could not create a temporary file next to {path}")
     try:
-        fid = open(tmp, mode.replace("w", "x"), *args, **kwargs)
-    except PermissionError:  # writable file in a read-only directory
-        with open(path, mode, *args, **kwargs) as fid:
-            yield fid
-        return
+        if target is not None:
+            wanted = stat.S_IMODE(target.st_mode)
+            if stat.S_IMODE(os.fstat(fid.fileno()).st_mode) != wanted:
+                os.chmod(tmp, wanted)
+    except BaseException:
+        fid.close()
+        with contextlib.suppress(OSError):
+            os.unlink(tmp)
+        raise
+    return fid, tmp
+
+
+@contextmanager
+def _replace_on_exit(path, fid, tmp, *, lock=True):
+    """Move ``tmp`` over ``path`` once ``fid`` is written; drop it on failure.
+
+    Readers see either the previous or the new file, never a partially written
+    one. On Windows a target held open by another process cannot be replaced
+    and is overwritten in place, under the lock.
+    """
     try:
         with fid:
-            if target is not None:
-                wanted = stat.S_IMODE(target.st_mode)
-                if stat.S_IMODE(os.fstat(fid.fileno()).st_mode) != wanted:
-                    os.chmod(tmp, wanted)
             yield fid
         try:
             os.replace(tmp, path)
-        except PermissionError:  # Windows: the target is open in another process
-            shutil.copyfile(tmp, path)
+        except PermissionError:
+            with _get_lock_context(path, lock=lock) as lock_context, lock_context:
+                shutil.copyfile(tmp, path)
             os.unlink(tmp)
     except BaseException:
         with contextlib.suppress(OSError):
@@ -175,10 +209,13 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
     reuse the existing lock instead of attempting to acquire it again.
 
     If file opening arguments (*args, **kwargs) are provided, the file is opened
-    in the specified mode. Otherwise, just the lock is acquired. Files opened
-    for writing (``"w"``/``"wb"``) are replaced atomically (see
-    :func:`_atomic_open`), so files opened read-only are read without a lock:
-    a reader can never observe a partially written file.
+    in the specified mode. Otherwise, just the lock is acquired.
+
+    Files opened for writing (``"w"``/``"wb"``) are replaced in one step (see
+    :func:`_replace_on_exit`), so a reader can never observe a partially written
+    file. Files opened read-only are therefore read without a lock, and so is a
+    plain overwrite: only a sequence that reads a file and then writes it needs
+    the lock, which its caller holds around the whole sequence.
 
     Parameters
     ----------
@@ -205,6 +242,12 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
         with open(canonical_path, *args, **kwargs) as fid:
             yield fid
         return
+    if mode in _REPLACE_MODES:
+        replacement = _open_replacement(canonical_path, *args, **kwargs)
+        if replacement is not None:
+            with _replace_on_exit(canonical_path, *replacement, lock=lock) as fid:
+                yield fid
+            return
 
     with _get_lock_context(
         canonical_path,
@@ -220,8 +263,7 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
                     f"({exp}); proceeding without a lock."
                 )
             if args or kwargs:
-                opener = _atomic_open if mode in _REPLACE_MODES else open
-                fid = stack.enter_context(opener(canonical_path, *args, **kwargs))
+                fid = stack.enter_context(open(canonical_path, *args, **kwargs))
                 yield fid
             else:
                 yield None
