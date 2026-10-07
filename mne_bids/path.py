@@ -2156,12 +2156,8 @@ def _share_dir_listings():
     """List each directory once for all sidecar lookups made inside the block.
 
     Reading one recording looks up several sidecars in the same few directories.
-    On network filesystems every lookup of a file that is not there is a round
-    trip to the server, so the lookups share one listing per directory instead.
+    On network filesystems every lookup is a round trip to the server.
     """
-    if _DIR_LISTINGS.get() is not None:
-        yield
-        return
     token = _DIR_LISTINGS.set({})
     try:
         yield
@@ -2174,39 +2170,27 @@ def _listed(dir_):
     listings = _DIR_LISTINGS.get()
     if listings is None:
         return None
-    dir_ = str(dir_)
     if dir_ not in listings:
-        try:
-            with os.scandir(dir_) as it:
-                listings[dir_] = {entry.name: entry for entry in it}
-        except OSError:
-            listings[dir_] = {}
+        listings[dir_] = {entry.name: entry for entry in _scandir(dir_)}
     return listings[dir_]
 
 
 def _sidecar_is_file(path, bids_root):
     """Like ``path.is_file()``, answered from a shared directory listing if any."""
     # The root can hold thousands of subject folders: ask for the one file there.
-    entries = None if path.parent == bids_root else _listed(path.parent)
+    entries = None if path.parent == bids_root else _listed(str(path.parent))
     if entries is None:
         return path.is_file()
-    entry = entries.get(path.name)
-    try:
-        return entry is not None and entry.is_file()
-    except OSError:
-        return False
+    return path.name in entries and entries[path.name].is_file()
 
 
 def _sidecar_glob(search_str):
     """Like ``glob.iglob(search_str)``, answered from a shared listing if any."""
     dir_, pattern = os.path.split(search_str)
-    if glob.has_magic(dir_) or not glob.has_magic(pattern) or pattern.startswith("."):
-        return glob.iglob(search_str)
-    entries = _listed(dir_)
+    entries = None if glob.has_magic(dir_) else _listed(dir_)
     if entries is None:
         return glob.iglob(search_str)
-    names = [name for name in entries if not name.startswith(".")]
-    return [os.path.join(dir_, name) for name in fnmatch.filter(names, pattern)]
+    return [os.path.join(dir_, name) for name in fnmatch.filter(entries, pattern)]
 
 
 def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
@@ -2324,10 +2308,6 @@ def get_datatypes(root, *, verbose=None):
 # Helpers for testing glob accesses
 def _path_glob(root, pattern):
     return root.glob(pattern)
-
-
-def _path_rglob(root, pattern):
-    return root.rglob(pattern)
 
 
 @verbose
@@ -3042,160 +3022,48 @@ def _return_root_paths(
         parameters.
     """
     root = Path(root)  # if root is str
+    datatypes = None if datatype is None else _ensure_tuple(datatype)
 
-    # OPTIMIZATION: Use entity-aware path construction when entities available
+    # Start from the subject (and session) directory when they are known
+    start = root
     if entities and entities.get("subject"):
-        # Build targeted search path starting from subject directory
-        search_parts = [f"sub-{entities['subject']}"]
-
-        # Add session if available
+        ignore_nosub = False
+        start = root / f"sub-{entities['subject']}"
         if entities.get("session"):
-            search_parts.append(f"ses-{entities['session']}")
+            start = start / f"ses-{entities['session']}"
 
-        # Add datatype-specific path
-        if datatype is not None:
-            datatype = _ensure_tuple(datatype)
-            if len(datatype) == 1:
-                # Single datatype - construct direct path
-                search_parts.extend(["**", datatype[0]])
-                search_str = "/".join(search_parts) + "/*.*"
-            else:
-                # Multiple datatypes - search each separately
-                paths = []
-                for dt in datatype:
-                    dt_search_parts = search_parts + ["**", dt]
-                    dt_search_str = "/".join(dt_search_parts) + "/*.*"
-                    paths.extend(
-                        [
-                            Path(root, fn)
-                            for fn in glob.iglob(
-                                dt_search_str, root_dir=root, recursive=True
-                            )
-                        ]
-                    )
-                return _filter_paths_optimized(paths, ignore_json)
-        else:
-            # No datatype specified - search all datatypes under subject
-            search_parts.append("**")
-            search_str = "/".join(search_parts) + "/*.*"
+    # Walk the tree once. File types come from the directory listings, so no file
+    # needs a ``stat`` call of its own (a round trip on network filesystems).
+    paths = []
 
-        # Single search with optimized path
-        paths = [
-            Path(root, fn)
-            for fn in glob.iglob(search_str, root_dir=root, recursive=True)
-        ]
+    def visit(dir_, keep, top=False):
+        for entry in _scandir(dir_):
+            name = entry.name
+            try:
+                is_dir, is_file = entry.is_dir(), entry.is_file()
+            except OSError:
+                continue
+            # Keep files and CTF .ds directories, and omit the JSON sidecars if
+            # `ignore_json` is True.
+            if keep and "." in name:
+                if is_dir and name.endswith(".ds"):
+                    paths.append(Path(entry.path))
+                elif is_file and not (ignore_json and name.endswith(".json")):
+                    paths.append(Path(entry.path))
+            if is_dir and not (top and ignore_nosub and not name.startswith("sub-")):
+                visit(entry.path, datatypes is None or name in datatypes)
 
-    else:
-        # FALLBACK: Original implementation when entities not available
-        # or subject unknown
-        if datatype is None and not ignore_nosub:
-            # Like the glob-based searches below, leave out hidden files and
-            # everything inside hidden directories (.git, .datalad, ...).
-            depth = len(root.parts)
-            paths = [
-                path
-                for path in _path_rglob(root, "*.*")
-                if not any(part.startswith(".") for part in path.parts[depth:])
-            ]
-        else:
-            if datatype is not None:
-                return _scan_datatype_dirs(
-                    root, _ensure_tuple(datatype), ignore_nosub, ignore_json
-                )
-            else:
-                search_str = "**/*.*"
-                if ignore_nosub:
-                    search_str = f"sub-*/{search_str}"
-                # TODO: Why is this not equivalent to list(root.rglob(search_str)) ?
-                # Most of the speedup is from using glob.iglob here.
-                paths = [
-                    Path(root, fn)
-                    for fn in glob.iglob(search_str, root_dir=root, recursive=True)
-                ]
-
-    return _filter_paths_optimized(paths, ignore_json)
+    visit(start, datatypes is None and not ignore_nosub, top=True)
+    return paths
 
 
 def _scandir(path):
-    """List the non-hidden entries of ``path`` (empty if it cannot be listed)."""
+    """List the non-hidden entries of ``path`` (none if it cannot be listed)."""
     try:
         with os.scandir(path) as it:
             return [entry for entry in it if not entry.name.startswith(".")]
     except OSError:
         return []
-
-
-def _entry_is(entry, kind):
-    try:
-        return entry.is_dir() if kind == "dir" else entry.is_file()
-    except OSError:
-        return False
-
-
-def _scan_datatype_dirs(root, datatypes, ignore_nosub, ignore_json):
-    """Find the files that ``**/<dt>/*.*`` globs plus a file-type filter would keep.
-
-    Gives the same paths in the same order as running
-    ``glob.iglob(f"[sub-*/]**/{dt}/*.*", recursive=True)`` for each datatype and
-    filtering the result, but lists every directory once and takes file types
-    from the directory listing, so it makes no ``stat`` call per file. On
-    network filesystems each listing and ``stat`` is a round trip to the server.
-    """
-    found = {dt: [] for dt in datatypes}
-    listings = {}
-
-    def visit(entries):
-        subdirs = [entry for entry in entries if _entry_is(entry, "dir")]
-        for entry in subdirs:
-            if entry.name in found:
-                listings[entry.path] = _scandir(entry.path)
-                found[entry.name].extend(
-                    child for child in listings[entry.path] if "." in child.name
-                )
-        for entry in subdirs:
-            visit(listings.pop(entry.path, None) or _scandir(entry.path))
-
-    top = _scandir(root)
-    if ignore_nosub:
-        for entry in top:
-            if fnmatch.fnmatch(entry.name, "sub-*") and _entry_is(entry, "dir"):
-                visit(_scandir(entry.path))
-    else:
-        visit(top)
-
-    paths = []
-    for entries in found.values():
-        for entry in entries:
-            path = Path(entry.path)
-            if _entry_is(entry, "file"):
-                if not (ignore_json and path.suffix == ".json"):
-                    paths.append(path)
-            elif path.suffix == ".ds" and _entry_is(entry, "dir"):
-                paths.append(path)
-    return paths
-
-
-def _filter_paths_optimized(paths, ignore_json):
-    """Filter paths based on file type criteria - extracted for reuse."""
-    # Only keep files (not directories), ...
-    # and omit the JSON sidecars if `ignore_json` is True.
-    if ignore_json:
-        return [
-            p
-            for p in paths
-            if (p.is_file() and p.suffix != ".json")
-            # XXX: generalize with a private func that takes
-            # a config of which "data format" are to be expected like .ds
-            or (p.is_dir() and p.suffix == ".ds")
-        ]
-    else:
-        return [
-            p
-            for p in paths
-            if p.is_file()
-            # XXX: see above, generalize with private func
-            or (p.is_dir() and p.suffix == ".ds")
-        ]
 
 
 def _fnames_to_bidspaths(fnames, root, check=False):

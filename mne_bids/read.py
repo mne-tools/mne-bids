@@ -1481,14 +1481,9 @@ def read_raw_bids(
     return raw
 
 
+@_share_dir_listings()  # the sidecars sit in the same few directories
 def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
     """Apply BIDS sidecars to a Raw or Epochs object."""
-    # The sidecars sit in the same few directories: list each of them once.
-    with _share_dir_listings():
-        return _apply_sidecars(raw, bids_path, on_ch_mismatch=on_ch_mismatch)
-
-
-def _apply_sidecars(raw, bids_path, *, on_ch_mismatch):
     datatype = bids_path.datatype
     bids_root = bids_path.root
 

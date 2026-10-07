@@ -47,13 +47,13 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Fix :func:`find_matching_paths` and :meth:`BIDSPath.match` returning hidden files, and files inside hidden directories such as ``.git``, when a whole dataset is searched without ``datatypes`` and without ``ignore_nosub``; the other searches already left them out, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
+- Fix :func:`find_matching_paths` and :meth:`BIDSPath.match` returning hidden files, and files inside hidden directories such as ``.git``, and not following symbolic links to directories, when a whole dataset is searched without ``datatypes`` and without ``ignore_nosub``; this search now behaves like the other ones, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
 - Fix :func:`find_matching_paths` omitting files with a ``tracksys`` entity and returning no matches when ``tracking_systems`` is specified, by `Shubham Padkonde`_.
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- Sped up :meth:`mne_bids.BIDSPath.match` and :func:`mne_bids.find_matching_paths` when searching from the dataset root for given datatypes: the tree is now walked once with :func:`os.scandir`, taking file types from the directory listing instead of one ``stat`` call per file, which matters most on network filesystems. The returned paths and their order are unchanged, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
+- Sped up :meth:`mne_bids.BIDSPath.match` and :func:`mne_bids.find_matching_paths`: the tree is now walked once with :func:`os.scandir`, taking file types from the directory listing instead of one ``stat`` call per file, which matters most on network filesystems, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
 - :func:`mne_bids.read_raw_bids` now lists each directory once when it looks up the sidecar files of a recording, instead of asking the filesystem about every candidate file, which saves calls on network filesystems, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
