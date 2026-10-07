@@ -28,6 +28,7 @@ mne_bids
    make_dataset_description
    make_report
    write_anat
+   deface_mri
    mark_channels
    get_anat_landmarks
    update_anat_landmarks

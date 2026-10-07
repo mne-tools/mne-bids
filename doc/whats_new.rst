@@ -31,7 +31,8 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- Expose :func:`open_lock` as a public re-export of the cross-process file lock used internally for ``participants.tsv`` / ``dataset_description.json`` writes, so parallel downstream writers can share the same lock without importing a private symbol, by `Bruno Aristimunha`_.
+- Expose MRI defacing function to public API as :func:`mne_bids.deface_mri` by `Erica Peterson`_ (:gh:`1544`)
+- Add :func:`mne_bids.open_lock`, the cross-process file lock mne-bids uses for shared files such as ``participants.tsv``, so downstream writers can share it, by `Bruno Aristimunha`_ (:gh:`1675`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

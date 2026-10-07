@@ -39,6 +39,7 @@ from mne_bids.write import (
     write_meg_crosstalk,
     get_anat_landmarks,
     anonymize_dataset,
+    deface_mri,
 )
 from mne_bids._fileio import _open_lock as open_lock  # noqa: F401 (public re-export)
 from mne_bids.sidecar_updates import update_sidecar_json, update_anat_landmarks
