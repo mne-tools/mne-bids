@@ -53,7 +53,7 @@ Detailed list of changes
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- Sped up :meth:`mne_bids.BIDSPath.match` and :func:`mne_bids.find_matching_paths`: the tree is now walked once with :func:`os.scandir`, taking file types from the directory listing instead of one ``stat`` call per file, which matters most on network filesystems, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
+- Sped up :meth:`mne_bids.BIDSPath.match` and :func:`mne_bids.find_matching_paths`: the tree is now walked once with :func:`os.scandir` and file types are taken from the directory listing, without a ``stat`` call per file, which matters most on network filesystems, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
 - :func:`mne_bids.read_raw_bids` now lists each directory once when it looks up the sidecar files of a recording, instead of asking the filesystem about every candidate file, which saves calls on network filesystems, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`

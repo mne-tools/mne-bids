@@ -1723,9 +1723,9 @@ def _parse_ext(raw_fname):
     return fname, ext
 
 
-def _infer_datatype_from_path(fname: Path):
+def _infer_datatype_from_path(fname: Path, exists=None):
     # get the parent
-    if fname.exists():
+    if fname.exists() if exists is None else exists:
         datatype = fname.parent.name
         if any([datatype.startswith(entity) for entity in ["sub", "ses"]]):
             datatype = None
@@ -1756,6 +1756,11 @@ def get_bids_path_from_fname(fname, check=True, *, verbose=None):
     bids_path : BIDSPath
         The BIDSPath object.
     """
+    return _bids_path_from_fname(fname, check, verbose=verbose)
+
+
+@verbose
+def _bids_path_from_fname(fname, check, *, exists=None, verbose=None):
     fpath = Path(fname)
     fname = fpath.name
 
@@ -1775,7 +1780,7 @@ def get_bids_path_from_fname(fname, check=True, *, verbose=None):
     if extension is not None:
         assert extension.startswith(".")  # better safe than sorry
 
-    datatype = _infer_datatype_from_path(fpath)
+    datatype = _infer_datatype_from_path(fpath, exists)
 
     # find root and datatype if it exists
     if fpath.parent == "":
@@ -3092,11 +3097,10 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     """
     bids_paths = []
     for fname in fnames:
-        datatype = _infer_datatype_from_path(fname)
-        bids_path = get_bids_path_from_fname(fname, check=False)
+        # the names come from a directory listing, so the files are known to exist
+        bids_path = _bids_path_from_fname(fname, check=False, exists=True)
         inferred_root = bids_path.root
         bids_path.root = root
-        bids_path.datatype = datatype
         expected_fpath = bids_path.directory / bids_path.basename
         if expected_fpath != Path(fname):
             bids_path.root = inferred_root
