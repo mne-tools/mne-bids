@@ -2554,6 +2554,45 @@ def test_read_epochs_bids_eeglab(tmp_path):
         read_raw_bids(bp)
 
 
+def test_read_epochs_bids_fif(tmp_path, recwarn):
+    """read_epochs_bids loads FIF epoched data; read_raw_bids refuses it."""
+    info = mne.create_info(["MEG1", "MEG2"], 100.0, ch_types="mag")
+    data = np.random.default_rng(0).normal(size=(3, 2, 50)) * 1e-12
+    events = np.column_stack([np.arange(3) * 100, np.zeros(3, int), [1, 2, 1]])
+    expected = mne.EpochsArray(
+        data, info, events, event_id=dict(A=1, B=2), verbose=False
+    )
+    bp = BIDSPath(
+        subject="01",
+        task="t",
+        datatype="meg",
+        suffix="meg",
+        extension=".fif",
+        root=tmp_path,
+    )
+    bp.directory.mkdir(parents=True)
+    expected.save(bp.fpath, verbose=False)
+    bp.copy().update(extension=".json").fpath.write_text(
+        '{"TaskName": "t", "PowerLineFrequency": 60, "RecordingType": "epoched"}'
+    )
+    bp.copy().update(suffix="channels", extension=".tsv").fpath.write_text(
+        "name\ttype\tunits\tstatus\nMEG1\tMEGMAG\tT\tgood\nMEG2\tMEGMAG\tT\tbad\n"
+    )
+    (tmp_path / "participants.tsv").write_text("participant_id\nsub-01\n")
+    (tmp_path / "dataset_description.json").write_text(
+        '{"Name": "x", "BIDSVersion": "1.8.0"}'
+    )
+    recwarn.clear()
+    epochs = read_epochs_bids(bp)
+    assert not [w for w in recwarn if "naming conventions" in str(w.message)]
+    np.testing.assert_allclose(epochs.get_data(), expected.get_data())
+    assert epochs.event_id == expected.event_id
+    assert epochs.info["bads"] == ["MEG2"]
+    assert epochs.info["line_freq"] == 60
+    with pytest.raises(RuntimeError, match="read_epochs_bids"):
+        read_raw_bids(bp)
+
+
 @pytest.mark.parametrize(
     ("ext", "fmt", "writer_pkg"),
     [(".edf", "EDF", "edfio"), (".vhdr", "BrainVision", "pybv")],
