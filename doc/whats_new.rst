@@ -48,6 +48,7 @@ Detailed list of changes
 ^^^^^^^^^^^^
 
 - Fix a reader being able to see an empty or partially written sidecar file while another process was rewriting it. This happened when file locking was not active (``filelock`` missing or older than the required version); sidecars are now replaced atomically, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
+- Fix :func:`mne_bids.write_raw_bids` updating ``.bidsignore`` without a lock when writing BTi/4D data, so that writers running in parallel could overwrite each other's changes, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
 - Fix :func:`find_matching_paths` omitting files with a ``tracksys`` entity and returning no matches when ``tracking_systems`` is specified, by `Shubham Padkonde`_.
 
 ⚕️ Code health
