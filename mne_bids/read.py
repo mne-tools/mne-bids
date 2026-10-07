@@ -9,6 +9,7 @@ import re
 from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
+from functools import lru_cache
 from pathlib import Path
 
 import mne
@@ -295,30 +296,22 @@ def _verbose_list_index(lst, val, *, allow_all=False):
         raise ValueError(f"{exc}{extra}") from None
 
 
-# Parsed participants.tsv per file, so reading every recording of a dataset
-# parses it once instead of once per recording.
-_PARTICIPANTS_CACHE: dict[str, tuple[bytes, dict]] = {}
+@lru_cache(maxsize=1)
+def _participants_tsv(participants_fname, content):
+    """Parse participants.tsv once per content of the file.
 
-
-def _read_participants_tsv(participants_fname):
-    """Return the parsed participants.tsv, reusing it while its content is unchanged.
-
-    The file's bytes are read on every call and compared with the cached ones,
-    which is much cheaper than parsing and, unlike file metadata, cannot miss a
-    rewrite (some network filesystems only store modification times in seconds).
+    ``content`` is the file's bytes. Reading them on every call is much cheaper
+    than parsing and, unlike file metadata, cannot miss a rewrite (some network
+    filesystems only store modification times in seconds). Only the last table
+    is kept, so a file that is rewritten often does not pile up in memory.
     """
-    content = Path(participants_fname).read_bytes()
-    key = str(participants_fname)
-    cached = _PARTICIPANTS_CACHE.get(key)
-    if cached is None or cached[0] != content:
-        if key not in _PARTICIPANTS_CACHE and len(_PARTICIPANTS_CACHE) >= 8:
-            _PARTICIPANTS_CACHE.pop(next(iter(_PARTICIPANTS_CACHE)))
-        cached = _PARTICIPANTS_CACHE[key] = (content, _from_tsv(participants_fname))
-    return cached[1]
+    return _from_tsv(participants_fname)
 
 
 def _handle_participants_reading(participants_fname, raw, subject):
-    participants_tsv = _read_participants_tsv(participants_fname)
+    participants_tsv = _participants_tsv(
+        participants_fname, participants_fname.read_bytes()
+    )
     subjects = participants_tsv["participant_id"]
     if subject not in subjects:
         warn(f"Subject {subject!r} is not listed in {participants_fname.name}")
