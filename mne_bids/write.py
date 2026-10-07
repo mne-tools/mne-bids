@@ -1721,12 +1721,9 @@ def make_dataset_description(
         If overwrite is False, no existing data will be overwritten or
         replaced.
     extra_fields : dict | None
-        Additional non-standard top-level fields to merge into
-        ``dataset_description.json``, e.g. keys defined by BIDS extensions
-        (``{"PublicationYear": 2024}``). Keys already produced by this
-        function (``Name``, ``BIDSVersion``, ``Authors``, ...) cannot be
-        overridden here and are silently ignored if present. ``None``
-        (the default) adds nothing.
+        Additional top-level fields to write, for keys not covered by the
+        parameters above (e.g., ``{"PublicationYear": 2024}``). They follow
+        the same ``overwrite`` rules as the other fields.
 
         .. versionadded:: 0.21
     %(verbose)s
@@ -1813,6 +1810,14 @@ def make_dataset_description(
         ]
     )
 
+    _validate_type(extra_fields, (dict, None), "extra_fields")
+    extra_fields = dict() if extra_fields is None else extra_fields
+    clash = sorted(set(extra_fields) & set(description))
+    if clash:
+        raise ValueError(
+            f"extra_fields cannot set {clash}, use the corresponding parameters."
+        )
+
     # Handle potentially existing file contents
     with _open_lock(fname):
         orig_cols = {}
@@ -1851,39 +1856,9 @@ def make_dataset_description(
         # Preserve BIDS-spec keys we do not model (e.g. Description, DatasetLinks).
         for key, val in orig_cols.items():
             description.setdefault(key, val)
-
-        # Merge user-supplied extra fields (BIDS extensions). Keys this
-        # function already produces cannot be overridden here.
-        if extra_fields:
-            if not isinstance(extra_fields, dict):
-                raise TypeError(
-                    "extra_fields must be a dict or None, got "
-                    f"{type(extra_fields).__name__}"
-                )
-            reserved = {
-                "Name",
-                "BIDSVersion",
-                "HEDVersion",
-                "DatasetType",
-                "License",
-                "Authors",
-                "Acknowledgements",
-                "HowToAcknowledge",
-                "Funding",
-                "EthicsApprovals",
-                "ReferencesAndLinks",
-                "Keywords",
-                "DatasetDOI",
-                "GeneratedBy",
-                "SourceDatasets",
-            }
-            for key, val in extra_fields.items():
-                if key in reserved:
-                    continue
-                if val is None and not overwrite:
-                    description.setdefault(key, orig_cols.get(key))
-                else:
-                    description[key] = val
+        for key, val in extra_fields.items():
+            if overwrite or key not in orig_cols:
+                description[key] = val
 
         _write_json(fname, description, overwrite=True, lock=False)
 

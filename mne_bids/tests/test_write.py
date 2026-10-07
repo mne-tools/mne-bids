@@ -497,45 +497,16 @@ def test_make_dataset_description_preserves_unknown_keys(tmp_path):
     final = json.loads(fname.read_text())
     assert final["Description"] == "Free-form custom field"
     assert final["Name"] == "enriched"
-
-
-def test_make_dataset_description_extra_fields(tmp_path):
-    """BIDS-extension keys survive make_dataset_description + round-trips."""
-    fname = tmp_path / "dataset_description.json"
+    # extra_fields writes unmodeled keys and follows the overwrite rules
+    make_dataset_description(path=tmp_path, name="x", extra_fields={"Year": 1})
+    make_dataset_description(path=tmp_path, name="x", extra_fields={"Year": 2})
+    assert json.loads(fname.read_text())["Year"] == 1
     make_dataset_description(
-        path=str(tmp_path),
-        name="t",
-        dataset_type="raw",
-        extra_fields={"PublicationYear": 2024, "CustomTag": ["a", "b"]},
-        overwrite=True,
+        path=tmp_path, name="x", extra_fields={"Year": 2}, overwrite=True
     )
-    desc = json.loads(fname.read_text())
-    assert desc["PublicationYear"] == 2024
-    assert desc["CustomTag"] == ["a", "b"]
-    # Unknown keys are preserved on a subsequent write even without passing
-    # them again (the generic unknown-key preservation path).
-    make_dataset_description(path=str(tmp_path), name="t", overwrite=True)
-    desc = json.loads(fname.read_text())
-    assert desc["PublicationYear"] == 2024
-    assert desc["CustomTag"] == ["a", "b"]
-    # Reserved keys cannot be overridden via extra_fields.
-    make_dataset_description(
-        path=str(tmp_path),
-        name="t",
-        extra_fields={"Name": "HIJACKED", "PublicationYear": 2025},
-        overwrite=True,
-    )
-    desc = json.loads(fname.read_text())
-    assert desc["Name"] == "t"
-    assert desc["PublicationYear"] == 2025
-    # Non-dict extra_fields is a TypeError.
-    with pytest.raises(TypeError, match="extra_fields must be a dict"):
-        make_dataset_description(
-            path=str(tmp_path),
-            name="t",
-            extra_fields=[("PublicationYear", 2024)],
-            overwrite=True,
-        )
+    assert json.loads(fname.read_text())["Year"] == 2
+    with pytest.raises(ValueError, match="cannot set.*Name"):
+        make_dataset_description(path=tmp_path, name="x", extra_fields={"Name": "y"})
 
 
 def test_stamp_to_dt():
