@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.write_anat &#8212; MNE-BIDS 0.21.0.dev5+ga1b22096d documentation</title>
+    <title>mne_bids.deface_mri &#8212; MNE-BIDS 0.21.0.dev5+ga1b22096d documentation</title>
   
   
   
@@ -66,7 +66,7 @@
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.write_anat';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.deface_mri';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.22.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-bids/versions.json';
@@ -77,9 +77,9 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_bids.deface_mri" href="mne_bids.deface_mri.html" />
-    <link rel="prev" title="mne_bids.make_report" href="mne_bids.make_report.html" />
-    <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.write_anat.html" />
+    <link rel="next" title="mne_bids.mark_channels" href="mne_bids.mark_channels.html" />
+    <link rel="prev" title="mne_bids.write_anat" href="mne_bids.write_anat.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.deface_mri.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
@@ -473,8 +473,8 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.BIDSPath.html">mne_bids.BIDSPath</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.make_dataset_description.html">mne_bids.make_dataset_description</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.make_report.html">mne_bids.make_report</a></li>
-<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">mne_bids.write_anat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mne_bids.deface_mri.html">mne_bids.deface_mri</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.write_anat.html">mne_bids.write_anat</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">mne_bids.deface_mri</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.mark_channels.html">mne_bids.mark_channels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.get_anat_landmarks.html">mne_bids.get_anat_landmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.update_anat_landmarks.html">mne_bids.update_anat_landmarks</a></li>
@@ -552,7 +552,7 @@
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Documentation</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.write_anat</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.deface_mri</span></li>
   </ul>
 </nav>
 </div>
@@ -569,96 +569,58 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="mne-bids-write-anat">
-<h1>mne_bids.write_anat<a class="headerlink" href="#mne-bids-write-anat" title="Link to this heading">#</a></h1>
+  <section id="mne-bids-deface-mri">
+<h1>mne_bids.deface_mri<a class="headerlink" href="#mne-bids-deface-mri" title="Link to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_bids.write_anat">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">write_anat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">landmarks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_anat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.write_anat" title="Link to this definition">#</a></dt>
-<dd><p>Put anatomical MRI data into a BIDS format.</p>
-<p>Given an MRI scan, format and store the MR data according to BIDS in the
-correct location inside the specified <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>. If a
-transformation matrix is supplied, this information will be stored in a
-sidecar JSON file.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>To generate the JSON sidecar with anatomical landmark
-coordinates (“fiducials”), you need to pass the landmarks via
-the <code class="docutils literal notranslate"><span class="pre">landmarks</span></code> parameter. <a class="reference internal" href="mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_anat_landmarks()</span></code></a>
-may be useful for getting the <code class="docutils literal notranslate"><span class="pre">landmarks</span></code>.</p>
-</div>
+<dt class="sig sig-object py" id="mne_bids.deface_mri">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">deface_mri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">landmarks</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#deface_mri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.deface_mri" title="Link to this definition">#</a></dt>
+<dd><p>Remove identifying facial detail from an MRI.</p>
+<p>This function blacks out MRI voxels anterior to a nearly vertical plane
+set by the nasion location. Watershed surfaces made using a defaced
+MRI will also have no identifying facial detail.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>image</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.13)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v0.1.0.dev1+gabe5e8e0c)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NibabelImageObject</span></code></a></span></dt><dd><p>Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
-readable by nibabel. Can also be a nibabel image object of an
-MRI scan. Will be written as a .nii.gz file.</p>
+<dt><strong>image</strong><span class="classifier"><a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v0.1.0.dev1+gabe5e8e0c)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nibabel.spatialimages.SpatialImage</span></code></a></span></dt><dd><p>Anatomical image as a nibabel object.</p>
 </dd>
-<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The file to write. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
-<strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">root</span></code> and <code class="docutils literal notranslate"><span class="pre">subject</span></code> attributes set.
-The suffix is assumed to be <code class="docutils literal notranslate"><span class="pre">'T1w'</span></code> if not present. It can
-also be <code class="docutils literal notranslate"><span class="pre">'FLASH'</span></code>, for example, to indicate FLASH MRI.</p>
+<dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.5)"><span class="xref std std-term">array_like</span></a></span></dt><dd><p>Coordinates (x / y / z) of left pre-auricular, nasion, and right
+pre-auricular points in MRI (voxel) coordinate space (3x3 list of
+lists or array with nasion coords in the middle).</p>
 </dd>
-<dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.13)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage or path to a montage with landmarks that can be
-passed to provide information for defacing. Landmarks can be determined
-from the head model using <a class="reference external" href="https://mne.tools/stable/generated/commands.html#mne-coreg" title="(in MNE v1.13)"><span>mne coreg</span></a> GUI, or they can be determined
-from the MRI using <code class="docutils literal notranslate"><span class="pre">freeview</span></code>.  If a dictionary is passed, then the
-values must be instances of <a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DigMontage</span></code></a> or
-path-like objects pointing to a <a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DigMontage</span></code></a>
-stored on disk, and the keys of the must be strings
-(e.g. <code class="docutils literal notranslate"><span class="pre">'session-1'</span></code>) which will be used as naming suffix for the
-landmarks in the sidecar JSON file. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no sidecar JSON file
-will be created.</p>
+<dt><strong>offset</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Controls how close the blackout plane sits to the nasion point
+in mm (an offset value of 5 will set the blackout plane 5 mm anterior
+to the nasion, whereas -5 will move the plane posterior to the nasion).
+Defaults to -5.</p>
 </dd>
-<dt><strong>deface</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>If False, no defacing is performed.
-If <code class="docutils literal notranslate"><span class="pre">True</span></code>, deface with default parameters using the provided
-<code class="docutils literal notranslate"><span class="pre">landmarks</span></code>. If multiple landmarks are provided, will
-use the ones with the suffix <code class="docutils literal notranslate"><span class="pre">'deface'</span></code>; if no landmarks with this
-suffix exist, will use the first ones in the <code class="docutils literal notranslate"><span class="pre">landmarks</span></code> dictionary.
-If dict, accepts the following keys:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">offset</span></code>: how far back in voxels to start defacing
-relative to the nasion (default -5)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">theta</span></code>: is the angle of the defacing shear in degrees relative
-to vertical (default 15).</p></li>
-</ul>
-</dd>
-<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
-Defaults to False.
-If overwrite is True, any existing files with the same BIDS parameters
-will be overwritten with the exception of the <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code> and
-<code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code> files. For these files, parts of pre-existing data that
-match the current data will be replaced.
-If overwrite is False, no existing data will be overwritten or
-replaced.</p>
-</dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
-verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.14)"><span class="xref std std-ref">logging documentation</span></a> and
-<a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
-argument.</p>
+<dt><strong>theta</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Controls the angle of the blackout plane with respect to vertical
+(expressed in degrees from 0 to 90). Defaults to 15.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>Path to the written MRI data.</p>
+<dt><strong>image</strong><span class="classifier"><a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v0.1.0.dev1+gabe5e8e0c)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nibabel.spatialimages.SpatialImage</span></code></a></span></dt><dd><p>Defaced anatomical image as a nibabel object.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TypeError</span></code></a></dt><dd><p>If image input is not an instance of
+<code class="docutils literal notranslate"><span class="pre">nibabel.spatialimages.SpatialImage</span></code>.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TypeError</span></code></a></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">landmarks</span></code> are not array-like (list of lists or array).</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TypeError</span></code></a></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">offset</span></code> is not an integer.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TypeError</span></code></a></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">theta</span></code> is not an int or float.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">theta</span></code> is not between 0 and 90 degrees.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<section id="examples-using-mne-bids-write-anat">
-<span id="sphx-glr-backreferences-mne-bids-write-anat"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.write_anat</span></code><a class="headerlink" href="#examples-using-mne-bids-write-anat" title="Link to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Consider the following scenario:"><img alt="" src="../_images/sphx_glr_anonymize_dataset_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/anonymize_dataset.html"><span class="doc">Anonymizing a BIDS dataset</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Anonymizing a BIDS dataset</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifically, we will follow these steps:"><img alt="" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html"><span class="doc">Convert iEEG data to BIDS format</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Convert iEEG data to BIDS format</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with aligning several coordinate systems, such as the coordinate systems of ..."><img alt="" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html"><span class="doc">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</div>
-</div></div></section>
 </section>
 
 
@@ -672,20 +634,20 @@ argument.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mne_bids.make_report.html"
+       href="mne_bids.write_anat.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">mne_bids.make_report</p>
+        <p class="prev-next-title">mne_bids.write_anat</p>
       </div>
     </a>
     <a class="right-next"
-       href="mne_bids.deface_mri.html"
+       href="mne_bids.mark_channels.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_bids.deface_mri</p>
+        <p class="prev-next-title">mne_bids.mark_channels</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -708,8 +670,7 @@ argument.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.write_anat"><code class="docutils literal notranslate"><span class="pre">write_anat()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-mne-bids-write-anat">Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.write_anat</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.deface_mri"><code class="docutils literal notranslate"><span class="pre">deface_mri()</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.21.0.dev4+g35b511983 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.21.0.dev5+ga1b22096d documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../_static/documentation_options.js?v=d9a42600"></script>
+    <script src="../../_static/documentation_options.js?v=0be41b67"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -82,7 +82,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev4+g35b511983" />
+  <meta name="docsearch:version" content="0.21.0.dev5+ga1b22096d" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -151,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev4+g35b511983 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev5+ga1b22096d documentation</p>
   
 </a></div>
     
@@ -1857,32 +1857,83 @@
     <span class="k">return</span> <span class="n">fname</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_deface</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="n">deface</span><span class="p">):</span>
+<div class="viewcode-block" id="deface_mri">
+<a class="viewcode-back" href="../../generated/mne_bids.deface_mri.html#mne_bids.deface_mri">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">deface_mri</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">offset</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">15</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Remove identifying facial detail from an MRI.</span>
+
+<span class="sd">    This function blacks out MRI voxels anterior to a nearly vertical plane</span>
+<span class="sd">    set by the nasion location. Watershed surfaces made using a defaced</span>
+<span class="sd">    MRI will also have no identifying facial detail.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image : nibabel.spatialimages.SpatialImage</span>
+<span class="sd">        Anatomical image as a nibabel object.</span>
+<span class="sd">    landmarks : array-like</span>
+<span class="sd">       Coordinates (x / y / z) of left pre-auricular, nasion, and right</span>
+<span class="sd">       pre-auricular points in MRI (voxel) coordinate space (3x3 list of</span>
+<span class="sd">       lists or array with nasion coords in the middle).</span>
+<span class="sd">    offset : int</span>
+<span class="sd">        Controls how close the blackout plane sits to the nasion point</span>
+<span class="sd">        in mm (an offset value of 5 will set the blackout plane 5 mm anterior</span>
+<span class="sd">        to the nasion, whereas -5 will move the plane posterior to the nasion).</span>
+<span class="sd">        Defaults to -5.</span>
+<span class="sd">    theta : float | int</span>
+<span class="sd">        Controls the angle of the blackout plane with respect to vertical</span>
+<span class="sd">        (expressed in degrees from 0 to 90). Defaults to 15.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image : nibabel.spatialimages.SpatialImage</span>
+<span class="sd">        Defaced anatomical image as a nibabel object.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If image input is not an instance of</span>
+<span class="sd">        ``nibabel.spatialimages.SpatialImage``.</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If ``landmarks`` are not array-like (list of lists or array).</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If ``offset`` is not an integer.</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If ``theta`` is not an int or float.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``theta`` is not between 0 and 90 degrees.</span>
+<span class="sd">    """</span>
     <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s2">"deface MRIs"</span><span class="p">)</span>
 
-    <span class="n">inset</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">deface</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s2">"inset"</span> <span class="ow">in</span> <span class="n">deface</span><span class="p">:</span>
-            <span class="n">inset</span> <span class="o">=</span> <span class="n">deface</span><span class="p">[</span><span class="s2">"inset"</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">"theta"</span> <span class="ow">in</span> <span class="n">deface</span><span class="p">:</span>
-            <span class="n">theta</span> <span class="o">=</span> <span class="n">deface</span><span class="p">[</span><span class="s2">"theta"</span><span class="p">]</span>
+    <span class="n">_validate_type</span><span class="p">(</span>
+        <span class="n">image</span><span class="p">,</span>
+        <span class="n">types</span><span class="o">=</span><span class="n">nib</span><span class="o">.</span><span class="n">spatialimages</span><span class="o">.</span><span class="n">SpatialImage</span><span class="p">,</span>
+        <span class="n">item_name</span><span class="o">=</span><span class="s2">"image"</span><span class="p">,</span>
+        <span class="n">type_name</span><span class="o">=</span><span class="s2">"nibabel.spatialimages.SpatialImage"</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_numeric</span><span class="p">(</span><span class="n">inset</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"inset must be numeric (float, int). Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inset</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span>
+        <span class="n">landmarks</span><span class="p">,</span>
+        <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">),</span>
+        <span class="n">item_name</span><span class="o">=</span><span class="s2">"landmarks"</span><span class="p">,</span>
+        <span class="n">type_name</span><span class="o">=</span><span class="s2">"list of lists or numpy array"</span><span class="p">,</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">"3x3 set of coordinates as a "</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_numeric</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"theta must be numeric (float, int). Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">"offset"</span><span class="p">,</span> <span class="n">type_name</span><span class="o">=</span><span class="s2">"integer"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">inset</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"inset should be positive, Got </span><span class="si">{inset}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span>
+        <span class="n">theta</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">"theta"</span><span class="p">,</span> <span class="n">type_name</span><span class="o">=</span><span class="s2">"float or integer"</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">theta</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"theta should be between 0 and 90 degrees. Got </span><span class="si">{theta}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"theta should be between 0 and 90 degrees. Got </span><span class="si">{</span><span class="n">theta</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># get image data, make a copy</span>
     <span class="n">image_data</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-    <span class="c1"># make indices to move around so that the image doesn't have to</span>
+    <span class="c1"># Voxel coordinate spaces depend on the acquisition device and are quite</span>
+    <span class="c1"># diverse, so we start by converting everything to an RAS coordinate system</span>
+    <span class="c1"># Construct an image index array in RAS space</span>
     <span class="n">idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
         <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
@@ -1893,16 +1944,21 @@
     <span class="n">idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">idxs</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>  <span class="c1"># (*image_data.shape, 3)</span>
     <span class="n">idxs</span> <span class="o">=</span> <span class="n">idxs</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># (n_voxels, 3)</span>
 
+    <span class="c1"># image.affine is the voxel to RAS transform given the original MRI</span>
     <span class="c1"># convert to RAS by applying affine</span>
     <span class="n">idxs</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">affines</span><span class="o">.</span><span class="n">apply_affine</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">idxs</span><span class="p">)</span>
 
+    <span class="c1"># get nasion into RAS (in mm, which is what nibabel uses)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">affines</span><span class="o">.</span><span class="n">apply_affine</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
     <span class="c1"># now comes the actual defacing</span>
-    <span class="c1"># 1. move center of voxels to (nasion - inset)</span>
+    <span class="c1"># defacing is performed by blacking out voxels ahead of a plane</span>
+    <span class="c1"># defined by the nasion.</span>
+    <span class="c1"># 1. move center of voxels to (nasion + offset)</span>
     <span class="c1"># 2. rotate the head by theta from vertical</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_trans</span><span class="p">,</span> <span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span>
 
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">affines</span><span class="o">.</span><span class="n">apply_affine</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">idxs</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">translation</span><span class="p">(</span><span class="n">x</span><span class="o">=-</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="n">y</span> <span class="o">+</span> <span class="n">inset</span><span class="p">,</span> <span class="n">z</span><span class="o">=-</span><span class="n">z</span><span class="p">),</span> <span class="n">idxs</span><span class="p">)</span>
+    <span class="n">idxs</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">translation</span><span class="p">(</span><span class="n">x</span><span class="o">=-</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="n">y</span> <span class="o">-</span> <span class="n">offset</span><span class="p">,</span> <span class="n">z</span><span class="o">=-</span><span class="n">z</span><span class="p">),</span> <span class="n">idxs</span><span class="p">)</span>
     <span class="n">idxs</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">rotation</span><span class="p">(</span><span class="n">x</span><span class="o">=-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">)),</span> <span class="n">idxs</span><span class="p">)</span>
     <span class="n">idxs</span> <span class="o">=</span> <span class="n">idxs</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">image_data</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">3</span><span class="p">,))</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="n">idxs</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># z &lt; middle</span>
@@ -1912,7 +1968,8 @@
     <span class="c1"># https://gist.github.com/alexrockhill/15043928b716a432db3a84a050b241ae</span>
 
     <span class="n">image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">image</span>
+    <span class="k">return</span> <span class="n">image</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">split_size</span><span class="o">=</span><span class="n">_FIFF_SPLIT_SIZE</span><span class="p">):</span>
@@ -3514,8 +3571,8 @@
 <span class="sd">        suffix exist, will use the first ones in the ``landmarks`` dictionary.</span>
 <span class="sd">        If dict, accepts the following keys:</span>
 
-<span class="sd">        - ``inset``: how far back in voxels to start defacing</span>
-<span class="sd">          relative to the nasion (default 5)</span>
+<span class="sd">        - ``offset``: how far back in voxels to start defacing</span>
+<span class="sd">          relative to the nasion (default -5)</span>
 
 <span class="sd">        - ``theta``: is the angle of the defacing shear in degrees relative</span>
 <span class="sd">          to vertical (default 15).</span>
@@ -3594,11 +3651,26 @@
 
         <span class="k">if</span> <span class="n">deface</span><span class="p">:</span>
             <span class="n">landmarks_deface</span> <span class="o">=</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"deface"</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="mi">15</span>
             <span class="k">if</span> <span class="n">landmarks_deface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># Take first one if none is specified for defacing.</span>
                 <span class="n">landmarks_deface</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">landmarks</span><span class="o">.</span><span class="n">items</span><span class="p">()))[</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">landmarks_deface</span> <span class="o">=</span> <span class="n">_get_landmarks</span><span class="p">(</span><span class="n">landmarks_deface</span><span class="p">,</span> <span class="n">image_nii</span><span class="p">)</span>
-            <span class="n">image_nii</span> <span class="o">=</span> <span class="n">_deface</span><span class="p">(</span><span class="n">image_nii</span><span class="p">,</span> <span class="n">landmarks_deface</span><span class="p">,</span> <span class="n">deface</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">deface</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">if</span> <span class="s2">"inset"</span> <span class="ow">in</span> <span class="n">deface</span><span class="p">:</span>  <span class="c1"># make backwards compatible</span>
+                    <span class="n">deface</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">offset</span><span class="o">=-</span><span class="n">deface</span><span class="p">[</span><span class="s2">"inset"</span><span class="p">])</span>
+                <span class="k">if</span> <span class="s2">"offset"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">deface</span> <span class="ow">or</span> <span class="s2">"theta"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">deface</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"When deface is a dict, keys must "</span>
+                        <span class="sa">f</span><span class="s2">"include offset and theta, but got "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">deface</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">)"</span>
+                    <span class="p">)</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="n">deface</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span>
+                <span class="n">theta</span> <span class="o">=</span> <span class="n">deface</span><span class="p">[</span><span class="s2">"theta"</span><span class="p">]</span>
+            <span class="n">image_nii</span> <span class="o">=</span> <span class="n">deface_mri</span><span class="p">(</span>
+                <span class="n">image_nii</span><span class="p">,</span> <span class="n">landmarks_deface</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">theta</span>
+            <span class="p">)</span>
 
     <span class="c1"># Save anatomical data</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
