@@ -31,7 +31,8 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- Add an ``extra_fields`` keyword argument to :func:`make_dataset_description` for merging non-standard top-level keys (e.g. BIDS-extension fields such as ``PublicationYear``) into ``dataset_description.json`` without a second read-modify-write pass. Reserved keys produced by the function itself cannot be overridden, by `Bruno Aristimunha`_.
+- Expose MRI defacing function to public API as :func:`mne_bids.deface_mri` by `Erica Peterson`_ (:gh:`1544`)
+- Add an ``extra_fields`` parameter to :func:`make_dataset_description` to write additional top-level keys to ``dataset_description.json``, by `Bruno Aristimunha`_ (:gh:`1674`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
