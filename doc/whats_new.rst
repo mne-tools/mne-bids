@@ -47,6 +47,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
+- Fix :func:`find_matching_paths` and :meth:`BIDSPath.match` returning hidden files, and files inside hidden directories such as ``.git``, when a whole dataset is searched without ``datatypes`` and without ``ignore_nosub``; the other searches already left them out, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
 - Fix :func:`find_matching_paths` omitting files with a ``tracksys`` entity and returning no matches when ``tracking_systems`` is specified, by `Shubham Padkonde`_.
 
 ⚕️ Code health

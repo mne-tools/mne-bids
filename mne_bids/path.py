@@ -3026,7 +3026,14 @@ def _return_root_paths(
         # FALLBACK: Original implementation when entities not available
         # or subject unknown
         if datatype is None and not ignore_nosub:
-            paths = _path_rglob(root, "*.*")
+            # Like the glob-based searches below, leave out hidden files and
+            # everything inside hidden directories (.git, .datalad, ...).
+            depth = len(root.parts)
+            paths = [
+                path
+                for path in _path_rglob(root, "*.*")
+                if not any(part.startswith(".") for part in path.parts[depth:])
+            ]
         else:
             if datatype is not None:
                 return _scan_datatype_dirs(

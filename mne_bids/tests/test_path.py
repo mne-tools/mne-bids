@@ -1879,6 +1879,21 @@ def test_find_matching_paths(bids_root):
     paths_find = find_matching_paths(bids_root)
     assert paths_match == paths_find
 
+    # Hidden files and directories are left out by every search
+    data_file = paths_find[0].fpath
+    hidden_file = data_file.with_name(f".{data_file.name}.tmp")
+    hidden_dir = Path(bids_root) / ".hidden" / "sub-01" / "meg"
+    hidden_dir.mkdir(parents=True)
+    for fname in (hidden_file, hidden_dir / "sub-01_task-rest_meg.fif"):
+        fname.touch()
+    assert find_matching_paths(bids_root) == paths_find
+    for kwargs in ({"ignore_nosub": True}, {"datatypes": "meg"}):
+        found = find_matching_paths(bids_root, **kwargs)
+        parts = [path.fpath.relative_to(bids_root).parts for path in found]
+        assert parts and not any(p.startswith(".") for ps in parts for p in ps)
+    hidden_file.unlink()
+    sh.rmtree(hidden_dir.parents[1])
+
     # Datatype is important because handled differently
     bids_path_01 = BIDSPath(root=bids_root, datatype="meg")
     paths_match = bids_path_01.match(ignore_json=False)
