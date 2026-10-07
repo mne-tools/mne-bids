@@ -3,6 +3,7 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import contextvars
 import copy
 import fnmatch
 import glob
@@ -11,6 +12,7 @@ import json
 import os
 import re
 import shutil as sh
+from contextlib import contextmanager
 from datetime import datetime
 from io import StringIO
 from os import path as op
@@ -2098,7 +2100,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     # Actually search now!
     candidate_list = []
     for search_str in search_strs_complete:
-        candidate_list.extend(glob.iglob(search_str))
+        candidate_list.extend(_sidecar_glob(search_str))
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)
 
     # If no candidates found within subject directory, search at dataset root
@@ -2146,6 +2148,67 @@ _ext_map = {  # these sidecar files should only ever have these extensions
 }
 
 
+_DIR_LISTINGS = contextvars.ContextVar("_DIR_LISTINGS", default=None)
+
+
+@contextmanager
+def _share_dir_listings():
+    """List each directory once for all sidecar lookups made inside the block.
+
+    Reading one recording looks up several sidecars in the same few directories.
+    On network filesystems every lookup of a file that is not there is a round
+    trip to the server, so the lookups share one listing per directory instead.
+    """
+    if _DIR_LISTINGS.get() is not None:
+        yield
+        return
+    token = _DIR_LISTINGS.set({})
+    try:
+        yield
+    finally:
+        _DIR_LISTINGS.reset(token)
+
+
+def _listed(dir_):
+    """Return the entries of ``dir_`` by name, or None when listings are not shared."""
+    listings = _DIR_LISTINGS.get()
+    if listings is None:
+        return None
+    dir_ = str(dir_)
+    if dir_ not in listings:
+        try:
+            with os.scandir(dir_) as it:
+                listings[dir_] = {entry.name: entry for entry in it}
+        except OSError:
+            listings[dir_] = {}
+    return listings[dir_]
+
+
+def _sidecar_is_file(path, bids_root):
+    """Like ``path.is_file()``, answered from a shared directory listing if any."""
+    # The root can hold thousands of subject folders: ask for the one file there.
+    entries = None if path.parent == bids_root else _listed(path.parent)
+    if entries is None:
+        return path.is_file()
+    entry = entries.get(path.name)
+    try:
+        return entry is not None and entry.is_file()
+    except OSError:
+        return False
+
+
+def _sidecar_glob(search_str):
+    """Like ``glob.iglob(search_str)``, answered from a shared listing if any."""
+    dir_, pattern = os.path.split(search_str)
+    if glob.has_magic(dir_) or not glob.has_magic(pattern) or pattern.startswith("."):
+        return glob.iglob(search_str)
+    entries = _listed(dir_)
+    if entries is None:
+        return glob.iglob(search_str)
+    names = [name for name in entries if not name.startswith(".")]
+    return [os.path.join(dir_, name) for name in fnmatch.filter(names, pattern)]
+
+
 def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
     # try some shortcuts that should work for some standard files
     # (e.g., those written with MNE-BIDS) when the BIDSPath is sufficiently complete
@@ -2190,10 +2253,10 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
             # we need to check with task as well
             if suffix != "scans" and bids_path.task is not None:
                 shortcut_file = dir_ / f"{entity_str}task-{bids_path.task}_{path_end}"
-                if shortcut_file.is_file():
+                if _sidecar_is_file(shortcut_file, bids_root):
                     return shortcut_file
             shortcut_file = dir_ / f"{entity_str}{path_end}"
-            if shortcut_file.is_file():
+            if _sidecar_is_file(shortcut_file, bids_root):
                 return shortcut_file
     # Ensure we can use our fast path in .fpath
     # knowing that extension and suffix are not None already
@@ -2207,7 +2270,7 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
             )
             .fpath
         )
-        if fast_path.is_file():
+        if _sidecar_is_file(fast_path, bids_root):
             return fast_path
 
 
