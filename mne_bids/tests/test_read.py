@@ -2554,7 +2554,7 @@ def test_read_epochs_bids_eeglab(tmp_path):
         read_raw_bids(bp)
 
 
-def test_read_epochs_bids_fif(tmp_path, recwarn):
+def test_read_epochs_bids_fif(tmp_path):
     """read_epochs_bids loads FIF epoched data; read_raw_bids refuses it."""
     info = mne.create_info(["MEG1", "MEG2"], 100.0, ch_types="mag")
     data = np.random.default_rng(0).normal(size=(3, 2, 50)) * 1e-12
@@ -2571,7 +2571,8 @@ def test_read_epochs_bids_fif(tmp_path, recwarn):
         root=tmp_path,
     )
     bp.directory.mkdir(parents=True)
-    expected.save(bp.fpath, verbose=False)
+    with pytest.warns(RuntimeWarning, match="naming conventions"):
+        expected.save(bp.fpath, verbose=False)
     bp.copy().update(extension=".json").fpath.write_text(
         '{"TaskName": "t", "PowerLineFrequency": 60, "RecordingType": "epoched"}'
     )
@@ -2582,9 +2583,7 @@ def test_read_epochs_bids_fif(tmp_path, recwarn):
     (tmp_path / "dataset_description.json").write_text(
         '{"Name": "x", "BIDSVersion": "1.8.0"}'
     )
-    recwarn.clear()
-    epochs = read_epochs_bids(bp)
-    assert not [w for w in recwarn if "naming conventions" in str(w.message)]
+    epochs = read_epochs_bids(bp)  # no warning about the BIDS file name
     np.testing.assert_allclose(epochs.get_data(), expected.get_data())
     assert epochs.event_id == expected.event_id
     assert epochs.info["bads"] == ["MEG2"]

@@ -209,14 +209,13 @@ def _get_readers(name):
     import mne
     from mne import io
 
-    # Most readers live in mne.io; mne.read_epochs is in the top-level namespace.
-    # A few need a newer MNE than we require and are left out when missing:
-    # read_raw_mef (MNE >= 1.12) and read_raw_ant (MNE >= 1.9)
-    readers = {
-        key: getattr(io, func, None) or getattr(mne, func, None)
+    # hasattr because a few readers need a newer MNE than we require: read_raw_mef
+    # (MNE >= 1.12) and read_raw_ant (MNE >= 1.9). mne.read_epochs is not in mne.io.
+    return {
+        key: getattr(io, func, None) or getattr(mne, func)
         for key, func in _LAZY_READERS[name].items()
+        if hasattr(io, func) or hasattr(mne, func)
     }
-    return {key: func for key, func in readers.items() if func is not None}
 
 
 def __getattr__(name):
