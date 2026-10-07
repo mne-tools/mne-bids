@@ -9,8 +9,6 @@ import contextlib
 import inspect
 import os
 import shutil
-import stat
-import time
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -19,7 +17,6 @@ from mne.utils import _soft_import, logger, warn
 _LOCK_TIMEOUT_FALLBACK = 60.0
 _READ_MODES = (None, "r", "rt", "rb")
 _REPLACE_MODES = ("w", "wt", "wb")
-_STALE_TMP_SECONDS = 3600.0
 _env_lock_timeout = os.getenv("MNE_BIDS_FILELOCK_TIMEOUT", "")
 try:
     DEFAULT_LOCK_TIMEOUT = (
@@ -130,61 +127,20 @@ def _has_text(path, text, encoding="utf-8"):
         return False
 
 
-def _open_replacement(path, mode, *args, **kwargs):
-    """Open a temporary sibling of ``path`` that will replace it.
-
-    Returns ``(fid, tmp)``, or ``None`` when ``path`` has to be written in place:
-    a symlink is written through, so datalad/git-annex datasets behave as before
-    (#1569), and so is a writable file in a read-only directory. The new file
-    gets the permissions of the file it replaces.
-
-    The sibling is ``.<name>.tmp``. If that name is taken, it belongs either to
-    another writer or to one that was killed, so a unique name is used instead,
-    and the leftover of a killed writer is removed once it is old enough.
-    """
-    try:
-        target = os.lstat(path)
-    except FileNotFoundError:
-        target = None
-    if target is not None and stat.S_ISLNK(target.st_mode):
-        return None
-    for name in (f".{path.name}.tmp", f".{path.name}.{os.urandom(4).hex()}.tmp"):
-        tmp = path.with_name(name)
-        try:
-            fid = open(tmp, mode.replace("w", "x"), *args, **kwargs)
-            break
-        except FileExistsError:
-            with contextlib.suppress(OSError):
-                if time.time() - os.lstat(tmp).st_mtime > _STALE_TMP_SECONDS:
-                    os.unlink(tmp)
-        except PermissionError:
-            return None
-    else:
-        raise FileExistsError(f"Could not create a temporary file next to {path}")
-    try:
-        if target is not None:
-            wanted = stat.S_IMODE(target.st_mode)
-            if stat.S_IMODE(os.fstat(fid.fileno()).st_mode) != wanted:
-                os.chmod(tmp, wanted)
-    except BaseException:
-        fid.close()
-        with contextlib.suppress(OSError):
-            os.unlink(tmp)
-        raise
-    return fid, tmp
-
-
 @contextmanager
 def _replace_on_exit(path, fid, tmp, *, lock=True):
     """Move ``tmp`` over ``path`` once ``fid`` is written; drop it on failure.
 
     Readers see either the previous or the new file, never a partially written
-    one. On Windows a target held open by another process cannot be replaced
-    and is overwritten in place, under the lock.
+    one. The new file gets the permissions of the file it replaces. On Windows a
+    target held open by another process cannot be replaced and is overwritten in
+    place, under the lock.
     """
     try:
         with fid:
             yield fid
+        with contextlib.suppress(OSError):  # nothing to replace yet
+            shutil.copymode(path, tmp)
         try:
             os.replace(tmp, path)
         except PermissionError:
@@ -242,10 +198,17 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
         with open(canonical_path, *args, **kwargs) as fid:
             yield fid
         return
-    if mode in _REPLACE_MODES:
-        replacement = _open_replacement(canonical_path, *args, **kwargs)
-        if replacement is not None:
-            with _replace_on_exit(canonical_path, *replacement, lock=lock) as fid:
+    # A symlink is written through, so datalad/git-annex datasets behave as before
+    # (#1569), and so is a writable file in a read-only directory.
+    if mode in _REPLACE_MODES and not canonical_path.is_symlink():
+        name = f".{canonical_path.name}.{os.urandom(4).hex()}.tmp"
+        tmp = canonical_path.with_name(name)
+        try:
+            fid = open(tmp, *args, **kwargs)
+        except PermissionError:
+            pass
+        else:
+            with _replace_on_exit(canonical_path, fid, tmp, lock=lock):
                 yield fid
             return
 

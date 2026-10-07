@@ -626,12 +626,10 @@ def _readme(datatype, fname):
         Filename to save the README to.
     """
     # Nothing to do, and no lock to take, when both references are already there.
-    try:
+    if fname.is_file():
         text = fname.read_text(_detect_file_encoding(fname))
-    except (OSError, UnicodeError):
-        text = ""
-    if REFERENCES["mne-bids"] in text and REFERENCES[datatype] in text:
-        return
+        if REFERENCES["mne-bids"] in text and REFERENCES[datatype] in text:
+            return
 
     # Hold the lock across read and write so concurrent writers cannot
     # observe a partially written file.
@@ -857,9 +855,7 @@ def _participants_json(fname, overwrite=False):
     if overwrite:
         try:
             current = fpath.read_text(encoding="utf-8")
-            orig_data = json.loads(current, object_pairs_hook=OrderedDict)
-            merged = {**orig_data, **new_data}
-            merged = {key: merged[key] for key in [*new_data, *orig_data]}
+            merged = {**new_data, **json.loads(current), **new_data}
             if json.dumps(merged, indent=4, ensure_ascii=False) + "\n" == current:
                 return
         except (OSError, ValueError, TypeError):
@@ -1802,7 +1798,7 @@ def make_dataset_description(
 
     # Prepare dataset_description.json
     fname = op.join(path, "dataset_description.json")
-    description = OrderedDict(
+    requested = OrderedDict(
         [
             ("Name", name),
             ("BIDSVersion", BIDS_VERSION),
@@ -1825,60 +1821,59 @@ def make_dataset_description(
     def _read():
         try:
             with open(fname, encoding="utf-8") as fin:
-                text = fin.read()
-            orig_cols = json.loads(text)
-        except (json.JSONDecodeError, OSError):
-            # File is missing, empty or corrupted
-            return None, {}
-        return (text, orig_cols) if isinstance(orig_cols, dict) else (None, {})
+                return fin.read()
+        except OSError:
+            return ""
 
-    def _merge(orig_cols, overwrite, warn_conflict):
+    def _merge(text, overwrite=overwrite):
         """Combine the requested fields with those already in the file."""
-        merged = OrderedDict(description)
-        conflict = orig_cols.get("BIDSVersion", BIDS_VERSION) != BIDS_VERSION
-        if conflict:
-            if warn_conflict:
+        description = requested.copy()
+        try:
+            orig_cols = json.loads(text)
+        except json.JSONDecodeError:
+            # File is missing, empty or corrupted
+            orig_cols = {}
+        if orig_cols:
+            if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
                 warnings.warn(
                     "Conflicting BIDSVersion found in dataset_description.json! "
                     "Consider setting BIDS root to a new directory and redo "
                     "conversion after ensuring all software has been updated. "
                     "Original dataset description will not be overwritten."
                 )
-            overwrite = False
-        if orig_cols:
-            for key in merged:
-                if merged[key] is None:
-                    merged[key] = orig_cols.get(key, None)
+                overwrite = False
+            for key in description:
+                if description[key] is None:
+                    description[key] = orig_cols.get(key, None)
                 elif not overwrite:
-                    merged[key] = orig_cols.get(key, merged[key])
+                    description[key] = orig_cols.get(key, description[key])
 
         # default author to make dataset description BIDS compliant
         # if the user passed an author don't overwrite,
         # if there was an author there, only overwrite if `overwrite=True`
-        if authors is None and (merged["Authors"] is None or overwrite):
-            merged["Authors"] = ["[Unspecified1]", "[Unspecified2]"]
+        if authors is None and (description["Authors"] is None or overwrite):
+            description["Authors"] = ["[Unspecified1]", "[Unspecified2]"]
 
         # Only write data that is not None
-        for key in [key for key, val in merged.items() if val is None]:
-            merged.pop(key)
+        pop_keys = [key for key, val in description.items() if val is None]
+        for key in pop_keys:
+            description.pop(key)
 
         # Preserve BIDS-spec keys we do not model (e.g. Description, DatasetLinks).
         for key, val in orig_cols.items():
-            merged.setdefault(key, val)
-        return merged, conflict
+            description.setdefault(key, val)
+        return description
 
     # Nothing to do, and no lock to take, when the file already holds the result.
-    text, orig_cols = _read()
-    warn_conflict = True
-    if text is not None:
-        merged, conflict = _merge(orig_cols, overwrite, warn_conflict)
-        if json.dumps(merged, indent=4, ensure_ascii=False) + "\n" == text:
-            return
-        warn_conflict = not conflict  # already warned
+    text = _read()
+    description = _merge(text)
+    if json.dumps(description, indent=4, ensure_ascii=False) + "\n" == text:
+        return
 
     # Handle potentially existing file contents
     with _open_lock(fname):
-        description, _ = _merge(_read()[1], overwrite, warn_conflict)
+        if (current := _read()) != text:  # another writer got there first
+            description = _merge(current)
         _write_json(fname, description, overwrite=True, lock=False)
 
 

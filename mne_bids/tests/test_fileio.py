@@ -414,15 +414,6 @@ def test_open_lock_write_is_atomic(tmp_path):
         assert (target.stat().st_mode & 0o777) == 0o640
     assert sorted(p.name for p in tmp_path.iterdir()) == ["sidecar.json"]
 
-    # the temporary file of a writer that was killed long ago is cleaned up
-    leftover = tmp_path / ".sidecar.json.tmp"
-    leftover.write_text("partial")
-    os.utime(leftover, (0, 0))
-    with _open_lock(target, "w", encoding="utf-8") as fid:
-        fid.write("newer")
-    assert target.read_text() == "newer"
-    assert sorted(p.name for p in tmp_path.iterdir()) == ["sidecar.json"]
-
     # writing what the file already holds leaves it alone
     _write_json(target, {"a": 1}, overwrite=True)
     inode = target.stat().st_ino
