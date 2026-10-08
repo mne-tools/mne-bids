@@ -1185,8 +1185,10 @@ class BIDSPath:
         if self.check:
             _check_empty_room_basename(self)
 
+            # these acq labels are reserved for MEG fine-calibration/crosstalk files
             if (
                 self.acquisition in ("calibration", "crosstalk")
+                and self.datatype in (None, "meg")
                 and self.task is not None
             ):
                 raise ValueError(
