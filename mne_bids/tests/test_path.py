@@ -455,8 +455,7 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     fnames = mne_bids.path._return_root_paths(tmp_bids_root)
     assert len(fnames) == len(set(fnames))
     assert len(fnames) == 10956
-    # Counts every directory entry the scandir walk lists. glob listed the same
-    # directories, but only the paths it yielded could be counted.
+    # Number of directory entries listed while walking the tree.
     max_count = 15253
     assert path_counter.count == max_count
 
@@ -1875,7 +1874,7 @@ def test_find_matching_paths(bids_root):
     # Hidden files and directories are left out by every search
     data_file = paths_find[0].fpath
     hidden_file = data_file.with_name(f".{data_file.name}.tmp")
-    hidden_dir = Path(bids_root) / ".hidden" / "sub-01" / "meg"
+    hidden_dir = bids_root / ".hidden" / "sub-01" / "meg"
     hidden_dir.mkdir(parents=True)
     for fname in (hidden_file, hidden_dir / "sub-01_task-rest_meg.fif"):
         fname.touch()

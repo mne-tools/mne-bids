@@ -47,13 +47,12 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Fix :func:`find_matching_paths` and :meth:`BIDSPath.match` returning hidden files, and files inside hidden directories such as ``.git``, and not following symbolic links to directories, when a whole dataset is searched without ``datatypes`` and without ``ignore_nosub``; this search now behaves like the other ones, by `Hamza Abdelhedi`_ (:gh:`1678`)
+- :func:`find_matching_paths` and :meth:`BIDSPath.match` now follow symbolic links to directories, and no longer return hidden files (or files inside hidden directories), which could happen when a dataset was searched without ``datatypes`` and without ``ignore_nosub``, by `Hamza Abdelhedi`_ (:gh:`1678`)
 - Fix :func:`find_matching_paths` omitting files with a ``tracksys`` entity and returning no matches when ``tracking_systems`` is specified, by `Shubham Padkonde`_.
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- Sped up :meth:`mne_bids.BIDSPath.match` and :func:`mne_bids.find_matching_paths`: the tree is now walked once with :func:`os.scandir` and file types are taken from the directory listing, without a ``stat`` call per file, which matters most on network filesystems, by `Hamza Abdelhedi`_ (:gh:`1678`)
-- :func:`mne_bids.read_raw_bids` now lists each directory once when it looks up the sidecar files of a recording, instead of asking the filesystem about every candidate file, which saves calls on network filesystems, by `Hamza Abdelhedi`_ (:gh:`1678`)
+- Improvements to directory searching that speed up :meth:`BIDSPath.match`, :func:`find_matching_paths`, and :func:`read_raw_bids`, especially when searching network file systems, by `Hamza Abdelhedi`_ (:gh:`1678`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`

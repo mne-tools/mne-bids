@@ -1723,9 +1723,9 @@ def _parse_ext(raw_fname):
     return fname, ext
 
 
-def _infer_datatype_from_path(fname: Path, exists=None):
+def _infer_datatype_from_path(fname: Path, assume_exists=False):
     # get the parent
-    if fname.exists() if exists is None else exists:
+    if assume_exists or fname.exists():
         datatype = fname.parent.name
         if any([datatype.startswith(entity) for entity in ["sub", "ses"]]):
             datatype = None
@@ -1760,7 +1760,7 @@ def get_bids_path_from_fname(fname, check=True, *, verbose=None):
 
 
 @verbose
-def _bids_path_from_fname(fname, check, *, exists=None, verbose=None):
+def _bids_path_from_fname(fname, check, *, assume_exists=False, verbose=None):
     fpath = Path(fname)
     fname = fpath.name
 
@@ -1780,7 +1780,7 @@ def _bids_path_from_fname(fname, check, *, exists=None, verbose=None):
     if extension is not None:
         assert extension.startswith(".")  # better safe than sorry
 
-    datatype = _infer_datatype_from_path(fpath, exists)
+    datatype = _infer_datatype_from_path(fpath, assume_exists)
 
     # find root and datatype if it exists
     if fpath.parent == "":
@@ -3042,22 +3042,33 @@ def _return_root_paths(
     paths = []
 
     def visit(dir_, keep, top=False):
+        # ``keep``: whether the entries listed directly in ``dir_`` are returned.
+        # ``top``: whether ``dir_`` is the directory the walk starts from.
         for entry in _scandir(dir_):
             name = entry.name
             try:
                 is_dir, is_file = entry.is_dir(), entry.is_file()
             except OSError:
                 continue
-            # Keep files and CTF .ds directories, and omit the JSON sidecars if
+            # Return files and CTF .ds directories whose name has an extension
+            # (so not README or LICENSE), and omit the JSON sidecars if
             # `ignore_json` is True.
             if keep and "." in name:
                 if is_dir and name.endswith(".ds"):
                     paths.append(Path(entry.path))
                 elif is_file and not (ignore_json and name.endswith(".json")):
                     paths.append(Path(entry.path))
+            # Go into every directory, a .ds directory included, except that
+            # `ignore_nosub` skips the directories of the starting directory that
+            # are not subject directories (derivatives, sourcedata, code, ...).
+            # Without `datatypes`, everything below is returned. With `datatypes`,
+            # only the entries of a directory named after one of them are.
             if is_dir and not (top and ignore_nosub and not name.startswith("sub-")):
                 visit(entry.path, datatypes is None or name in datatypes)
 
+    # The entries of the starting directory itself are returned only by a search
+    # of the whole dataset: `datatypes` restricts the result to the datatype
+    # directories, and `ignore_nosub` to what is inside the sub-* directories.
     visit(start, datatypes is None and not ignore_nosub, top=True)
     return paths
 
@@ -3098,7 +3109,7 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     bids_paths = []
     for fname in fnames:
         # the names come from a directory listing, so the files are known to exist
-        bids_path = _bids_path_from_fname(fname, check=False, exists=True)
+        bids_path = _bids_path_from_fname(fname, check=False, assume_exists=True)
         inferred_root = bids_path.root
         bids_path.root = root
         expected_fpath = bids_path.directory / bids_path.basename
