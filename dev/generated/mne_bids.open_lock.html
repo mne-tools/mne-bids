@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.get_anonymization_daysback &#8212; MNE-BIDS 0.21.0.dev6+gcd32e35ff documentation</title>
+    <title>mne_bids.open_lock &#8212; MNE-BIDS 0.21.0.dev6+gcd32e35ff documentation</title>
   
   
   
@@ -66,7 +66,7 @@
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.get_anonymization_daysback';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.open_lock';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-bids/versions.json';
@@ -77,9 +77,9 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_bids.search_folder_for_text" href="mne_bids.search_folder_for_text.html" />
-    <link rel="prev" title="mne_bids.template_to_head" href="mne_bids.template_to_head.html" />
-    <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.get_anonymization_daysback.html" />
+    <link rel="next" title="mne_bids.stats.count_events" href="mne_bids.stats.count_events.html" />
+    <link rel="prev" title="mne_bids.events_file_to_annotation_kwargs" href="mne_bids.events_file_to_annotation_kwargs.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.open_lock.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
@@ -483,7 +483,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.convert_montage_to_mri.html">mne_bids.convert_montage_to_mri</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.convert_montage_to_ras.html">mne_bids.convert_montage_to_ras</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.template_to_head.html">mne_bids.template_to_head</a></li>
-<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">mne_bids.get_anonymization_daysback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.get_anonymization_daysback.html">mne_bids.get_anonymization_daysback</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.search_folder_for_text.html">mne_bids.search_folder_for_text</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.print_dir_tree.html">mne_bids.print_dir_tree</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.get_bids_path_from_fname.html">mne_bids.get_bids_path_from_fname</a></li>
@@ -495,7 +495,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.anonymize_dataset.html">mne_bids.anonymize_dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.find_matching_paths.html">mne_bids.find_matching_paths</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.events_file_to_annotation_kwargs.html">mne_bids.events_file_to_annotation_kwargs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mne_bids.open_lock.html">mne_bids.open_lock</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">mne_bids.open_lock</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.stats.count_events.html">mne_bids.stats.count_events</a></li>
@@ -554,7 +554,7 @@
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Documentation</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.get_anonymization_daysback</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.open_lock</span></li>
   </ul>
 </nav>
 </div>
@@ -571,54 +571,44 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="mne-bids-get-anonymization-daysback">
-<h1>mne_bids.get_anonymization_daysback<a class="headerlink" href="#mne-bids-get-anonymization-daysback" title="Link to this heading">#</a></h1>
+  <section id="mne-bids-open-lock">
+<h1>mne_bids.open_lock<a class="headerlink" href="#mne-bids-open-lock" title="Link to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_bids.get_anonymization_daysback">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_anonymization_daysback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raws</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#get_anonymization_daysback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_anonymization_daysback" title="Link to this definition">#</a></dt>
-<dd><p>Get the group min and max number of daysback necessary for BIDS specs.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>It is important that you remember the anonymization
-number if you would ever like to de-anonymize but
-that it is not included in the code publication
-as that would break the anonymization.</p>
-</div>
-<p>BIDS requires that anonymized dates be before 1925. In order to
-preserve the longitudinal structure and ensure anonymization, the
-user is asked to provide the same <code class="docutils literal notranslate"><span class="pre">daysback</span></code> argument to each call
-of <a class="reference internal" href="mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>. To determine the minimum number of daysback
-necessary, this function will calculate the minimum number based on
-the most recent measurement date of raw objects.</p>
+<dt class="sig sig-object py" id="mne_bids.open_lock">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">open_lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_bids.open_lock" title="Link to this definition">#</a></dt>
+<dd><p>Context manager that acquires a file lock with optional file opening.</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">filelock</span></code> package is available, a lock is acquired on a lock file
+based on the given path (by appending ‘.lock’). Lock files are left behind
+to avoid race conditions during concurrent operations.</p>
+<p>The lock is re-entrant per process: nested calls for the same <code class="docutils literal notranslate"><span class="pre">path</span></code> will
+reuse the existing lock instead of attempting to acquire it again.</p>
+<p>If file opening arguments (<code class="docutils literal notranslate"><span class="pre">*args</span></code>, <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>) are provided, the file is opened
+in the specified mode. Otherwise, just the lock is acquired.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>raws</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>Subject raw data or list of raw data from several subjects.</p>
+<dt><strong>path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The path to acquire a lock for (and optionally open).</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
-verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.14)"><span class="xref std std-ref">logging documentation</span></a> and
-<a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
-argument.</p>
+<dt><strong>*args</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></span></dt><dd><p>Additional positional arguments forwarded to <code class="docutils literal notranslate"><span class="pre">open</span></code>.</p>
+</dd>
+<dt><strong>lock_timeout</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Timeout in seconds for acquiring the lock. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default
+timeout applies.</p>
+</dd>
+<dt><strong>lock</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If True, use a FileLock (if available) to lock the file.</p>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Additional keyword arguments forwarded to <code class="docutils literal notranslate"><span class="pre">open</span></code>.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>daysback_min</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The minimum number of daysback necessary to be compatible with BIDS.</p>
-</dd>
-<dt><strong>daysback_max</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The maximum number of daysback that MNE can store.</p>
+<dt><strong>fid</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/io.html#io.IOBase" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.IOBase</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>File object if file opening args were provided, None otherwise.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<section id="examples-using-mne-bids-get-anonymization-daysback">
-<span id="sphx-glr-backreferences-mne-bids-get-anonymization-daysback"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.get_anonymization_daysback</span></code><a class="headerlink" href="#examples-using-mne-bids-get-anonymization-daysback" title="Link to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. We will use the EEG Motor Movement/Imagery Dataset available on the PhysioBank database. We recommend that you go through the more basic BIDS conversion example before checking out this group conversion example: ex-convert-mne-sample"><img alt="" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_group_studies.html"><span class="doc">BIDS conversion for group studies</span></a></p>
-  <div class="sphx-glr-thumbnail-title">BIDS conversion for group studies</div>
-</div></div></section>
 </section>
 
 
@@ -632,20 +622,20 @@ argument.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mne_bids.template_to_head.html"
+       href="mne_bids.events_file_to_annotation_kwargs.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">mne_bids.template_to_head</p>
+        <p class="prev-next-title">mne_bids.events_file_to_annotation_kwargs</p>
       </div>
     </a>
     <a class="right-next"
-       href="mne_bids.search_folder_for_text.html"
+       href="mne_bids.stats.count_events.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_bids.search_folder_for_text</p>
+        <p class="prev-next-title">mne_bids.stats.count_events</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -668,8 +658,7 @@ argument.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.get_anonymization_daysback"><code class="docutils literal notranslate"><span class="pre">get_anonymization_daysback()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-mne-bids-get-anonymization-daysback">Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.get_anonymization_daysback</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.open_lock"><code class="docutils literal notranslate"><span class="pre">open_lock()</span></code></a></li>
 </ul>
   </nav></div>
 
