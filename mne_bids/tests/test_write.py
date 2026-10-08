@@ -497,6 +497,16 @@ def test_make_dataset_description_preserves_unknown_keys(tmp_path):
     final = json.loads(fname.read_text())
     assert final["Description"] == "Free-form custom field"
     assert final["Name"] == "enriched"
+    # extra_fields writes unmodeled keys and follows the overwrite rules
+    make_dataset_description(path=tmp_path, name="x", extra_fields={"Year": 1})
+    make_dataset_description(path=tmp_path, name="x", extra_fields={"Year": 2})
+    assert json.loads(fname.read_text())["Year"] == 1
+    make_dataset_description(
+        path=tmp_path, name="x", extra_fields={"Year": 2}, overwrite=True
+    )
+    assert json.loads(fname.read_text())["Year"] == 2
+    with pytest.raises(ValueError, match="cannot set.*Name"):
+        make_dataset_description(path=tmp_path, name="x", extra_fields={"Name": "y"})
 
 
 def test_stamp_to_dt():
