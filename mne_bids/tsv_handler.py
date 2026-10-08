@@ -5,7 +5,6 @@
 
 import codecs
 import gzip
-import io
 import json
 import re
 from collections import OrderedDict
@@ -33,10 +32,7 @@ def _normalize_tsv_cell(value):
     return _DECIMAL_COMMA_RE.sub(r"\1.\2", stripped)
 
 
-_ENCODING_CHUNK_SIZE = 65536
-
-
-def _detect_file_encoding(fname, chunk_size=_ENCODING_CHUNK_SIZE):
+def _detect_file_encoding(fname, chunk_size=65536):
     """Detect the text encoding of a file from its first chunk.
 
     Checks for a BOM and otherwise tests UTF-8 validity on a single chunk
@@ -47,11 +43,7 @@ def _detect_file_encoding(fname, chunk_size=_ENCODING_CHUNK_SIZE):
     fname = Path(fname)
     opener = gzip.open if fname.suffix == ".gz" else open
     with opener(fname, "rb") as f:
-        return _detect_encoding(f.read(chunk_size))
-
-
-def _detect_encoding(chunk):
-    """Detect the text encoding of the first bytes of a file."""
+        chunk = f.read(chunk_size)
     if chunk.startswith(codecs.BOM_UTF8):
         return "utf-8-sig"
     if chunk.startswith((codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)):
@@ -201,21 +193,11 @@ def _from_tsv(fname, dtypes=None):
     fname = Path(fname)
     compressed = fname.suffix == ".gz"
 
-    # Read the file once: its first bytes give the encoding, and the decoded
-    # text is parsed from memory. ``newline=None`` treats line endings as
-    # opening the file in text mode would.
-    opener = gzip.open if compressed else open
-    with opener(fname, "rb") as fid:
-        content = fid.read()
-    encoding = _detect_encoding(content[:_ENCODING_CHUNK_SIZE])
+    encoding = _detect_file_encoding(fname)
     if not encoding.startswith("utf-8"):
         logger.info(f"Reading non-UTF-8 TSV as {encoding}: '{fname}'")
     data = np.loadtxt(
-        io.StringIO(content.decode(encoding), newline=None),
-        dtype=str,
-        delimiter="\t",
-        ndmin=2,
-        comments=None,
+        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
     )
     # Handle empty files - data may be empty or only have a header
     if data.size == 0:
