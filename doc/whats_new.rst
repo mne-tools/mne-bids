@@ -52,7 +52,7 @@ Detailed list of changes
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- :func:`mne_bids.read_raw_bids` now parses ``participants.tsv`` once per version of the file instead of on every call, so reading every recording of a large dataset no longer gets slower as the number of subjects grows, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
-- TSV sidecar files are now read from disk once instead of twice (once to detect the encoding and once to parse), and dropping rows from a table no longer deep-copies it first, by `Hamza Abdelhedi`_ (:gh:`XXXX`)
+- :func:`mne_bids.read_raw_bids` now parses ``participants.tsv`` once per version of the file instead of on every call, so reading every recording of a large dataset no longer gets slower as the number of subjects grows, by `Hamza Abdelhedi`_ (:gh:`1681`)
+- TSV sidecar files are now read from disk once instead of twice (once to detect the encoding and once to parse), and dropping rows from a table no longer deep-copies it first, by `Hamza Abdelhedi`_ (:gh:`1681`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
