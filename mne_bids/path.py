@@ -3053,11 +3053,11 @@ def _return_root_paths(
             # Return files and CTF .ds directories whose name has an extension
             # (so not README or LICENSE), and omit the JSON sidecars if
             # `ignore_json` is True.
-            if keep and "." in name:
-                if is_dir and name.endswith(".ds"):
-                    paths.append(Path(entry.path))
-                elif is_file and not (ignore_json and name.endswith(".json")):
-                    paths.append(Path(entry.path))
+            wanted = keep and "." in name
+            if wanted and is_dir and name.endswith(".ds"):
+                paths.append(Path(entry.path))
+            elif wanted and is_file and not (ignore_json and name.endswith(".json")):
+                paths.append(Path(entry.path))
             # Go into every directory, a .ds directory included, except that
             # `ignore_nosub` skips the directories of the starting directory that
             # are not subject directories (derivatives, sourcedata, code, ...).
