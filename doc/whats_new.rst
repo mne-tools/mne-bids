@@ -38,7 +38,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Reading sidecar files no longer takes a file lock: files written by MNE-BIDS are now replaced atomically (written to a temporary file next to the target, then moved into place), so a reader always sees either the old or the new file. A plain overwrite no longer takes a lock either, and a sidecar whose content would not change is no longer rewritten, so its modification time stays as it was, by `Hamza Abdelhedi`_ (:gh:`1680`)
+- Reading sidecar files no longer takes a file lock: files written by MNE-BIDS are now replaced atomically (written to a temporary file next to the target, then moved into place), so a reader always sees either the old or the new file. A plain overwrite no longer takes a lock either, and a sidecar whose content would not change is no longer rewritten, so its modification time stays as it was. The same holds for :func:`mne_bids.open_lock` when it opens a file for reading or for a plain overwrite; it still takes the lock when called without a mode, by `Hamza Abdelhedi`_ (:gh:`1680`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^

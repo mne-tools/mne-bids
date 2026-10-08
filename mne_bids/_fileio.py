@@ -167,11 +167,12 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
     If file opening arguments (``*args``, ``**kwargs``) are provided, the file is opened
     in the specified mode. Otherwise, just the lock is acquired.
 
-    Files opened for writing (``"w"``/``"wb"``) are replaced in one step (see
-    :func:`_replace_on_exit`), so a reader can never observe a partially written
-    file. Files opened read-only are therefore read without a lock, and so is a
-    plain overwrite: only a sequence that reads a file and then writes it needs
-    the lock, which its caller holds around the whole sequence.
+    Files opened for writing (``"w"`` / ``"wb"``) are written to a temporary file
+    and moved into place in one step, so a reader can never observe a partially
+    written file. No lock is therefore taken when a file is opened read-only or
+    for a plain overwrite. The lock is taken when no file is opened and for the
+    other modes (such as ``"r+"`` and ``"a"``): to read a file and then write
+    it, hold the lock around the whole sequence with ``open_lock(path)``.
 
     Parameters
     ----------
