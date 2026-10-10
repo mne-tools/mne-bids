@@ -179,6 +179,9 @@ def test_open_lock_basic(tmp_path):
     with _open_lock(test_file) as fid:
         assert fid is None
 
+    # public name
+    assert mne_bids.open_lock is _open_lock
+
 
 def test_open_lock_write(tmp_path):
     """Test lock with file writing."""
