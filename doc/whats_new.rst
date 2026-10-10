@@ -55,6 +55,8 @@ Detailed list of changes
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
+- :func:`mne_bids.read_raw_bids` now parses ``participants.tsv`` once per version of the file instead of on every call, so reading every recording of a large dataset no longer gets slower as the number of subjects grows, by `Hamza Abdelhedi`_ (:gh:`1681`)
+- Dropping rows from a TSV table no longer deep-copies the table first, by `Hamza Abdelhedi`_ (:gh:`1681`)
 - Sped up reading on network filesystems, where taking a lock for every sidecar was a large part of :func:`mne_bids.read_raw_bids`, and stopped the lock warnings on read-only datasets. :func:`mne_bids.write_raw_bids` is faster as well, alone and in parallel, because sidecars that are already up to date are neither locked nor rewritten, by `Hamza Abdelhedi`_ (:gh:`1680`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
