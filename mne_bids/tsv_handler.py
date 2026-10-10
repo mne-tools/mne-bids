@@ -5,6 +5,7 @@
 
 import codecs
 import gzip
+import io
 import json
 import re
 from collections import OrderedDict
@@ -32,17 +33,17 @@ def _normalize_tsv_cell(value):
     return _DECIMAL_COMMA_RE.sub(r"\1.\2", stripped)
 
 
-def _detect_file_encoding(fname, chunk_size=65536):
+def _detect_file_encoding(fname, chunk_size=65536, *, content=None):
     """Detect the text encoding of a file from its first chunk.
 
     Checks for a BOM and otherwise tests UTF-8 validity on a single chunk
     (default 64 KiB), falling back to ``latin-1``. Avoids reading the full
     file: enough to catch non-UTF-8 bytes in typical BIDS TSV files (e.g.
-    ``µV`` in ``channels.tsv``).
+    ``µV`` in ``channels.tsv``). ``content`` (bytes) is used instead of the file.
     """
     fname = Path(fname)
     opener = gzip.open if fname.suffix == ".gz" else open
-    with opener(fname, "rb") as f:
+    with opener(fname, "rb") if content is None else io.BytesIO(content) as f:
         chunk = f.read(chunk_size)
     if chunk.startswith(codecs.BOM_UTF8):
         return "utf-8-sig"
@@ -155,8 +156,7 @@ def _drop(data, values, column):
         Copy of the original data with 0 or more rows dropped.
 
     """
-    new_data = deepcopy(data)
-    new_data_col = np.array(new_data[column])
+    new_data_col = np.array(data[column])
 
     # Cast `values` to the same dtype as `new_data_col` to avoid a NumPy
     # FutureWarning, see
@@ -167,12 +167,13 @@ def _drop(data, values, column):
     values = np.array(values, dtype=dtype)
 
     mask = np.isin(new_data_col, values, invert=True)
-    for key in new_data.keys():
-        new_data[key] = np.array(new_data[key])[mask].tolist()
+    new_data = type(data)()
+    for key, column_data in data.items():
+        new_data[key] = np.array(column_data)[mask].tolist()
     return new_data
 
 
-def _from_tsv(fname, dtypes=None):
+def _from_tsv(fname, dtypes=None, *, content=None):
     """Read a tsv file into an OrderedDict.
 
     Parameters
@@ -182,6 +183,8 @@ def _from_tsv(fname, dtypes=None):
     dtypes : list, optional
         List of types to cast the values loaded as. This is specified column by
         column. Defaults to None. In this case all the data is loaded as strings.
+    content : bytes | None
+        The file's bytes, if already read. They are parsed instead of the file.
 
     Returns
     -------
@@ -193,11 +196,12 @@ def _from_tsv(fname, dtypes=None):
     fname = Path(fname)
     compressed = fname.suffix == ".gz"
 
-    encoding = _detect_file_encoding(fname)
+    encoding = _detect_file_encoding(fname, content=content)
     if not encoding.startswith("utf-8"):
         logger.info(f"Reading non-UTF-8 TSV as {encoding}: '{fname}'")
+    source = fname if content is None else io.StringIO(content.decode(encoding))
     data = np.loadtxt(
-        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
+        source, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
     )
     # Handle empty files - data may be empty or only have a header
     if data.size == 0:

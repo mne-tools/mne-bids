@@ -422,6 +422,20 @@ def test_read_participants_data(tmp_path):
         raw = read_raw_bids(bids_path=bids_path)
     assert raw.info["subject_info"] == dict()
 
+    # a rewrite that keeps the file size, within the timestamp resolution of the
+    # filesystem (1 s on some network filesystems), must still be picked up
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    raw.info["subject_info"] = {"sex": 2}
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    assert read_raw_bids(bids_path=bids_path).info["subject_info"]["sex"] == 2
+    stat = participants_tsv_fpath.stat()
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv["sex"][0] = "M"
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    os.utime(participants_tsv_fpath, ns=(stat.st_atime_ns, stat.st_mtime_ns))
+    assert participants_tsv_fpath.stat().st_size == stat.st_size
+    assert read_raw_bids(bids_path=bids_path).info["subject_info"]["sex"] == 1
+
 
 @pytest.mark.parametrize(
     ("hand_bids", "hand_mne", "sex_bids", "sex_mne"),

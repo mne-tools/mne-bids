@@ -54,6 +54,7 @@ Detailed list of changes
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- None yet
+- :func:`mne_bids.read_raw_bids` now parses ``participants.tsv`` once per version of the file instead of on every call, so reading every recording of a large dataset no longer gets slower as the number of subjects grows, by `Hamza Abdelhedi`_ (:gh:`1681`)
+- Dropping rows from a TSV table no longer deep-copies the table first, by `Hamza Abdelhedi`_ (:gh:`1681`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`

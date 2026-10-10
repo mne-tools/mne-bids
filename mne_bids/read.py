@@ -10,6 +10,7 @@ import warnings
 from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
+from functools import lru_cache
 from pathlib import Path
 
 import mne
@@ -296,8 +297,22 @@ def _verbose_list_index(lst, val, *, allow_all=False):
         raise ValueError(f"{exc}{extra}") from None
 
 
+@lru_cache(maxsize=1)
+def _participants_tsv(participants_fname, content):
+    """Parse participants.tsv once per content of the file.
+
+    ``content`` is the file's bytes. Reading them on every call is much cheaper
+    than parsing and, unlike file metadata, cannot miss a rewrite (some network
+    filesystems only store modification times in seconds). Only the last table
+    is kept, so a file that is rewritten often does not pile up in memory.
+    """
+    return _from_tsv(participants_fname, content=content)
+
+
 def _handle_participants_reading(participants_fname, raw, subject):
-    participants_tsv = _from_tsv(participants_fname)
+    participants_tsv = _participants_tsv(
+        participants_fname, participants_fname.read_bytes()
+    )
     subjects = participants_tsv["participant_id"]
     if subject not in subjects:
         warn(f"Subject {subject!r} is not listed in {participants_fname.name}")
