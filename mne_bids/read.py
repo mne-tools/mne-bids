@@ -33,6 +33,7 @@ from mne_bids.path import (
     _find_matching_sidecar,
     _infer_datatype,
     _parse_ext,
+    _share_dir_listings,
     get_bids_path_from_fname,
 )
 from mne_bids.tsv_handler import _drop, _from_tsv
@@ -1495,6 +1496,7 @@ def read_raw_bids(
     return raw
 
 
+@_share_dir_listings()  # the sidecars sit in the same few directories
 def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
     """Apply BIDS sidecars to a Raw or Epochs object."""
     datatype = bids_path.datatype
