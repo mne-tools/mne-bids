@@ -159,7 +159,7 @@ _READER_NAMES = {
     ".mefd": "read_raw_mef",
 }
 
-_EPOCH_READER_NAMES = {".set": "read_epochs_eeglab"}
+_EPOCH_READER_NAMES = {".set": "read_epochs_eeglab", ".fif": "read_epochs"}
 
 # Continuous-format files where each "trial" is a fixed-length segment of the
 # file. Trial duration is read from the sidecar's ``EpochLength`` field.
@@ -204,16 +204,17 @@ def _get_readers(name):
     Returns
     -------
     readers : dict
-        Maps file extensions (or ``raw`` class names) to ``mne.io`` functions.
+        Maps file extensions (or ``raw`` class names) to MNE reader functions.
     """
+    import mne
     from mne import io
 
     # hasattr because a few readers need a newer MNE than we require: read_raw_mef
-    # (MNE >= 1.12) and read_raw_ant (MNE >= 1.9)
+    # (MNE >= 1.12) and read_raw_ant (MNE >= 1.9). mne.read_epochs is not in mne.io.
     return {
-        key: getattr(io, func)
+        key: getattr(io, func, None) or getattr(mne, func)
         for key, func in _LAZY_READERS[name].items()
-        if hasattr(io, func)
+        if hasattr(io, func) or hasattr(mne, func)
     }
 
 
