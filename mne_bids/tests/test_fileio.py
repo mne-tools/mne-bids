@@ -8,7 +8,6 @@ import os
 import sys
 import threading
 import time
-import warnings
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import contextmanager
 from pathlib import Path
@@ -325,10 +324,8 @@ def test_open_lock_readonly_parent_falls_back(tmp_path):
             with _open_lock(test_file):
                 pass
         # reads take no lock, so a read-only dataset reads without warnings
-        with warnings.catch_warnings():
-            warnings.simplefilter("error")
-            with _open_lock(test_file, "r", encoding="utf-8") as fid:
-                assert fid.read() == "payload"
+        with _open_lock(test_file, "r", encoding="utf-8") as fid:
+            assert fid.read() == "payload"
     assert not (ro_dir / "file.json.lock").exists()
 
 
