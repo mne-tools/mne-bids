@@ -38,7 +38,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- None yet
+- Reading sidecar files no longer takes a file lock: files written by MNE-BIDS are now replaced atomically (written to a temporary file next to the target, then moved into place), so a reader always sees either the old or the new file. A plain overwrite no longer takes a lock either, and a sidecar whose content would not change is no longer rewritten, so its modification time stays as it was. The same holds for :func:`mne_bids.open_lock` when it opens a file for reading or for a plain overwrite; it still takes the lock when called without a mode, by `Hamza Abdelhedi`_ (:gh:`1680`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -48,6 +48,8 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
+- Fix a reader being able to see an empty or partially written sidecar file while another process was rewriting it. This happened when file locking was not active (``filelock`` missing or older than the required version); sidecars are now replaced atomically, by `Hamza Abdelhedi`_ (:gh:`1680`)
+- Fix :func:`mne_bids.write_raw_bids` updating ``.bidsignore`` without a lock when writing BTi/4D data, so that writers running in parallel could overwrite each other's changes, by `Hamza Abdelhedi`_ (:gh:`1680`)
 - Fix :func:`find_matching_paths` omitting files with a ``tracksys`` entity and returning no matches when ``tracking_systems`` is specified, by `Shubham Padkonde`_.
 
 ⚕️ Code health
@@ -55,5 +57,6 @@ Detailed list of changes
 
 - :func:`mne_bids.read_raw_bids` now parses ``participants.tsv`` once per version of the file instead of on every call, so reading every recording of a large dataset no longer gets slower as the number of subjects grows, by `Hamza Abdelhedi`_ (:gh:`1681`)
 - Dropping rows from a TSV table no longer deep-copies the table first, by `Hamza Abdelhedi`_ (:gh:`1681`)
+- Sped up reading on network filesystems, where taking a lock for every sidecar was a large part of :func:`mne_bids.read_raw_bids`, and stopped the lock warnings on read-only datasets. :func:`mne_bids.write_raw_bids` is faster as well, alone and in parallel, because sidecars that are already up to date are neither locked nor rewritten, by `Hamza Abdelhedi`_ (:gh:`1680`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
