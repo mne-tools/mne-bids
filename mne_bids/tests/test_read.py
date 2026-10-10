@@ -11,6 +11,7 @@ import os
 import os.path as op
 import re
 import shutil as sh
+import warnings
 from collections import OrderedDict
 from contextlib import nullcontext
 from datetime import UTC, date, datetime, timedelta, timezone
@@ -2540,8 +2541,9 @@ def test_read_epochs_bids_eeglab(tmp_path, ext, datatype):
     if ext == ".set":
         sh.copy(src, bp.fpath)
         sh.copy(src.with_suffix(".fdt"), bp.fpath.with_suffix(".fdt"))
-    else:  # BIDS does not name epoched FIF files as MNE expects
-        with pytest.warns(RuntimeWarning, match="naming conventions"):
+    else:  # BIDS does not name epoched FIF files as older MNE versions expect
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", message=".*naming conventions")
             expected.save(bp.fpath, verbose=False)
     bp.copy().update(extension=".json").fpath.write_text(
         '{"TaskName": "t", "PowerLineFrequency": 60, "RecordingType": "epoched"}'

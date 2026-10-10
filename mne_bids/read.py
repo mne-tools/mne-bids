@@ -1611,7 +1611,7 @@ def read_epochs_bids(
     if ext in epoch_reader:
         with warnings.catch_warnings():
             # BIDS names an epoched FIF file like any other recording
-            # (``*_meg.fif``), not ``*-epo.fif`` as MNE expects.
+            # (``*_meg.fif``), not ``*-epo.fif`` as older MNE versions expect.
             warnings.filterwarnings(
                 "ignore", message=".*does not conform to MNE naming conventions.*"
             )
