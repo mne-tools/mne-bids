@@ -140,6 +140,13 @@ def _replace_on_exit(path, fid, tmp, *, lock=True):
         with fid:
             yield fid
         with contextlib.suppress(OSError):  # nothing to replace yet
+            st = os.stat(path)
+            if hasattr(os, "chown"):
+                uid = st.st_uid if os.geteuid() == 0 else -1
+                gid = st.st_gid if st.st_gid != os.stat(tmp).st_gid else -1
+                if uid != -1 or gid != -1:
+                    with contextlib.suppress(OSError):
+                        os.chown(tmp, uid, gid)
             shutil.copymode(path, tmp)
         try:
             os.replace(tmp, path)
