@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.21.0.dev6+gcd32e35ff documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.21.0.dev7+g90b31312c documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="_static/documentation_options.js?v=d8b45880"></script>
+    <script src="_static/documentation_options.js?v=7856eaab"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev6+gcd32e35ff" />
+  <meta name="docsearch:version" content="0.21.0.dev7+g90b31312c" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev6+gcd32e35ff documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev7+g90b31312c documentation</p>
   
 </a></div>
     
@@ -529,6 +529,7 @@
 <h3>👩🏽‍💻 Authors<a class="headerlink" href="#authors" title="Link to this heading">#</a></h3>
 <p>The following authors contributed for the first time. Thank you so much! 🤩</p>
 <ul class="simple">
+<li><p><a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a></p></li>
 <li><p><a class="reference external" href="https://github.com/Shubham-Padkonde">Shubham Padkonde</a></p></li>
 </ul>
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
@@ -566,7 +567,8 @@
 <section id="code-health">
 <h4>⚕️ Code health<a class="headerlink" href="#code-health" title="Link to this heading">#</a></h4>
 <ul class="simple">
-<li><p>None yet</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now parses <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code> once per version of the file instead of on every call, so reading every recording of a large dataset no longer gets slower as the number of subjects grows, by <a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1681">#1681</a>)</p></li>
+<li><p>Dropping rows from a TSV table no longer deep-copies the table first, by <a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1681">#1681</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -661,7 +663,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-10-08.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-10-10.
       <br/>
     
   </p>

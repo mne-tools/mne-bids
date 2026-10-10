@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev6+gcd32e35ff documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev7+g90b31312c documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../../_static/documentation_options.js?v=d8b45880"></script>
+    <script src="../../_static/documentation_options.js?v=7856eaab"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev6+gcd32e35ff" />
+  <meta name="docsearch:version" content="0.21.0.dev7+g90b31312c" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev6+gcd32e35ff documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev7+g90b31312c documentation</p>
   
 </a></div>
     
@@ -514,6 +514,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">difflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_close_matches</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
@@ -800,8 +801,22 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">exc</span><span class="si">}{</span><span class="n">extra</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
 
 
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_participants_tsv</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Parse participants.tsv once per content of the file.</span>
+
+<span class="sd">    ``content`` is the file's bytes. Reading them on every call is much cheaper</span>
+<span class="sd">    than parsing and, unlike file metadata, cannot miss a rewrite (some network</span>
+<span class="sd">    filesystems only store modification times in seconds). Only the last table</span>
+<span class="sd">    is kept, so a file that is rewritten often does not pile up in memory.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
-    <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">)</span>
+    <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_participants_tsv</span><span class="p">(</span>
+        <span class="n">participants_fname</span><span class="p">,</span> <span class="n">participants_fname</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">()</span>
+    <span class="p">)</span>
     <span class="n">subjects</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s2">"participant_id"</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Subject </span><span class="si">{</span><span class="n">subject</span><span class="si">!r}</span><span class="s2"> is not listed in </span><span class="si">{</span><span class="n">participants_fname</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -2485,7 +2500,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-10-08.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-10-10.
       <br/>
     
   </p>

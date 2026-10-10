@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert EMG data to BIDS format &#8212; MNE-BIDS 0.21.0.dev6+gcd32e35ff documentation</title>
+    <title>Convert EMG data to BIDS format &#8212; MNE-BIDS 0.21.0.dev7+g90b31312c documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../_static/documentation_options.js?v=d8b45880"></script>
+    <script src="../_static/documentation_options.js?v=7856eaab"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev6+gcd32e35ff" />
+  <meta name="docsearch:version" content="0.21.0.dev7+g90b31312c" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev6+gcd32e35ff documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev7+g90b31312c documentation</p>
   
 </a></div>
     
@@ -562,7 +562,7 @@ channel type from EEG to EMG; this may not be necessary for your data.</p>
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">mne_bids</span><span class="w">
 </span></pre></div></div>
 <p>There are sometimes a lot of warnings when writing BIDS datasets. Here we use
-<a class="reference external" href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">warnings.filterwarnings()</span></code></a> to ignore some warnings that are expected given what
+<a class="reference external" href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="(in Python v3.15)"><code class="xref py py-func docutils literal notranslate"><span class="pre">warnings.filterwarnings()</span></code></a> to ignore some warnings that are expected given what
 we (don’t) know about this dataset.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">known_warnings</span></a> <span class="o">=</span> <span class="p">{</span><span class="w">
 </span>    <span class="s2">&quot;</span><span class="s2">The `doi` field in dataset_description should be</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="s2">mne_bids</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># our DOI is n/a</span><span class="w">
@@ -669,24 +669,23 @@ then prepare the info about what is <em>different</em> between them.</p>
 </span>        <span class="p">)</span><span class="p">,</span><span class="w">
 </span>    <span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.edf
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_GABA_RAW.vhdr...
 Setting channel info structure...
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_GABA_RAW.vhdr...
 Setting channel info structure...
-Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/README'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.tsv'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_channels.tsv'...
-Converting data files to EDF format
 Reading 0 ... 7666299  =      0.000 ...  1533.260 secs...
+Converting data files to EDF format
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv'...
 Wrote /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv entry with emg/sub-nt05_task-rest_acq-GabaMrs_emg.edf.
 /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json'...
-/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold
+/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.edf
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_RS_RAW.vhdr...
 Setting channel info structure...
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_RS_RAW.vhdr...
@@ -700,8 +699,8 @@ Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/s
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_channels.tsv'...
-Converting data files to EDF format
 Reading 0 ... 3118199  =      0.000 ...   623.640 secs...
+Converting data files to EDF format
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv'...
 Wrote /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/sub-nt05_scans.tsv entry with emg/sub-nt05_task-rest_acq-Bold_emg.edf.
 /home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.json
@@ -730,7 +729,7 @@ data file, so the GABA MRS run lacks <code class="docutils literal notranslate">
 |--------- sub-nt05_task-rest_acq-GabaMrs_emg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.843 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.673 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-fieldtrip-emg-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3be0d39829386dcc67fee90c7f6116c6/convert_fieldtrip_emg.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_fieldtrip_emg.ipynb</span></code></a></p>
@@ -803,7 +802,7 @@ data file, so the GABA MRS run lacks <code class="docutils literal notranslate">
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-10-08.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-10-10.
       <br/>
     
   </p>
