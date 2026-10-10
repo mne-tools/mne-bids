@@ -305,7 +305,7 @@ def _participants_tsv(participants_fname, content):
     filesystems only store modification times in seconds). Only the last table
     is kept, so a file that is rewritten often does not pile up in memory.
     """
-    return _from_tsv(participants_fname)
+    return _from_tsv(participants_fname, content=content)
 
 
 def _handle_participants_reading(participants_fname, raw, subject):
