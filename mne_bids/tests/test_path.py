@@ -331,12 +331,6 @@ def path_counter(monkeypatch):
         # Reroute Path.glob through iglob to count accesses
         return [root / f for f in glob.iglob(pattern, root_dir=root, recursive=True)]
 
-    def _path_rglob_iglob(root, pattern):
-        # Reroute Path.rglob through iglob to count accesses
-        return [
-            root / f for f in glob.iglob(f"**/{pattern}", root_dir=root, recursive=True)
-        ]
-
     def _iglob_count(*args, **kwargs):
         for fn in orig_iglob(*args, **kwargs):
             path_counter.count += 1
@@ -355,9 +349,17 @@ def path_counter(monkeypatch):
             )
             yield out
 
+    orig_scandir = mne_bids.path._scandir
+
+    def _scandir_count(path):
+        entries = orig_scandir(path)
+        path_counter.count += len(entries)
+        path_counter.files.extend(entry.path for entry in entries)
+        return entries
+
     monkeypatch.setattr(glob, "iglob", _iglob_count)
+    monkeypatch.setattr(mne_bids.path, "_scandir", _scandir_count)
     monkeypatch.setattr(mne_bids.path, "_path_glob", _path_glob_iglob)
-    monkeypatch.setattr(mne_bids.path, "_path_rglob", _path_rglob_iglob)
     monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
     monkeypatch.setattr(mne_bids, "get_entity_vals", get_entity_vals_count)
     monkeypatch.setattr(mne_bids, "get_datatypes", get_datatypes_count)
@@ -453,7 +455,8 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     fnames = mne_bids.path._return_root_paths(tmp_bids_root)
     assert len(fnames) == len(set(fnames))
     assert len(fnames) == 10956
-    max_count = 11642
+    # Number of directory entries listed while walking the tree.
+    max_count = 15253
     assert path_counter.count == max_count
 
     # apply nosub on find_matching_matchs with root level bids directory should
@@ -476,7 +479,7 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
             repeat=3,
         )
     )
-    assert path_counter.count == 621
+    assert path_counter.count == 818
 
     # while this should be of same order, lets give it some space by a factor of 3
     target = 3 * timed_all / len(bids_root_dense.bids_subdirectories)
@@ -507,15 +510,15 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     assert len(paths) == expected_n_paths
     assert len(set(paths)) == len(paths)
     assert all(path.fpath.exists() for path in paths)
-    assert path_counter.count == 3420
+    assert path_counter.count == max_count
     path.subject = "1"  # add subject
     paths = path.match()
     assert len(paths) == n_sessions
-    assert path_counter.count == 20
+    assert path_counter.count == 89
     path.session = "2"  # add session
     paths = path.match()
     assert len(paths) == 1, paths
-    assert path_counter.count == 5
+    assert path_counter.count == 21
 
 
 def _scan_targeted_meg(root, entities=None):
@@ -1867,6 +1870,21 @@ def test_find_matching_paths(bids_root):
     paths_match = bids_path_01.match(ignore_json=False)
     paths_find = find_matching_paths(bids_root)
     assert paths_match == paths_find
+
+    # Hidden files and directories are left out by every search
+    data_file = paths_find[0].fpath
+    hidden_file = data_file.with_name(f".{data_file.name}.tmp")
+    hidden_dir = bids_root / ".hidden" / "sub-01" / "meg"
+    hidden_dir.mkdir(parents=True)
+    for fname in (hidden_file, hidden_dir / "sub-01_task-rest_meg.fif"):
+        fname.touch()
+    assert find_matching_paths(bids_root) == paths_find
+    for kwargs in ({"ignore_nosub": True}, {"datatypes": "meg"}):
+        found = find_matching_paths(bids_root, **kwargs)
+        parts = [path.fpath.relative_to(bids_root).parts for path in found]
+        assert parts and not any(p.startswith(".") for ps in parts for p in ps)
+    hidden_file.unlink()
+    sh.rmtree(hidden_dir.parents[1])
 
     # Datatype is important because handled differently
     bids_path_01 = BIDSPath(root=bids_root, datatype="meg")
