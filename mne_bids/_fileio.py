@@ -119,14 +119,14 @@ def _get_lock_context(path, *, timeout=None, lock=True):
 def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
     """Context manager that acquires a file lock with optional file opening.
 
-    If the `filelock` package is available, a lock is acquired on a lock file
+    If the ``filelock`` package is available, a lock is acquired on a lock file
     based on the given path (by appending '.lock'). Lock files are left behind
     to avoid race conditions during concurrent operations.
 
     The lock is re-entrant per process: nested calls for the same ``path`` will
     reuse the existing lock instead of attempting to acquire it again.
 
-    If file opening arguments (*args, **kwargs) are provided, the file is opened
+    If file opening arguments (``*args``, ``**kwargs``) are provided, the file is opened
     in the specified mode. Otherwise, just the lock is acquired.
 
     Parameters
@@ -145,7 +145,7 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
 
     Yields
     ------
-    fid : file object or None
+    fid : io.IOBase | None
         File object if file opening args were provided, None otherwise.
     """
     canonical_path = _canonical_lock_path(path)

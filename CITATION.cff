@@ -241,6 +241,8 @@ authors:
       orcid: 'https://orcid.org/0009-0006-6058-947X'
     - given-names: Shubham
       family-names: Padkonde
+    - given-names: Hamza
+      family-names: Abdelhedi
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
