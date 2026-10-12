@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.21.0.dev8+g49e960ff0 documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.21.0.dev9+gf6999a93d documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../../_static/documentation_options.js?v=5cb2329c"></script>
+    <script src="../../_static/documentation_options.js?v=03bb5aed"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev8+g49e960ff0" />
+  <meta name="docsearch:version" content="0.21.0.dev9+gf6999a93d" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev8+g49e960ff0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev9+gf6999a93d documentation</p>
   
 </a></div>
     
@@ -1710,8 +1710,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">:</span>
             <span class="n">_check_empty_room_basename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
+            <span class="c1"># these acq labels are reserved for MEG fine-calibration/crosstalk files</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">acquisition</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"calibration"</span><span class="p">,</span> <span class="s2">"crosstalk"</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">"meg"</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
