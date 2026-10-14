@@ -2759,6 +2759,8 @@ def test_write_meg_crosstalk(_bids_validate, tmp_path):
     # bad path when task is provided for crosstalk
     with pytest.raises(ValueError, match="task must be None if the acquisition is"):
         assert bids_path_erm.copy().update(acquisition="crosstalk").task == "noise"
+    # ... but for a non-MEG datatype "crosstalk" is an ordinary acq label
+    BIDSPath(subject="01", task="t", acquisition="crosstalk", datatype="eeg")
     # subject not set.
     bids_path = bids_path.copy().update(root=bids_root, subject=None)
     with pytest.raises(ValueError, match="must have root and subject set"):
