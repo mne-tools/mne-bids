@@ -603,9 +603,8 @@ def _events_json(
     # make sure to append any JSON fields added by the user
     fname = Path(fname)
     if fname.exists():
-        orig_data = json.loads(
-            fname.read_text(encoding="utf-8"), object_pairs_hook=OrderedDict
-        )
+        with _open_lock(fname, encoding="utf-8") as fid:
+            orig_data = json.load(fid, object_pairs_hook=OrderedDict)
         new_data = {**orig_data, **new_data}
 
     _write_json(fname, new_data, overwrite=overwrite)
@@ -1820,7 +1819,7 @@ def make_dataset_description(
 
     def _read():
         try:
-            with open(fname, encoding="utf-8") as fin:
+            with _open_lock(fname, encoding="utf-8") as fin:
                 return fin.read()
         except OSError:
             return ""
@@ -3822,7 +3821,8 @@ def anonymize_dataset(
 
         if bp_in.datatype == "anat":
             bp_anat_json = bp_in.copy().update(extension=".json")
-            anat_json = json.loads(bp_anat_json.fpath.read_text(encoding="utf-8"))
+            with _open_lock(bp_anat_json.fpath, encoding="utf-8") as fid:
+                anat_json = json.load(fid)
             landmarks = anat_json["AnatomicalLandmarkCoordinates"]
             landmarks_dig = mne.channels.make_dig_montage(
                 nasion=landmarks["NAS"],
@@ -3865,12 +3865,14 @@ def anonymize_dataset(
 
         # Enrich the JSON file
         if bp_in_json.fpath.exists():
-            json_in = json.loads(bp_in_json.fpath.read_text(encoding="utf-8"))
+            with _open_lock(bp_in_json.fpath, encoding="utf-8") as fid:
+                json_in = json.load(fid)
         else:
             json_in = dict()
 
         if bp_out_json.fpath.exists():
-            json_out = json.loads(bp_out_json.fpath.read_text(encoding="utf-8"))
+            with _open_lock(bp_out_json.fpath, encoding="utf-8") as fid:
+                json_out = json.load(fid)
         else:
             json_out = dict()
 

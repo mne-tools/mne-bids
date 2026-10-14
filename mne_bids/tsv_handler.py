@@ -262,7 +262,8 @@ def _get_column_names_from_json(fname, dtypes=None):
             f"  {sidecar_json}"
         )
 
-    sidecar = json.loads(sidecar_json.read_text(encoding="utf-8"))
+    with _open_lock(sidecar_json, encoding="utf-8") as fid:
+        sidecar = json.load(fid)
     column_names = sidecar["Columns"]
     _validate_type(column_names, list)
     return column_names, sidecar_json
