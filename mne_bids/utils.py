@@ -13,7 +13,7 @@ import numpy as np
 from mne.utils import logger, verbose
 from mne.utils import warn as _warn
 
-from mne_bids._fileio import _open_lock
+from mne_bids._fileio import _has_text, _open_lock
 from mne_bids.tsv_handler import _to_tsv
 
 # This regex matches key-val pairs. Any characters are allowed in the key and
@@ -233,10 +233,11 @@ def _write_json(fname, dictionary, *, overwrite=False, lock=True):
             f'"{fname}" already exists. Please set overwrite to True.'
         )
 
-    json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
+    json_output = json.dumps(dictionary, indent=4, ensure_ascii=False) + "\n"
+    if _has_text(fname, json_output):
+        return
     with _open_lock(fname, "w", encoding="utf-8", lock=lock) as fid:
         fid.write(json_output)
-        fid.write("\n")
 
     logger.info(f"Writing '{fname}'...")
 
@@ -262,6 +263,8 @@ def _write_text(fname, text, overwrite=False, lock=True):
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
+    if _has_text(fname, f"{text}\n"):
+        return
     with _open_lock(fname, "w", encoding="utf-8", lock=lock) as fid:
         fid.write(text)
         fid.write("\n")
