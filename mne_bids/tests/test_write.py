@@ -1326,10 +1326,16 @@ def test_bti(_bids_validate, tmp_path, dataset):
         source_datasets=s_ds,
         generated_by=gen_by,
         authors="a,b,c",
+        # a key the BIDS spec does not define: the validator below must accept it
+        extra_fields={"PublicationYear": 2026},
     )
+    with open(tmp_path / "dataset_description.json", encoding="utf-8") as fid:
+        assert json.load(fid)["PublicationYear"] == 2026
     bids_output_path = write_raw_bids(raw, bids_path, verbose=True)
 
     assert op.exists(tmp_path / "participants.tsv")
+    with open(tmp_path / "dataset_description.json", encoding="utf-8") as fid:
+        assert json.load(fid)["PublicationYear"] == 2026
     _bids_validate(tmp_path)
 
     if dataset == "inbuilt_linux":
@@ -2769,6 +2775,8 @@ def test_write_meg_crosstalk(_bids_validate, tmp_path):
     # bad path when task is provided for crosstalk
     with pytest.raises(ValueError, match="task must be None if the acquisition is"):
         assert bids_path_erm.copy().update(acquisition="crosstalk").task == "noise"
+    # ... but for a non-MEG datatype "crosstalk" is an ordinary acq label
+    BIDSPath(subject="01", task="t", acquisition="crosstalk", datatype="eeg")
     # subject not set.
     bids_path = bids_path.copy().update(root=bids_root, subject=None)
     with pytest.raises(ValueError, match="must have root and subject set"):
