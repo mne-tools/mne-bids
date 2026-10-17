@@ -11,18 +11,19 @@ differs from the BIDS specification.
 Anatomy of a BIDS path
 ----------------------
 
-Take this file. The marks below show what each part of its path is called:
+Take this file. Its parts are called:
 
 .. code-block:: text
 
     /bids_dataset/sub-01/ses-02/eeg/sub-01_ses-02_task-rest_run-01_eeg.vhdr
-    ^^^^^^^^^^^^^                                                             root
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                           directory
-                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^   basename
-                                    ^^^^^^ ^^^^^^ ^^^^^^^^^ ^^^^^^            entities
-                                                                   ^^^        suffix
-                                                                      ^^^^^   extension
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^   fpath
+
+    root       /bids_dataset
+    directory  /bids_dataset/sub-01/ses-02/eeg
+    basename   sub-01_ses-02_task-rest_run-01_eeg.vhdr
+    entities   sub-01  ses-02  task-rest  run-01
+    suffix     eeg
+    extension  .vhdr
+    fpath      the whole path above (the directory plus the basename)
 
 The same file described with :class:`mne_bids.BIDSPath`:
 
