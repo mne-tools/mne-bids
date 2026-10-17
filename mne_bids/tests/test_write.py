@@ -497,6 +497,16 @@ def test_make_dataset_description_preserves_unknown_keys(tmp_path):
     final = json.loads(fname.read_text())
     assert final["Description"] == "Free-form custom field"
     assert final["Name"] == "enriched"
+    # extra_fields writes unmodeled keys and follows the overwrite rules
+    make_dataset_description(path=tmp_path, name="x", extra_fields={"Year": 1})
+    make_dataset_description(path=tmp_path, name="x", extra_fields={"Year": 2})
+    assert json.loads(fname.read_text())["Year"] == 1
+    make_dataset_description(
+        path=tmp_path, name="x", extra_fields={"Year": 2}, overwrite=True
+    )
+    assert json.loads(fname.read_text())["Year"] == 2
+    with pytest.raises(ValueError, match="cannot set.*Name"):
+        make_dataset_description(path=tmp_path, name="x", extra_fields={"Name": "y"})
 
 
 def test_stamp_to_dt():
@@ -1316,10 +1326,16 @@ def test_bti(_bids_validate, tmp_path, dataset):
         source_datasets=s_ds,
         generated_by=gen_by,
         authors="a,b,c",
+        # a key the BIDS spec does not define: the validator below must accept it
+        extra_fields={"PublicationYear": 2026},
     )
+    with open(tmp_path / "dataset_description.json", encoding="utf-8") as fid:
+        assert json.load(fid)["PublicationYear"] == 2026
     bids_output_path = write_raw_bids(raw, bids_path, verbose=True)
 
     assert op.exists(tmp_path / "participants.tsv")
+    with open(tmp_path / "dataset_description.json", encoding="utf-8") as fid:
+        assert json.load(fid)["PublicationYear"] == 2026
     _bids_validate(tmp_path)
 
     if dataset == "inbuilt_linux":
