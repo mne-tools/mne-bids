@@ -3,27 +3,40 @@
 Glossary of BIDS terms in MNE-BIDS
 ==================================
 
-MNE-BIDS is a Python library built on the Brain Imaging Data Structure (BIDS)
-standard. Some BIDS ideas have different names in MNE-BIDS, and MNE-BIDS has a
-few terms of its own. This page explains these terms and lists where MNE-BIDS
-differs from the BIDS specification.
+MNE-BIDS uses Python to implement the Brain Imaging Data Structure (BIDS)
+specification. Working with BIDS in Python results in a few special terms that
+MNE-BIDS uses but the BIDS specification does not. MNE-BIDS does not rename
+BIDS concepts. This glossary defines the key terms of MNE-BIDS and explains how
+they relate to BIDS terms.
 
 Anatomy of a BIDS path
 ----------------------
 
-Take this file. Its parts are called:
+:class:`~mne_bids.BIDSPath` objects are the primary way that MNE-BIDS stores
+and organizes information about subject data. To see what a ``BIDSPath`` holds,
+take this file. Its parts are listed below, grouped by whether the term comes
+from the BIDS specification or from MNE-BIDS:
 
 .. code-block:: text
 
     /bids_dataset/sub-01/ses-02/eeg/sub-01_ses-02_task-rest_run-01_eeg.vhdr
 
-    root       /bids_dataset
-    directory  /bids_dataset/sub-01/ses-02/eeg
-    basename   sub-01_ses-02_task-rest_run-01_eeg.vhdr
-    entities   sub-01  ses-02  task-rest  run-01
-    suffix     eeg
-    extension  .vhdr
-    fpath      the whole path above (the directory plus the basename)
+    BIDS terms
+      root       /bids_dataset
+      datatype   eeg
+      entities   sub-01  ses-02  task-rest  run-01
+      suffix     eeg
+      extension  .vhdr
+
+    MNE-BIDS terms
+      directory  /bids_dataset/sub-01/ses-02/eeg
+      basename   sub-01_ses-02_task-rest_run-01_eeg.vhdr
+      fpath      the whole path above (the directory plus the basename)
+
+The BIDS specification talks about a file name and the location of a file in
+the dataset. MNE-BIDS adds the ``basename``, ``directory`` and ``fpath``
+properties to describe the path in Python. ``root`` is also a BIDS term (the
+specification says "root directory").
 
 The same file described with :class:`mne_bids.BIDSPath`:
 
@@ -53,7 +66,10 @@ Glossary
       them. It is a standalone class, not a subclass of
       :class:`pathlib.Path`, but its ``root``, ``directory`` and ``fpath``
       properties return :class:`pathlib.Path` objects. Its entities can be
-      changed in place with ``update()``.
+      changed in place with ``update()``. It does not have to point to a single
+      existing file: it can hold only some entities and act as a search
+      pattern, which ``BIDSPath.match()`` uses to find matching files in the
+      dataset.
 
    basename
       The file name without any parent folders, for example
@@ -64,9 +80,9 @@ Glossary
 
    check
       A ``BIDSPath`` option. If ``True`` (the default), MNE-BIDS enforces
-      BIDS conformity, for example only allowing known suffixes and
-      extensions. Setting ``check=False`` allows paths that MNE-BIDS does not
-      natively support, such as ``dataset_description.json``.
+      BIDS conformity, for example only allowing known data types, suffixes
+      and extensions. Setting ``check=False`` allows paths that MNE-BIDS does
+      not natively support, such as ``dataset_description.json``.
 
    datatype
       The kind of data a file holds, which is also the name of the folder it
@@ -88,7 +104,9 @@ Glossary
       ``task-rest``. Entities are separated by ``_``, and the key and value
       within an entity are separated by ``-``. They must appear in a fixed
       order, and no entity may appear more than once in a file name.
-      ``BIDSPath.entities`` returns them as a dictionary.
+      ``BIDSPath.entities`` returns them as a dictionary. A value is either a
+      *label* (letters and digits, such as the ``patient`` in ``sub-patient``)
+      or an *index* (a non-negative integer, such as the ``01`` in ``run-01``).
 
    extension
       The file type at the end of the file name, including the leading
@@ -185,43 +203,19 @@ entities to appear in a file name.
 defines many more entities, mostly for other data types (for example ``echo``,
 ``flip``, ``dir``, ``ce``, ``sample``, and ``part``).
 
-Where MNE-BIDS differs from the BIDS specification
---------------------------------------------------
+Legacy MNE-BIDS terms
+---------------------
 
-- ``basename``, ``directory``, ``fpath`` and ``check`` describe how MNE-BIDS
-  works with paths in Python. They are not terms from the BIDS specification,
-  which talks about file names and the root directory of a dataset instead.
-- A ``BIDSPath`` does not have to point to a single existing file. It can hold
-  only some entities and act as a search pattern, which ``BIDSPath.match()``
-  uses to find real files in the dataset.
-- The BIDS specification gives entity values one of two forms. A *label* is
-  made of letters and digits, such as ``sub-patient`` or ``task-rest``. An
-  *index* is a non-negative integer, such as ``run-01``. ``BIDSPath`` follows
-  this for ``run`` and ``split``: with ``check=True`` they must be indices, so
-  ``run='5H'`` raises an error, while with ``check=False`` other values are
-  accepted. The specification recommends zero padding for indices, but
-  ``BIDSPath`` writes the value as given, so ``run=1`` gives ``run-1``. For
-  labels, ``BIDSPath`` only rejects the characters ``-``, ``_`` and ``/``, so
-  it also accepts some values that the specification does not allow, such as
-  ``a.b``.
-- With ``check=True``, ``BIDSPath`` accepts the data types ``eeg``, ``emg``,
-  ``ieeg``, ``meg``, ``nirs``, ``motion``, ``anat`` and ``beh``, and a fixed
-  list of suffixes. BIDS defines more. For example, ``func`` and ``dwi`` are
-  data types that ``BIDSPath`` does not accept by default, and ``photo`` and
-  ``physioevents`` are suffixes that it rejects. Use ``check=False`` to build
-  such paths anyway.
-
-Old names
----------
-
-Version 0.5 introduced ``BIDSPath`` and renamed several things. If you see
-these names in old code or tutorials, this is what they became:
+Version 0.5 introduced ``BIDSPath`` and renamed several terms. The old names
+below are no longer used in MNE-BIDS, but you may still see them in release
+notes and in code written for older versions:
 
 - ``make_bids_basename`` became ``BIDSPath``.
 - ``prefix`` became ``root``.
-- ``kind`` became ``datatype``.
+- ``kind``, the name of the data type, became ``datatype``.
 - ``get_kinds`` became ``get_datatypes``.
-- The ``bids_basename`` and ``bids_root`` arguments of the read and write
-  functions became a single ``bids_path`` argument.
+- The ``bids_basename`` and ``bids_root`` arguments of functions such as
+  ``write_raw_bids`` and ``read_raw_bids`` became a single ``bids_path``
+  argument.
 
 More changes are listed in :doc:`whats_new_previous_releases`.
