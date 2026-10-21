@@ -1665,6 +1665,7 @@ def make_dataset_description(
     generated_by=None,
     source_datasets=None,
     overwrite=False,
+    extra_fields=None,
     verbose=None,
 ):
     """Create a dataset_description.json file for a BIDS dataset.
@@ -1733,6 +1734,12 @@ def make_dataset_description(
         If overwrite is True, provided fields will overwrite previous data.
         If overwrite is False, no existing data will be overwritten or
         replaced.
+    extra_fields : dict | None
+        Additional top-level fields to write, for keys not covered by the
+        parameters above (e.g., ``{"PublicationYear": 2024}``). They follow
+        the same ``overwrite`` rules as the other fields.
+
+        .. versionadded:: 0.21
     %(verbose)s
 
     Notes
@@ -1817,6 +1824,14 @@ def make_dataset_description(
         ]
     )
 
+    _validate_type(extra_fields, (dict, None), "extra_fields")
+    extra_fields = dict() if extra_fields is None else extra_fields
+    clash = sorted(set(extra_fields) & set(requested))
+    if clash:
+        raise ValueError(
+            f"extra_fields cannot set {clash}, use the corresponding parameters."
+        )
+
     def _read():
         try:
             with _open_lock(fname, encoding="utf-8") as fin:
@@ -1861,6 +1876,9 @@ def make_dataset_description(
         # Preserve BIDS-spec keys we do not model (e.g. Description, DatasetLinks).
         for key, val in orig_cols.items():
             description.setdefault(key, val)
+        for key, val in extra_fields.items():
+            if overwrite or key not in orig_cols:
+                description[key] = val
         return description
 
     # Nothing to do, and no lock to take, when the file already holds the result.
