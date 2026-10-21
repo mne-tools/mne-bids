@@ -8,6 +8,7 @@ from datetime import datetime
 import mne
 import mne.datasets.utils
 import pytest
+from mne.utils import check_version
 
 
 def pytest_configure(config):
@@ -23,6 +24,12 @@ def pytest_configure(config):
         pass
     else:
         matplotlib.use(os.environ["MPLBACKEND"], force=True)
+    # MNE < 1.13 uses defusedxml.ElementTree without importing the submodule
+    if not check_version("mne", "1.13"):
+        try:
+            import defusedxml.ElementTree  # noqa: F401
+        except ImportError:
+            pass
 
 
 @pytest.fixture(autouse=True)
