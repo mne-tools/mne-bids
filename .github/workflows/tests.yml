@@ -185,13 +185,21 @@ jobs:
         repository: mne-tools/mne-python
         path: mne-python
 
+    - name: Find MNE-Python maintenance branches
+      id: mne-branches
+      working-directory: mne-python
+      run: |
+        BRANCHES=$(git branch -r --list 'origin/maint/*' | sed 's|.*origin/||' | sort -V | tail -n 2)
+        echo "prev-stable=$(echo "$BRANCHES" | head -n 1)" | tee -a "$GITHUB_OUTPUT"
+        echo "stable=$(echo "$BRANCHES" | tail -n 1)" | tee -a "$GITHUB_OUTPUT"
+
     - name: Install MNE-Python
       working-directory: mne-python
       run: |
         if [[ "${{ matrix.mne-version }}" == 'mne-stable' ]]; then
-          git checkout -b maint/1.11 origin/maint/1.11
+          git checkout -b ${{ steps.mne-branches.outputs.stable }} origin/${{ steps.mne-branches.outputs.stable }}
         elif [[ "${{ matrix.mne-version }}" == 'mne-prev-stable' ]]; then
-          git checkout -b maint/1.10 origin/maint/1.10
+          git checkout -b ${{ steps.mne-branches.outputs.prev-stable }} origin/${{ steps.mne-branches.outputs.prev-stable }}
         elif [[ "${{ matrix.mne-version }}" != 'mne-main' ]]; then
           echo "Unknown MNE version: ${{ matrix.mne-version }}"
           exit 1
