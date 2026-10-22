@@ -71,6 +71,10 @@ def _access_file_with_lock(thread_id, test_file, access_log, access_lock, errors
             errors.append((thread_id, str(e)))
 
 
+def _raise_permission_error(*args, **kwargs):
+    raise PermissionError("file is open in another process")
+
+
 def _mock_filelock_oserror(*args, **kwargs):
     """Mock FileLock that raises OSError."""
     raise OSError("Permission denied")
@@ -179,8 +183,10 @@ def test_open_lock_basic(tmp_path):
     with _open_lock(test_file) as fid:
         assert fid is None
 
-    # public name
-    assert mne_bids.open_lock is _open_lock
+    # the public open_lock holds the lock whatever the mode
+    for args in ((), ("r",), ("w",)):
+        with mne_bids.open_lock(test_file, *args):
+            assert Path(f"{test_file}.lock").exists()
 
 
 def test_open_lock_write(tmp_path):
@@ -203,9 +209,9 @@ def test_open_lock_reentrant(tmp_path):
     test_file.write_text("test")
 
     # Nested lock calls should work
-    with _open_lock(test_file, "r") as fid1:
+    with mne_bids.open_lock(test_file, "r") as fid1:
         assert fid1 is not None
-        with _open_lock(test_file, "r", lock=False) as fid2:
+        with mne_bids.open_lock(test_file, "r", lock_timeout=1) as fid2:
             assert fid2 is not None
             # Both should be able to read
             content1 = fid1.read()
@@ -320,7 +326,7 @@ def test_open_lock_readonly_parent_falls_back(tmp_path):
 
     with _readonly(ro_dir):
         with pytest.warns(RuntimeWarning, match="without a lock"):
-            with _open_lock(test_file, "r", encoding="utf-8") as fid:
+            with mne_bids.open_lock(test_file, "r", encoding="utf-8") as fid:
                 assert fid.read() == "payload"
 
 
@@ -387,3 +393,55 @@ def test_environment_variable_invalid_timeout(tmp_path, monkeypatch):
 
     # Should fall back to default
     assert mne_bids._fileio.DEFAULT_LOCK_TIMEOUT == 60.0
+
+
+def test_open_lock_write_is_atomic(tmp_path, monkeypatch):
+    """A file opened with "w" is replaced in one step and keeps its permissions."""
+    target = tmp_path / "sidecar.json"
+    target.write_text("old")
+    os.chmod(target, 0o640)
+    groups = [g for g in getattr(os, "getgroups", list)() if g != target.stat().st_gid]
+    if hasattr(os, "chown") and groups:
+        os.chown(target, -1, groups[0])
+    group = target.stat().st_gid
+
+    with pytest.raises(RuntimeError, match="boom"):
+        with mne_bids.open_lock(target, "w", encoding="utf-8") as fid:
+            fid.write("partial")
+            assert target.read_text() == "old"
+            raise RuntimeError("boom")
+    assert target.read_text() == "old"
+
+    with mne_bids.open_lock(target, "w", encoding="utf-8") as fid:
+        fid.write("new")
+    assert target.read_text() == "new"
+    assert target.stat().st_gid == group
+    if sys.platform != "win32":  # chmod only sets read-only on Windows
+        assert (target.stat().st_mode & 0o777) == 0o640
+
+    # a file that cannot be replaced (open elsewhere, on Windows) is overwritten
+    with monkeypatch.context() as m:
+        m.setattr(os, "replace", _raise_permission_error)
+        with mne_bids.open_lock(target, "w", encoding="utf-8") as fid:
+            fid.write("newer")
+    assert target.read_text() == "newer"
+
+    # a symlink is replaced at its target and stays a symlink
+    link = tmp_path / "link.json"
+    try:
+        link.symlink_to(target)
+    except (OSError, NotImplementedError):  # no symlinks without privileges on Windows
+        pass
+    else:
+        with mne_bids.open_lock(link, "w", encoding="utf-8") as fid:
+            fid.write("linked")
+        assert link.is_symlink()
+        assert target.read_text() == "linked"
+    assert not list(tmp_path.glob(".*.tmp"))
+
+    # a sidecar that would not change is not rewritten
+    mne_bids.make_dataset_description(path=tmp_path, name="test", overwrite=True)
+    before = (tmp_path / "dataset_description.json").stat()
+    mne_bids.make_dataset_description(path=tmp_path, name="test", overwrite=True)
+    after = (tmp_path / "dataset_description.json").stat()
+    assert (after.st_ino, after.st_mtime_ns) == (before.st_ino, before.st_mtime_ns)

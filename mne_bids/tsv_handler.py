@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 from mne.utils import _validate_type, logger
 
-from mne_bids._fileio import _open_lock
+from mne_bids._fileio import _has_text, _open_lock
 
 # Match digit,digit not adjacent to other word chars; rewrites
 # European-locale decimal commas (e.g. "0,5") to "0.5" without touching
@@ -262,7 +262,8 @@ def _get_column_names_from_json(fname, dtypes=None):
             f"  {sidecar_json}"
         )
 
-    sidecar = json.loads(sidecar_json.read_text(encoding="utf-8"))
+    with _open_lock(sidecar_json, encoding="utf-8") as fid:
+        sidecar = json.load(fid)
     column_names = sidecar["Columns"]
     _validate_type(column_names, list)
     return column_names, sidecar_json
@@ -287,7 +288,7 @@ def _to_tsv(data, fname, *, compress=False, lock=True):
     if compress:
         with _open_lock(fname, "wb") as f:
             f.write(gzip.compress(output.encode("utf-8")))
-    else:
+    elif not _has_text(fname, output):
         with _open_lock(fname, "w", encoding="utf-8", lock=lock) as f:
             f.write(output)
 
