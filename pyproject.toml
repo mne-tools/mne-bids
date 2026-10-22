@@ -158,6 +158,8 @@ filterwarnings = [
   "ignore:Participants file not found for.*:RuntimeWarning",
   "ignore:Setting the shape on a NumPy array[\\S\\s]*:DeprecationWarning",
   "ignore:The .*_event function was deprecated in Matplotlib.*:",
+  # pandas 3.1 deprecated inplace=, still used by MNE's eyelink reader and hedtools
+  "ignore:The inplace keyword in DataFrame.* is deprecated.*:",
   "ignore:There are channels without locations (n/a)*:RuntimeWarning",
   "ignore:tostring\\(\\) is deprecated.*:DeprecationWarning",
   "ignore:Writing of electrodes.tsv is not supported for datatype.*:RuntimeWarning",
