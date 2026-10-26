@@ -27,7 +27,7 @@ Optional:
 * ``edfio`` (>=0.4.10, for writing EDF data)
 * ``curryreader`` (>=0.1.2, for reading Curry data)
 * ``defusedxml`` (for writing reading EGI MFF data and BrainVision montages)
-* ``filelock`` (for atomic file writing, and parallel processing support)
+* ``filelock`` (for parallel processing support)
 
 We recommend installing ``mne-bids`` into an isolated Python environment,
 for example created via ``conda``
