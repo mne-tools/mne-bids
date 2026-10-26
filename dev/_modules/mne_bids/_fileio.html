@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids._fileio &#8212; MNE-BIDS 0.21.0.dev15+g52b38c5f8 documentation</title>
+    <title>mne_bids._fileio &#8212; MNE-BIDS 0.21.0.dev16+ge278ba9af documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../../_static/documentation_options.js?v=57c4fda5"></script>
+    <script src="../../_static/documentation_options.js?v=3d056b20"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev15+g52b38c5f8" />
+  <meta name="docsearch:version" content="0.21.0.dev16+ge278ba9af" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev15+g52b38c5f8 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev16+ge278ba9af documentation</p>
   
 </a></div>
     
@@ -513,12 +513,17 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_soft_import</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span>
 
 <span class="n">_LOCK_TIMEOUT_FALLBACK</span> <span class="o">=</span> <span class="mf">60.0</span>
+<span class="n">_READ_MODES</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"rt"</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span>
+<span class="n">_REPLACE_MODES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"w"</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span>
+<span class="n">_HELD</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">()</span>  <span class="c1"># lock files held by this thread</span>
 <span class="n">_env_lock_timeout</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"MNE_BIDS_FILELOCK_TIMEOUT"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">DEFAULT_LOCK_TIMEOUT</span> <span class="o">=</span> <span class="p">(</span>
@@ -528,6 +533,18 @@
         <span class="k">raise</span> <span class="ne">ValueError</span>
 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
     <span class="n">DEFAULT_LOCK_TIMEOUT</span> <span class="o">=</span> <span class="n">_LOCK_TIMEOUT_FALLBACK</span>
+
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_hold</span><span class="p">(</span><span class="n">lock</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Acquire ``lock``, so that nested calls in this thread can reuse it."""</span>
+    <span class="n">held</span> <span class="o">=</span> <span class="n">_HELD</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"keys"</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+    <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+        <span class="n">held</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">held</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_canonical_lock_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
@@ -596,14 +613,12 @@
         <span class="k">del</span> <span class="n">where</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Lock: acquiring </span><span class="si">{</span><span class="n">canonical_path</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">stack</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">lock</span> <span class="ow">and</span> <span class="n">filelock</span><span class="p">:</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span> <span class="n">lock_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lock</span> <span class="ow">and</span> <span class="n">filelock</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_HELD</span><span class="p">,</span> <span class="s2">"keys"</span><span class="p">,</span> <span class="p">()):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Ensure parent directory exists</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">lock_path</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">lock_context</span> <span class="o">=</span> <span class="n">filelock</span><span class="o">.</span><span class="n">SoftFileLock</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">lock_path</span><span class="p">),</span>
-                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">lock_context</span> <span class="o">=</span> <span class="n">_hold</span><span class="p">(</span><span class="n">filelock</span><span class="o">.</span><span class="n">SoftFileLock</span><span class="p">(</span><span class="n">lock_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">),</span> <span class="n">key</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exp</span><span class="p">:</span>
             <span class="c1"># OSError: permission issues creating lock file</span>
             <span class="c1"># TypeError: invalid timeout parameter</span>
@@ -620,19 +635,118 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Lock: released  </span><span class="si">{</span><span class="n">canonical_path</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">stack</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_has_text</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Whether ``path`` already holds exactly ``text``."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fid</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">==</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">UnicodeError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_replace_on_exit</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">tmp</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Move ``tmp`` over ``target`` (``path`` or its symlink target) once written.</span>
+
+<span class="sd">    The new file keeps the permissions of the one it replaces. A target that</span>
+<span class="sd">    cannot be replaced (open elsewhere, on Windows) is overwritten under the lock.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">fid</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">fid</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">OSError</span><span class="p">):</span>  <span class="c1"># nothing to replace yet</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">os</span><span class="p">,</span> <span class="s2">"chown"</span><span class="p">):</span>
+                <span class="n">uid</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">st_uid</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">geteuid</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">gid</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">st_gid</span> <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">st_gid</span> <span class="o">!=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span><span class="o">.</span><span class="n">st_gid</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">if</span> <span class="n">uid</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">gid</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">OSError</span><span class="p">):</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">chown</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">uid</span><span class="p">,</span> <span class="n">gid</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copymode</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
+            <span class="k">with</span> <span class="p">(</span>
+                <span class="n">_get_lock_context</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">)</span> <span class="k">as</span> <span class="n">lock_context</span><span class="p">,</span>
+                <span class="n">lock_context</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">OSError</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+        <span class="k">raise</span>
+
+
 <span class="nd">@contextmanager</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_open_lock</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">lock_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Like :func:`open_lock`, but reads and ``"w"`` writes take no lock.</span>
+
+<span class="sd">    Writes replace the file in one step, so readers never see a partial file.</span>
+<span class="sd">    """</span>
+    <span class="n">canonical_path</span> <span class="o">=</span> <span class="n">_canonical_lock_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"mode"</span><span class="p">)</span>
+    <span class="c1"># On Windows an open file cannot be replaced, so reads keep the lock there.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">args</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">)</span> <span class="ow">and</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">_READ_MODES</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">"nt"</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">canonical_path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">fid</span>
+        <span class="k">return</span>
+    <span class="c1"># A read-only directory (git-annex, #1569) falls back to writing under the lock.</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">_REPLACE_MODES</span><span class="p">:</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">canonical_path</span>
+        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">():</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="sa">f</span><span class="s2">".</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">.tmp"</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fid</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot open </span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s2">. Doing nothing."</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">_replace_on_exit</span><span class="p">(</span>
+                <span class="n">canonical_path</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">lock_timeout</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span>
+            <span class="p">):</span>
+                <span class="k">yield</span> <span class="n">fid</span>
+            <span class="k">return</span>
+
+    <span class="k">with</span> <span class="n">_get_lock_context</span><span class="p">(</span>
+        <span class="n">canonical_path</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="n">lock_timeout</span><span class="p">,</span>
+        <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">lock_context</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">lock_context</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exp</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Could not acquire lock for </span><span class="si">{</span><span class="n">canonical_path</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">exp</span><span class="si">}</span><span class="s2">); proceeding without a lock."</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">fid</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">canonical_path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+                <span class="k">yield</span> <span class="n">fid</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="open_lock">
+<a class="viewcode-back" href="../../generated/mne_bids.open_lock.html#mne_bids.open_lock">[docs]</a>
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_lock</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">lock_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Context manager that acquires a file lock with optional file opening.</span>
 
 <span class="sd">    If the ``filelock`` package is available, a lock is acquired on a lock file</span>
-<span class="sd">    based on the given path (by appending '.lock'). Lock files are left behind</span>
-<span class="sd">    to avoid race conditions during concurrent operations.</span>
+<span class="sd">    based on the given path (by appending '.lock') and held for the whole</span>
+<span class="sd">    ``with`` block. The lock file is removed when the lock is released.</span>
 
-<span class="sd">    The lock is re-entrant per process: nested calls for the same ``path`` will</span>
-<span class="sd">    reuse the existing lock instead of attempting to acquire it again.</span>
+<span class="sd">    If file opening arguments (``*args``, ``**kwargs``) are provided, the file is</span>
+<span class="sd">    opened in the specified mode. Otherwise, just the lock is acquired. A file</span>
+<span class="sd">    opened with ``"w"`` or ``"wb"`` is written to a temporary file and moved into</span>
+<span class="sd">    place at the end of the block, so readers never see it partially written.</span>
 
-<span class="sd">    If file opening arguments (``*args``, ``**kwargs``) are provided, the file is opened</span>
-<span class="sd">    in the specified mode. Otherwise, just the lock is acquired.</span>
+<span class="sd">    The lock is re-entrant per thread: a nested call for the same ``path`` reuses</span>
+<span class="sd">    the lock instead of waiting for it. To read a file and then write it, do</span>
+<span class="sd">    both inside one ``with open_lock(path):`` block.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -653,26 +767,13 @@
 <span class="sd">    fid : io.IOBase | None</span>
 <span class="sd">        File object if file opening args were provided, None otherwise.</span>
 <span class="sd">    """</span>
-    <span class="n">canonical_path</span> <span class="o">=</span> <span class="n">_canonical_lock_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-
-    <span class="k">with</span> <span class="n">_get_lock_context</span><span class="p">(</span>
-        <span class="n">canonical_path</span><span class="p">,</span>
-        <span class="n">timeout</span><span class="o">=</span><span class="n">lock_timeout</span><span class="p">,</span>
-        <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">,</span>
-    <span class="p">)</span> <span class="k">as</span> <span class="n">lock_context</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">lock_context</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exp</span><span class="p">:</span>
-                <span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Could not acquire lock for </span><span class="si">{</span><span class="n">canonical_path</span><span class="si">}</span><span class="s2"> "</span>
-                    <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">exp</span><span class="si">}</span><span class="s2">); proceeding without a lock."</span>
-                <span class="p">)</span>
-            <span class="k">if</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">fid</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">canonical_path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">lock_timeout</span><span class="o">=</span><span class="n">lock_timeout</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">fid</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="kc">None</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_chmod_rw_R</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>

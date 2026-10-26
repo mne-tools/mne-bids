@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.open_lock &#8212; MNE-BIDS 0.21.0.dev15+g52b38c5f8 documentation</title>
+    <title>mne_bids.open_lock &#8212; MNE-BIDS 0.21.0.dev16+ge278ba9af documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../_static/documentation_options.js?v=57c4fda5"></script>
+    <script src="../_static/documentation_options.js?v=3d056b20"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev15+g52b38c5f8" />
+  <meta name="docsearch:version" content="0.21.0.dev16+ge278ba9af" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev15+g52b38c5f8 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev16+ge278ba9af documentation</p>
   
 </a></div>
     
@@ -575,15 +575,18 @@
 <h1>mne_bids.open_lock<a class="headerlink" href="#mne-bids-open-lock" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.open_lock">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">open_lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_bids.open_lock" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">open_lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/_fileio.html#open_lock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.open_lock" title="Link to this definition">#</a></dt>
 <dd><p>Context manager that acquires a file lock with optional file opening.</p>
 <p>If the <code class="docutils literal notranslate"><span class="pre">filelock</span></code> package is available, a lock is acquired on a lock file
-based on the given path (by appending ‘.lock’). Lock files are left behind
-to avoid race conditions during concurrent operations.</p>
-<p>The lock is re-entrant per process: nested calls for the same <code class="docutils literal notranslate"><span class="pre">path</span></code> will
-reuse the existing lock instead of attempting to acquire it again.</p>
-<p>If file opening arguments (<code class="docutils literal notranslate"><span class="pre">*args</span></code>, <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>) are provided, the file is opened
-in the specified mode. Otherwise, just the lock is acquired.</p>
+based on the given path (by appending ‘.lock’) and held for the whole
+<code class="docutils literal notranslate"><span class="pre">with</span></code> block. The lock file is removed when the lock is released.</p>
+<p>If file opening arguments (<code class="docutils literal notranslate"><span class="pre">*args</span></code>, <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>) are provided, the file is
+opened in the specified mode. Otherwise, just the lock is acquired. A file
+opened with <code class="docutils literal notranslate"><span class="pre">&quot;w&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;wb&quot;</span></code> is written to a temporary file and moved into
+place at the end of the block, so readers never see it partially written.</p>
+<p>The lock is re-entrant per thread: a nested call for the same <code class="docutils literal notranslate"><span class="pre">path</span></code> reuses
+the lock instead of waiting for it. To read a file and then write it, do
+both inside one <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">open_lock(path):</span></code> block.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>

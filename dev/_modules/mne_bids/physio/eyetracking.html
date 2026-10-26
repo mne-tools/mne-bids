@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.physio.eyetracking &#8212; MNE-BIDS 0.21.0.dev15+g52b38c5f8 documentation</title>
+    <title>mne_bids.physio.eyetracking &#8212; MNE-BIDS 0.21.0.dev16+ge278ba9af documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../../../_static/documentation_options.js?v=57c4fda5"></script>
+    <script src="../../../_static/documentation_options.js?v=3d056b20"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev15+g52b38c5f8" />
+  <meta name="docsearch:version" content="0.21.0.dev16+ge278ba9af" />
   
     
     <script src="../../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev15+g52b38c5f8 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev16+ge278ba9af documentation</p>
   
 </a></div>
     
@@ -512,6 +512,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids._fileio</span><span class="w"> </span><span class="kn">import</span> <span class="n">_open_lock</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNITS_FIFF_TO_BIDS_MAP</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSPath</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span>
@@ -923,7 +924,8 @@
 
         <span class="n">updates</span> <span class="o">=</span> <span class="n">_calibration_to_sidecar_updates</span><span class="p">(</span><span class="n">cals_by_eye</span><span class="p">[</span><span class="n">eye</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">updates</span><span class="p">:</span>
-            <span class="n">sidecar</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">sidecar_fpath</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8-sig"</span><span class="p">))</span>
+            <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">sidecar_fpath</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8-sig"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+                <span class="n">sidecar</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fid</span><span class="p">)</span>
             <span class="n">sidecar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">updates</span><span class="p">)</span>
             <span class="n">_write_json</span><span class="p">(</span><span class="n">sidecar_fpath</span><span class="p">,</span> <span class="n">sidecar</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">updated_sidecar_fpaths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sidecar_fpath</span><span class="p">)</span>

@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Convert EMG data to BIDS format &#8212; MNE-BIDS 0.21.0.dev15+g52b38c5f8 documentation</title>
+    <title>Convert EMG data to BIDS format &#8212; MNE-BIDS 0.21.0.dev16+ge278ba9af documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../_static/documentation_options.js?v=57c4fda5"></script>
+    <script src="../_static/documentation_options.js?v=3d056b20"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev15+g52b38c5f8" />
+  <meta name="docsearch:version" content="0.21.0.dev16+ge278ba9af" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev15+g52b38c5f8 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev16+ge278ba9af documentation</p>
   
 </a></div>
     
@@ -618,9 +618,6 @@ of <code class="docutils literal notranslate"><span class="pre">n/a</span></code
 </span>    <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">n/a</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
 </span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json'...
-</pre></div>
-</div>
 <p>Next we prepare the metadata that is common to both acquisition runs,
 then prepare the info about what is <em>different</em> between them.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="dict"><span class="n">emg_metadata</span></a> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="w">
@@ -675,8 +672,6 @@ Setting channel info structure...
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_GABA_RAW.vhdr...
 Setting channel info structure...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.tsv'...
-Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.json'...
-Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_emg.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-GabaMrs_channels.tsv'...
 Reading 0 ... 7666299  =      0.000 ...  1533.260 secs...
@@ -691,12 +686,9 @@ Setting channel info structure...
 Extracting parameters from /home/circleci/mne_data/MNE-fieldtrip_emg-data/nt05_EMG_SESS1_RS_RAW.vhdr...
 Setting channel info structure...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.tsv'...
-Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/participants.json'...
 The provided raw data contains annotations, but you did not pass an "event_id" mapping from annotation descriptions to event codes. We will generate arbitrary event codes. To specify custom event codes, please pass "event_id".
 Used Annotations descriptions: ['Response/R  1']
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_events.tsv'...
-Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_events.json'...
-Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/dataset_description.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_emg.json'...
 Writing '/home/circleci/mne_data/MNE-fieldtrip_emg-data/bidsified/sub-nt05/emg/sub-nt05_task-rest_acq-Bold_channels.tsv'...
 Reading 0 ... 3118199  =      0.000 ...   623.640 secs...
@@ -729,7 +721,7 @@ data file, so the GABA MRS run lacks <code class="docutils literal notranslate">
 |--------- sub-nt05_task-rest_acq-GabaMrs_emg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.569 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.751 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-fieldtrip-emg-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3be0d39829386dcc67fee90c7f6116c6/convert_fieldtrip_emg.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_fieldtrip_emg.ipynb</span></code></a></p>
