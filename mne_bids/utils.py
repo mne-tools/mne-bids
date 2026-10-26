@@ -235,6 +235,7 @@ def _write_json(fname, dictionary, *, overwrite=False, lock=True):
 
     json_output = json.dumps(dictionary, indent=4, ensure_ascii=False) + "\n"
     if _has_text(fname, json_output):
+        logger.debug(f"{fname} contents are unchanged. Skipping write.")
         return
     with _open_lock(fname, "w", encoding="utf-8", lock=lock) as fid:
         fid.write(json_output)
@@ -264,6 +265,9 @@ def _write_text(fname, text, overwrite=False, lock=True):
             f'"{fname}" already exists. Please set overwrite to True.'
         )
     if _has_text(fname, f"{text}\n"):
+        logger.debug(
+            f"contents of {fname} have not changed. Not rewriting."
+            )
         return
     with _open_lock(fname, "w", encoding="utf-8", lock=lock) as fid:
         fid.write(text)
