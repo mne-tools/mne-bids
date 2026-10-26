@@ -294,6 +294,7 @@ def _to_tsv(data, fname, *, compress=False, lock=True):
     else:
         logger.debug(f"{fname} contents are unchanged. Skipping write.")
 
+
 def _tsv_to_str(data, rows=5, *, include_header=True):
     """Return a string representation of the OrderedDict.
 

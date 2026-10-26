@@ -113,9 +113,7 @@ def _get_lock_context(path, *, timeout=None, lock=True):
         try:
             # Ensure parent directory exists
             Path(lock_path).parent.mkdir(parents=True, exist_ok=True)
-            lock_context = _hold(
-                filelock.SoftFileLock(lock_path, timeout=timeout), key
-            )
+            lock_context = _hold(filelock.SoftFileLock(lock_path, timeout=timeout), key)
         except (OSError, TypeError) as exp:
             # OSError: permission issues creating lock file
             # TypeError: invalid timeout parameter
@@ -197,9 +195,7 @@ def _open_lock(path, *args, lock_timeout=None, lock=True, **kwargs):
         try:
             fid = open(tmp, *args, **kwargs)
         except PermissionError:
-            logger.debug(
-                f"Cannot open {tmp}. Doing nothing."
-            )
+            logger.debug(f"Cannot open {tmp}. Doing nothing.")
             pass
         else:
             with _replace_on_exit(
