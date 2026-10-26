@@ -315,7 +315,8 @@ def update_anat_landmarks(
     if not bids_path_json.fpath.exists():  # Must exist before we can update it
         _write_json(bids_path_json.fpath, dict())
 
-    mri_json = json.loads(bids_path_json.fpath.read_text(encoding="utf-8"))
+    with _open_lock(bids_path_json.fpath, encoding="utf-8") as fid:
+        mri_json = json.load(fid)
     if "AnatomicalLandmarkCoordinates" not in mri_json:
         _on_missing(
             on_missing=on_missing,

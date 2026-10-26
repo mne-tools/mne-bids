@@ -603,9 +603,8 @@ def _events_json(
     # make sure to append any JSON fields added by the user
     fname = Path(fname)
     if fname.exists():
-        orig_data = json.loads(
-            fname.read_text(encoding="utf-8"), object_pairs_hook=OrderedDict
-        )
+        with _open_lock(fname, encoding="utf-8") as fid:
+            orig_data = json.load(fid, object_pairs_hook=OrderedDict)
         new_data = {**orig_data, **new_data}
 
     _write_json(fname, new_data, overwrite=overwrite)
@@ -625,6 +624,12 @@ def _readme(datatype, fname):
     fname : str | mne_bids.BIDSPath
         Filename to save the README to.
     """
+    # Nothing to do, and no lock to take, when both references are already there.
+    if fname.is_file():
+        text = fname.read_text(_detect_file_encoding(fname))
+        if REFERENCES["mne-bids"] in text and REFERENCES[datatype] in text:
+            return
+
     # Hold the lock across read and write so concurrent writers cannot
     # observe a partially written file.
     with _open_lock(fname):
@@ -844,11 +849,23 @@ def _participants_json(fname, overwrite=False):
     fpath = Path(fname)
     fpath.parent.mkdir(parents=True, exist_ok=True)
 
-    # Use _open_lock for atomic read-modify-write operation
-    with _open_lock(fpath, "a+", encoding="utf-8") as fid:
-        # Move to beginning of file for reading
-        fid.seek(0)
-        file_content = fid.read().strip()
+    # Nothing to do, and no lock to take, when the file already holds this schema
+    # next to the fields the user added.
+    if overwrite:
+        try:
+            current = fpath.read_text(encoding="utf-8")
+            merged = {**new_data, **json.loads(current), **new_data}
+            if json.dumps(merged, indent=4, ensure_ascii=False) + "\n" == current:
+                return
+        except (OSError, ValueError, TypeError):
+            pass
+
+    # Hold the lock across the read-modify-write so concurrent writers cannot
+    # interleave; the write itself replaces the file atomically.
+    with _open_lock(fpath):
+        file_content = (
+            fpath.read_text(encoding="utf-8").strip() if fpath.exists() else ""
+        )
 
         # Try to parse existing content
         orig_data = {}
@@ -883,15 +900,7 @@ def _participants_json(fname, overwrite=False):
                 if key not in new_data:
                     new_data[key] = orig_data[key]
 
-        # Write JSON data atomically within the lock context
-        # I could not use the _write_json helper here because it also
-        # handles file locking and I need to manage that manually
-        json_output = json.dumps(new_data, indent=4, ensure_ascii=False)
-        fid.seek(0)
-        fid.truncate()
-        fid.write(json_output)
-        fid.write("\n")
-        logger.info(f"Writing '{fname}'...")
+        _write_json(fpath, new_data, overwrite=True, lock=False)
 
 
 def _check_fif_splits(raw_fname, fdir, datatype):
@@ -1500,9 +1509,14 @@ def _ensure_bti_bidsignore(bids_root):
     else:
         lines = []
 
-    if pattern not in lines:
-        lines.append(pattern)
-        bidsignore_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if pattern in lines:
+        return
+    with _open_lock(bidsignore_path):
+        if bidsignore_path.exists():
+            lines = bidsignore_path.read_text(encoding="utf-8").splitlines()
+        if pattern not in lines:
+            lines.append(pattern)
+            _write_text(bidsignore_path, "\n".join(lines), overwrite=True, lock=False)
 
 
 def _write_raw_brainvision(raw, bids_fname, events, overwrite):
@@ -1790,7 +1804,7 @@ def make_dataset_description(
 
     # Prepare dataset_description.json
     fname = op.join(path, "dataset_description.json")
-    description = OrderedDict(
+    requested = OrderedDict(
         [
             ("Name", name),
             ("BIDSVersion", BIDS_VERSION),
@@ -1812,22 +1826,28 @@ def make_dataset_description(
 
     _validate_type(extra_fields, (dict, None), "extra_fields")
     extra_fields = dict() if extra_fields is None else extra_fields
-    clash = sorted(set(extra_fields) & set(description))
+    clash = sorted(set(extra_fields) & set(requested))
     if clash:
         raise ValueError(
             f"extra_fields cannot set {clash}, use the corresponding parameters."
         )
 
-    # Handle potentially existing file contents
-    with _open_lock(fname):
-        orig_cols = {}
-        if op.isfile(fname):
-            try:
-                with open(fname, encoding="utf-8") as fin:
-                    orig_cols = json.load(fin)
-            except (json.JSONDecodeError, OSError):
-                # File is empty, corrupted, or being written to by another process
-                pass
+    def _read():
+        try:
+            with _open_lock(fname, encoding="utf-8") as fin:
+                return fin.read()
+        except OSError:
+            return ""
+
+    def _merge(text, overwrite=overwrite):
+        """Combine the requested fields with those already in the file."""
+        description = requested.copy()
+        try:
+            orig_cols = json.loads(text)
+        except json.JSONDecodeError:
+            # File is missing, empty or corrupted
+            orig_cols = {}
+        if orig_cols:
             if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
                 warnings.warn(
                     "Conflicting BIDSVersion found in dataset_description.json! "
@@ -1859,7 +1879,18 @@ def make_dataset_description(
         for key, val in extra_fields.items():
             if overwrite or key not in orig_cols:
                 description[key] = val
+        return description
 
+    # Nothing to do, and no lock to take, when the file already holds the result.
+    text = _read()
+    description = _merge(text)
+    if json.dumps(description, indent=4, ensure_ascii=False) + "\n" == text:
+        return
+
+    # Handle potentially existing file contents
+    with _open_lock(fname):
+        if (current := _read()) != text:  # another writer got there first
+            description = _merge(current)
         _write_json(fname, description, overwrite=True, lock=False)
 
 
@@ -3808,7 +3839,8 @@ def anonymize_dataset(
 
         if bp_in.datatype == "anat":
             bp_anat_json = bp_in.copy().update(extension=".json")
-            anat_json = json.loads(bp_anat_json.fpath.read_text(encoding="utf-8"))
+            with _open_lock(bp_anat_json.fpath, encoding="utf-8") as fid:
+                anat_json = json.load(fid)
             landmarks = anat_json["AnatomicalLandmarkCoordinates"]
             landmarks_dig = mne.channels.make_dig_montage(
                 nasion=landmarks["NAS"],
@@ -3851,12 +3883,14 @@ def anonymize_dataset(
 
         # Enrich the JSON file
         if bp_in_json.fpath.exists():
-            json_in = json.loads(bp_in_json.fpath.read_text(encoding="utf-8"))
+            with _open_lock(bp_in_json.fpath, encoding="utf-8") as fid:
+                json_in = json.load(fid)
         else:
             json_in = dict()
 
         if bp_out_json.fpath.exists():
-            json_out = json.loads(bp_out_json.fpath.read_text(encoding="utf-8"))
+            with _open_lock(bp_out_json.fpath, encoding="utf-8") as fid:
+                json_out = json.load(fid)
         else:
             json_out = dict()
 

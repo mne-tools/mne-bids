@@ -823,7 +823,7 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
         return None
 
     try:
-        with open(events_json_fname, encoding="utf-8") as f:
+        with _open_lock(events_json_fname, encoding="utf-8") as f:
             sidecar = json.load(f)
     except FileNotFoundError:
         return None
@@ -878,7 +878,7 @@ def _read_hed_version(bids_root):
         return None
     desc_path = Path(bids_root) / "dataset_description.json"
     try:
-        with open(desc_path, encoding="utf-8") as f:
+        with _open_lock(desc_path, encoding="utf-8") as f:
             return json.load(f).get("HEDVersion")
     except FileNotFoundError:
         return None
@@ -1376,7 +1376,7 @@ def read_raw_bids(
         bids_path, suffix=datatype, extension=".json", on_error="ignore"
     )
     if sidecar_json_fname is not None:
-        with open(sidecar_json_fname, encoding="utf-8") as fin:
+        with _open_lock(sidecar_json_fname, encoding="utf-8") as fin:
             recording_type = json.load(fin).get("RecordingType")
         if recording_type == "epoched" and bids_path.fpath.suffix in _EPOCHED_EXTS:
             raise RuntimeError(
@@ -1644,7 +1644,7 @@ def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
     sidecar_fname = _find_matching_sidecar(
         bids_path, suffix=bids_path.datatype, extension=".json"
     )
-    with open(sidecar_fname, encoding="utf-8") as fp:
+    with _open_lock(sidecar_fname, encoding="utf-8") as fp:
         try:
             duration = float(json.load(fp)["EpochLength"])
         except KeyError:
@@ -1843,7 +1843,8 @@ def get_head_mri_trans(
         )
 
     # Get MRI landmarks from the JSON sidecar
-    t1w_json = json.loads(t1w_json_path.read_text(encoding="utf-8"))
+    with _open_lock(t1w_json_path, encoding="utf-8") as fid:
+        t1w_json = json.load(fid)
     mri_coords_dict = t1w_json.get("AnatomicalLandmarkCoordinates", dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
