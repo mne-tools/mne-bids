@@ -7,6 +7,7 @@ import mne
 import numpy as np
 from mne.utils import _validate_type, logger, warn
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import UNITS_FIFF_TO_BIDS_MAP
 from mne_bids.path import BIDSPath
 from mne_bids.utils import _write_json, _write_tsv
@@ -416,7 +417,8 @@ def write_eyetrack_calibration(
 
         updates = _calibration_to_sidecar_updates(cals_by_eye[eye])
         if updates:
-            sidecar = json.loads(sidecar_fpath.read_text(encoding="utf-8-sig"))
+            with _open_lock(sidecar_fpath, encoding="utf-8-sig") as fid:
+                sidecar = json.load(fid)
             sidecar.update(updates)
             _write_json(sidecar_fpath, sidecar, overwrite=True)
             updated_sidecar_fpaths.append(sidecar_fpath)

@@ -26,6 +26,35 @@ deprecation policy, compact tests, license rules for adapted code, and in partic
   the change must review, understand, and disclose AI use in the PR description.
 - Keep changes minimal and scoped to the request; mention, don't silently fix, unrelated
   problems you notice.
+- Do not paste agent-written text into issues, PRs or, comments.
+- When presenting benchmarks or results for a given metric, include a minimal reproducible example that reviewers can run locally, where feasible. For example:
+
+<details><summary>Minimally Working Example</summary>
+
+```python
+import timeit
+from tempfile import TemporaryDirectory
+
+import mne
+import mne_bids
+import numpy as np
+
+sample_fpath = mne.datasets.sample.data_path() / "MEG" / "sample" / "sample_audvis_raw.fif"
+raw = mne.io.read_raw_fif(sample_fpath)
+
+with TemporaryDirectory(prefix="mne-bids-benchmark-") as temp_dir:
+    bids_path = mne_bids.BIDSPath(subject="01", task="audvis", root=temp_dir)
+    times = timeit.repeat(
+        lambda: mne_bids.write_raw_bids(
+            raw, bids_path, overwrite=True, verbose="error",
+        ),
+        repeat=5,
+        number=1,
+    )
+
+print(f"{np.mean(times):.3f} ± {np.std(times):.3f} s per run")
+```
+</details>
 
 What does *not* carry over from MNE-Python:
 
