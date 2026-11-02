@@ -6,6 +6,7 @@
 import json
 import os
 import re
+import warnings
 from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
@@ -1580,8 +1581,8 @@ def read_epochs_bids(
 ):
     """Read epoched BIDS data (RecordingType="epoched") as :class:`mne.Epochs`.
 
-    EEGLAB ``.set`` files are read with the dedicated MNE epochs reader.
-    Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``"epoched"``
+    EEGLAB ``.set`` and FIF ``.fif`` files are read with the dedicated MNE epochs
+    readers. Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``"epoched"``
     in the sidecar are sliced into trials of length ``EpochLength`` (from the
     sidecar). When ``events.tsv`` is present its onsets give the trial starts
     (``sample`` / ``begSample`` / ``onset`` columns are tried in that order;
@@ -1623,9 +1624,15 @@ def read_epochs_bids(
     ext = bids_path.fpath.suffix
     epoch_reader = _get_readers("epoch_reader")
     if ext in epoch_reader:
-        epochs = epoch_reader[ext](
-            bids_path.fpath, verbose=verbose, **(extra_params or {})
-        )
+        with warnings.catch_warnings():
+            # BIDS names an epoched FIF file like any other recording
+            # (``*_meg.fif``), not ``*-epo.fif`` as older MNE versions expect.
+            warnings.filterwarnings(
+                "ignore", message=".*does not conform to MNE naming conventions.*"
+            )
+            epochs = epoch_reader[ext](
+                bids_path.fpath, verbose=verbose, **(extra_params or {})
+            )
     elif ext in _get_readers("_continuous_epoched_reader"):
         epochs = _read_epochs_from_continuous(
             bids_path, extra_params=extra_params, verbose=verbose
