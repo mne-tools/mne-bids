@@ -33,7 +33,6 @@ from mne_bids.config import (
     ALLOWED_PATH_ENTITIES_SHORT,
     ALLOWED_SPACES,
     ENTITY_VALUE_TYPE,
-    EPHY_ALLOWED_DATATYPES,
     _get_readers,
 )
 from mne_bids.tsv_handler import _detect_file_encoding, _drop, _from_tsv, _to_tsv
@@ -1729,11 +1728,11 @@ def _parse_ext(raw_fname):
 
 def _infer_datatype_from_path(fname: Path, assume_exists=False):
     # get the parent
-    if (assume_exists or fname.exists()) and fname.parent.name:
+    if assume_exists or fname.exists():
         datatype = fname.parent.name
         if any([datatype.startswith(entity) for entity in ["sub", "ses"]]):
             datatype = None
-    elif fname.stem.split("_")[-1] in EPHY_ALLOWED_DATATYPES:
+    elif fname.stem.split("_")[-1] in ("meg", "eeg", "ieeg"):
         datatype = fname.stem.split("_")[-1]
     else:
         datatype = None
@@ -2864,7 +2863,7 @@ def _filter_fnames(
 
 
 def find_matching_paths(
-    root=None,
+    root,
     subjects=None,
     sessions=None,
     tasks=None,
@@ -2890,12 +2889,12 @@ def find_matching_paths(
     Input can be str or list of str. None matches all found values.
 
     Performs a recursive search, starting in ``.root`` (if set), based on
-    ``BIDSPath.entities`` object, unless ``fnames`` is provided.
+    ``BIDSPath.entities`` object.
 
     Parameters
     ----------
-    root : pathlib.Path | str | None
-        The root of the BIDS path. Can be ``None`` if ``fnames`` is provided.
+    root : pathlib.Path | str
+        The root of the BIDS path.
     subjects : str | array-like of str | None
         The subject ID. Corresponds to "sub".
     sessions : str | array-like of str | None
@@ -2957,7 +2956,6 @@ def find_matching_paths(
         Defaults to ``False``.
     fnames : iterable of path-like | None
         Pre-collected file paths to filter instead of walking ``root`` on disk.
-        If ``None`` (default), ``root`` is searched recursively.
 
         .. versionadded:: 0.21
 
@@ -2966,76 +2964,25 @@ def find_matching_paths(
     bids_paths : list of mne_bids.BIDSPath
         The matching paths.
     """
-    _validate_type(root, ("path-like", None), "root")
-    if root is None and fnames is None:
-        raise ValueError("Either 'root' or 'fnames' must be provided.")
-    if fnames is not None:
-        if isinstance(fnames, str | os.PathLike) or not isinstance(fnames, Iterable):
-            raise TypeError(
-                f"fnames must be an iterable of path-like, got {type(fnames)}"
-            )
-        root_path = Path(root) if root is not None else None
-        dts = None if datatypes is None else _ensure_tuple(datatypes)
-        seen = {}
-        for fname in fnames:
-            _validate_type(fname, "path-like", "fnames item")
-            p = Path(fname)
-            if root_path and not p.is_absolute() and not p.is_relative_to(root_path):
-                p = root_path / p
-            for parent in p.parents:
-                if parent.name.endswith(".ds"):
-                    seen[parent] = None
-            seen[p] = None
-        fpaths = []
-        for p in seen:
-            rel = (
-                p.relative_to(root_path).parts
-                if root_path and p.is_relative_to(root_path)
-                else None
-            )
-            dirs = rel[:-1] if rel is not None else p.parts[:-1]
-            if "." not in p.name or p.name.startswith("."):
-                continue
-            if rel is not None and any(d.startswith(".") for d in dirs):
-                continue
-            if ignore_json and p.suffix == ".json":
-                continue
-            if ignore_nosub:
-                if root_path is not None:
-                    if not (rel and len(rel) > 1 and rel[0].startswith("sub-")):
-                        continue
-                elif not any(d.startswith("sub-") for d in dirs) or any(
-                    d in ("sourcedata", "derivatives") for d in dirs
-                ):
-                    continue
-            if dts is not None:
-                dt = (
-                    dirs[-1]
-                    if dirs
-                    else (None if rel is not None else _infer_datatype_from_path(p))
-                )
-                if dt not in dts:
-                    continue
-            fpaths.append(p)
-    else:
-        entities_opt = dict()
-        if subjects is not None:
-            if isinstance(subjects, str):
-                entities_opt["subject"] = subjects
-            elif len(subjects) == 1:
-                entities_opt["subject"] = subjects[0]
-        if sessions is not None:
-            if isinstance(sessions, str):
-                entities_opt["session"] = sessions
-            elif len(sessions) == 1:
-                entities_opt["session"] = sessions[0]
-        fpaths = _return_root_paths(
-            root,
-            datatype=datatypes,
-            ignore_json=ignore_json,
-            ignore_nosub=ignore_nosub,
-            entities=entities_opt,
-        )
+    entities_opt = dict()
+    if subjects is not None:
+        if isinstance(subjects, str):
+            entities_opt["subject"] = subjects
+        elif len(subjects) == 1:
+            entities_opt["subject"] = subjects[0]
+    if sessions is not None:
+        if isinstance(sessions, str):
+            entities_opt["session"] = sessions
+        elif len(sessions) == 1:
+            entities_opt["session"] = sessions[0]
+    fpaths = _return_root_paths(
+        root,
+        datatype=datatypes,
+        ignore_json=ignore_json,
+        ignore_nosub=ignore_nosub,
+        entities=entities_opt,
+        fnames=fnames,
+    )
 
     fpaths_filtered = _filter_fnames(
         fpaths,
@@ -3059,7 +3006,12 @@ def find_matching_paths(
 
 
 def _return_root_paths(
-    root, datatype=None, ignore_json=True, ignore_nosub=False, entities=None
+    root,
+    datatype=None,
+    ignore_json=True,
+    ignore_nosub=False,
+    entities=None,
+    fnames=None,
 ):
     """Return all file paths + .ds paths in root with entity-aware optimization.
 
@@ -3090,6 +3042,28 @@ def _return_root_paths(
     """
     root = Path(root)  # if root is str
     datatypes = None if datatype is None else _ensure_tuple(datatype)
+    if fnames is not None:
+        if isinstance(fnames, str | os.PathLike) or not isinstance(fnames, Iterable):
+            raise TypeError(
+                f"fnames must be an iterable of path-like, got {type(fnames)}"
+            )
+        cands = {}
+        for f in fnames:
+            _validate_type(f, "path-like", "fnames item")
+            p = Path(f)
+            rel = (p.relative_to(root) if p.is_relative_to(root) else p).parts
+            for i in range(1, len(rel) + 1):
+                if i == len(rel) or rel[i - 1].endswith(".ds"):
+                    cands[rel[:i]] = None
+        return [
+            root.joinpath(*r)
+            for r in cands
+            if "." in r[-1]
+            and not any(x.startswith(".") for x in r)
+            and not (ignore_json and r[-1].endswith(".json"))
+            and not (ignore_nosub and not (len(r) > 1 and r[0].startswith("sub-")))
+            and (datatypes is None or (len(r) > 1 and r[-2] in datatypes))
+        ]
 
     # Start from the subject (and session) directory when they are known
     start = root

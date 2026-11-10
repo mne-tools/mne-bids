@@ -36,7 +36,7 @@ Detailed list of changes
 - Add an ``extra_fields`` parameter to :func:`make_dataset_description` to write additional top-level keys to ``dataset_description.json``, by `Bruno Aristimunha`_ (:gh:`1674`)
 - Add :func:`mne_bids.open_lock`, the cross-process file lock mne-bids uses for shared files such as ``participants.tsv``, so downstream writers can share it, by `Bruno Aristimunha`_ (:gh:`1675`)
 - :func:`mne_bids.read_epochs_bids` now reads epoched FIF files (``RecordingType: "epoched"``) with :func:`mne.read_epochs`, and :func:`mne_bids.read_raw_bids` points to it for such files, by `Hamza Abdelhedi`_ (:gh:`1679`)
-- Add ``fnames`` parameter to :func:`mne_bids.find_matching_paths` to filter pre-collected file paths without walking the filesystem, by `Bruno Aristimunha`_ (:gh:`1697`)
+- Add ``fnames`` parameter to :func:`mne_bids.find_matching_paths` to filter pre-collected file paths without walking the filesystem, by `Bruno Aristimunha`_ (:gh:`1698`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
