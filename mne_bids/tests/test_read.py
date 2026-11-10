@@ -218,7 +218,7 @@ def test_read_correct_inputs():
     """Test that inputs of read functions are correct."""
     bids_path = "sub-01_ses-01_meg.fif"
     with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
-        read_raw_bids(bids_path)
+        read_raw_bids(None)
 
     with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         get_head_mri_trans(bids_path)
@@ -257,6 +257,8 @@ def test_read_raw_bids_task_none_warns(tmp_path):
     write_raw_bids(
         raw, bids_path_valid, allow_preload=True, format="FIF", verbose=False
     )
+    for path in (bids_path_valid.fpath, str(bids_path_valid.fpath)):
+        assert read_raw_bids(path, verbose=False).ch_names == raw.ch_names
 
     meg_dir = tmp_path / "sub-01" / "meg"
     for fpath in meg_dir.iterdir():
