@@ -1935,6 +1935,48 @@ def test_find_matching_paths(bids_root):
     bids_path_01.fpath.unlink()  # clean up created file
 
 
+@pytest.mark.parametrize("pass_root", [True, False])
+def test_find_matching_paths_fnames(bids_root, pass_root):
+    """Test find_matching_paths with pre-collected fnames (local and virtual)."""
+    all_files = [p for p in bids_root.rglob("*") if p.is_file()] + [
+        bids_root / "README",
+        bids_root / ".git" / "config",
+    ]
+    fnames = [p.relative_to(bids_root) for p in all_files] if pass_root else all_files
+    root_arg = bids_root if pass_root else None
+    for kw in (
+        {},
+        dict(datatypes="meg", runs="02", ignore_json=True, ignore_nosub=True),
+    ):
+        assert find_matching_paths(
+            root_arg, fnames=fnames, **kw
+        ) == find_matching_paths(bids_root, **kw)
+
+    vroot = bids_root / "virtual_ds"
+    virtual = [
+        vroot / "sub-01/nirs/sub-01_task-tap_nirs.snirf",
+        vroot / "sub-01/nirs/sub-01_task-tap_nirs.json",
+        vroot / "sub-01/meg/sub-01_task-rest_meg.ds/sub-01_task-rest_meg.meg4",
+        vroot / "sourcedata/sub-99/eeg/sub-99_task-rest_eeg.edf",
+    ]
+    matched = find_matching_paths(
+        vroot if pass_root else None,
+        fnames=virtual,
+        datatypes=["nirs", "meg"],
+        suffixes=["nirs", "meg"],
+        ignore_json=True,
+        ignore_nosub=True,
+    )
+    assert [(bp.subject, bp.datatype, bp.extension, bp.root) for bp in matched] == [
+        ("01", "meg", ".ds", vroot),
+        ("01", "nirs", ".snirf", vroot),
+    ]
+    with pytest.raises(ValueError, match="Either 'root' or 'fnames'"):
+        find_matching_paths()
+    with pytest.raises(TypeError, match="iterable of path-like"):
+        find_matching_paths(fnames="sub-01_eeg.vhdr")
+
+
 def test_return_root_paths_entity_aware(tmp_path):
     """Test that `_return_root_paths` respects `entities['subject']`.
 
