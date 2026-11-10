@@ -1269,10 +1269,10 @@ def read_raw_bids(
     bids_path : BIDSPath | path-like
         The file to read. If a path-like is passed, it is converted with
         :func:`get_bids_path_from_fname`. If a :class:`mne_bids.BIDSPath`
-        instance is passed, it **must** have the ``.root`` attribute set. The ``.datatype``
-        attribute **may** be set. If ``.datatype`` is not set and only one data
-        type (e.g., only EEG or MEG data) is present in the dataset, it will be
-        selected automatically.
+        instance is passed, it **must** have the ``.root`` attribute set. The
+        ``.datatype`` attribute **may** be set. If ``.datatype`` is not set and
+        only one data type (e.g., only EEG or MEG data) is present in the
+        dataset, it will be selected automatically.
 
         .. note::
            If ``bids_path`` points to a symbolic link of a ``.fif`` file
@@ -1337,7 +1337,8 @@ def read_raw_bids(
             bids_path = get_bids_path_from_fname(bids_path, check=False)
         else:
             raise RuntimeError(
-                f'"bids_path" must be a BIDSPath object or path-like. Got {type(bids_path)}: {bids_path}. Please '
+                '"bids_path" must be a BIDSPath object or path-like. '
+                f"Got {type(bids_path)}: {bids_path}. Please "
                 "instantiate using mne_bids.BIDSPath()."
             )
     for required in ["root", "subject"]:
