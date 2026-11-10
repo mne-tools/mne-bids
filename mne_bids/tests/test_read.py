@@ -11,6 +11,7 @@ import os
 import os.path as op
 import re
 import shutil as sh
+import warnings
 from collections import OrderedDict
 from contextlib import nullcontext
 from datetime import UTC, date, datetime, timedelta, timezone
@@ -2543,14 +2544,21 @@ def test_read_hed_version_returns_none(tmp_path, bids_root):
 
 @testing.requires_testing_data
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
-def test_read_epochs_bids_eeglab(tmp_path):
-    """read_epochs_bids loads EEGLAB epoched data; read_raw_bids refuses it."""
+@pytest.mark.parametrize(("ext", "datatype"), [(".set", "eeg"), (".fif", "meg")])
+def test_read_epochs_bids_eeglab(tmp_path, ext, datatype):
+    """read_epochs_bids loads EEGLAB/FIF epoched data; read_raw_bids refuses it."""
     src = data_path / "EEGLAB" / "test_epochs.set"
-    bp = BIDSPath(subject="01", task="t", datatype="eeg", root=tmp_path)
+    bp = BIDSPath(subject="01", task="t", datatype=datatype, root=tmp_path)
     bp.directory.mkdir(parents=True)
-    sh.copy(src, bp.update(suffix="eeg", extension=".set").fpath)
-    sh.copy(src.with_suffix(".fdt"), bp.fpath.with_suffix(".fdt"))
+    bp.update(suffix=datatype, extension=ext)
     expected = mne.io.read_epochs_eeglab(src, verbose=False)
+    if ext == ".set":
+        sh.copy(src, bp.fpath)
+        sh.copy(src.with_suffix(".fdt"), bp.fpath.with_suffix(".fdt"))
+    else:  # BIDS does not name epoched FIF files as older MNE versions expect
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", message=".*naming conventions")
+            expected.save(bp.fpath, verbose=False)
     bp.copy().update(extension=".json").fpath.write_text(
         '{"TaskName": "t", "PowerLineFrequency": 60, "RecordingType": "epoched"}'
     )
