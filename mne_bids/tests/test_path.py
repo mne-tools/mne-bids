@@ -276,6 +276,16 @@ def test_get_entity_vals_ignore_hidden(bids_root):
     assert "hid" in vals_include_hidden
 
 
+def test_get_entity_vals_root_in_hidden_dir(tmp_path):
+    """Test that only directories below the root count as hidden."""
+    root = tmp_path / ".cache" / "ds"
+    fname = root / "sub-01" / "ses-a" / "meg" / "sub-01_ses-a_task-x_meg.fif"
+    fname.parent.mkdir(parents=True)
+    fname.touch()
+    assert get_entity_vals(root, "session") == ["a"]
+    assert get_entity_vals(root, "session", include_match="**/") == ["a"]
+
+
 @dataclass
 class _PathAccessCounter:
     calls: list[str]
@@ -787,6 +797,12 @@ def test_get_bids_path_from_fname(fname):
 
         # root should be default '.'
         assert str(bids_path.root) == "."
+
+
+def test_get_bids_path_from_fname_no_root_level():
+    """Test a scans file without subject or session, so no folders to strip."""
+    with pytest.raises(ValueError, match="scans.tsv file name can only contain"):
+        get_bids_path_from_fname("/bids_root/task-rest_scans.tsv", check=False)
 
 
 @pytest.mark.parametrize(
@@ -1933,6 +1949,25 @@ def test_find_matching_paths(bids_root):
     )
     assert paths_match == paths_find
     bids_path_01.fpath.unlink()  # clean up created file
+
+
+@pytest.mark.parametrize("check", [False, True])
+def test_find_matching_paths_skips_non_bidspath(tmp_path, check):
+    """Test that files that cannot be a BIDSPath are skipped instead of raising."""
+    good = tmp_path / "sub-01" / "meg" / "sub-01_task-rest_meg.fif"
+    bad = [
+        # FreeSurfer output: the folder name is not a valid datatype label
+        tmp_path / "derivatives/freesurfer/sub-01/mri/flash/parameter_maps/flash5.mgz",
+        # scans files may only have subject and session entities
+        tmp_path / "sub-01" / "task-rest_scans.tsv",
+    ]
+    for fname in (good, *bad):
+        fname.parent.mkdir(parents=True, exist_ok=True)
+        fname.touch()
+    paths = find_matching_paths(tmp_path, check=check)
+    assert [path.fpath for path in paths] == [good]
+    paths = BIDSPath(root=tmp_path).match(check=check)
+    assert [path.fpath for path in paths] == [good]
 
 
 def test_return_root_paths_entity_aware(tmp_path):
