@@ -1337,7 +1337,7 @@ def read_raw_bids(
             bids_path = get_bids_path_from_fname(bids_path, check=False)
         else:
             raise RuntimeError(
-                '"bids_path" must be a BIDSPath object or path-like. Please '
+                f'"bids_path" must be a BIDSPath object or path-like. Got {type(bids_path)}: {bids_path}. Please '
                 "instantiate using mne_bids.BIDSPath()."
             )
     for required in ["root", "subject"]:
