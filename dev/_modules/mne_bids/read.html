@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev22+gae1c79a9e documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev23+g749e7a0fb documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=e7657d58"></script>
+    <script src="../../_static/documentation_options.js?v=50261681"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev22+gae1c79a9e" />
+  <meta name="docsearch:version" content="0.21.0.dev23+g749e7a0fb" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev22+gae1c79a9e documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev23+g749e7a0fb documentation</p>
   
 </a></div>
     
@@ -1777,12 +1777,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : BIDSPath</span>
-<span class="sd">        The file to read. The :class:`mne_bids.BIDSPath` instance passed here</span>
-<span class="sd">        **must** have the ``.root`` attribute set. The ``.datatype`` attribute</span>
-<span class="sd">        **may** be set. If ``.datatype`` is not set and only one data type</span>
-<span class="sd">        (e.g., only EEG or MEG data) is present in the dataset, it will be</span>
-<span class="sd">        selected automatically.</span>
+<span class="sd">    bids_path : BIDSPath | path-like</span>
+<span class="sd">        The file to read. If a path-like is passed, it is converted with</span>
+<span class="sd">        :func:`get_bids_path_from_fname`. If a :class:`mne_bids.BIDSPath`</span>
+<span class="sd">        instance is passed, it **must** have the ``.root`` attribute set. The</span>
+<span class="sd">        ``.datatype`` attribute **may** be set. If ``.datatype`` is not set and</span>
+<span class="sd">        only one data type (e.g., only EEG or MEG data) is present in the</span>
+<span class="sd">        dataset, it will be selected automatically.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">           If ``bids_path`` points to a symbolic link of a ``.fif`` file</span>
@@ -1843,10 +1844,14 @@
 <span class="sd">        and ``on_ch_mismatch`` is 'raise'.</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="s1">'"bids_path" must be a BIDSPath object. Please '</span>
-            <span class="s2">"instantiate using mne_bids.BIDSPath()."</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">):</span>
+            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s1">'"bids_path" must be a BIDSPath object or path-like. '</span>
+                <span class="sa">f</span><span class="s2">"Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">bids_path</span><span class="si">}</span><span class="s2">. Please "</span>
+                <span class="s2">"instantiate using mne_bids.BIDSPath()."</span>
+            <span class="p">)</span>
     <span class="k">for</span> <span class="n">required</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"root"</span><span class="p">,</span> <span class="s2">"subject"</span><span class="p">]:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">required</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
