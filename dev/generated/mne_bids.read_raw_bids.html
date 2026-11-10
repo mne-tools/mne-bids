@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.read_raw_bids &#8212; MNE-BIDS 0.21.0.dev22+gae1c79a9e documentation</title>
+    <title>mne_bids.read_raw_bids &#8212; MNE-BIDS 0.21.0.dev23+g749e7a0fb documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=e7657d58"></script>
+    <script src="../_static/documentation_options.js?v=50261681"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev22+gae1c79a9e" />
+  <meta name="docsearch:version" content="0.21.0.dev23+g749e7a0fb" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev22+gae1c79a9e documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev23+g749e7a0fb documentation</p>
   
 </a></div>
     
@@ -582,11 +582,12 @@ populate the returned raw object with raw.annotations and raw.info[‘bads’].<
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The file to read. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
-<strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute set. The <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> attribute
-<strong>may</strong> be set. If <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> is not set and only one data type
-(e.g., only EEG or MEG data) is present in the dataset, it will be
-selected automatically.</p>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.13)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The file to read. If a path-like is passed, it is converted with
+<a class="reference internal" href="mne_bids.get_bids_path_from_fname.html#mne_bids.get_bids_path_from_fname" title="mne_bids.get_bids_path_from_fname"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_bids_path_from_fname()</span></code></a>. If a <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>
+instance is passed, it <strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute set. The
+<code class="docutils literal notranslate"><span class="pre">.datatype</span></code> attribute <strong>may</strong> be set. If <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> is not set and
+only one data type (e.g., only EEG or MEG data) is present in the
+dataset, it will be selected automatically.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">bids_path</span></code> points to a symbolic link of a <code class="docutils literal notranslate"><span class="pre">.fif</span></code> file
