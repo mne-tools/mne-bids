@@ -64,7 +64,7 @@ from mne_bids.utils import (
     _write_json,
     get_anonymization_daysback,
 )
-from mne_bids.write import _get_fid_coords, deface_mri
+from mne_bids.write import _channels_tsv, _get_fid_coords, deface_mri
 
 base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
@@ -1878,6 +1878,26 @@ def test_snirf(_bids_validate, tmp_path):
         RuntimeError, match="'head' coordinate frame must contain nasion"
     ):
         write_raw_bids(raw, bids_path, overwrite=True)
+
+
+def test_channels_tsv_nirs_types(tmp_path):
+    """Optical density and hemoglobin channels get their BIDS types."""
+    ch_names = ["S1_D1 760", "S1_D1 850", "S1_D1 hbo", "S1_D1 hbr"]
+    ch_types = ["fnirs_od", "fnirs_od", "hbo", "hbr"]
+    info = mne.create_info(ch_names, sfreq=10, ch_types=ch_types)
+    raw_fname = tmp_path / "nirs_raw.fif"
+    mne.io.RawArray(np.ones((4, 10)), info).save(raw_fname)
+    raw = mne.io.read_raw_fif(raw_fname)
+    channels_fname = tmp_path / "channels.tsv"
+    _channels_tsv(raw, channels_fname, convert_fmt=None)
+    channels = _from_tsv(channels_fname)
+    assert channels["type"] == [
+        "NIRSCWOPTICALDENSITY",
+        "NIRSCWOPTICALDENSITY",
+        "NIRSCWHBO",
+        "NIRSCWHBR",
+    ]
+    assert "Other type of channel" not in channels["description"]
 
 
 def test_bdf(_bids_validate, tmp_path):
