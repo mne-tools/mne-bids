@@ -1057,9 +1057,11 @@ class BIDSPath:
         if check is not None:
             self.check = check
 
+        # ``_validate_type`` is slow, so call it only to raise its error message
         for key, val in kwargs.items():
             if key == "root":
-                _validate_type(val, types=("path-like", None), item_name=key)
+                if val is not None and not isinstance(val, str | os.PathLike):
+                    _validate_type(val, types=("path-like", None), item_name=key)
                 continue
 
             if key == "datatype":
@@ -1077,11 +1079,13 @@ class BIDSPath:
                     f"Key must be one of {ALLOWED_PATH_ENTITIES}, got {key}"
                 )
 
-            if ENTITY_VALUE_TYPE[key] == "label":
-                _validate_type(val, types=(None, str), item_name=key)
-            else:
-                assert ENTITY_VALUE_TYPE[key] == "index"
-                _validate_type(val, types=(int, str, None), item_name=key)
+            if val is not None and not isinstance(val, str):
+                if ENTITY_VALUE_TYPE[key] == "label":
+                    _validate_type(val, types=(None, str), item_name=key)
+                else:
+                    assert ENTITY_VALUE_TYPE[key] == "index"
+                    _validate_type(val, types=(int, str, None), item_name=key)
+            if ENTITY_VALUE_TYPE[key] == "index":
                 if isinstance(val, str) and not val.isdigit() and self.check:
                     raise ValueError(f"{key} is not an index (Got {val})")
                 elif isinstance(val, int):
@@ -1108,9 +1112,7 @@ class BIDSPath:
             # set entity value, ensuring `root` is a Path
             if val is not None and key == "root":
                 val = Path(val).expanduser()
-            old_kwargs[key] = (
-                getattr(self, f"{key}") if hasattr(self, f"_{key}") else None
-            )
+            old_kwargs[key] = getattr(self, f"_{key}", None)
             setattr(self, f"_{key}", val)
 
         # Perform a check of the entities and revert changes if check fails
@@ -1729,7 +1731,7 @@ def _infer_datatype_from_path(fname: Path, assume_exists=False):
     # get the parent
     if assume_exists or fname.exists():
         datatype = fname.parent.name
-        if any([datatype.startswith(entity) for entity in ["sub", "ses"]]):
+        if datatype.startswith(("sub", "ses")):
             datatype = None
     elif fname.stem.split("_")[-1] in ("meg", "eeg", "ieeg"):
         datatype = fname.stem.split("_")[-1]
@@ -1758,14 +1760,16 @@ def get_bids_path_from_fname(fname, check=True, *, verbose=None):
     bids_path : BIDSPath
         The BIDSPath object.
     """
-    return _bids_path_from_fname(fname, check, verbose=verbose)
-
-
-@verbose
-def _bids_path_from_fname(fname, check, *, assume_exists=False, verbose=None):
     fpath = Path(fname)
-    fname = fpath.name
+    bids_path = BIDSPath(**_parse_bids_fname(fpath), check=check)
+    if verbose:
+        logger.info(f"From {fpath}, formed a BIDSPath: {bids_path}.")
+    return bids_path
 
+
+def _parse_bids_fname(fpath, assume_exists=False):
+    """Parse a file path into keyword arguments for :class:`BIDSPath`."""
+    fname = fpath.name
     entities = get_entities_from_fname(fname)
 
     # parse suffix and extension
@@ -1775,44 +1779,26 @@ def _bids_path_from_fname(fname, check, *, assume_exists=False, verbose=None):
         suffix, extension = _get_bids_suffix_and_ext(suffix)
     else:
         suffix = None
-        extension = Path(fname).suffix  # already starts with a period
-        if extension == "":
-            extension = None
+        extension = fpath.suffix or None  # already starts with a period
 
-    if extension is not None:
-        assert extension.startswith(".")  # better safe than sorry
+    # The root is above the subject, session, and datatype folders (a scans file
+    # sits directly in the subject or session folder). ``parents`` stops at the
+    # top-level folder, as ``.parent`` does.
+    root_level = (
+        (entities["subject"] is not None)
+        + (entities["session"] is not None)
+        + (suffix != "scans")
+    )
+    parents = fpath.parents
+    root = parents[min(root_level, len(parents) - 1)]
 
-    datatype = _infer_datatype_from_path(fpath, assume_exists)
-
-    # find root and datatype if it exists
-    if fpath.parent == "":
-        root = None
-    else:
-        root_level = 0
-        # determine root if it's there
-        if entities["subject"] is not None:
-            root_level += 1
-        if entities["session"] is not None:
-            root_level += 1
-        if suffix != "scans":
-            root_level += 1
-
-        if root_level:
-            root = fpath.parent
-            for _ in range(root_level):
-                root = root.parent
-
-    bids_path = BIDSPath(
+    return dict(
         root=root,
-        datatype=datatype,
+        datatype=_infer_datatype_from_path(fpath, assume_exists),
         suffix=suffix,
         extension=extension,
         **entities,
-        check=check,
     )
-    if verbose:
-        logger.info(f"From {fpath}, formed a BIDSPath: {bids_path}.")
-    return bids_path
 
 
 def _suggest_fix_for_segment(segment, known_keys):
@@ -2530,7 +2516,10 @@ def get_entity_vals(
             for im in include_match
             for f in _path_glob(root, im + search_str)
             if not any(f.is_relative_to(d) for d in ignore_dirs_set)
-            and not (ignore_hidden and any(p.startswith(".") for p in f.parts))
+            and not (
+                ignore_hidden
+                and any(p.startswith(".") for p in f.relative_to(root).parts)
+            )
         ]
     else:
         filenames = []
@@ -3110,12 +3099,19 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     """
     bids_paths = []
     for fname in fnames:
-        # the names come from a directory listing, so the files are known to exist
-        bids_path = _bids_path_from_fname(fname, check=False, assume_exists=True)
-        inferred_root = bids_path.root
-        bids_path.root = root
-        expected_fpath = bids_path.directory / bids_path.basename
-        if expected_fpath != Path(fname):
+        fpath = Path(fname)
+        try:
+            # the names come from a directory listing, so the files are known to exist
+            kwargs = _parse_bids_fname(fpath, assume_exists=True)
+            # Use ``root`` if it reproduces the path, else the root inferred from it
+            inferred_root, kwargs["root"] = kwargs["root"], root
+            bids_path = BIDSPath(**kwargs, check=False)
+        except ValueError as exc:
+            # not even an unchecked BIDSPath can hold this file (for example,
+            # FreeSurfer output in derivatives), so leave it out
+            logger.debug(f"Skipping {fpath}: {exc}")
+            continue
+        if bids_path.directory / bids_path.basename != fpath:
             bids_path.root = inferred_root
         bids_path.check = True
 

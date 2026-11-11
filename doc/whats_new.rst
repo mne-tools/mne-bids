@@ -25,6 +25,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Bruno Aristimunha`_
+* `Eric Larson`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,6 +57,9 @@ Detailed list of changes
 - :func:`find_matching_paths` and :meth:`BIDSPath.match` now follow symbolic links to directories, and no longer return hidden files (or files inside hidden directories), which could happen when a dataset was searched without ``datatypes`` and without ``ignore_nosub``, by `Hamza Abdelhedi`_ (:gh:`1678`)
 - Fix :func:`find_matching_paths` omitting files with a ``tracksys`` entity and returning no matches when ``tracking_systems`` is specified, by `Shubham Padkonde`_.
 - Allow ``acquisition="calibration"`` or ``"crosstalk"`` together with a ``task`` in :class:`BIDSPath` when ``datatype`` is not ``"meg"``, since these labels are reserved only for MEG fine-calibration and crosstalk files, by `Bruno Aristimunha`_ (:gh:`1673`)
+- Fix :func:`find_matching_paths` and :meth:`BIDSPath.match` raising an error when the dataset contains a file that cannot be represented as a :class:`BIDSPath`, such as FreeSurfer output in ``derivatives``; such files are now skipped, by `Eric Larson`_ (:gh:`1699`)
+- Fix :func:`mne_bids.get_entity_vals` with ``include_match`` returning no values when the dataset itself is inside a hidden directory, by `Eric Larson`_ (:gh:`1699`)
+- Fix :func:`mne_bids.get_bids_path_from_fname` raising an ``UnboundLocalError`` instead of a clear error for a ``scans.tsv`` file name without subject or session entities, by `Eric Larson`_ (:gh:`1699`)
 - :func:`mne_bids.read_raw_bids` no longer sets fNIRS channels whose ``channels.tsv`` type is ``NIRSCWHBO``, ``NIRSCWHBR`` or ``NIRSCWOPTICALDENSITY`` to ``misc``: they get the MNE types ``hbo``, ``hbr`` and ``fnirs_od``, and ``channels.tsv`` is written with these BIDS types for such channels instead of raising a ``KeyError``, by `Bruno Aristimunha`_ (:gh:`1701`)
 
 ⚕️ Code health
@@ -65,5 +69,6 @@ Detailed list of changes
 - Dropping rows from a TSV table no longer deep-copies the table first, by `Hamza Abdelhedi`_ (:gh:`1681`)
 - Sped up :func:`mne_bids.read_raw_bids` and :func:`mne_bids.write_raw_bids` on network filesystems by taking fewer file locks, by `Hamza Abdelhedi`_ (:gh:`1680`)
 - Improvements to directory searching that speed up :meth:`BIDSPath.match`, :func:`find_matching_paths`, and :func:`read_raw_bids`, especially when searching network file systems, by `Hamza Abdelhedi`_ (:gh:`1678`)
+- Creating and updating :class:`BIDSPath` objects is faster, which speeds up :meth:`BIDSPath.match` and :func:`find_matching_paths` on datasets with many files, by `Eric Larson`_ (:gh:`1699`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
