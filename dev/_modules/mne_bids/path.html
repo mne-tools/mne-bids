@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.21.0.dev24+gf2e861490 documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.21.0.dev25+g0078db27a documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=de1b64ed"></script>
+    <script src="../../_static/documentation_options.js?v=a2c151b9"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev24+gf2e861490" />
+  <meta name="docsearch:version" content="0.21.0.dev25+g0078db27a" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev24+gf2e861490 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev25+g0078db27a documentation</p>
   
 </a></div>
     
@@ -1578,9 +1578,11 @@
         <span class="k">if</span> <span class="n">check</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="n">check</span>
 
+        <span class="c1"># ``_validate_type`` is slow, so call it only to raise its error message</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"root"</span><span class="p">:</span>
-                <span class="n">_validate_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s2">"path-like"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">):</span>
+                    <span class="n">_validate_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s2">"path-like"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"datatype"</span><span class="p">:</span>
@@ -1598,11 +1600,13 @@
                     <span class="sa">f</span><span class="s2">"Key must be one of </span><span class="si">{</span><span class="n">ALLOWED_PATH_ENTITIES</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"label"</span><span class="p">:</span>
-                <span class="n">_validate_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">assert</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"index"</span>
-                <span class="n">_validate_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"label"</span><span class="p">:</span>
+                    <span class="n">_validate_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"index"</span>
+                    <span class="n">_validate_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"index"</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">val</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not an index (Got </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -1629,9 +1633,7 @@
             <span class="c1"># set entity value, ensuring `root` is a Path</span>
             <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"root"</span><span class="p">:</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
-            <span class="n">old_kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="p">)</span>
+            <span class="n">old_kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
         <span class="c1"># Perform a check of the entities and revert changes if check fails</span>
@@ -2270,7 +2272,7 @@
     <span class="c1"># get the parent</span>
     <span class="k">if</span> <span class="n">assume_exists</span> <span class="ow">or</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">datatype</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"sub"</span><span class="p">,</span> <span class="s2">"ses"</span><span class="p">]]):</span>
+        <span class="k">if</span> <span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"sub"</span><span class="p">,</span> <span class="s2">"ses"</span><span class="p">)):</span>
             <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">elif</span> <span class="n">fname</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"meg"</span><span class="p">,</span> <span class="s2">"eeg"</span><span class="p">,</span> <span class="s2">"ieeg"</span><span class="p">):</span>
         <span class="n">datatype</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -2301,15 +2303,17 @@
 <span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The BIDSPath object.</span>
 <span class="sd">    """</span>
-    <span class="k">return</span> <span class="n">_bids_path_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">check</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
-
-
-
-<span class="nd">@verbose</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_bids_path_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">check</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">assume_exists</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-    <span class="n">fname</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="o">**</span><span class="n">_parse_bids_fname</span><span class="p">(</span><span class="n">fpath</span><span class="p">),</span> <span class="n">check</span><span class="o">=</span><span class="n">check</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"From </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">, formed a BIDSPath: </span><span class="si">{</span><span class="n">bids_path</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bids_path</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_bids_fname</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">assume_exists</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Parse a file path into keyword arguments for :class:`BIDSPath`."""</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
     <span class="n">entities</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
 
     <span class="c1"># parse suffix and extension</span>
@@ -2319,44 +2323,26 @@
         <span class="n">suffix</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">_get_bids_suffix_and_ext</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">suffix</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">extension</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span>  <span class="c1"># already starts with a period</span>
-        <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
-            <span class="n">extension</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">or</span> <span class="kc">None</span>  <span class="c1"># already starts with a period</span>
 
-    <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">extension</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>  <span class="c1"># better safe than sorry</span>
+    <span class="c1"># The root is above the subject, session, and datatype folders (a scans file</span>
+    <span class="c1"># sits directly in the subject or session folder). ``parents`` stops at the</span>
+    <span class="c1"># top-level folder, as ``.parent`` does.</span>
+    <span class="n">root_level</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">entities</span><span class="p">[</span><span class="s2">"subject"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="o">+</span> <span class="p">(</span><span class="n">entities</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="o">+</span> <span class="p">(</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">"scans"</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">parents</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">parents</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">parents</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">root_level</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">parents</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
 
-    <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">assume_exists</span><span class="p">)</span>
-
-    <span class="c1"># find root and datatype if it exists</span>
-    <span class="k">if</span> <span class="n">fpath</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
-        <span class="n">root</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">root_level</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c1"># determine root if it's there</span>
-        <span class="k">if</span> <span class="n">entities</span><span class="p">[</span><span class="s2">"subject"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">root_level</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">entities</span><span class="p">[</span><span class="s2">"session"</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">root_level</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">suffix</span> <span class="o">!=</span> <span class="s2">"scans"</span><span class="p">:</span>
-            <span class="n">root_level</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="k">if</span> <span class="n">root_level</span><span class="p">:</span>
-            <span class="n">root</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">parent</span>
-            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">root_level</span><span class="p">):</span>
-                <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span>
-
-    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
-        <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+        <span class="n">datatype</span><span class="o">=</span><span class="n">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">assume_exists</span><span class="p">),</span>
         <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span>
         <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span>
         <span class="o">**</span><span class="n">entities</span><span class="p">,</span>
-        <span class="n">check</span><span class="o">=</span><span class="n">check</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"From </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">, formed a BIDSPath: </span><span class="si">{</span><span class="n">bids_path</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">bids_path</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_suggest_fix_for_segment</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">known_keys</span><span class="p">):</span>
@@ -3082,7 +3068,10 @@
             <span class="k">for</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">include_match</span>
             <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_path_glob</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">im</span> <span class="o">+</span> <span class="n">search_str</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ignore_dirs_set</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ignore_hidden</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">parts</span><span class="p">))</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="n">ignore_hidden</span>
+                <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3666,12 +3655,19 @@
 <span class="sd">    """</span>
     <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
-        <span class="c1"># the names come from a directory listing, so the files are known to exist</span>
-        <span class="n">bids_path</span> <span class="o">=</span> <span class="n">_bids_path_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">assume_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">inferred_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
-        <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
-        <span class="n">expected_fpath</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span>
-        <span class="k">if</span> <span class="n">expected_fpath</span> <span class="o">!=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># the names come from a directory listing, so the files are known to exist</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="n">_parse_bids_fname</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">assume_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Use ``root`` if it reproduces the path, else the root inferred from it</span>
+            <span class="n">inferred_root</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"root"</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">"root"</span><span class="p">],</span> <span class="n">root</span>
+            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="c1"># not even an unchecked BIDSPath can hold this file (for example,</span>
+            <span class="c1"># FreeSurfer output in derivatives), so leave it out</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Skipping </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span> <span class="o">!=</span> <span class="n">fpath</span><span class="p">:</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">inferred_root</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="kc">True</span>
 
