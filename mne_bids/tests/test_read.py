@@ -2159,7 +2159,26 @@ def test_nirs_channel_names_from_columns(tmp_path, wavelength_fmt):
     ]
     _to_tsv(channels, channels_fname)
 
-    assert read_raw_bids(bids_path).ch_names == raw.ch_names
+    raw_bids = read_raw_bids(bids_path)
+    assert raw_bids.ch_names == raw.ch_names
+    # Short-separation channels (about 8 mm, detectors D9 to D13) map as well
+    short = mne.preprocessing.nirs.short_channels(raw_bids.info)
+    assert np.array(raw_bids.ch_names)[short].tolist() == [
+        f"S{i}_D{i + 8} {wavelength}" for wavelength in (760, 850) for i in range(1, 6)
+    ]
+
+    # A value that cannot be used leaves the mismatch handling as it was
+    first_wavelength = channels["wavelength_nominal"][0]
+    channels["wavelength_nominal"][0] = "n/a"
+    _to_tsv(channels, channels_fname)
+    with pytest.raises(RuntimeError, match="Channel mismatch"):
+        read_raw_bids(bids_path, on_ch_mismatch="raise")
+
+    channels["wavelength_nominal"][0] = first_wavelength
+    channels["source"][1] = "n/a"
+    _to_tsv(channels, channels_fname)
+    raw_bids = read_raw_bids(bids_path, on_ch_mismatch="rename")
+    assert raw_bids.ch_names == channels["name"]
 
 
 def test_channel_mismatch_warn(tmp_path):

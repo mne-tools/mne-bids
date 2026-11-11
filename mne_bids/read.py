@@ -1131,11 +1131,17 @@ def _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname)
         return True
 
     # SNIRF stores no channel names: MNE builds them from source, detector and
-    # wavelength, so match on those columns when the names differ.
+    # wavelength, so match on those columns when the names differ and every
+    # value can be used.
     if (
         list(raw.ch_names) != ch_names_tsv
         and set(raw.get_channel_types()) == {"fnirs_cw_amplitude"}
         and {"source", "detector", "wavelength_nominal"} <= channels_dict.keys()
+        and not {"", "n/a"} & {*channels_dict["source"], *channels_dict["detector"]}
+        and all(
+            re.fullmatch(r"\d+(\.\d+)?", wavelength)
+            for wavelength in channels_dict["wavelength_nominal"]
+        )
     ):
         ch_names_tsv = channels_dict["name"] = [
             f"{source}_{detector} {int(float(wavelength))}"
