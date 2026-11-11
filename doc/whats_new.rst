@@ -56,6 +56,7 @@ Detailed list of changes
 - :func:`find_matching_paths` and :meth:`BIDSPath.match` now follow symbolic links to directories, and no longer return hidden files (or files inside hidden directories), which could happen when a dataset was searched without ``datatypes`` and without ``ignore_nosub``, by `Hamza Abdelhedi`_ (:gh:`1678`)
 - Fix :func:`find_matching_paths` omitting files with a ``tracksys`` entity and returning no matches when ``tracking_systems`` is specified, by `Shubham Padkonde`_.
 - Allow ``acquisition="calibration"`` or ``"crosstalk"`` together with a ``task`` in :class:`BIDSPath` when ``datatype`` is not ``"meg"``, since these labels are reserved only for MEG fine-calibration and crosstalk files, by `Bruno Aristimunha`_ (:gh:`1673`)
+- :func:`mne_bids.read_raw_bids` no longer sets fNIRS channels whose ``channels.tsv`` type is ``NIRSCWHBO``, ``NIRSCWHBR`` or ``NIRSCWOPTICALDENSITY`` to ``misc``: they get the MNE types ``hbo``, ``hbr`` and ``fnirs_od``, and ``channels.tsv`` is written with these BIDS types for such channels instead of raising a ``KeyError``, by `Bruno Aristimunha`_ (:gh:`1701`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
