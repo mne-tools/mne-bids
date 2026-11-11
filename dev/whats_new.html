@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.21.0.dev24+gf2e861490 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.21.0.dev25+g0078db27a documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=de1b64ed"></script>
+    <script src="_static/documentation_options.js?v=a2c151b9"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev24+gf2e861490" />
+  <meta name="docsearch:version" content="0.21.0.dev25+g0078db27a" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev24+gf2e861490 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev25+g0078db27a documentation</p>
   
 </a></div>
     
@@ -535,6 +535,7 @@
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a></p></li>
+<li><p><a class="reference external" href="https://larsoner.com/">Eric Larson</a></p></li>
 </ul>
 </section>
 <section id="detailed-list-of-changes">
@@ -569,6 +570,9 @@
 <li><p><a class="reference internal" href="generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_matching_paths()</span></code></a> and <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BIDSPath.match()</span></code></a> now follow symbolic links to directories, and no longer return hidden files (or files inside hidden directories), which could happen when a dataset was searched without <code class="docutils literal notranslate"><span class="pre">datatypes</span></code> and without <code class="docutils literal notranslate"><span class="pre">ignore_nosub</span></code>, by <a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1678">#1678</a>)</p></li>
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_matching_paths()</span></code></a> omitting files with a <code class="docutils literal notranslate"><span class="pre">tracksys</span></code> entity and returning no matches when <code class="docutils literal notranslate"><span class="pre">tracking_systems</span></code> is specified, by <a class="reference external" href="https://github.com/Shubham-Padkonde">Shubham Padkonde</a>.</p></li>
 <li><p>Allow <code class="docutils literal notranslate"><span class="pre">acquisition=&quot;calibration&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;crosstalk&quot;</span></code> together with a <code class="docutils literal notranslate"><span class="pre">task</span></code> in <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> when <code class="docutils literal notranslate"><span class="pre">datatype</span></code> is not <code class="docutils literal notranslate"><span class="pre">&quot;meg&quot;</span></code>, since these labels are reserved only for MEG fine-calibration and crosstalk files, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1673">#1673</a>)</p></li>
+<li><p>Fix <a class="reference internal" href="generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_matching_paths()</span></code></a> and <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BIDSPath.match()</span></code></a> raising an error when the dataset contains a file that cannot be represented as a <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a>, such as FreeSurfer output in <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>; such files are now skipped, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1699">#1699</a>)</p></li>
+<li><p>Fix <a class="reference internal" href="generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_entity_vals()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">include_match</span></code> returning no values when the dataset itself is inside a hidden directory, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1699">#1699</a>)</p></li>
+<li><p>Fix <a class="reference internal" href="generated/mne_bids.get_bids_path_from_fname.html#mne_bids.get_bids_path_from_fname" title="mne_bids.get_bids_path_from_fname"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_bids_path_from_fname()</span></code></a> raising an <code class="docutils literal notranslate"><span class="pre">UnboundLocalError</span></code> instead of a clear error for a <code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code> file name without subject or session entities, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1699">#1699</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> no longer sets fNIRS channels whose <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> type is <code class="docutils literal notranslate"><span class="pre">NIRSCWHBO</span></code>, <code class="docutils literal notranslate"><span class="pre">NIRSCWHBR</span></code> or <code class="docutils literal notranslate"><span class="pre">NIRSCWOPTICALDENSITY</span></code> to <code class="docutils literal notranslate"><span class="pre">misc</span></code>: they get the MNE types <code class="docutils literal notranslate"><span class="pre">hbo</span></code>, <code class="docutils literal notranslate"><span class="pre">hbr</span></code> and <code class="docutils literal notranslate"><span class="pre">fnirs_od</span></code>, and <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> is written with these BIDS types for such channels instead of raising a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1701">#1701</a>)</p></li>
 </ul>
 </section>
@@ -579,6 +583,7 @@
 <li><p>Dropping rows from a TSV table no longer deep-copies the table first, by <a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1681">#1681</a>)</p></li>
 <li><p>Sped up <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> and <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> on network filesystems by taking fewer file locks, by <a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1680">#1680</a>)</p></li>
 <li><p>Improvements to directory searching that speed up <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BIDSPath.match()</span></code></a>, <a class="reference internal" href="generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_matching_paths()</span></code></a>, and <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a>, especially when searching network file systems, by <a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1678">#1678</a>)</p></li>
+<li><p>Creating and updating <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> objects is faster, which speeds up <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BIDSPath.match()</span></code></a> and <a class="reference internal" href="generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_matching_paths()</span></code></a> on datasets with many files, by <a class="reference external" href="https://larsoner.com/">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1699">#1699</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
