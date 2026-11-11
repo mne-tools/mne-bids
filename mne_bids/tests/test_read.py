@@ -2167,18 +2167,32 @@ def test_nirs_channel_names_from_columns(tmp_path, wavelength_fmt):
         f"S{i}_D{i + 8} {wavelength}" for wavelength in (760, 850) for i in range(1, 6)
     ]
 
-    # A value that cannot be used leaves the mismatch handling as it was
-    first_wavelength = channels["wavelength_nominal"][0]
-    channels["wavelength_nominal"][0] = "n/a"
-    _to_tsv(channels, channels_fname)
+    # Columns that do not give the raw names leave the mismatch handling as it was
+    sources, detectors, wavelengths = (
+        channels[column] for column in ("source", "detector", "wavelength_nominal")
+    )
+    _to_tsv(
+        {**channels, "wavelength_nominal": ["n/a", *wavelengths[1:]]}, channels_fname
+    )
     with pytest.raises(RuntimeError, match="Channel mismatch"):
         read_raw_bids(bids_path, on_ch_mismatch="raise")
 
-    channels["wavelength_nominal"][0] = first_wavelength
-    channels["source"][1] = "n/a"
-    _to_tsv(channels, channels_fname)
-    raw_bids = read_raw_bids(bids_path, on_ch_mismatch="rename")
-    assert raw_bids.ch_names == channels["name"]
+    for changes in (
+        {"source": ["n/a", *sources[1:]]},
+        {  # labels other than MNE's S1/D1
+            "source": [source.replace("S", "Tx") for source in sources],
+            "detector": [detector.replace("D", "Rx") for detector in detectors],
+        },
+        {  # 760 and 850 rows of each pair give the same name
+            "wavelength_nominal": [
+                "760.2" if float(wavelength) < 800 else "760.8"
+                for wavelength in wavelengths
+            ]
+        },
+    ):
+        _to_tsv({**channels, **changes}, channels_fname)
+        raw_bids = read_raw_bids(bids_path, on_ch_mismatch="rename")
+        assert raw_bids.ch_names == channels["name"]
 
 
 def test_channel_mismatch_warn(tmp_path):
