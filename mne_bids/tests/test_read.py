@@ -2107,6 +2107,33 @@ def test_channel_mismatch_invalid_option(tmp_path):
         _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
 
 
+@pytest.mark.parametrize(
+    "ch_names, bids_type, mne_type",
+    [
+        (["S1_D1 760", "S1_D1 850"], "NIRSCWOPTICALDENSITY", "fnirs_od"),
+        (["S1_D1 hbo", "S2_D1 hbo"], "NIRSCWHBO", "hbo"),
+        (["S1_D1 hbr", "S2_D1 hbr"], "NIRSCWHBR", "hbr"),
+    ],
+    ids=["od", "hbo", "hbr"],
+)
+@pytest.mark.parametrize("raw_type", ["same", "misc"])
+def test_nirs_channel_types_from_tsv(tmp_path, ch_names, bids_type, mne_type, raw_type):
+    """Read the fNIRS types of channels.tsv as MNE fNIRS types, not ``misc``."""
+    # "same": the reader typed the channels already (SNIRF processed data);
+    # "misc": a reader that did not.
+    info = mne.create_info(
+        ch_names, sfreq=10, ch_types=mne_type if raw_type == "same" else "misc"
+    )
+    raw = mne.io.RawArray(np.ones((len(ch_names), 10)), info)
+    channels_fname = tmp_path / "channels.tsv"
+    _to_tsv(
+        OrderedDict([("name", ch_names), ("type", [bids_type] * len(ch_names))]),
+        channels_fname,
+    )
+    raw = _handle_channels_reading(channels_fname, raw)
+    assert raw.get_channel_types() == [mne_type] * len(ch_names)
+
+
 def test_channel_mismatch_warn(tmp_path):
     """``on_ch_mismatch='warn'`` warns and leaves raw channel names intact."""
     raw, ch_order_snirf, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(

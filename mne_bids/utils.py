@@ -74,6 +74,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             temperature="TEMP",
             # NIRS
             fnirs_cw_amplitude="NIRSCWAMPLITUDE",
+            fnirs_od="NIRSCWOPTICALDENSITY",
+            hbo="NIRSCWHBO",
+            hbr="NIRSCWHBR",
             # MEG channels
             meggradaxial="MEGGRADAXIAL",
             megmag="MEGMAG",
@@ -105,6 +108,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             # NIRS
             NIRSCWAMPLITUDE="fnirs_cw_amplitude",
             NIRS="fnirs_cw_amplitude",
+            NIRSCWOPTICALDENSITY="fnirs_od",
+            NIRSCWHBO="hbo",
+            NIRSCWHBR="hbr",
             # No MEG channels for now (see Notes above)
             # Many to one mapping
             VEOG="eog",

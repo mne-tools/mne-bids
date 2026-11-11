@@ -60,6 +60,7 @@ Detailed list of changes
 - Fix :func:`find_matching_paths` and :meth:`BIDSPath.match` raising an error when the dataset contains a file that cannot be represented as a :class:`BIDSPath`, such as FreeSurfer output in ``derivatives``; such files are now skipped, by `Eric Larson`_ (:gh:`1697`)
 - Fix :func:`mne_bids.get_entity_vals` with ``include_match`` returning no values when the dataset itself is inside a hidden directory, by `Eric Larson`_ (:gh:`1697`)
 - Fix :func:`mne_bids.get_bids_path_from_fname` raising an ``UnboundLocalError`` instead of a clear error for a ``scans.tsv`` file name without subject or session entities, by `Eric Larson`_ (:gh:`1697`)
+- :func:`mne_bids.read_raw_bids` no longer sets fNIRS channels whose ``channels.tsv`` type is ``NIRSCWHBO``, ``NIRSCWHBR`` or ``NIRSCWOPTICALDENSITY`` to ``misc``: they get the MNE types ``hbo``, ``hbr`` and ``fnirs_od``, and ``channels.tsv`` is written with these BIDS types for such channels instead of raising a ``KeyError``, by `Bruno Aristimunha`_ (:gh:`1701`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
