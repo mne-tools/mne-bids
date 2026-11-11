@@ -2955,7 +2955,12 @@ def find_matching_paths(
         If ``True``, ignores all files that are not of the form ``root/sub-*``.
         Defaults to ``False``.
     fnames : iterable of path-like | None
-        Pre-collected file paths to filter instead of walking ``root`` on disk.
+        File paths to filter instead of listing the files in ``root``, for
+        example the members of an archive or the listing of a remote dataset.
+        Each path must be inside ``root`` or relative to it, and is not checked
+        for existence. The returned :class:`BIDSPath` objects are ``root``
+        joined with these paths. URLs are not accepted: pass the part after the
+        dataset root, for example ``"sub-01/eeg/sub-01_task-rest_eeg.edf"``.
 
         .. versionadded:: 0.21
 
@@ -3033,6 +3038,8 @@ def _return_root_paths(
     entities : dict | None
         Dictionary of BIDS entities to enable targeted directory scanning.
         If provided with 'subject', will scan only that subject's directory.
+    fnames : iterable of path-like | None
+        Paths to filter instead of listing the files in ``root``.
 
     Returns
     -------
@@ -3042,6 +3049,13 @@ def _return_root_paths(
     """
     root = Path(root)  # if root is str
     datatypes = None if datatype is None else _ensure_tuple(datatype)
+    # Start from the subject (and session) directory when they are known
+    start = ()
+    if entities and entities.get("subject"):
+        ignore_nosub = False
+        start = (f"sub-{entities['subject']}",)
+        if entities.get("session"):
+            start += (f"ses-{entities['session']}",)
     if fnames is not None:
         if isinstance(fnames, str | os.PathLike) or not isinstance(fnames, Iterable):
             raise TypeError(
@@ -3050,8 +3064,17 @@ def _return_root_paths(
         cands = {}
         for f in fnames:
             _validate_type(f, "path-like", "fnames item")
+            if "://" in str(f):
+                raise ValueError(
+                    f"fnames must be file paths, got the URL {f!r}: pass its path "
+                    "relative to the dataset root instead"
+                )
             p = Path(f)
-            rel = (p.relative_to(root) if p.is_relative_to(root) else p).parts
+            if p.is_relative_to(root):
+                p = p.relative_to(root)
+            rel = p.parts
+            if p.is_absolute() or ".." in rel:
+                raise ValueError(f"fnames item {f!r} is not inside root {root}")
             for i in range(1, len(rel) + 1):
                 if i == len(rel) or rel[i - 1].endswith(".ds"):
                     cands[rel[:i]] = None
@@ -3063,15 +3086,8 @@ def _return_root_paths(
             and not (ignore_json and r[-1].endswith(".json"))
             and not (ignore_nosub and not (len(r) > 1 and r[0].startswith("sub-")))
             and (datatypes is None or (len(r) > 1 and r[-2] in datatypes))
+            and r[: len(start)] == start  # as the walk below, which starts there
         ]
-
-    # Start from the subject (and session) directory when they are known
-    start = root
-    if entities and entities.get("subject"):
-        ignore_nosub = False
-        start = root / f"sub-{entities['subject']}"
-        if entities.get("session"):
-            start = start / f"ses-{entities['session']}"
 
     # Walk the tree once. File types come from the directory listings, so no file
     # needs a ``stat`` call of its own (a round trip on network filesystems).
@@ -3105,7 +3121,7 @@ def _return_root_paths(
     # The entries of the starting directory itself are returned only by a search
     # of the whole dataset: `datatypes` restricts the result to the datatype
     # directories, and `ignore_nosub` to what is inside the sub-* directories.
-    visit(start, datatypes is None and not ignore_nosub, top=True)
+    visit(root.joinpath(*start), datatypes is None and not ignore_nosub, top=True)
     return paths
 
 

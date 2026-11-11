@@ -1972,6 +1972,44 @@ def test_find_matching_paths_fnames(bids_root):
         find_matching_paths(bids_root, fnames="sub-01_eeg.vhdr")
 
 
+def test_find_matching_paths_fnames_one_subject(tmp_path):
+    """Test that fnames give the same paths as the disk for one subject."""
+    for top in ("", "derivatives/pipe/"):
+        for sub in ("01", "02"):
+            for ses in ("a", "b"):
+                fname = f"sub-{sub}_ses-{ses}_task-t_meg.fif"
+                fpath = tmp_path / f"{top}sub-{sub}/ses-{ses}/meg/{fname}"
+                fpath.parent.mkdir(parents=True)
+                fpath.touch()
+    fnames = [p.relative_to(tmp_path) for p in tmp_path.rglob("*.fif")]
+    for kwargs in (
+        dict(subjects="01"),
+        dict(subjects="01", sessions="a"),
+        dict(subjects="01", datatypes="meg"),
+        dict(subjects=["01", "02"], sessions=["a", "b"]),
+        dict(sessions="a"),
+    ):
+        disk = find_matching_paths(tmp_path, **kwargs)
+        assert find_matching_paths(tmp_path, fnames=fnames, **kwargs) == disk, kwargs
+    # A single subject is only searched for in root/sub-<label>
+    found = find_matching_paths(tmp_path, fnames=fnames, subjects="01", sessions="a")
+    assert [p.fpath.relative_to(tmp_path).as_posix() for p in found] == [
+        "sub-01/ses-a/meg/sub-01_ses-a_task-t_meg.fif"
+    ]
+
+
+def test_find_matching_paths_fnames_outside_root(tmp_path):
+    """Test that fnames outside root, and URLs, are rejected rather than mangled."""
+    good = "sub-01/meg/sub-01_task-t_meg.fif"
+    for bad, match in (
+        (tmp_path.parent / "other" / good, "not inside root"),
+        (f"../{good}", "not inside root"),
+        (f"s3://bucket/ds/{good}", "URL"),
+    ):
+        with pytest.raises(ValueError, match=match):
+            find_matching_paths(tmp_path, fnames=[good, bad])
+
+
 def test_return_root_paths_entity_aware(tmp_path):
     """Test that `_return_root_paths` respects `entities['subject']`.
 
