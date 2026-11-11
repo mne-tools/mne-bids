@@ -2650,3 +2650,18 @@ def test_read_epochs_bids_continuous(tmp_path, ext, fmt, writer_pkg):
     assert epochs.get_data().shape == (n_ep, 2, n_per)
     assert set(epochs.event_id) == {"A", "B"}
     assert len(epochs["A"]) == 2 and len(epochs["B"]) == 1  # last 'B' was dropped
+
+
+@pytest.mark.parametrize("suffix", ["eeg", "events"])
+def test_read_raw_bids_non_object_json_sidecar(tmp_path, suffix):
+    """A JSON sidecar that is not an object is skipped with a warning."""
+    bids_root = tmp_path / "tiny_bids"
+    sh.copytree(tiny_bids_root, bids_root)
+    eeg_dir = bids_root / "sub-01" / "ses-eeg" / "eeg"
+    (eeg_dir / f"sub-01_ses-eeg_task-rest_{suffix}.json").write_text("[]")
+    bids_path = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
+    )
+    with pytest.warns(RuntimeWarning, match="not a JSON object"):
+        raw = read_raw_bids(bids_path)
+    assert len(raw.annotations) > 0

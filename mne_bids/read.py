@@ -503,13 +503,22 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     return raw
 
 
+def _read_json_object(fname):
+    """Read a JSON sidecar, which BIDS requires to be a JSON object."""
+    with _open_lock(fname, encoding="utf-8") as fin:
+        content = json.load(fin)
+    if not isinstance(content, dict):
+        warn(f"{fname} is not a JSON object, ignoring it.")
+        return {}
+    return content
+
+
 def _handle_info_reading(sidecar_fname, raw):
     """Read associated sidecar JSON and populate raw.
 
     Handle PowerLineFrequency of recording.
     """
-    with _open_lock(sidecar_fname, encoding="utf-8") as fin:
-        sidecar_json = json.load(fin)
+    sidecar_json = _read_json_object(sidecar_fname)
 
     # read in the sidecar JSON's and raw object's line frequency
     json_linefreq = sidecar_json.get("PowerLineFrequency")
@@ -825,8 +834,7 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
         return None
 
     try:
-        with _open_lock(events_json_fname, encoding="utf-8") as f:
-            sidecar = json.load(f)
+        sidecar = _read_json_object(events_json_fname)
     except FileNotFoundError:
         return None
     except (json.JSONDecodeError, OSError) as exc:
@@ -880,8 +888,7 @@ def _read_hed_version(bids_root):
         return None
     desc_path = Path(bids_root) / "dataset_description.json"
     try:
-        with _open_lock(desc_path, encoding="utf-8") as f:
-            return json.load(f).get("HEDVersion")
+        return _read_json_object(desc_path).get("HEDVersion")
     except FileNotFoundError:
         return None
     except (json.JSONDecodeError, OSError) as exc:
@@ -1383,8 +1390,7 @@ def read_raw_bids(
         bids_path, suffix=datatype, extension=".json", on_error="ignore"
     )
     if sidecar_json_fname is not None:
-        with _open_lock(sidecar_json_fname, encoding="utf-8") as fin:
-            recording_type = json.load(fin).get("RecordingType")
+        recording_type = _read_json_object(sidecar_json_fname).get("RecordingType")
         if recording_type == "epoched" and bids_path.fpath.suffix in _EPOCHED_EXTS:
             raise RuntimeError(
                 'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
@@ -1658,14 +1664,13 @@ def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
     sidecar_fname = _find_matching_sidecar(
         bids_path, suffix=bids_path.datatype, extension=".json"
     )
-    with _open_lock(sidecar_fname, encoding="utf-8") as fp:
-        try:
-            duration = float(json.load(fp)["EpochLength"])
-        except KeyError:
-            raise RuntimeError(
-                f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
-                "required to slice an 'epoched' continuous file."
-            ) from None
+    try:
+        duration = float(_read_json_object(sidecar_fname)["EpochLength"])
+    except KeyError:
+        raise RuntimeError(
+            f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
+            "required to slice an 'epoched' continuous file."
+        ) from None
     raw = _get_readers("_continuous_epoched_reader")[bids_path.fpath.suffix](
         bids_path.fpath, preload=False, verbose=verbose, **(extra_params or {})
     )
@@ -1857,8 +1862,7 @@ def get_head_mri_trans(
         )
 
     # Get MRI landmarks from the JSON sidecar
-    with _open_lock(t1w_json_path, encoding="utf-8") as fid:
-        t1w_json = json.load(fid)
+    t1w_json = _read_json_object(t1w_json_path)
     mri_coords_dict = t1w_json.get("AnatomicalLandmarkCoordinates", dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
