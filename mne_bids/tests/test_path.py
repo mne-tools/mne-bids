@@ -25,6 +25,7 @@ import mne_bids
 import mne_bids.path
 from mne_bids import (
     BIDSPath,
+    find_inherited_sidecars,
     get_datatypes,
     get_entity_vals,
     print_dir_tree,
@@ -1067,6 +1068,27 @@ def test_find_best_candidates(candidate_list, best_candidates):
     """Test matching of candidate sidecar files."""
     params = dict(subject="01", session="02", acquisition=None)
     assert _find_best_candidates(params, candidate_list) == best_candidates
+
+
+@pytest.mark.parametrize(
+    "root", ["/data/ds", "hf://datasets/user/ds", "s3://bucket/ds/"]
+)
+def test_find_inherited_sidecars(root):
+    """Test choosing the sidecars that apply to a recording, from the root down."""
+    ds = root.rstrip("/")
+    expected = [
+        f"{ds}/task-rest_eeg.json",
+        f"{ds}/sub-01/eeg/sub-01_task-rest_eeg.json",
+    ]
+    candidates = [
+        expected[1],
+        f"{ds}/task-rest_acq-x_eeg.json",  # acq-x is not in the recording
+        f"{ds}/sub-01/eeg/sub-01_task-rest_events.json",  # another suffix
+        f"{ds.rsplit('/', 1)[0]}/task-rest_eeg.json",  # outside root
+        expected[0],
+    ]
+    fname = f"{ds}/sub-01/eeg/sub-01_task-rest_eeg.edf"
+    assert find_inherited_sidecars(fname, candidates, root=root) == expected
 
 
 def test_find_matching_sidecar_basic(bids_root, tmp_path, path_counter, fast_sidecar):

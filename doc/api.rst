@@ -47,6 +47,7 @@ mne_bids
    update_sidecar_json
    anonymize_dataset
    find_matching_paths
+   find_inherited_sidecars
    events_file_to_annotation_kwargs
    open_lock
 
