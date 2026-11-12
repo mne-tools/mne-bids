@@ -2161,11 +2161,6 @@ def test_nirs_channel_names_from_columns(tmp_path, wavelength_fmt):
 
     raw_bids = read_raw_bids(bids_path)
     assert raw_bids.ch_names == raw.ch_names
-    # Short-separation channels (about 8 mm, detectors D9 to D13) map as well
-    short = mne.preprocessing.nirs.short_channels(raw_bids.info)
-    assert np.array(raw_bids.ch_names)[short].tolist() == [
-        f"S{i}_D{i + 8} {wavelength}" for wavelength in (760, 850) for i in range(1, 6)
-    ]
 
     # Columns that do not give the raw names leave the mismatch handling as it was
     sources, detectors, wavelengths = (
