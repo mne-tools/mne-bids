@@ -282,7 +282,7 @@ def _write_text(fname, text, overwrite=False, lock=True):
 
 def _check_key_val(key, val):
     """Perform checks on a value to make sure it adheres to the spec."""
-    if any(ii in val for ii in ["-", "_", "/"]):
+    if "-" in val or "_" in val or "/" in val:
         raise ValueError(
             f"Unallowed `-`, `_`, or `/` found in key/value pair {key}: {val}"
         )

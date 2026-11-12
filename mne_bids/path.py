@@ -12,6 +12,7 @@ import json
 import os
 import re
 import shutil as sh
+from collections.abc import Iterable
 from contextlib import contextmanager
 from datetime import datetime
 from io import StringIO
@@ -1057,9 +1058,11 @@ class BIDSPath:
         if check is not None:
             self.check = check
 
+        # ``_validate_type`` is slow, so call it only to raise its error message
         for key, val in kwargs.items():
             if key == "root":
-                _validate_type(val, types=("path-like", None), item_name=key)
+                if val is not None and not isinstance(val, str | os.PathLike):
+                    _validate_type(val, types=("path-like", None), item_name=key)
                 continue
 
             if key == "datatype":
@@ -1077,11 +1080,13 @@ class BIDSPath:
                     f"Key must be one of {ALLOWED_PATH_ENTITIES}, got {key}"
                 )
 
-            if ENTITY_VALUE_TYPE[key] == "label":
-                _validate_type(val, types=(None, str), item_name=key)
-            else:
-                assert ENTITY_VALUE_TYPE[key] == "index"
-                _validate_type(val, types=(int, str, None), item_name=key)
+            if val is not None and not isinstance(val, str):
+                if ENTITY_VALUE_TYPE[key] == "label":
+                    _validate_type(val, types=(None, str), item_name=key)
+                else:
+                    assert ENTITY_VALUE_TYPE[key] == "index"
+                    _validate_type(val, types=(int, str, None), item_name=key)
+            if ENTITY_VALUE_TYPE[key] == "index":
                 if isinstance(val, str) and not val.isdigit() and self.check:
                     raise ValueError(f"{key} is not an index (Got {val})")
                 elif isinstance(val, int):
@@ -1108,9 +1113,7 @@ class BIDSPath:
             # set entity value, ensuring `root` is a Path
             if val is not None and key == "root":
                 val = Path(val).expanduser()
-            old_kwargs[key] = (
-                getattr(self, f"{key}") if hasattr(self, f"_{key}") else None
-            )
+            old_kwargs[key] = getattr(self, f"_{key}", None)
             setattr(self, f"_{key}", val)
 
         # Perform a check of the entities and revert changes if check fails
@@ -1729,7 +1732,7 @@ def _infer_datatype_from_path(fname: Path, assume_exists=False):
     # get the parent
     if assume_exists or fname.exists():
         datatype = fname.parent.name
-        if any([datatype.startswith(entity) for entity in ["sub", "ses"]]):
+        if datatype.startswith(("sub", "ses")):
             datatype = None
     elif fname.stem.split("_")[-1] in ("meg", "eeg", "ieeg"):
         datatype = fname.stem.split("_")[-1]
@@ -1758,14 +1761,16 @@ def get_bids_path_from_fname(fname, check=True, *, verbose=None):
     bids_path : BIDSPath
         The BIDSPath object.
     """
-    return _bids_path_from_fname(fname, check, verbose=verbose)
-
-
-@verbose
-def _bids_path_from_fname(fname, check, *, assume_exists=False, verbose=None):
     fpath = Path(fname)
-    fname = fpath.name
+    bids_path = BIDSPath(**_parse_bids_fname(fpath), check=check)
+    if verbose:
+        logger.info(f"From {fpath}, formed a BIDSPath: {bids_path}.")
+    return bids_path
 
+
+def _parse_bids_fname(fpath, assume_exists=False):
+    """Parse a file path into keyword arguments for :class:`BIDSPath`."""
+    fname = fpath.name
     entities = get_entities_from_fname(fname)
 
     # parse suffix and extension
@@ -1775,44 +1780,26 @@ def _bids_path_from_fname(fname, check, *, assume_exists=False, verbose=None):
         suffix, extension = _get_bids_suffix_and_ext(suffix)
     else:
         suffix = None
-        extension = Path(fname).suffix  # already starts with a period
-        if extension == "":
-            extension = None
+        extension = fpath.suffix or None  # already starts with a period
 
-    if extension is not None:
-        assert extension.startswith(".")  # better safe than sorry
+    # The root is above the subject, session, and datatype folders (a scans file
+    # sits directly in the subject or session folder). ``parents`` stops at the
+    # top-level folder, as ``.parent`` does.
+    root_level = (
+        (entities["subject"] is not None)
+        + (entities["session"] is not None)
+        + (suffix != "scans")
+    )
+    parents = fpath.parents
+    root = parents[min(root_level, len(parents) - 1)]
 
-    datatype = _infer_datatype_from_path(fpath, assume_exists)
-
-    # find root and datatype if it exists
-    if fpath.parent == "":
-        root = None
-    else:
-        root_level = 0
-        # determine root if it's there
-        if entities["subject"] is not None:
-            root_level += 1
-        if entities["session"] is not None:
-            root_level += 1
-        if suffix != "scans":
-            root_level += 1
-
-        if root_level:
-            root = fpath.parent
-            for _ in range(root_level):
-                root = root.parent
-
-    bids_path = BIDSPath(
+    return dict(
         root=root,
-        datatype=datatype,
+        datatype=_infer_datatype_from_path(fpath, assume_exists),
         suffix=suffix,
         extension=extension,
         **entities,
-        check=check,
     )
-    if verbose:
-        logger.info(f"From {fpath}, formed a BIDSPath: {bids_path}.")
-    return bids_path
 
 
 def _suggest_fix_for_segment(segment, known_keys):
@@ -2530,7 +2517,10 @@ def get_entity_vals(
             for im in include_match
             for f in _path_glob(root, im + search_str)
             if not any(f.is_relative_to(d) for d in ignore_dirs_set)
-            and not (ignore_hidden and any(p.startswith(".") for p in f.parts))
+            and not (
+                ignore_hidden
+                and any(p.startswith(".") for p in f.relative_to(root).parts)
+            )
         ]
     else:
         filenames = []
@@ -2881,6 +2871,7 @@ def find_matching_paths(
     check=False,
     ignore_json=False,
     ignore_nosub=False,
+    fnames=None,
 ):
     """Get list of all matching paths for all matching entity values.
 
@@ -2952,6 +2943,15 @@ def find_matching_paths(
     ignore_nosub : bool
         If ``True``, ignores all files that are not of the form ``root/sub-*``.
         Defaults to ``False``.
+    fnames : iterable of path-like | None
+        File paths to filter instead of listing the files in ``root``, for
+        example the members of an archive or the listing of a remote dataset.
+        Each path must be inside ``root`` or relative to it, and is not checked
+        for existence. The returned :class:`BIDSPath` objects are ``root``
+        joined with these paths. URLs are not accepted: pass the part after the
+        dataset root, for example ``"sub-01/eeg/sub-01_task-rest_eeg.edf"``.
+
+        .. versionadded:: 0.21
 
     Returns
     -------
@@ -2975,6 +2975,7 @@ def find_matching_paths(
         ignore_json=ignore_json,
         ignore_nosub=ignore_nosub,
         entities=entities_opt,
+        fnames=fnames,
     )
 
     fpaths_filtered = _filter_fnames(
@@ -2999,7 +3000,12 @@ def find_matching_paths(
 
 
 def _return_root_paths(
-    root, datatype=None, ignore_json=True, ignore_nosub=False, entities=None
+    root,
+    datatype=None,
+    ignore_json=True,
+    ignore_nosub=False,
+    entities=None,
+    fnames=None,
 ):
     """Return all file paths + .ds paths in root with entity-aware optimization.
 
@@ -3021,6 +3027,8 @@ def _return_root_paths(
     entities : dict | None
         Dictionary of BIDS entities to enable targeted directory scanning.
         If provided with 'subject', will scan only that subject's directory.
+    fnames : iterable of path-like | None
+        Paths to filter instead of listing the files in ``root``.
 
     Returns
     -------
@@ -3030,14 +3038,45 @@ def _return_root_paths(
     """
     root = Path(root)  # if root is str
     datatypes = None if datatype is None else _ensure_tuple(datatype)
-
     # Start from the subject (and session) directory when they are known
-    start = root
+    start = ()
     if entities and entities.get("subject"):
         ignore_nosub = False
-        start = root / f"sub-{entities['subject']}"
+        start = (f"sub-{entities['subject']}",)
         if entities.get("session"):
-            start = start / f"ses-{entities['session']}"
+            start += (f"ses-{entities['session']}",)
+    if fnames is not None:
+        if isinstance(fnames, str | os.PathLike) or not isinstance(fnames, Iterable):
+            raise TypeError(
+                f"fnames must be an iterable of path-like, got {type(fnames)}"
+            )
+        cands = {}
+        for f in fnames:
+            _validate_type(f, "path-like", "fnames item")
+            if "://" in str(f):
+                raise ValueError(
+                    f"fnames must be file paths, got the URL {f!r}: pass its path "
+                    "relative to the dataset root instead"
+                )
+            p = Path(f)
+            if p.is_relative_to(root):
+                p = p.relative_to(root)
+            rel = p.parts
+            if p.is_absolute() or ".." in rel:
+                raise ValueError(f"fnames item {f!r} is not inside root {root}")
+            for i in range(1, len(rel) + 1):
+                if i == len(rel) or rel[i - 1].endswith(".ds"):
+                    cands[rel[:i]] = None
+        return [
+            root.joinpath(*r)
+            for r in cands
+            if "." in r[-1]
+            and not any(x.startswith(".") for x in r)
+            and not (ignore_json and r[-1].endswith(".json"))
+            and not (ignore_nosub and not (len(r) > 1 and r[0].startswith("sub-")))
+            and (datatypes is None or (len(r) > 1 and r[-2] in datatypes))
+            and r[: len(start)] == start  # as the walk below, which starts there
+        ]
 
     # Walk the tree once. File types come from the directory listings, so no file
     # needs a ``stat`` call of its own (a round trip on network filesystems).
@@ -3071,7 +3110,7 @@ def _return_root_paths(
     # The entries of the starting directory itself are returned only by a search
     # of the whole dataset: `datatypes` restricts the result to the datatype
     # directories, and `ignore_nosub` to what is inside the sub-* directories.
-    visit(start, datatypes is None and not ignore_nosub, top=True)
+    visit(root.joinpath(*start), datatypes is None and not ignore_nosub, top=True)
     return paths
 
 
@@ -3110,12 +3149,19 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     """
     bids_paths = []
     for fname in fnames:
-        # the names come from a directory listing, so the files are known to exist
-        bids_path = _bids_path_from_fname(fname, check=False, assume_exists=True)
-        inferred_root = bids_path.root
-        bids_path.root = root
-        expected_fpath = bids_path.directory / bids_path.basename
-        if expected_fpath != Path(fname):
+        fpath = Path(fname)
+        try:
+            # the names come from a directory listing, so the files are known to exist
+            kwargs = _parse_bids_fname(fpath, assume_exists=True)
+            # Use ``root`` if it reproduces the path, else the root inferred from it
+            inferred_root, kwargs["root"] = kwargs["root"], root
+            bids_path = BIDSPath(**kwargs, check=False)
+        except ValueError as exc:
+            # not even an unchecked BIDSPath can hold this file (for example,
+            # FreeSurfer output in derivatives), so leave it out
+            logger.debug(f"Skipping {fpath}: {exc}")
+            continue
+        if bids_path.directory / bids_path.basename != fpath:
             bids_path.root = inferred_root
         bids_path.check = True
 
