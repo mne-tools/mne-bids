@@ -29,7 +29,7 @@ from numpy.testing import assert_almost_equal
 
 import mne_bids.utils
 import mne_bids.write
-from mne_bids import BIDSPath, read_epochs_bids
+from mne_bids import BIDSPath, read_epochs_bids, read_participants
 from mne_bids.config import (
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
@@ -2650,3 +2650,19 @@ def test_read_epochs_bids_continuous(tmp_path, ext, fmt, writer_pkg):
     assert epochs.get_data().shape == (n_ep, 2, n_per)
     assert set(epochs.event_id) == {"A", "B"}
     assert len(epochs["A"]) == 2 and len(epochs["B"]) == 1  # last 'B' was dropped
+
+
+def test_read_participants(tmp_path):
+    """Read participants.tsv into rows keyed by subject label."""
+    fname = tmp_path / "participants.tsv"
+    fname.write_text("participant_id\tage\tsex\nsub-01\t24\tF\nsub-02\tn/a\tM\n")
+    expected = {"01": {"age": "24", "sex": "F"}, "02": {"age": None, "sex": "M"}}
+    assert read_participants(fname) == expected
+    assert (
+        read_participants("hf://repo/participants.tsv", content=fname.read_bytes())
+        == expected
+    )
+
+    fname.write_text("age\tsex\n24\tF\n")
+    with pytest.raises(ValueError, match="participant_id"):
+        read_participants(fname)
