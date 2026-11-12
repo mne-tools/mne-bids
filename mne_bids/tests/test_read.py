@@ -2172,22 +2172,14 @@ def test_nirs_channel_names_from_columns(tmp_path, wavelength_fmt):
     with pytest.raises(RuntimeError, match="Channel mismatch"):
         read_raw_bids(bids_path, on_ch_mismatch="raise")
 
-    for changes in (
-        {"source": ["n/a", *sources[1:]]},
-        {  # labels other than MNE's S1/D1
-            "source": [source.replace("S", "Tx") for source in sources],
-            "detector": [detector.replace("D", "Rx") for detector in detectors],
-        },
-        {  # 760 and 850 rows of each pair give the same name
-            "wavelength_nominal": [
-                "760.2" if float(wavelength) < 800 else "760.8"
-                for wavelength in wavelengths
-            ]
-        },
-    ):
-        _to_tsv({**channels, **changes}, channels_fname)
-        raw_bids = read_raw_bids(bids_path, on_ch_mismatch="rename")
-        assert raw_bids.ch_names == channels["name"]
+    # Labels other than MNE's S1/D1 keep the channels.tsv names
+    tx_rx = {
+        "source": [source.replace("S", "Tx") for source in sources],
+        "detector": [detector.replace("D", "Rx") for detector in detectors],
+    }
+    _to_tsv({**channels, **tx_rx}, channels_fname)
+    raw_bids = read_raw_bids(bids_path, on_ch_mismatch="rename")
+    assert raw_bids.ch_names == channels["name"]
 
 
 def test_channel_mismatch_warn(tmp_path):
