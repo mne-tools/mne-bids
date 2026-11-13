@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev26+g4c8a5d999 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev27+g3663da9f4 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=04172181"></script>
+    <script src="../../_static/documentation_options.js?v=05814d5b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev26+g4c8a5d999" />
+  <meta name="docsearch:version" content="0.21.0.dev27+g3663da9f4" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev26+g4c8a5d999 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev27+g3663da9f4 documentation</p>
   
 </a></div>
     
@@ -1343,6 +1343,11 @@
             <span class="s2">"Skipping sidecar HED assembly."</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sidecar</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">events_json_fname</span><span class="si">}</span><span class="s2"> is not a JSON object. Skipping sidecar HED assembly."</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># Collect columns that have HED annotations in the sidecar</span>
     <span class="n">hed_columns</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2515,7 +2520,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-11-11.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-11-13.
       <br/>
     
   </p>
