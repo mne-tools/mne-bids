@@ -2134,6 +2134,54 @@ def test_nirs_channel_types_from_tsv(tmp_path, ch_names, bids_type, mne_type, ra
     assert raw.get_channel_types() == [mne_type] * len(ch_names)
 
 
+@testing.requires_testing_data
+@pytest.mark.parametrize("wavelength_fmt", ["{:.0f}", "{:.1f}"], ids=["760", "760.0"])
+def test_nirs_channel_names_from_columns(tmp_path, wavelength_fmt):
+    """Match NIRS channels on source, detector and wavelength, not on names."""
+    raw_fname = op.join(
+        data_path, "SNIRF", "MNE-NIRS", "20220217", "20220217_nirx_15_3_recording.snirf"
+    )
+    raw = mne.io.read_raw_snirf(raw_fname)
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype="nirs")
+    write_raw_bids(raw, bids_path)
+
+    # Name channels like OpenNeuro ds004830 does: S1-D1-760.0
+    channels_fname = bids_path.copy().update(suffix="channels", extension=".tsv")
+    channels = _from_tsv(channels_fname)
+    channels["wavelength_nominal"] = [
+        wavelength_fmt.format(float(w)) for w in channels["wavelength_nominal"]
+    ]
+    channels["name"] = [
+        f"{source}-{detector}-{wavelength}"
+        for source, detector, wavelength in zip(
+            channels["source"], channels["detector"], channels["wavelength_nominal"]
+        )
+    ]
+    _to_tsv(channels, channels_fname)
+
+    raw_bids = read_raw_bids(bids_path)
+    assert raw_bids.ch_names == raw.ch_names
+
+    # Columns that do not give the raw names leave the mismatch handling as it was
+    sources, detectors, wavelengths = (
+        channels[column] for column in ("source", "detector", "wavelength_nominal")
+    )
+    _to_tsv(
+        {**channels, "wavelength_nominal": ["n/a", *wavelengths[1:]]}, channels_fname
+    )
+    with pytest.raises(RuntimeError, match="Channel mismatch"):
+        read_raw_bids(bids_path, on_ch_mismatch="raise")
+
+    # Labels other than MNE's S1/D1 keep the channels.tsv names
+    tx_rx = {
+        "source": [source.replace("S", "Tx") for source in sources],
+        "detector": [detector.replace("D", "Rx") for detector in detectors],
+    }
+    _to_tsv({**channels, **tx_rx}, channels_fname)
+    raw_bids = read_raw_bids(bids_path, on_ch_mismatch="rename")
+    assert raw_bids.ch_names == channels["name"]
+
+
 def test_channel_mismatch_warn(tmp_path):
     """``on_ch_mismatch='warn'`` warns and leaves raw channel names intact."""
     raw, ch_order_snirf, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(
