@@ -835,6 +835,11 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
             "Skipping sidecar HED assembly."
         )
         return None
+    if not isinstance(sidecar, dict):
+        warn(
+            f"{events_json_fname} is not a JSON object. Skipping sidecar HED assembly."
+        )
+        return None
 
     # Collect columns that have HED annotations in the sidecar
     hed_columns = {}
