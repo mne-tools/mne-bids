@@ -2135,7 +2135,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     return None
 
 
-def find_inherited_sidecars(fname, candidates, *, root, extension=".json"):
+def find_inherited_sidecars(fname, candidates, *, root=None, extension=".json"):
     """Choose the sidecar files that apply to a recording from a list of files.
 
     Under the BIDS `inheritance principle
@@ -2143,9 +2143,7 @@ def find_inherited_sidecars(fname, candidates, *, root, extension=".json"):
     a sidecar file applies to a recording if it has the same suffix, every
     entity in its name is in the recording's name with the same value, and it
     is stored in the recording's directory or in one above it, up to the
-    dataset root. Only the strings are compared: no file is accessed, and the
-    candidates are returned as given, so URLs such as ``"hf://..."`` or
-    ``"s3://..."`` keep their double slash.
+    dataset root.
 
     Parameters
     ----------
@@ -2153,9 +2151,10 @@ def find_inherited_sidecars(fname, candidates, *, root, extension=".json"):
         The path of the recording.
     candidates : iterable of str
         The files to choose from, for example the files of a dataset listing.
-    root : str
+    root : str | None
         The root of the dataset, spelled as at the start of ``fname`` and of
-        ``candidates``.
+        ``candidates``. If ``None``, the directory above the ``sub-*``
+        directory of ``fname`` is used.
     extension : str
         The extension of the sidecar files.
 
@@ -2170,9 +2169,12 @@ def find_inherited_sidecars(fname, candidates, *, root, extension=".json"):
     -----
     .. versionadded:: 0.21
     """
-    root = op.dirname(op.join(root, ""))  # without a trailing separator
+    if root is not None:
+        root = op.dirname(op.join(root, ""))  # without a trailing separator
     levels = [op.dirname(fname)]  # from the recording's directory up to root
     while levels[-1] != root and op.dirname(levels[-1]) != levels[-1]:
+        if root is None and op.basename(levels[-1]).startswith("sub-"):
+            root = op.dirname(levels[-1])
         levels.append(op.dirname(levels[-1]))
     if levels[-1] != root:
         return []  # fname is not inside root

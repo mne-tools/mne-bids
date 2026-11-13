@@ -1089,6 +1089,7 @@ def test_find_inherited_sidecars(root):
     ]
     fname = f"{ds}/sub-01/eeg/sub-01_task-rest_eeg.edf"
     assert find_inherited_sidecars(fname, candidates, root=root) == expected
+    assert find_inherited_sidecars(fname, candidates) == expected  # root from fname
 
 
 def test_find_matching_sidecar_basic(bids_root, tmp_path, path_counter, fast_sidecar):
