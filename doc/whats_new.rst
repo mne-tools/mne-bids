@@ -33,6 +33,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
+- Add :func:`mne_bids.read_participants` to read ``participants.tsv`` into rows keyed by subject label, also from the file's bytes for files that are not on a local disk, by `Bruno Aristimunha`_ (:gh:`1706`)
 - Expose MRI defacing function to public API as :func:`mne_bids.deface_mri` by `Erica Peterson`_ (:gh:`1544`)
 - Add an ``extra_fields`` parameter to :func:`make_dataset_description` to write additional top-level keys to ``dataset_description.json``, by `Bruno Aristimunha`_ (:gh:`1674`)
 - Add :func:`mne_bids.open_lock`, the cross-process file lock mne-bids uses for shared files such as ``participants.tsv``, so downstream writers can share it, by `Bruno Aristimunha`_ (:gh:`1675`)
@@ -54,6 +55,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
+- :func:`mne_bids.read_raw_bids` no longer fails with an ``AttributeError`` when an ``events.json`` sidecar is not a JSON object (for example ``[]``), by `Bruno Aristimunha`_ (:gh:`1703`)
 - Fix readers seeing a partially written sidecar while another process was rewriting it, by `Hamza Abdelhedi`_ (:gh:`1680`)
 - Fix parallel :func:`mne_bids.write_raw_bids` calls for BTi/4D data overwriting each other's ``.bidsignore`` changes, by `Hamza Abdelhedi`_ (:gh:`1680`)
 - :func:`find_matching_paths` and :meth:`BIDSPath.match` now follow symbolic links to directories, and no longer return hidden files (or files inside hidden directories), which could happen when a dataset was searched without ``datatypes`` and without ``ignore_nosub``, by `Hamza Abdelhedi`_ (:gh:`1678`)
@@ -63,6 +65,7 @@ Detailed list of changes
 - Fix :func:`mne_bids.get_entity_vals` with ``include_match`` returning no values when the dataset itself is inside a hidden directory, by `Eric Larson`_ (:gh:`1699`)
 - Fix :func:`mne_bids.get_bids_path_from_fname` raising an ``UnboundLocalError`` instead of a clear error for a ``scans.tsv`` file name without subject or session entities, by `Eric Larson`_ (:gh:`1699`)
 - :func:`mne_bids.read_raw_bids` no longer sets fNIRS channels whose ``channels.tsv`` type is ``NIRSCWHBO``, ``NIRSCWHBR`` or ``NIRSCWOPTICALDENSITY`` to ``misc``: they get the MNE types ``hbo``, ``hbr`` and ``fnirs_od``, and ``channels.tsv`` is written with these BIDS types for such channels instead of raising a ``KeyError``, by `Bruno Aristimunha`_ (:gh:`1701`)
+- :func:`mne_bids.read_raw_bids` now matches fNIRS channels on the ``source``, ``detector`` and ``wavelength_nominal`` columns of ``channels.tsv`` when their names differ from the names MNE gives SNIRF channels (for example ``S1-D1-690.0`` in OpenNeuro ds004830), instead of raising a channel mismatch error, by `Bruno Aristimunha`_ (:gh:`1704`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
