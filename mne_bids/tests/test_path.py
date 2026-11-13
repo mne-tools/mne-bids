@@ -1951,6 +1951,81 @@ def test_find_matching_paths(bids_root):
     bids_path_01.fpath.unlink()  # clean up created file
 
 
+def test_find_matching_paths_fnames(bids_root):
+    """Test find_matching_paths with pre-collected local and virtual fnames."""
+    files = [p for p in bids_root.rglob("*") if p.is_file()] + [
+        bids_root / "README",
+        bids_root / ".git" / "config",
+    ]
+    for fnames in (files, [p.relative_to(bids_root) for p in files]):
+        for kw in (
+            {},
+            dict(datatypes="meg", runs="02", ignore_json=True, ignore_nosub=True),
+        ):
+            assert find_matching_paths(
+                bids_root, fnames=fnames, **kw
+            ) == find_matching_paths(bids_root, **kw)
+
+    v = bids_root / "virtual_ds"
+    matched = find_matching_paths(
+        v,
+        fnames=[
+            "sub-01/nirs/sub-01_task-tap_nirs.snirf",
+            "sub-01/nirs/sub-01_task-tap_nirs.json",
+            "sub-01/meg/sub-01_task-rest_meg.ds/sub-01_task-rest_meg.meg4",
+            "sourcedata/sub-99/eeg/sub-99_task-rest_eeg.edf",
+        ],
+        datatypes=["nirs", "meg"],
+        suffixes=["nirs", "meg"],
+        ignore_json=True,
+        ignore_nosub=True,
+    )
+    assert [(bp.subject, bp.datatype, bp.extension) for bp in matched] == [
+        ("01", "meg", ".ds"),
+        ("01", "nirs", ".snirf"),
+    ]
+    with pytest.raises(TypeError, match="iterable of path-like"):
+        find_matching_paths(bids_root, fnames="sub-01_eeg.vhdr")
+
+
+def test_find_matching_paths_fnames_one_subject(tmp_path):
+    """Test that fnames give the same paths as the disk for one subject."""
+    for top in ("", "derivatives/pipe/"):
+        for sub in ("01", "02"):
+            for ses in ("a", "b"):
+                fname = f"sub-{sub}_ses-{ses}_task-t_meg.fif"
+                fpath = tmp_path / f"{top}sub-{sub}/ses-{ses}/meg/{fname}"
+                fpath.parent.mkdir(parents=True)
+                fpath.touch()
+    fnames = [p.relative_to(tmp_path) for p in tmp_path.rglob("*.fif")]
+    for kwargs in (
+        dict(subjects="01"),
+        dict(subjects="01", sessions="a"),
+        dict(subjects="01", datatypes="meg"),
+        dict(subjects=["01", "02"], sessions=["a", "b"]),
+        dict(sessions="a"),
+    ):
+        disk = find_matching_paths(tmp_path, **kwargs)
+        assert find_matching_paths(tmp_path, fnames=fnames, **kwargs) == disk, kwargs
+    # A single subject is only searched for in root/sub-<label>
+    found = find_matching_paths(tmp_path, fnames=fnames, subjects="01", sessions="a")
+    assert [p.fpath.relative_to(tmp_path).as_posix() for p in found] == [
+        "sub-01/ses-a/meg/sub-01_ses-a_task-t_meg.fif"
+    ]
+
+
+def test_find_matching_paths_fnames_outside_root(tmp_path):
+    """Test that fnames outside root, and URLs, are rejected rather than mangled."""
+    good = "sub-01/meg/sub-01_task-t_meg.fif"
+    for bad, match in (
+        (tmp_path.parent / "other" / good, "not inside root"),
+        (f"../{good}", "not inside root"),
+        (f"s3://bucket/ds/{good}", "URL"),
+    ):
+        with pytest.raises(ValueError, match=match):
+            find_matching_paths(tmp_path, fnames=[good, bad])
+
+
 @pytest.mark.parametrize("check", [False, True])
 def test_find_matching_paths_skips_non_bidspath(tmp_path, check):
     """Test that files that cannot be a BIDSPath are skipped instead of raising."""
