@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.21.0.dev30+geb2fc6f55 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.21.0.dev31+gd437a0036 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=1b159225"></script>
+    <script src="_static/documentation_options.js?v=2e6b92ff"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev30+geb2fc6f55" />
+  <meta name="docsearch:version" content="0.21.0.dev31+gd437a0036" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev30+geb2fc6f55 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev31+gd437a0036 documentation</p>
   
 </a></div>
     
@@ -550,6 +550,7 @@
 <li><p><a class="reference internal" href="generated/mne_bids.read_epochs_bids.html#mne_bids.read_epochs_bids" title="mne_bids.read_epochs_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_epochs_bids()</span></code></a> now reads epoched FIF files (<code class="docutils literal notranslate"><span class="pre">RecordingType:</span> <span class="pre">&quot;epoched&quot;</span></code>) with <a class="reference external" href="https://mne.tools/stable/generated/mne.read_epochs.html#mne.read_epochs" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.read_epochs()</span></code></a>, and <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> points to it for such files, by <a class="reference external" href="https://github.com/BabaSanfour">Hamza Abdelhedi</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1679">#1679</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now accepts path-like inputs (<code class="docutils literal notranslate"><span class="pre">str</span></code> or <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>), converting them via <a class="reference internal" href="generated/mne_bids.get_bids_path_from_fname.html#mne_bids.get_bids_path_from_fname" title="mne_bids.get_bids_path_from_fname"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_bids_path_from_fname()</span></code></a>, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1695">#1695</a>)</p></li>
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">fnames</span></code> parameter to <a class="reference internal" href="generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.find_matching_paths()</span></code></a> to filter pre-collected file paths without walking the filesystem, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1698">#1698</a>)</p></li>
+<li><p>Add <a class="reference internal" href="generated/mne_bids.find_inherited_sidecars.html#mne_bids.find_inherited_sidecars" title="mne_bids.find_inherited_sidecars"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.find_inherited_sidecars()</span></code></a> to choose, from a list of file paths, the sidecar files that apply to a recording under the BIDS inheritance principle, ordered from the dataset root down, without accessing the files, so it also works with URLs, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1708">#1708</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
