@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API Documentation &#8212; MNE-BIDS 0.21.0.dev30+geb2fc6f55 documentation</title>
+    <title>API Documentation &#8212; MNE-BIDS 0.21.0.dev31+gd437a0036 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=1b159225"></script>
+    <script src="_static/documentation_options.js?v=2e6b92ff"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev30+geb2fc6f55" />
+  <meta name="docsearch:version" content="0.21.0.dev31+gd437a0036" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev30+geb2fc6f55 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev31+gd437a0036 documentation</p>
   
 </a></div>
     
@@ -495,6 +495,7 @@
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_bids.update_sidecar_json.html">mne_bids.update_sidecar_json</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_bids.anonymize_dataset.html">mne_bids.anonymize_dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_bids.find_matching_paths.html">mne_bids.find_matching_paths</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/mne_bids.find_inherited_sidecars.html">mne_bids.find_inherited_sidecars</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_bids.events_file_to_annotation_kwargs.html">mne_bids.events_file_to_annotation_kwargs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generated/mne_bids.open_lock.html">mne_bids.open_lock</a></li>
 </ul>
@@ -664,10 +665,13 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_matching_paths</span></code></a>(root[, subjects, ...])</p></td>
 <td><p>Get list of all matching paths for all matching entity values.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.events_file_to_annotation_kwargs.html#mne_bids.events_file_to_annotation_kwargs" title="mne_bids.events_file_to_annotation_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">events_file_to_annotation_kwargs</span></code></a>(events_fname, *)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.find_inherited_sidecars.html#mne_bids.find_inherited_sidecars" title="mne_bids.find_inherited_sidecars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_inherited_sidecars</span></code></a>(fname, candidates, *)</p></td>
+<td><p>Choose the sidecar files that apply to a recording from a list of files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.events_file_to_annotation_kwargs.html#mne_bids.events_file_to_annotation_kwargs" title="mne_bids.events_file_to_annotation_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">events_file_to_annotation_kwargs</span></code></a>(events_fname, *)</p></td>
 <td><p>Read the <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> file and extract onset, duration, and description.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.open_lock.html#mne_bids.open_lock" title="mne_bids.open_lock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_lock</span></code></a>(path, *args[, lock_timeout, lock])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.open_lock.html#mne_bids.open_lock" title="mne_bids.open_lock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_lock</span></code></a>(path, *args[, lock_timeout, lock])</p></td>
 <td><p>Context manager that acquires a file lock with optional file opening.</p></td>
 </tr>
 </tbody>
