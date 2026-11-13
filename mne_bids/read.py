@@ -310,6 +310,38 @@ def _participants_tsv(participants_fname, content):
     return _from_tsv(participants_fname, content=content)
 
 
+def read_participants(fname, *, content=None):
+    """Read a ``participants.tsv`` file.
+
+    Parameters
+    ----------
+    fname : path-like
+        Path to the ``participants.tsv`` file.
+    content : bytes | None
+        The file's bytes, if already read, to be parsed instead of reading
+        ``fname``. If ``None``, the file is read from ``fname``.
+
+    Returns
+    -------
+    participants : dict
+        The rows keyed by subject label (``participant_id`` without the
+        ``sub-`` prefix), each a dict from column name to value. Values are
+        strings, and ``n/a`` becomes None.
+
+    Notes
+    -----
+    .. versionadded:: 0.21
+    """
+    table = _from_tsv(fname, content=content)
+    if "participant_id" not in table:
+        raise ValueError(f"{fname} has no participant_id column.")
+    participants = {}
+    for values in zip(*table.values()):
+        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
+        participants[row.pop("participant_id").removeprefix("sub-")] = row
+    return participants
+
+
 def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _participants_tsv(
         participants_fname, participants_fname.read_bytes()
