@@ -2135,6 +2135,64 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     return None
 
 
+def find_inherited_sidecars(fname, candidates, *, root=None, extension=".json"):
+    """Choose the sidecar files that apply to a recording from a list of files.
+
+    Under the BIDS `inheritance principle
+    <https://bids-specification.readthedocs.io/en/stable/common-principles.html#the-inheritance-principle>`__,
+    a sidecar file applies to a recording if it has the same suffix, every
+    entity in its name is in the recording's name with the same value, and it
+    is stored in the recording's directory or in one above it, up to the
+    dataset root.
+
+    Parameters
+    ----------
+    fname : str
+        The path of the recording.
+    candidates : iterable of str
+        The files to choose from, for example the files of a dataset listing.
+    root : str | None
+        The root of the dataset, spelled as at the start of ``fname`` and of
+        ``candidates``. If ``None``, the directory above the ``sub-*``
+        directory of ``fname`` is used.
+    extension : str
+        The extension of the sidecar files.
+
+    Returns
+    -------
+    sidecars : list of str
+        The candidates that apply, ordered from the dataset root down, so that
+        merging JSON sidecars in this order lets lower files override higher
+        ones.
+
+    Notes
+    -----
+    .. versionadded:: 0.21
+    """
+    if root is not None:
+        root = op.dirname(op.join(root, ""))  # without a trailing separator
+    levels = [op.dirname(fname)]  # from the recording's directory up to root
+    while levels[-1] != root and op.dirname(levels[-1]) != levels[-1]:
+        if root is None and op.basename(levels[-1]).startswith("sub-"):
+            root = op.dirname(levels[-1])
+        levels.append(op.dirname(levels[-1]))
+    if levels[-1] != root:
+        return []  # fname is not inside root
+    suffix = op.basename(fname).split(".")[0].rsplit("_", 1)[-1]
+    tail = f"_{suffix}{extension}"
+    entities = get_entities_from_fname(fname, on_error="ignore").items()
+    sidecars = []
+    for candidate in candidates:
+        directory, name = op.split(candidate)
+        if directory not in levels or not f"_{name}".endswith(tail):
+            continue
+        found = get_entities_from_fname(name, on_error="ignore")
+        found = {key: val for key, val in found.items() if val is not None}
+        if found.items() <= entities:
+            sidecars.append((-levels.index(directory), len(found), candidate))
+    return [candidate for *_, candidate in sorted(sidecars)]
+
+
 _ext_map = {  # these sidecar files should only ever have these extensions
     "scans": ".tsv",
     "coordsystem": ".json",

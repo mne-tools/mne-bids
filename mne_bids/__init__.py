@@ -22,6 +22,7 @@ from mne_bids.path import (
     search_folder_for_text,
     get_bids_path_from_fname,
     find_matching_paths,
+    find_inherited_sidecars,
 )
 from mne_bids.read import (
     get_head_mri_trans,
