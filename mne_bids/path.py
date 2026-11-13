@@ -3123,7 +3123,7 @@ def _return_root_paths(
             if p.is_absolute() or ".." in rel:
                 raise ValueError(f"fnames item {f!r} is not inside root {root}")
             for i in range(1, len(rel) + 1):
-                if i == len(rel) or rel[i - 1].endswith(".ds"):
+                if i == len(rel) or rel[i - 1].endswith((".ds", ".mefd")):
                     cands[rel[:i]] = None
         return [
             root.joinpath(*r)
@@ -3149,11 +3149,11 @@ def _return_root_paths(
                 is_dir, is_file = entry.is_dir(), entry.is_file()
             except OSError:
                 continue
-            # Return files and CTF .ds directories whose name has an extension
+            # Return files and CTF .ds or MEF3 .mefd directories with an extension
             # (so not README or LICENSE), and omit the JSON sidecars if
             # `ignore_json` is True.
             wanted = keep and "." in name
-            if wanted and is_dir and name.endswith(".ds"):
+            if wanted and is_dir and name.endswith((".ds", ".mefd")):
                 paths.append(Path(entry.path))
             elif wanted and is_file and not (ignore_json and name.endswith(".json")):
                 paths.append(Path(entry.path))
