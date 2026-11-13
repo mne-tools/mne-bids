@@ -318,8 +318,7 @@ def read_participants(fname, *, content=None):
     fname : path-like
         Path to the ``participants.tsv`` file.
     content : bytes | None
-        The file's bytes, for a file that is not on a local disk; ``fname`` is
-        then only used in messages. If None, the file is read from ``fname``.
+        The file's bytes, if already read, to be parsed instead of reading ``fname``.  If ``None``, the file is read from ``fname``.
 
     Returns
     -------
