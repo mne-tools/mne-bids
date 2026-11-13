@@ -2026,6 +2026,19 @@ def test_find_matching_paths_fnames_outside_root(tmp_path):
             find_matching_paths(tmp_path, fnames=[good, bad])
 
 
+def test_find_matching_paths_mefd(tmp_path):
+    """Test that a MEF3 .mefd directory is returned once, as one recording."""
+    mefd = tmp_path / "sub-01" / "ieeg" / "sub-01_task-rest_ieeg.mefd"
+    segment = mefd / "ch1.timd" / "ch1-000000.segd"
+    segment.mkdir(parents=True)
+    fnames = [segment / "ch1-000000.tdat", segment / "ch1-000000.tmet"]
+    for fname in fnames:
+        fname.touch()
+    for kwargs in (dict(), dict(fnames=fnames)):
+        paths = find_matching_paths(tmp_path, datatypes="ieeg", **kwargs)
+        assert [path.fpath for path in paths] == [mefd], kwargs
+
+
 @pytest.mark.parametrize("check", [False, True])
 def test_find_matching_paths_skips_non_bidspath(tmp_path, check):
     """Test that files that cannot be a BIDSPath are skipped instead of raising."""
