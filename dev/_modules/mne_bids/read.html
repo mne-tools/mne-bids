@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev28+gcefe6a86d documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev29+g1beede30c documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=062d5f9e"></script>
+    <script src="../../_static/documentation_options.js?v=2a46f413"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev28+gcefe6a86d" />
+  <meta name="docsearch:version" content="0.21.0.dev29+g1beede30c" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev28+gcefe6a86d documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev29+g1beede30c documentation</p>
   
 </a></div>
     
@@ -813,6 +813,41 @@
 <span class="sd">    is kept, so a file that is rewritten often does not pile up in memory.</span>
 <span class="sd">    """</span>
     <span class="k">return</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="read_participants">
+<a class="viewcode-back" href="../../generated/mne_bids.read_participants.html#mne_bids.read_participants">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_participants</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Read a ``participants.tsv`` file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname : path-like</span>
+<span class="sd">        Path to the ``participants.tsv`` file.</span>
+<span class="sd">    content : bytes | None</span>
+<span class="sd">        The file's bytes, if already read, to be parsed instead of reading</span>
+<span class="sd">        ``fname``. If ``None``, the file is read from ``fname``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    participants : dict</span>
+<span class="sd">        The rows keyed by subject label (``participant_id`` without the</span>
+<span class="sd">        ``sub-`` prefix), each a dict from column name to value. Values are</span>
+<span class="sd">        strings, and ``n/a`` becomes None.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 0.21</span>
+<span class="sd">    """</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"participant_id"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2"> has no participant_id column."</span><span class="p">)</span>
+    <span class="n">participants</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">table</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">"n/a"</span> <span class="k">else</span> <span class="n">val</span> <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">values</span><span class="p">)}</span>
+        <span class="n">participants</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"participant_id"</span><span class="p">)</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">"sub-"</span><span class="p">)]</span> <span class="o">=</span> <span class="n">row</span>
+    <span class="k">return</span> <span class="n">participants</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
