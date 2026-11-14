@@ -22,6 +22,7 @@ from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     _EPOCHED_EXTS,
     ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_DATATYPES,
     ANNOTATIONS_TO_KEEP,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
@@ -310,6 +311,17 @@ def _participants_tsv(participants_fname, content):
     return _from_tsv(participants_fname, content=content)
 
 
+def _read_tsv_rows(fname, key_col, prefix="", *, content=None):
+    table = _from_tsv(fname, content=content)
+    if key_col not in table:
+        raise ValueError(f"{fname} has no {key_col} column.")
+    rows = {}
+    for values in zip(*table.values()):
+        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
+        rows[row.pop(key_col).removeprefix(prefix)] = row
+    return rows
+
+
 def read_participants(fname, *, content=None):
     """Read a ``participants.tsv`` file.
 
@@ -332,14 +344,55 @@ def read_participants(fname, *, content=None):
     -----
     .. versionadded:: 0.21
     """
-    table = _from_tsv(fname, content=content)
-    if "participant_id" not in table:
-        raise ValueError(f"{fname} has no participant_id column.")
-    participants = {}
-    for values in zip(*table.values()):
-        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
-        participants[row.pop("participant_id").removeprefix("sub-")] = row
-    return participants
+    return _read_tsv_rows(fname, "participant_id", "sub-", content=content)
+
+
+@_share_dir_listings()
+def _get_metadata(bids_path):
+    """Assemble entities, inherited JSON sidecars, and tabular rows."""
+    if bids_path.root is None:
+        raise ValueError("The root of the BIDSPath must be set to read metadata.")
+    root = Path(bids_path.root)
+    if bids_path.datatype is None and bids_path.suffix in ALLOWED_DATATYPES:
+        bids_path = bids_path.copy().update(datatype=bids_path.suffix)
+    participants_fname = root / "participants.tsv"
+    sessions_fname = (
+        _find_matching_sidecar(
+            bids_path, suffix="sessions", extension=".tsv", on_error="ignore"
+        )
+        if bids_path.subject and bids_path.session
+        else None
+    )
+    scans_fname = (
+        _find_matching_sidecar(
+            bids_path, suffix="scans", extension=".tsv", on_error="ignore"
+        )
+        if bids_path.subject and bids_path.datatype
+        else None
+    )
+    return {
+        "entities": {k: v for k, v in bids_path.entities.items() if v is not None},
+        "metadata": _read_sidecar_json(bids_path) if bids_path.datatype else {},
+        "participant": (
+            read_participants(participants_fname).get(bids_path.subject, {})
+            if bids_path.subject and participants_fname.is_file()
+            else {}
+        ),
+        "session": (
+            _read_tsv_rows(sessions_fname, "session_id", "ses-").get(
+                bids_path.session, {}
+            )
+            if sessions_fname is not None
+            else {}
+        ),
+        "scan": (
+            _read_tsv_rows(scans_fname, "filename").get(
+                bids_path.fpath.relative_to(scans_fname.parent).as_posix(), {}
+            )
+            if scans_fname is not None
+            else {}
+        ),
+    }
 
 
 def _handle_participants_reading(participants_fname, raw, subject):
@@ -535,13 +588,36 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     return raw
 
 
+def _read_json_object(fname):
+    """Read a JSON sidecar, which BIDS requires to be a JSON object."""
+    with _open_lock(fname, encoding="utf-8") as fin:
+        content = json.load(fin)
+    if not isinstance(content, dict):
+        warn(f"{fname} is not a JSON object, ignoring it.")
+        return {}
+    return content
+
+
+def _read_sidecar_json(bids_path, suffix=None, on_error="ignore"):
+    """Read and merge inherited JSON sidecars from the dataset root down."""
+    sidecar = {}
+    for fname in _find_matching_sidecar(
+        bids_path, suffix=suffix, extension=".json", on_error=on_error, inherited=True
+    ):
+        sidecar.update(_read_json_object(fname))
+    return sidecar
+
+
 def _handle_info_reading(sidecar_fname, raw):
     """Read associated sidecar JSON and populate raw.
 
     Handle PowerLineFrequency of recording.
     """
-    with _open_lock(sidecar_fname, encoding="utf-8") as fin:
-        sidecar_json = json.load(fin)
+    sidecar_json = {}
+    for sidecar_fname in (
+        sidecar_fname if isinstance(sidecar_fname, list) else [sidecar_fname]
+    ):
+        sidecar_json.update(_read_json_object(sidecar_fname))
 
     # read in the sidecar JSON's and raw object's line frequency
     json_linefreq = sidecar_json.get("PowerLineFrequency")
@@ -1433,17 +1509,14 @@ def read_raw_bids(
     if suffix is None:
         bids_path.update(suffix=datatype)
 
-    sidecar_json_fname = _find_matching_sidecar(
-        bids_path, suffix=datatype, extension=".json", on_error="ignore"
-    )
-    if sidecar_json_fname is not None:
-        with _open_lock(sidecar_json_fname, encoding="utf-8") as fin:
-            recording_type = json.load(fin).get("RecordingType")
-        if recording_type == "epoched" and bids_path.fpath.suffix in _EPOCHED_EXTS:
-            raise RuntimeError(
-                'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
-                "instead of read_raw_bids()."
-            )
+    if (
+        _read_sidecar_json(bids_path, suffix=datatype).get("RecordingType") == "epoched"
+        and bids_path.fpath.suffix in _EPOCHED_EXTS
+    ):
+        raise RuntimeError(
+            'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
+            "instead of read_raw_bids()."
+        )
 
     if bids_path.extension == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
@@ -1603,11 +1676,11 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
 
     # Try to find an associated sidecar .json to get information about the
     # recording snapshot
-    sidecar_fname = _find_matching_sidecar(
-        bids_path, suffix=datatype, extension=".json", on_error="warn"
+    sidecar_fnames = _find_matching_sidecar(
+        bids_path, suffix=datatype, extension=".json", on_error="warn", inherited=True
     )
-    if sidecar_fname is not None:
-        raw = _handle_info_reading(sidecar_fname, raw)
+    if sidecar_fnames:
+        raw = _handle_info_reading(sidecar_fnames, raw)
 
     # read in associated scans filename
     scans_fname = BIDSPath(
@@ -1709,17 +1782,14 @@ def read_epochs_bids(
 @verbose
 def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
     """Slice a continuous file flagged ``RecordingType="epoched"`` into Epochs."""
-    sidecar_fname = _find_matching_sidecar(
-        bids_path, suffix=bids_path.datatype, extension=".json"
-    )
-    with _open_lock(sidecar_fname, encoding="utf-8") as fp:
-        try:
-            duration = float(json.load(fp)["EpochLength"])
-        except KeyError:
-            raise RuntimeError(
-                f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
-                "required to slice an 'epoched' continuous file."
-            ) from None
+    sidecar = _read_sidecar_json(bids_path, suffix=bids_path.datatype, on_error="raise")
+    try:
+        duration = float(sidecar["EpochLength"])
+    except KeyError:
+        raise RuntimeError(
+            f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
+            "required to slice an 'epoched' continuous file."
+        ) from None
     raw = _get_readers("_continuous_epoched_reader")[bids_path.fpath.suffix](
         bids_path.fpath, preload=False, verbose=verbose, **(extra_params or {})
     )
