@@ -33,7 +33,7 @@ def _normalize_tsv_cell(value):
     return _DECIMAL_COMMA_RE.sub(r"\1.\2", stripped)
 
 
-def _detect_file_encoding(fname, chunk_size=65536, *, content=None):
+def _detect_file_encoding(fname, chunk_size=None, *, content=None):
     """Detect the text encoding of a file from its first chunk.
 
     Checks for a BOM and otherwise tests UTF-8 validity on a single chunk
@@ -54,7 +54,11 @@ def _detect_file_encoding(fname, chunk_size=65536, *, content=None):
         decoder.decode(chunk, final=False)
         return "utf-8"
     except UnicodeDecodeError:
-        return "latin-1"
+        try:
+            chunk.decode("cp1252")
+            return "cp1252"
+        except UnicodeDecodeError:
+            return "latin-1"
 
 
 def _combine_rows(data1, data2, drop_column=None):

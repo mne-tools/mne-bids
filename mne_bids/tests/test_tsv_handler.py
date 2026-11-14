@@ -137,9 +137,10 @@ def test_contains_row_different_types():
         ("name\tunit\nEEG\tµV\n".encode(), "utf-8"),
         (codecs.BOM_UTF8 + b"name\tunit\nEEG\tuV\n", "utf-8-sig"),
         ("name\tunit\nEEG\tµV\n".encode("utf-16"), "utf-16"),
-        (b"name\tunit\nEEG\t\xb5V\n", "latin-1"),
+        (b"name\tunit\nEEG\t\xb5V\n", "cp1252"),
+        (b"name\tunit\nEEG\t\x81\n", "latin-1"),
     ],
-    ids=["ascii", "utf8", "utf8-bom", "utf16", "latin1"],
+    ids=["ascii", "utf8", "utf8-bom", "utf16", "cp1252", "latin1"],
 )
 def test_detect_file_encoding(tmp_path, payload, expected):
     """Encoding is detected deterministically from BOM and UTF-8 validity."""

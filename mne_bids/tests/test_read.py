@@ -2734,3 +2734,16 @@ def test_read_raw_bids_non_object_events_json(tmp_path):
     with pytest.warns(RuntimeWarning, match="not a JSON object"):
         raw = read_raw_bids(bids_path)
     assert len(raw.annotations) > 0
+
+
+@pytest.mark.parametrize("col", ["description", "ch_names", "hed_string"])
+def test_malformed_events_tsv(tmp_path, col):
+    """Reserved extra columns and negative durations are sanitized with warnings."""
+    fname = tmp_path / "events.tsv"
+    fname.write_text(f"onset\tduration\ttrial_type\t{col}\n0.1\t-0.2\tgo\tleft\n")
+    with (
+        pytest.warns(RuntimeWarning, match="negative duration"),
+        pytest.warns(RuntimeWarning, match="reserved"),
+    ):
+        kw = events_file_to_annotation_kwargs(fname)
+    assert list(kw["duration"]) == [0.0] and kw["extras"] == [{f"events_{col}": "left"}]
