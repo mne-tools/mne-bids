@@ -1517,6 +1517,8 @@ def read_raw_bids(
 
     if raw_path.suffix == ".fif" and "allow_maxshield" not in extra_params:
         extra_params["allow_maxshield"] = True
+    if raw_path.suffix == ".fif":
+        extra_params.setdefault("on_split_missing", "warn")
     raw = _read_raw(
         raw_path,
         electrode=None,
