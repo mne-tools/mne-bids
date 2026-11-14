@@ -56,6 +56,7 @@ Detailed list of changes
 ^^^^^^^^^^^^
 
 - :func:`mne_bids.read_raw_bids` no longer fails with an ``AttributeError`` when an ``events.json`` sidecar is not a JSON object (for example ``[]``), by `Bruno Aristimunha`_ (:gh:`1703`)
+- :func:`mne_bids.read_raw_bids` now automatically retries reading EEGLAB ``.set`` files with ``uint16_codec="latin-1"`` when a ``TypeError("buffer is too small")`` is raised and ``uint16_codec`` was not explicitly specified, by `Bruno Aristimunha`_ (:gh:`1713`)
 - Fix readers seeing a partially written sidecar while another process was rewriting it, by `Hamza Abdelhedi`_ (:gh:`1680`)
 - Fix parallel :func:`mne_bids.write_raw_bids` calls for BTi/4D data overwriting each other's ``.bidsignore`` changes, by `Hamza Abdelhedi`_ (:gh:`1680`)
 - :func:`find_matching_paths` and :meth:`BIDSPath.match` now follow symbolic links to directories, and no longer return hidden files (or files inside hidden directories), which could happen when a dataset was searched without ``datatypes`` and without ``ignore_nosub``, by `Hamza Abdelhedi`_ (:gh:`1678`)

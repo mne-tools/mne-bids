@@ -2734,3 +2734,18 @@ def test_read_raw_bids_non_object_events_json(tmp_path):
     with pytest.warns(RuntimeWarning, match="not a JSON object"):
         raw = read_raw_bids(bids_path)
     assert len(raw.annotations) > 0
+
+
+def test_read_raw_eeglab_latin1_retry(tmp_path, monkeypatch):
+    """_read_raw retries EEGLAB .set with uint16_codec='latin-1' on buffer TypeError."""
+
+    def fake_reader(fname, verbose=None, **kwargs):
+        if kwargs.get("uint16_codec") is None:
+            raise TypeError("buffer is too small for requested array")
+        return kwargs["uint16_codec"]
+
+    monkeypatch.setitem(_get_readers("reader"), ".set", fake_reader)
+    with pytest.warns(RuntimeWarning, match='uint16_codec="latin-1"'):
+        assert _read_raw(tmp_path / "a.set") == "latin-1"
+    with pytest.raises(TypeError, match="buffer is too small"):
+        _read_raw(tmp_path / "a.set", uint16_codec=None)
