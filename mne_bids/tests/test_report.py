@@ -3,9 +3,7 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import shutil
 import textwrap
-from pathlib import Path
 
 import mne
 import pytest
@@ -24,8 +22,6 @@ task = "testing"
 _bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq, task=task
 )
-
-tiny_bids_root = Path(__file__).parent / "data" / "tiny_bids"
 
 # Get the MNE testing sample data
 data_path = testing.data_path(download=False)
@@ -98,14 +94,8 @@ analysis (2.0 +/- 0.0 were removed from analysis)."""  # noqa: E501
 
     expected_report = "\n".join(textwrap.wrap(expected_report, width=80))
     assert report == expected_report
-
-
-def test_report_skips_mri_scans(tmp_path):
-    """Test scans of datatypes MNE-BIDS does not handle are left out."""
-    bids_root = tmp_path / "tiny_bids"
-    shutil.copytree(tiny_bids_root, bids_root)
-    expected_report = make_report(bids_root)
-    scans_fname = bids_root / "sub-01" / "ses-eeg" / "sub-01_ses-eeg_scans.tsv"
-    with open(scans_fname, "a", encoding="utf-8") as fid:
-        fid.write("func/sub-01_ses-eeg_task-rest_bold.nii.gz\tn/a\n")
+    scans = tmp_path / "sub-01" / "ses-01" / "sub-01_ses-01_scans.tsv"
+    scans.write_text(
+        scans.read_text() + "func/sub-01_ses-01_task-rest_bold.nii.gz\tn/a\n"
+    )
     assert make_report(bids_root) == expected_report

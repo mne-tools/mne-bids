@@ -12,6 +12,7 @@ import json
 import os
 import re
 import shutil as sh
+from collections.abc import Iterable
 from contextlib import contextmanager
 from datetime import datetime
 from io import StringIO
@@ -242,7 +243,6 @@ def _find_matched_empty_room(bids_path):
 LONG_TO_SHORT_ENTITY = {
     long: short for short, long in ALLOWED_PATH_ENTITIES_SHORT.items()
 }
-# and set or read the values of all entities of a BIDSPath at once
 _UNSET_ENTITIES = dict.fromkeys(f"_{key}" for key in LONG_TO_SHORT_ENTITY)
 _get_entity_values = attrgetter(*_UNSET_ENTITIES)
 
@@ -318,63 +318,17 @@ class BIDSPath:
         ``'ieeg'``.
     check : bool
         If ``True``, enforces BIDS conformity. Defaults to ``True``.
-    template : str | None
-        The template. Corresponds to ``tpl``.
-    cohort : str | None
-        The cohort of a template. Corresponds to ``cohort``.
-    sample : str | None
-        The sample, for microscopy data. Corresponds to ``sample``.
-    nucleus : str | None
-        The nucleus, for MR spectroscopy data. Corresponds to ``nuc``.
-    volume : str | None
-        The volume of interest, for MR spectroscopy data. Corresponds to
-        ``voi``.
-    ceagent : str | None
-        The contrast enhancing agent. Corresponds to ``ce``.
-    tracer : str | None
-        The PET tracer. Corresponds to ``trc``.
-    stain : str | None
-        The stain, for microscopy data. Corresponds to ``stain``.
-    reconstruction : str | None
-        The image reconstruction. Corresponds to ``rec``.
-    direction : str | None
-        The phase-encoding direction. Corresponds to ``dir``.
-    modality : str | None
-        The modality a defacing mask corresponds to. Corresponds to ``mod``.
-    echo : int | None
-        The echo index. Corresponds to ``echo``.
-    flip : int | None
-        The flip angle index. Corresponds to ``flip``.
-    inversion : int | None
-        The inversion time index. Corresponds to ``inv``.
-    mtransfer : str | None
-        The magnetization transfer state (``on`` or ``off``). Corresponds
-        to ``mt``.
-    part : str | None
-        The component of complex data (e.g., ``mag`` or ``phase``).
-        Corresponds to ``part``.
-    hemisphere : str | None
-        The hemisphere (``L`` or ``R``). Corresponds to ``hemi``.
-    chunk : int | None
-        The chunk index, for microscopy data. Corresponds to ``chunk``.
-    atlas : str | None
-        The atlas. Corresponds to ``atlas``.
-    segmentation : str | None
-        The segmentation. Corresponds to ``seg``.
-    scale : str | None
-        The scale. Corresponds to ``scale``.
-    resolution : str | None
-        The resolution of regularly sampled data. Corresponds to ``res``.
-    density : str | None
-        The density of surface data. Corresponds to ``den``.
-    label : str | None
-        The tissue type or anatomical structure. Corresponds to ``label``.
+    **entities : dict
+        Additional BIDS schema entities by long name (e.g., ``echo``,
+        ``reconstruction``, ``direction``, ``tracer``, ``part``).
 
     Attributes
     ----------
     entities : dict
-        A dictionary of all BIDS entities and their values, in the order they
-        appear in a filename.
+        A dictionary of the BIDS entities and their values:
+        ``subject``, ``session``, ``task``, ``acquisition``,
+        ``run``, ``processing``, ``space``, ``recording``,
+        ``split``, ``description``, ``suffix``, and ``extension``.
     datatype : str | None
         The data type, i.e., one of ``'meg'``, ``'eeg'``, ``'ieeg'``,
         ``'anat'``.
@@ -400,10 +354,11 @@ class BIDSPath:
     one can set ``check=False``, and pass ``suffix='dataset_description'``
     and ``extension='.json'``.
 
-    ``BIDSPath`` can also represent the file and folder names of BIDS data types
-    that MNE-BIDS cannot read or write, such as ``func``, ``dwi`` or ``pet``, with
-    any entity of the BIDS schema. The parameters from ``template`` to ``label``
-    were added in version 0.21.
+    ``BIDSPath`` can also be used to represent file and folder names of data
+    types that are not yet supported through MNE-BIDS, but are recognized by
+    BIDS. For example, one can set ``datatype`` to ``dwi`` or ``func`` and
+    pass ``check=False`` to represent diffusion-weighted imaging and
+    functional MRI paths.
 
     Examples
     --------
@@ -471,58 +426,8 @@ class BIDSPath:
         extension=None,
         datatype=None,
         check=True,
-        *,
-        template=None,
-        cohort=None,
-        sample=None,
-        nucleus=None,
-        volume=None,
-        ceagent=None,
-        tracer=None,
-        stain=None,
-        reconstruction=None,
-        direction=None,
-        modality=None,
-        echo=None,
-        flip=None,
-        inversion=None,
-        mtransfer=None,
-        part=None,
-        hemisphere=None,
-        chunk=None,
-        atlas=None,
-        segmentation=None,
-        scale=None,
-        resolution=None,
-        density=None,
-        label=None,
+        **entities,
     ):
-        entities = dict(
-            template=template,
-            cohort=cohort,
-            sample=sample,
-            nucleus=nucleus,
-            volume=volume,
-            ceagent=ceagent,
-            tracer=tracer,
-            stain=stain,
-            reconstruction=reconstruction,
-            direction=direction,
-            modality=modality,
-            echo=echo,
-            flip=flip,
-            inversion=inversion,
-            mtransfer=mtransfer,
-            part=part,
-            hemisphere=hemisphere,
-            chunk=chunk,
-            atlas=atlas,
-            segmentation=segmentation,
-            scale=scale,
-            resolution=resolution,
-            density=density,
-            label=label,
-        )
         if all(
             ii is None
             for ii in [
@@ -543,7 +448,6 @@ class BIDSPath:
         ):
             raise ValueError("At least one parameter must be given.")
 
-        # unset entities need no validation, so ``update`` only gets the given ones
         vars(self).update(_UNSET_ENTITIES)
         self.update(
             subject=subject,
@@ -579,7 +483,6 @@ class BIDSPath:
 
     def __setstate__(self, state):
         """Set the object state."""
-        # states pickled by older versions lack the newer entities
         vars(self).update(_UNSET_ENTITIES)
         self.update(**state)
 
@@ -598,13 +501,11 @@ class BIDSPath:
     @property
     def basename(self):
         """Path basename."""
-        basename = [
-            f"{short}-{val}"
-            for short, val in zip(
-                LONG_TO_SHORT_ENTITY.values(), _get_entity_values(self)
-            )
-            if val is not None
-        ]
+        basename = []
+        for key, val in self.entities.items():
+            if val is not None and key != "datatype":
+                # convert certain keys to shorthand
+                basename.append(f"{LONG_TO_SHORT_ENTITY[key]}-{val}")
 
         if self.suffix is not None:
             if self.extension is not None:
@@ -1124,9 +1025,8 @@ class BIDSPath:
         **kwargs : dict
             It can contain updates for valid BIDSPath entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
-            'recording', 'space', 'suffix', 'split', 'extension', or any other
-            entity of the BIDS schema by its long name (see
-            :class:`mne_bids.BIDSPath`), or updates for 'root' or 'datatype'.
+            'recording', 'space', 'suffix', 'split', 'extension',
+            or updates for 'root' or 'datatype'.
 
         Returns
         -------
@@ -1166,7 +1066,6 @@ class BIDSPath:
                 continue
 
             if key == "datatype":
-                # any BIDS datatype, not only those MNE-BIDS reads and writes
                 if (
                     val is not None
                     and val not in ALLOWED_DATATYPES
@@ -1541,8 +1440,6 @@ class BIDSPath:
         return path
 
 
-# A property for each entity without a hand-written one above (the BIDS schema
-# entities that MNE-BIDS added later), validated like the others by ``update``
 for _short, _long in ALLOWED_PATH_ENTITIES_SHORT.items():
     if _long not in vars(BIDSPath):
         setattr(
@@ -1930,10 +1827,6 @@ def _parse_bids_fname(fpath, assume_exists=False):
     )
 
 
-# The keys ``get_entities_from_fname`` uses to split a segment that misses a
-# separator ("task-ECONrun-1"): the entities MNE-BIDS had before it took all
-# entities from the BIDS schema, whose short keys such as "ce" or "rec" end
-# ordinary words ("dance", "xspace")
 _SEGMENT_FIX_KEYS = (
     "sub",
     "ses",
@@ -2093,7 +1986,7 @@ def get_entities_from_fname(fname, on_error="raise", *, verbose=None):
                 msg = f'Unexpected entity "{key}" found in filename "{fname}"'
                 if on_error == "raise":
                     raise KeyError(msg)
-                warn(msg)  # and keep the entity, as on_error="ignore" does
+                warn(msg)
             elif fname_vals.index(key) < idx_key:
                 msg = (
                     f"Entities in filename not ordered correctly."
@@ -2270,6 +2163,64 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
         warn(msg)
 
     return None
+
+
+def find_inherited_sidecars(fname, candidates, *, root=None, extension=".json"):
+    """Choose the sidecar files that apply to a recording from a list of files.
+
+    Under the BIDS `inheritance principle
+    <https://bids-specification.readthedocs.io/en/stable/common-principles.html#the-inheritance-principle>`__,
+    a sidecar file applies to a recording if it has the same suffix, every
+    entity in its name is in the recording's name with the same value, and it
+    is stored in the recording's directory or in one above it, up to the
+    dataset root.
+
+    Parameters
+    ----------
+    fname : str
+        The path of the recording.
+    candidates : iterable of str
+        The files to choose from, for example the files of a dataset listing.
+    root : str | None
+        The root of the dataset, spelled as at the start of ``fname`` and of
+        ``candidates``. If ``None``, the directory above the ``sub-*``
+        directory of ``fname`` is used.
+    extension : str
+        The extension of the sidecar files.
+
+    Returns
+    -------
+    sidecars : list of str
+        The candidates that apply, ordered from the dataset root down, so that
+        merging JSON sidecars in this order lets lower files override higher
+        ones.
+
+    Notes
+    -----
+    .. versionadded:: 0.21
+    """
+    if root is not None:
+        root = op.dirname(op.join(root, ""))  # without a trailing separator
+    levels = [op.dirname(fname)]  # from the recording's directory up to root
+    while levels[-1] != root and op.dirname(levels[-1]) != levels[-1]:
+        if root is None and op.basename(levels[-1]).startswith("sub-"):
+            root = op.dirname(levels[-1])
+        levels.append(op.dirname(levels[-1]))
+    if levels[-1] != root:
+        return []  # fname is not inside root
+    suffix = op.basename(fname).split(".")[0].rsplit("_", 1)[-1]
+    tail = f"_{suffix}{extension}"
+    entities = get_entities_from_fname(fname, on_error="ignore").items()
+    sidecars = []
+    for candidate in candidates:
+        directory, name = op.split(candidate)
+        if directory not in levels or not f"_{name}".endswith(tail):
+            continue
+        found = get_entities_from_fname(name, on_error="ignore")
+        found = {key: val for key, val in found.items() if val is not None}
+        if found.items() <= entities:
+            sidecars.append((-levels.index(directory), len(found), candidate))
+    return [candidate for *_, candidate in sorted(sidecars)]
 
 
 _ext_map = {  # these sidecar files should only ever have these extensions
@@ -2876,41 +2827,39 @@ def _literal_suffix(pattern):
 
 
 def _filter_fnames(fnames, *, suffix=None, extension=None, **entities):
-    r"""Filter a list of BIDS filenames / paths based on BIDS entity values.
+    """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
     Input can be str or list of str.
 
     Parameters
     ----------
     fnames : iterable of pathlib.Path | iterable of str
-        The names to filter. A chained fsspec URL (``"<url>::<url>"``) is
-        matched by its first ``"::"``-separated part that contains a ``/`` or
-        a ``\``, or as a whole if no part does.
-    suffix, extension, **entities : str | iterable of str | None
-        The values to keep, by long entity name (e.g., ``subject``).
 
     Returns
     -------
-    list of pathlib.Path | list of str
-        The matching names of ``fnames``, sorted and as given.
+    list of pathlib.Path
     """
     suffix = _ensure_tuple(suffix)
     extension = _ensure_tuple(extension)
 
     leading_path_str = r".*\/?"  # nothing or something ending with a `/`
-    # One ``_<short>-<value>`` group per entity in the filename order, optional
-    # unless values are given, except that every name starts with ``sub-``.
     entities_str = ""
     for short, long in ALLOWED_PATH_ENTITIES_SHORT.items():
         values = _ensure_tuple(entities.get(long))
-        group = rf"{short}-(" + ("|".join(values) if values else r"[^_]+") + ")"
+        group = (
+            rf"{short}-("
+            + ("|".join(re.escape(v) for v in values) if values else r"[^_]+")
+            + ")"
+        )
         if long == "subject":
             entities_str += group
         elif values:
             entities_str += "_" + group
         else:
             entities_str += f"(|_{group})"
-    suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
+    suffix_str = (
+        r"_(" + "|".join(re.escape(s) for s in suffix) + ")" if suffix else r"_([^_]+)"
+    )
     ext_str = (
         r"(" + "|".join(re.escape(ext) for ext in extension) + ")$"
         if extension
@@ -2919,19 +2868,8 @@ def _filter_fnames(fnames, *, suffix=None, extension=None, **entities):
 
     regexp = leading_path_str + entities_str + suffix_str + ext_str
 
-    # Match a chained fsspec URL by its first part with a "/" (or "\" on Windows),
-    # which is the inner path of ``zip://sub-01/...::/tmp/x.zip`` and the URL of
-    # ``simplecache::s3://bucket/sub-01/...``, but return every name as given.
-    names = [
-        (
-            next(
-                (p for p in str(fname).split("::") if "/" in p or "\\" in p),
-                str(fname),
-            ),
-            fname,
-        )
-        for fname in fnames
-    ]
+    # Convert to str so we can apply the regexp ...
+    fnames = [str(f) for f in fnames]
 
     # The regexp ends with the extension alternatives followed by ``$``, so
     # every name it can match ends with one of their literal tails. Rejecting
@@ -2940,25 +2878,18 @@ def _filter_fnames(fnames, *, suffix=None, extension=None, **entities):
     # candidate (28x on a 4800-file tree).
     tails = tuple(_literal_suffix(ext) for ext in extension)
     if tails and all(tails):
-        names = [(name, fname) for name, fname in names if name.endswith(tails)]
+        fnames = [fname for fname in fnames if fname.endswith(tails)]
 
-    match = re.compile(regexp).match
-    return sorted((fname for name, fname in names if match(name)), key=str)
+    # https://stackoverflow.com/a/51246151/1944216
+    fnames_filtered = sorted(filter(re.compile(regexp).match, fnames))
+
+    # ... and return Paths.
+    fnames_filtered = [Path(f) for f in fnames_filtered]
+    return fnames_filtered
 
 
-# The entities that find_matching_paths has a keyword argument for (``subjects``, ...)
-_FIND_KEYWORD_ENTITIES = (
-    "subject",
-    "session",
-    "task",
-    "acquisition",
-    "run",
-    "processing",
-    "recording",
-    "space",
-    "split",
-    "description",
-    "tracking_system",
+_FIND_KEYWORD_ENTITIES = tuple(
+    ALLOWED_PATH_ENTITIES_SHORT[k] for k in _SEGMENT_FIX_KEYS
 )
 
 
@@ -2983,6 +2914,7 @@ def find_matching_paths(
     check=False,
     ignore_json=False,
     ignore_nosub=False,
+    fnames=None,
 ):
     """Get list of all matching paths for all matching entity values.
 
@@ -3063,6 +2995,15 @@ def find_matching_paths(
     ignore_nosub : bool
         If ``True``, ignores all files that are not of the form ``root/sub-*``.
         Defaults to ``False``.
+    fnames : iterable of path-like | None
+        File paths to filter instead of listing the files in ``root``, for
+        example the members of an archive or the listing of a remote dataset.
+        Each path must be inside ``root`` or relative to it, and is not checked
+        for existence. The returned :class:`BIDSPath` objects are ``root``
+        joined with these paths. URLs are not accepted: pass the part after the
+        dataset root, for example ``"sub-01/eeg/sub-01_task-rest_eeg.edf"``.
+
+        .. versionadded:: 0.21
 
     Returns
     -------
@@ -3098,6 +3039,7 @@ def find_matching_paths(
         ignore_json=ignore_json,
         ignore_nosub=ignore_nosub,
         entities=entities_opt,
+        fnames=fnames,
     )
 
     fpaths_filtered = _filter_fnames(
@@ -3123,7 +3065,12 @@ def find_matching_paths(
 
 
 def _return_root_paths(
-    root, datatype=None, ignore_json=True, ignore_nosub=False, entities=None
+    root,
+    datatype=None,
+    ignore_json=True,
+    ignore_nosub=False,
+    entities=None,
+    fnames=None,
 ):
     """Return all file paths + .ds paths in root with entity-aware optimization.
 
@@ -3145,6 +3092,8 @@ def _return_root_paths(
     entities : dict | None
         Dictionary of BIDS entities to enable targeted directory scanning.
         If provided with 'subject', will scan only that subject's directory.
+    fnames : iterable of path-like | None
+        Paths to filter instead of listing the files in ``root``.
 
     Returns
     -------
@@ -3154,14 +3103,45 @@ def _return_root_paths(
     """
     root = Path(root)  # if root is str
     datatypes = None if datatype is None else _ensure_tuple(datatype)
-
     # Start from the subject (and session) directory when they are known
-    start = root
+    start = ()
     if entities and entities.get("subject"):
         ignore_nosub = False
-        start = root / f"sub-{entities['subject']}"
+        start = (f"sub-{entities['subject']}",)
         if entities.get("session"):
-            start = start / f"ses-{entities['session']}"
+            start += (f"ses-{entities['session']}",)
+    if fnames is not None:
+        if isinstance(fnames, str | os.PathLike) or not isinstance(fnames, Iterable):
+            raise TypeError(
+                f"fnames must be an iterable of path-like, got {type(fnames)}"
+            )
+        cands = {}
+        for f in fnames:
+            _validate_type(f, "path-like", "fnames item")
+            if "://" in str(f):
+                raise ValueError(
+                    f"fnames must be file paths, got the URL {f!r}: pass its path "
+                    "relative to the dataset root instead"
+                )
+            p = Path(f)
+            if p.is_relative_to(root):
+                p = p.relative_to(root)
+            rel = p.parts
+            if p.is_absolute() or ".." in rel:
+                raise ValueError(f"fnames item {f!r} is not inside root {root}")
+            for i in range(1, len(rel) + 1):
+                if i == len(rel) or rel[i - 1].endswith((".ds", ".mefd")):
+                    cands[rel[:i]] = None
+        return [
+            root.joinpath(*r)
+            for r in cands
+            if "." in r[-1]
+            and not any(x.startswith(".") for x in r)
+            and not (ignore_json and r[-1].endswith(".json"))
+            and not (ignore_nosub and not (len(r) > 1 and r[0].startswith("sub-")))
+            and (datatypes is None or (len(r) > 1 and r[-2] in datatypes))
+            and r[: len(start)] == start  # as the walk below, which starts there
+        ]
 
     # Walk the tree once. File types come from the directory listings, so no file
     # needs a ``stat`` call of its own (a round trip on network filesystems).
@@ -3176,11 +3156,11 @@ def _return_root_paths(
                 is_dir, is_file = entry.is_dir(), entry.is_file()
             except OSError:
                 continue
-            # Return files and CTF .ds directories whose name has an extension
+            # Return files and CTF .ds or MEF3 .mefd directories with an extension
             # (so not README or LICENSE), and omit the JSON sidecars if
             # `ignore_json` is True.
             wanted = keep and "." in name
-            if wanted and is_dir and name.endswith(".ds"):
+            if wanted and is_dir and name.endswith((".ds", ".mefd")):
                 paths.append(Path(entry.path))
             elif wanted and is_file and not (ignore_json and name.endswith(".json")):
                 paths.append(Path(entry.path))
@@ -3195,7 +3175,7 @@ def _return_root_paths(
     # The entries of the starting directory itself are returned only by a search
     # of the whole dataset: `datatypes` restricts the result to the datatype
     # directories, and `ignore_nosub` to what is inside the sub-* directories.
-    visit(start, datatypes is None and not ignore_nosub, top=True)
+    visit(root.joinpath(*start), datatypes is None and not ignore_nosub, top=True)
     return paths
 
 

@@ -310,6 +310,38 @@ def _participants_tsv(participants_fname, content):
     return _from_tsv(participants_fname, content=content)
 
 
+def read_participants(fname, *, content=None):
+    """Read a ``participants.tsv`` file.
+
+    Parameters
+    ----------
+    fname : path-like
+        Path to the ``participants.tsv`` file.
+    content : bytes | None
+        The file's bytes, if already read, to be parsed instead of reading
+        ``fname``. If ``None``, the file is read from ``fname``.
+
+    Returns
+    -------
+    participants : dict
+        The rows keyed by subject label (``participant_id`` without the
+        ``sub-`` prefix), each a dict from column name to value. Values are
+        strings, and ``n/a`` becomes None.
+
+    Notes
+    -----
+    .. versionadded:: 0.21
+    """
+    table = _from_tsv(fname, content=content)
+    if "participant_id" not in table:
+        raise ValueError(f"{fname} has no participant_id column.")
+    participants = {}
+    for values in zip(*table.values()):
+        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
+        participants[row.pop("participant_id").removeprefix("sub-")] = row
+    return participants
+
+
 def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _participants_tsv(
         participants_fname, participants_fname.read_bytes()
@@ -835,6 +867,11 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
             "Skipping sidecar HED assembly."
         )
         return None
+    if not isinstance(sidecar, dict):
+        warn(
+            f"{events_json_fname} is not a JSON object. Skipping sidecar HED assembly."
+        )
+        return None
 
     # Collect columns that have HED annotations in the sidecar
     hed_columns = {}
@@ -1129,6 +1166,23 @@ def _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname)
             f"set channel names."
         )
         return True
+
+    # SNIRF stores no channel names: MNE builds them from source, detector and
+    # wavelength, so use those columns when the names they give are the raw ones.
+    if {"source", "detector", "wavelength_nominal"} <= channels_dict.keys() and all(
+        re.fullmatch(r"\d+(\.\d+)?", wavelength)
+        for wavelength in channels_dict["wavelength_nominal"]
+    ):
+        nirs_names = [
+            f"{source}_{detector} {int(float(wavelength))}"
+            for source, detector, wavelength in zip(
+                channels_dict["source"],
+                channels_dict["detector"],
+                channels_dict["wavelength_nominal"],
+            )
+        ]
+        if set(nirs_names) == set(raw.ch_names):
+            ch_names_tsv = channels_dict["name"] = nirs_names
 
     if list(raw.ch_names) != ch_names_tsv:
         return _handle_channel_mismatch(

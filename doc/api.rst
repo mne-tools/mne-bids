@@ -22,6 +22,7 @@ mne_bids
    write_raw_bids
    read_raw_bids
    read_epochs_bids
+   read_participants
    write_meg_calibration
    write_meg_crosstalk
    BIDSPath
@@ -47,6 +48,7 @@ mne_bids
    update_sidecar_json
    anonymize_dataset
    find_matching_paths
+   find_inherited_sidecars
    events_file_to_annotation_kwargs
    open_lock
 

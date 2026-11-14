@@ -29,7 +29,7 @@ from numpy.testing import assert_almost_equal
 
 import mne_bids.utils
 import mne_bids.write
-from mne_bids import BIDSPath, read_epochs_bids
+from mne_bids import BIDSPath, read_epochs_bids, read_participants
 from mne_bids.config import (
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
@@ -2134,6 +2134,54 @@ def test_nirs_channel_types_from_tsv(tmp_path, ch_names, bids_type, mne_type, ra
     assert raw.get_channel_types() == [mne_type] * len(ch_names)
 
 
+@testing.requires_testing_data
+@pytest.mark.parametrize("wavelength_fmt", ["{:.0f}", "{:.1f}"], ids=["760", "760.0"])
+def test_nirs_channel_names_from_columns(tmp_path, wavelength_fmt):
+    """Match NIRS channels on source, detector and wavelength, not on names."""
+    raw_fname = op.join(
+        data_path, "SNIRF", "MNE-NIRS", "20220217", "20220217_nirx_15_3_recording.snirf"
+    )
+    raw = mne.io.read_raw_snirf(raw_fname)
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype="nirs")
+    write_raw_bids(raw, bids_path)
+
+    # Name channels like OpenNeuro ds004830 does: S1-D1-760.0
+    channels_fname = bids_path.copy().update(suffix="channels", extension=".tsv")
+    channels = _from_tsv(channels_fname)
+    channels["wavelength_nominal"] = [
+        wavelength_fmt.format(float(w)) for w in channels["wavelength_nominal"]
+    ]
+    channels["name"] = [
+        f"{source}-{detector}-{wavelength}"
+        for source, detector, wavelength in zip(
+            channels["source"], channels["detector"], channels["wavelength_nominal"]
+        )
+    ]
+    _to_tsv(channels, channels_fname)
+
+    raw_bids = read_raw_bids(bids_path)
+    assert raw_bids.ch_names == raw.ch_names
+
+    # Columns that do not give the raw names leave the mismatch handling as it was
+    sources, detectors, wavelengths = (
+        channels[column] for column in ("source", "detector", "wavelength_nominal")
+    )
+    _to_tsv(
+        {**channels, "wavelength_nominal": ["n/a", *wavelengths[1:]]}, channels_fname
+    )
+    with pytest.raises(RuntimeError, match="Channel mismatch"):
+        read_raw_bids(bids_path, on_ch_mismatch="raise")
+
+    # Labels other than MNE's S1/D1 keep the channels.tsv names
+    tx_rx = {
+        "source": [source.replace("S", "Tx") for source in sources],
+        "detector": [detector.replace("D", "Rx") for detector in detectors],
+    }
+    _to_tsv({**channels, **tx_rx}, channels_fname)
+    raw_bids = read_raw_bids(bids_path, on_ch_mismatch="rename")
+    assert raw_bids.ch_names == channels["name"]
+
+
 def test_channel_mismatch_warn(tmp_path):
     """``on_ch_mismatch='warn'`` warns and leaves raw channel names intact."""
     raw, ch_order_snirf, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(
@@ -2650,3 +2698,39 @@ def test_read_epochs_bids_continuous(tmp_path, ext, fmt, writer_pkg):
     assert epochs.get_data().shape == (n_ep, 2, n_per)
     assert set(epochs.event_id) == {"A", "B"}
     assert len(epochs["A"]) == 2 and len(epochs["B"]) == 1  # last 'B' was dropped
+
+
+def test_read_participants(tmp_path):
+    """Read participants.tsv into rows keyed by subject label."""
+    fname = tmp_path / "participants.tsv"
+    fname.write_text("participant_id\tage\tsex\nsub-01\t24\tF\nsub-02\tn/a\tM\n")
+    expected = {"01": {"age": "24", "sex": "F"}, "02": {"age": None, "sex": "M"}}
+    assert read_participants(fname) == expected
+    assert (
+        read_participants("hf://repo/participants.tsv", content=fname.read_bytes())
+        == expected
+    )
+
+    fname.write_text("age\tsex\n24\tF\n")
+    with pytest.raises(ValueError, match="participant_id"):
+        read_participants(fname)
+
+
+def test_read_raw_bids_non_object_events_json(tmp_path):
+    """An events.json sidecar that is not an object is skipped with a warning."""
+    bids_root = tmp_path / "tiny_bids"
+    sh.copytree(tiny_bids_root, bids_root)
+    events_json = (
+        bids_root
+        / "sub-01"
+        / "ses-eeg"
+        / "eeg"
+        / "sub-01_ses-eeg_task-rest_events.json"
+    )
+    events_json.write_text("[]")
+    bids_path = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
+    )
+    with pytest.warns(RuntimeWarning, match="not a JSON object"):
+        raw = read_raw_bids(bids_path)
+    assert len(raw.annotations) > 0

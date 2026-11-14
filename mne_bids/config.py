@@ -9,7 +9,6 @@ from collections.abc import Mapping
 from bidsschematools.schema import load_schema
 from mne.io.constants import FIFF
 
-# the BIDS schema bundled with bidsschematools
 _SCHEMA = load_schema()
 
 BIDS_VERSION = "1.9.0"
@@ -23,7 +22,6 @@ DOI = """https://doi.org/10.21105/joss.01896"""
 EPHY_ALLOWED_DATATYPES = ["eeg", "emg", "ieeg", "meg", "nirs"]
 
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh", "motion"]
-# every BIDS datatype, which BIDSPath accepts although MNE-BIDS cannot read most
 _BIDS_DATATYPES = sorted(dt.value for dt in _SCHEMA.objects.datatypes.values())
 
 MEG_CONVERT_FORMATS = ["FIF", "auto"]
@@ -363,7 +361,6 @@ ALLOWED_FILENAME_SUFFIX = [
     "stim",
     "motion",
 ]
-# and the suffixes of the raw (not derived) files of the BIDS schema
 ALLOWED_FILENAME_SUFFIX += sorted(
     {
         suffix
@@ -397,17 +394,13 @@ ALLOWED_FILENAME_EXTENSIONS = (
     + [".mrk"]  # KIT/Yokogawa/Ricoh marker coil
 )
 
-# allowed BIDSPath entities: short name -> long name, in filename order. That is
-# the schema order, except that split comes right before desc as MNE's
-# split_naming="bids" puts it before the suffix, and tracksys keeps its long name
-_SCHEMA_ENTITIES = {
-    key: _SCHEMA.objects.entities[key] for key in _SCHEMA.rules.entities
-}
+# allowed BIDSPath entities (short name -> long name)
+_SCHEMA_ENTITIES = {k: _SCHEMA.objects.entities[k] for k in _SCHEMA.rules.entities}
 ALLOWED_PATH_ENTITIES_SHORT = {
     **{
-        entity.name: key
-        for key, entity in _SCHEMA_ENTITIES.items()
-        if entity.name not in ("split", "desc")
+        e.name: k
+        for k, e in _SCHEMA_ENTITIES.items()
+        if e.name not in ("split", "desc")
     },
     "tracksys": "tracking_system",
     "split": "split",
