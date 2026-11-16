@@ -55,6 +55,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
+- :func:`mne_bids.read_raw_bids` now leaves the birthday unset when a participant age is non-finite or would produce an out-of-range date, preserving other participant metadata instead of failing, by `Bruno Aristimunha`_ (:gh:`1709`)
 - :func:`mne_bids.read_raw_bids` no longer fails with an ``AttributeError`` when an ``events.json`` sidecar is not a JSON object (for example ``[]``), by `Bruno Aristimunha`_ (:gh:`1703`)
 - Fix readers seeing a partially written sidecar while another process was rewriting it, by `Hamza Abdelhedi`_ (:gh:`1680`)
 - Fix parallel :func:`mne_bids.write_raw_bids` calls for BTi/4D data overwriting each other's ``.bidsignore`` changes, by `Hamza Abdelhedi`_ (:gh:`1680`)

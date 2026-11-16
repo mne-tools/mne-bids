@@ -385,13 +385,12 @@ def _handle_participants_reading(participants_fname, raw, subject):
             elif value is not None:
                 try:
                     value = float(value)
-                except Exception:
-                    value = None
-                else:
                     value = (
                         raw.info["meas_date"]
                         - timedelta(days=int(np.ceil(365.25 * value)))
                     ).date()
+                except (ValueError, OverflowError):
+                    value = None
         else:
             if value == "n/a":
                 value = None

@@ -437,6 +437,11 @@ def test_read_participants_data(tmp_path):
     os.utime(participants_tsv_fpath, ns=(stat.st_atime_ns, stat.st_mtime_ns))
     assert participants_tsv_fpath.stat().st_size == stat.st_size
     assert read_raw_bids(bids_path=bids_path).info["subject_info"]["sex"] == 1
+    for age in ("24", "nan", "inf", "2018"):
+        participants_tsv["age"][0] = age
+        _to_tsv(participants_tsv, participants_tsv_fpath)
+        info = read_raw_bids(bids_path=bids_path).info["subject_info"]
+        assert info["sex"] == 1 and ("birthday" in info) == (age == "24")
 
 
 @pytest.mark.parametrize(
