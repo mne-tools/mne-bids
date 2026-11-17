@@ -147,6 +147,7 @@ def test_detect_file_encoding(tmp_path, payload, expected):
     fpath = tmp_path / "test.tsv"
     fpath.write_bytes(payload)
     assert _detect_file_encoding(fpath) == expected
+    assert _from_tsv(fpath)["name"] == ["EEG"]
 
 
 def test_from_tsv_latin1_logs_info(tmp_path):

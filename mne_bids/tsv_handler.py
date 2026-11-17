@@ -203,11 +203,12 @@ def _from_tsv(fname, dtypes=None, *, content=None):
             source, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
         )
 
-    encoding = _detect_file_encoding(fname, content=content)
+    # parse as UTF-8 (utf-8-sig also strips a BOM) and only detect the encoding
+    # of the whole file when that fails, so valid files are read once (gh-1593)
+    encoding = "utf-8"
     try:
-        data = _load(encoding)
+        data = _load("utf-8-sig")
     except UnicodeDecodeError:
-        # non-UTF-8 bytes past the first chunk: check the whole file (gh-1593)
         encoding = _detect_file_encoding(fname, chunk_size=None, content=content)
         data = _load(encoding)
     if not encoding.startswith("utf-8"):
