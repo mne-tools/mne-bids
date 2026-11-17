@@ -46,7 +46,7 @@ def _detect_file_encoding(fname, chunk_size=65536, *, content=None):
         return "utf-16"
     decoder = codecs.getincrementaldecoder("utf-8")()
     try:
-        decoder.decode(chunk, final=False)
+        decoder.decode(chunk, final=chunk_size is None)
         return "utf-8"
     except UnicodeDecodeError:
         # cp1252 is the usual Windows encoding (e.g. ``µV``); latin-1 decodes
