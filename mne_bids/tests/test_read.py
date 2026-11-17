@@ -42,6 +42,7 @@ from mne_bids.read import (
     _handle_channels_reading,
     _handle_events_reading,
     _handle_scans_reading,
+    _make_annotation_kwargs,
     _read_hed_version,
     _read_raw,
     events_file_to_annotation_kwargs,
@@ -2747,3 +2748,21 @@ def test_malformed_events_tsv(tmp_path, col):
     ):
         kw = events_file_to_annotation_kwargs(fname)
     assert list(kw["duration"]) == [0.0] and kw["extras"] == [{f"events_{col}": "left"}]
+
+
+def test_reserved_events_columns_keep_hed_and_existing_columns(tmp_path):
+    """Renaming a reserved column keeps sidecar HED and never overwrites a column."""
+    events_dict = {
+        "onset": ["0.1"],
+        "duration": ["0"],
+        "description": ["left"],
+        "events_description": ["kept"],
+    }
+    sidecar = tmp_path / "events.json"
+    sidecar.write_text('{"description": {"HED": {"left": "Left-side-of"}}}')
+    with pytest.warns(RuntimeWarning, match="'events_description_1'"):
+        kw, events_dict = _make_annotation_kwargs(events_dict)
+    assert kw["extras"] == [
+        {"events_description": "kept", "events_description_1": "left"}
+    ]
+    assert _assemble_hed_from_sidecar(events_dict, sidecar) == ["Left-side-of"]

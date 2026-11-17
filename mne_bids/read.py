@@ -828,10 +828,18 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
         }
     )
     if extra_columns:
-        for col in set(extra_columns) & {"description", "ch_names", "hed_string"}:
-            warn(f"Events column {col!r} is reserved; storing it as 'events_{col}'.")
-            events_dict[f"events_{col}"] = events_dict.pop(col)
-            extra_columns[extra_columns.index(col)] = f"events_{col}"
+        # rename reserved Annotations names in the extras only: events_dict keeps
+        # the file's column names, which the events.json HED is matched against
+        extra_keys = []
+        for col in extra_columns:
+            key = col
+            if col in ("description", "ch_names", "hed_string"):
+                key, n = f"events_{col}", 0
+                while key in events_dict or key in extra_keys:
+                    n += 1
+                    key = f"events_{col}_{n}"
+                warn(f"Events column {col!r} is a reserved name; renaming to {key!r}.")
+            extra_keys.append(key)
         # infer types (int, float or str)
         for col in extra_columns:
             vals = [str(v) for v in events_dict[col]]
@@ -843,7 +851,7 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
                 except ValueError:
                     events_dict[col] = vals
             extras = [
-                dict(zip(extra_columns, values))
+                dict(zip(extra_keys, values))
                 for values in zip(*[events_dict[col] for col in extra_columns])
             ]
 

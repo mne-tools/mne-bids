@@ -33,14 +33,9 @@ def _normalize_tsv_cell(value):
     return _DECIMAL_COMMA_RE.sub(r"\1.\2", stripped)
 
 
-def _detect_file_encoding(fname, chunk_size=None, *, content=None):
-    """Detect the text encoding of a file from its first chunk.
-
-    Checks for a BOM and otherwise tests UTF-8 validity on a single chunk
-    (default 64 KiB), falling back to ``latin-1``. Avoids reading the full
-    file: enough to catch non-UTF-8 bytes in typical BIDS TSV files (e.g.
-    ``µV`` in ``channels.tsv``). ``content`` (bytes) is used instead of the file.
-    """
+def _detect_file_encoding(fname, chunk_size=65536, *, content=None):
+    # Only the first chunk is checked (chunk_size=None checks the whole file);
+    # ``content`` (bytes) is used instead of reading the file.
     fname = Path(fname)
     opener = gzip.open if fname.suffix == ".gz" else open
     with opener(fname, "rb") if content is None else io.BytesIO(content) as f:
@@ -54,6 +49,8 @@ def _detect_file_encoding(fname, chunk_size=None, *, content=None):
         decoder.decode(chunk, final=False)
         return "utf-8"
     except UnicodeDecodeError:
+        # cp1252 is the usual Windows encoding (e.g. ``µV``); latin-1 decodes
+        # any byte, so it is the last resort
         try:
             chunk.decode("cp1252")
             return "cp1252"
@@ -200,13 +197,21 @@ def _from_tsv(fname, dtypes=None, *, content=None):
     fname = Path(fname)
     compressed = fname.suffix == ".gz"
 
+    def _load(encoding):
+        source = fname if content is None else io.StringIO(content.decode(encoding))
+        return np.loadtxt(
+            source, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
+        )
+
     encoding = _detect_file_encoding(fname, content=content)
+    try:
+        data = _load(encoding)
+    except UnicodeDecodeError:
+        # non-UTF-8 bytes past the first chunk: check the whole file (gh-1593)
+        encoding = _detect_file_encoding(fname, chunk_size=None, content=content)
+        data = _load(encoding)
     if not encoding.startswith("utf-8"):
         logger.info(f"Reading non-UTF-8 TSV as {encoding}: '{fname}'")
-    source = fname if content is None else io.StringIO(content.decode(encoding))
-    data = np.loadtxt(
-        source, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
-    )
     # Handle empty files - data may be empty or only have a header
     if data.size == 0:
         warn(f"TSV file is empty: '{fname}'")
