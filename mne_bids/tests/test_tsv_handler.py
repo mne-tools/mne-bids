@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import codecs
+import gzip
 from collections import OrderedDict as odict
 
 import pytest
@@ -160,11 +161,21 @@ def test_from_tsv_latin1_logs_info(tmp_path):
     assert "non-UTF-8" in log.getvalue()
 
 
-def test_from_tsv_non_utf8_past_first_chunk(tmp_path):
+@pytest.mark.parametrize("ext", [".tsv", ".tsv.gz"])
+@pytest.mark.parametrize(
+    "last, expected",
+    [(b"\xb5V\n", "µV"), (b"\xe9", "é")],  # cp1252 bytes; \xe9 without a newline
+)
+def test_from_tsv_non_utf8_past_first_chunk(tmp_path, ext, last, expected):
     """A non-UTF-8 byte after the first 64 KiB chunk still reads."""
-    tsv = tmp_path / "channels.tsv"
-    tsv.write_bytes(b"name\tunit\n" + b"EEG\tV\n" * 20_000 + b"EEG\t\xb5V\n")
-    assert _from_tsv(tsv)["unit"][-1] == "µV"  # \xb5: µ in cp1252
+    rows = b"EEG\tV\n" * 20_000 + b"EEG\t" + last
+    tsv = tmp_path / f"channels{ext}"
+    if ext == ".tsv.gz":  # compressed TSVs are headerless
+        tsv.write_bytes(gzip.compress(rows))
+        (tmp_path / "channels.json").write_text('{"Columns": ["name", "unit"]}')
+    else:
+        tsv.write_bytes(b"name\tunit\n" + rows)
+    assert _from_tsv(tsv)["unit"][-1] == expected
 
 
 def test_from_tsv_strips_whitespace_and_normalizes_decimal_commas(tmp_path):

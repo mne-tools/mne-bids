@@ -850,10 +850,10 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
                     events_dict[col] = [float(v) for v in vals]
                 except ValueError:
                     events_dict[col] = vals
-            extras = [
-                dict(zip(extra_keys, values))
-                for values in zip(*[events_dict[col] for col in extra_columns])
-            ]
+        extras = [
+            dict(zip(extra_keys, values))
+            for values in zip(*[events_dict[col] for col in extra_columns])
+        ]
 
     hed_strings = events_dict.get("HED")
 
