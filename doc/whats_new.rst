@@ -19,6 +19,7 @@ Version 0.21 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
+* `Eva B`_
 * `Hamza Abdelhedi`_
 * `Shubham Padkonde`_
 
@@ -55,6 +56,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
+- Fix :func:`mne_bids.search_folder_for_text` showing a literal placeholder instead of the invalid folder path in its error, by `Eva B`_.
 - :func:`mne_bids.read_raw_bids` now leaves the birthday unset when a participant age is non-finite or would produce an out-of-range date, preserving other participant metadata instead of failing, by `Bruno Aristimunha`_ (:gh:`1709`)
 - :func:`mne_bids.read_raw_bids` no longer fails with an ``AttributeError`` when an ``events.json`` sidecar is not a JSON object (for example ``[]``), by `Bruno Aristimunha`_ (:gh:`1703`)
 - Fix readers seeing a partially written sidecar while another process was rewriting it, by `Hamza Abdelhedi`_ (:gh:`1680`)

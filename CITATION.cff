@@ -243,6 +243,9 @@ authors:
       family-names: Padkonde
     - given-names: Hamza
       family-names: Abdelhedi
+    - given-names: Eva
+      family-names: B
+      website: https://github.com/evadiva3
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'

@@ -1599,7 +1599,7 @@ def search_folder_for_text(
     """
     _validate_type(entry, str, "entry")
     if not op.isdir(folder):
-        raise ValueError("{folder} is not a directory")
+        raise ValueError(f"{folder} is not a directory")
     folder = Path(folder)  # ensure pathlib.Path
 
     extensions = (extensions,) if isinstance(extensions, str) else extensions

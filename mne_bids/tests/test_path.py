@@ -581,7 +581,7 @@ def test_entity_targeted_scan_speed(tmp_path_factory):
 
 def test_search_folder_for_text(capsys):
     """Test finding entries."""
-    with pytest.raises(ValueError, match="is not a directory"):
+    with pytest.raises(ValueError, match="i_dont_exist is not a directory"):
         search_folder_for_text("foo", "i_dont_exist")
 
     # We check the testing directory

@@ -24,6 +24,7 @@
 .. _Eric Larson: https://larsoner.com/
 .. _Erica Peterson: https://github.com/nordme
 .. _Ethan Knights: https://github.com/ethanknights
+.. _Eva B: https://github.com/evadiva3
 .. _Evgenii Kalenkovich: https://github.com/kalenkovich
 .. _Ezequiel Mikulan: https://github.com/ezemikulan
 .. _Flore Boscher: https://github.com/boscherf
