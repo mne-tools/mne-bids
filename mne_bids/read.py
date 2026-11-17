@@ -22,7 +22,6 @@ from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     _EPOCHED_EXTS,
     ALLOWED_DATATYPE_EXTENSIONS,
-    ALLOWED_DATATYPES,
     ANNOTATIONS_TO_KEEP,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
@@ -311,17 +310,6 @@ def _participants_tsv(participants_fname, content):
     return _from_tsv(participants_fname, content=content)
 
 
-def _read_tsv_rows(fname, key_col, prefix="", *, content=None):
-    table = _from_tsv(fname, content=content)
-    if key_col not in table:
-        raise ValueError(f"{fname} has no {key_col} column.")
-    rows = {}
-    for values in zip(*table.values()):
-        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
-        rows[row.pop(key_col).removeprefix(prefix)] = row
-    return rows
-
-
 def read_participants(fname, *, content=None):
     """Read a ``participants.tsv`` file.
 
@@ -344,55 +332,14 @@ def read_participants(fname, *, content=None):
     -----
     .. versionadded:: 0.21
     """
-    return _read_tsv_rows(fname, "participant_id", "sub-", content=content)
-
-
-@_share_dir_listings()
-def _get_metadata(bids_path):
-    """Assemble entities, inherited JSON sidecars, and tabular rows."""
-    if bids_path.root is None:
-        raise ValueError("The root of the BIDSPath must be set to read metadata.")
-    root = Path(bids_path.root)
-    if bids_path.datatype is None and bids_path.suffix in ALLOWED_DATATYPES:
-        bids_path = bids_path.copy().update(datatype=bids_path.suffix)
-    participants_fname = root / "participants.tsv"
-    sessions_fname = (
-        _find_matching_sidecar(
-            bids_path, suffix="sessions", extension=".tsv", on_error="ignore"
-        )
-        if bids_path.subject and bids_path.session
-        else None
-    )
-    scans_fname = (
-        _find_matching_sidecar(
-            bids_path, suffix="scans", extension=".tsv", on_error="ignore"
-        )
-        if bids_path.subject and bids_path.datatype
-        else None
-    )
-    return {
-        "entities": {k: v for k, v in bids_path.entities.items() if v is not None},
-        "metadata": _read_sidecar_json(bids_path) if bids_path.datatype else {},
-        "participant": (
-            read_participants(participants_fname).get(bids_path.subject, {})
-            if bids_path.subject and participants_fname.is_file()
-            else {}
-        ),
-        "session": (
-            _read_tsv_rows(sessions_fname, "session_id", "ses-").get(
-                bids_path.session, {}
-            )
-            if sessions_fname is not None
-            else {}
-        ),
-        "scan": (
-            _read_tsv_rows(scans_fname, "filename").get(
-                bids_path.fpath.relative_to(scans_fname.parent).as_posix(), {}
-            )
-            if scans_fname is not None
-            else {}
-        ),
-    }
+    table = _from_tsv(fname, content=content)
+    if "participant_id" not in table:
+        raise ValueError(f"{fname} has no participant_id column.")
+    participants = {}
+    for values in zip(*table.values()):
+        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
+        participants[row.pop("participant_id").removeprefix("sub-")] = row
+    return participants
 
 
 def _handle_participants_reading(participants_fname, raw, subject):

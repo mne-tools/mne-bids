@@ -2737,16 +2737,13 @@ def test_read_raw_bids_non_object_events_json(tmp_path, suffix):
     assert len(raw.annotations) > 0
 
 
-def test_get_metadata_and_inherited_sidecar(tmp_path):
-    """BIDSPath.get_metadata and read_raw_bids merge inherited sidecars and tables."""
+def test_get_sidecar_metadata(tmp_path):
+    """BIDSPath.get_sidecar_metadata and read_raw_bids merge inherited sidecars."""
     bids_root = tmp_path / "tiny_bids[1]"
     sh.copytree(tiny_bids_root, bids_root)
     _write_json(
         bids_root / "task-rest_eeg.json",
         {"PowerLineFrequency": 60, "EEGReference": "Cz"},
-    )
-    (bids_root / "sub-01" / "sub-01_sessions.tsv").write_text(
-        "session_id\tvisit\nses-eeg\tbaseline\n", encoding="utf-8"
     )
     eeg_json = (
         bids_root / "sub-01" / "ses-eeg" / "eeg" / "sub-01_ses-eeg_task-rest_eeg.json"
@@ -2758,16 +2755,11 @@ def test_get_metadata_and_inherited_sidecar(tmp_path):
     bp = BIDSPath(
         subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
     )
-    meta = bp.get_metadata()
-    assert meta["entities"] == {"subject": "01", "session": "eeg", "task": "rest"}
-    assert meta["metadata"]["PowerLineFrequency"] == 60
-    assert meta["metadata"]["EEGReference"] == "Cz"
-    assert meta["participant"]["age"] == "29" and meta["participant"]["weight"] is None
-    assert meta["session"] == {"visit": "baseline"}
-    assert meta["scan"] == {"acq_time": "2000-01-01T12:00:00.000000Z"}
+    meta = bp.get_sidecar_metadata()
+    assert meta["PowerLineFrequency"] == 60 and meta["EEGReference"] == "Cz"
     assert read_raw_bids(bp).info["line_freq"] == 60
 
     sidecar["PowerLineFrequency"] = 50
     _write_json(eeg_json, sidecar, overwrite=True)
-    assert bp.get_metadata()["metadata"]["PowerLineFrequency"] == 50
+    assert bp.get_sidecar_metadata()["PowerLineFrequency"] == 50
     assert read_raw_bids(bp).info["line_freq"] == 50

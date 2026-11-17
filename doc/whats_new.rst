@@ -40,7 +40,7 @@ Detailed list of changes
 - :func:`mne_bids.read_epochs_bids` now reads epoched FIF files (``RecordingType: "epoched"``) with :func:`mne.read_epochs`, and :func:`mne_bids.read_raw_bids` points to it for such files, by `Hamza Abdelhedi`_ (:gh:`1679`)
 - :func:`mne_bids.read_raw_bids` now accepts path-like inputs (``str`` or :class:`pathlib.Path`), converting them via :func:`mne_bids.get_bids_path_from_fname`, by `Bruno Aristimunha`_ (:gh:`1695`)
 - Add ``fnames`` parameter to :func:`mne_bids.find_matching_paths` to filter pre-collected file paths without walking the filesystem, by `Bruno Aristimunha`_ (:gh:`1698`)
-- Extend :meth:`BIDSPath.find_matching_sidecar` with ``inherited=False`` and ``candidates=None`` to list applicable sidecar files from the dataset root down (including from pre-collected paths or URLs), add :meth:`BIDSPath.get_metadata` to return the recording's entities, merged inherited JSON sidecar dictionary, and matching ``participants.tsv``, ``sessions.tsv``, and ``scans.tsv`` rows, and merge inherited JSON sidecars in :func:`mne_bids.read_raw_bids` and :func:`mne_bids.read_epochs_bids`, by `Bruno Aristimunha`_ (:gh:`1708`)
+- Extend :meth:`BIDSPath.find_matching_sidecar` with ``inherited=False`` and ``candidates=None`` to list applicable sidecar files from the dataset root down (including from pre-collected paths or URLs), add :meth:`BIDSPath.get_sidecar_metadata` to read the merged inherited JSON sidecars, and merge inherited JSON sidecars in :func:`mne_bids.read_raw_bids` and :func:`mne_bids.read_epochs_bids`, by `Bruno Aristimunha`_ (:gh:`1708`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

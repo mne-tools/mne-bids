@@ -1384,28 +1384,23 @@ class BIDSPath:
             candidates=candidates,
         )
 
-    def get_metadata(self):
-        """Read entities, merged inherited sidecar JSON, and tabular rows.
+    def get_sidecar_metadata(self):
+        """Read and merge the JSON sidecar files that apply to this path.
 
         Returns
         -------
         metadata : dict
-            A dictionary with keys:
-
-            - ``"entities"``: non-empty BIDS entities of this path.
-            - ``"metadata"``: merged JSON sidecar dictionary from the dataset
-              root down to the recording directory.
-            - ``"participant"``: matching row from ``participants.tsv``, if any.
-            - ``"session"``: matching row from ``*_sessions.tsv``, if any.
-            - ``"scan"``: matching row from ``*_scans.tsv``, if any.
+            The JSON sidecars that apply under the BIDS inheritance principle,
+            merged from the dataset root down, so that lower files override
+            higher ones. Empty if no sidecar applies.
 
         Notes
         -----
         .. versionadded:: 0.21
         """
-        from mne_bids.read import _get_metadata
+        from mne_bids.read import _read_sidecar_json
 
-        return _get_metadata(self)
+        return _read_sidecar_json(self)
 
     @property
     def meg_calibration_fpath(self):
@@ -2253,7 +2248,6 @@ def _find_inherited_sidecars(bids_path, suffix=None, extension=None, candidates=
 
 _ext_map = {  # these sidecar files should only ever have these extensions
     "scans": ".tsv",
-    "sessions": ".tsv",
     "coordsystem": ".json",
     "electrodes": ".tsv",
 }
@@ -2342,11 +2336,11 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
     paths.append((bids_root, ""))
 
     # Now do the heavy lifting: look for the files
-    if suffix in ("scans", "sessions", "coordsystem", "electrodes"):
+    if suffix in ("scans", "coordsystem", "electrodes"):
         path_end = f"{suffix}{extension}"
         for dir_, entity_str in paths:
             # we need to check with task as well
-            if suffix not in ("scans", "sessions") and bids_path.task is not None:
+            if suffix != "scans" and bids_path.task is not None:
                 shortcut_file = dir_ / f"{entity_str}task-{bids_path.task}_{path_end}"
                 if _sidecar_is_file(shortcut_file, bids_root):
                     return shortcut_file
