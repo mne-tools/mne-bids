@@ -71,6 +71,7 @@ data type you used:
    News<whats_new>
    Install<install>
    Use<use>
+   Glossary<bids_glossary>
    API<api>
    CLI<generated/cli>
    Contribute<contribute>
