@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev33+g265d8ca4d documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev35+g54fb735d5 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=57901407"></script>
+    <script src="../../_static/documentation_options.js?v=37c9f993"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev33+g265d8ca4d" />
+  <meta name="docsearch:version" content="0.21.0.dev35+g54fb735d5" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev33+g265d8ca4d documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev35+g54fb735d5 documentation</p>
   
 </a></div>
     
@@ -1320,6 +1320,10 @@
         <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">du</span> <span class="o">==</span> <span class="s2">"n/a"</span> <span class="k">else</span> <span class="n">du</span> <span class="k">for</span> <span class="n">du</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s2">"duration"</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
     <span class="p">)</span>
 
+    <span class="k">if</span> <span class="p">(</span><span class="n">durs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">"Events contain negative durations; setting them to zero."</span><span class="p">)</span>
+        <span class="n">durs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">durs</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
     <span class="n">extras</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">extra_columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
         <span class="nb">set</span><span class="p">(</span><span class="n">events_dict</span><span class="p">)</span>
@@ -1334,6 +1338,18 @@
         <span class="p">}</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">extra_columns</span><span class="p">:</span>
+        <span class="c1"># rename reserved Annotations names in the extras only: events_dict keeps</span>
+        <span class="c1"># the file's column names, which the events.json HED is matched against</span>
+        <span class="n">extra_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">col</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"description"</span><span class="p">,</span> <span class="s2">"ch_names"</span><span class="p">,</span> <span class="s2">"hed_string"</span><span class="p">):</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"events_</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="mi">0</span>
+                <span class="k">while</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">events_dict</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">extra_keys</span><span class="p">:</span>
+                    <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"events_</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">"</span>
+                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Events column </span><span class="si">{</span><span class="n">col</span><span class="si">!r}</span><span class="s2"> is a reserved name; renaming to </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+            <span class="n">extra_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="c1"># infer types (int, float or str)</span>
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="p">:</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]]</span>
@@ -1344,10 +1360,10 @@
                     <span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
-            <span class="n">extras</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">extra_columns</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="p">])</span>
-            <span class="p">]</span>
+        <span class="n">extras</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">extra_keys</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">events_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="p">])</span>
+        <span class="p">]</span>
 
     <span class="n">hed_strings</span> <span class="o">=</span> <span class="n">events_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"HED"</span><span class="p">)</span>
 
@@ -2571,7 +2587,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-11-16.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-11-18.
       <br/>
     
   </p>
