@@ -22,6 +22,7 @@ from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     _EPOCHED_EXTS,
     ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_DATATYPES,
     ANNOTATIONS_TO_KEEP,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
@@ -298,14 +299,14 @@ def _verbose_list_index(lst, val, *, allow_all=False):
         raise ValueError(f"{exc}{extra}") from None
 
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=3)
 def _participants_tsv(participants_fname, content):
     """Parse participants.tsv once per content of the file.
 
     ``content`` is the file's bytes. Reading them on every call is much cheaper
     than parsing and, unlike file metadata, cannot miss a rewrite (some network
-    filesystems only store modification times in seconds). Only the last table
-    is kept, so a file that is rewritten often does not pile up in memory.
+    filesystems only store modification times in seconds). Only the last three
+    tables are kept (participants, sessions and scans for ``get_metadata``).
     """
     return _from_tsv(participants_fname, content=content)
 
@@ -340,6 +341,46 @@ def read_participants(fname, *, content=None):
         row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
         participants[row.pop("participant_id").removeprefix("sub-")] = row
     return participants
+
+
+@_share_dir_listings()  # the sidecars sit in the same few directories
+def _get_metadata(bids_path):
+    """Combine the inherited JSON sidecars with the data summary file rows."""
+    if bids_path.datatype is None and bids_path.suffix in ALLOWED_DATATYPES:
+        bids_path = bids_path.copy().update(datatype=bids_path.suffix)
+    root, sub, ses = bids_path.root, bids_path.subject, bids_path.session
+    # scans.tsv lists multi-file formats by the file passed to readers
+    header = {".eeg": ".vhdr", ".vmrk": ".vhdr", ".fdt": ".set"}
+    scan = bids_path.fpath
+    scan = scan.with_suffix(header.get(scan.suffix, scan.suffix))
+    # data summary files have fixed locations in BIDS, so no directory listing
+    scans = BIDSPath(
+        subject=sub, session=ses, suffix="scans", extension=".tsv", root=root
+    )
+    sessions = BIDSPath(subject=sub, suffix="sessions", extension=".tsv", root=root)
+    files = dict(
+        participant=(Path(root) / "participants.tsv", "participant_id", f"sub-{sub}"),
+        session=(sessions.fpath, "session_id", f"ses-{ses}"),
+        scan=(
+            scans.fpath,
+            "filename",
+            scan.relative_to(scans.directory).as_posix(),
+        ),
+    )
+    metadata = dict(sidecar=bids_path.read_sidecar(inherit=True, on_error="ignore"))
+    metadata["columns"] = {}
+    for key, (fname, id_col, row_id) in files.items():
+        table = _participants_tsv(fname, fname.read_bytes()) if fname.is_file() else {}
+        row = dict(zip(table.get(id_col, []), zip(*table.values()))).get(row_id, ())
+        metadata[key] = {
+            col: None if val == "n/a" else val
+            for col, val in zip(table, row)
+            if col != id_col
+        }
+        metadata["columns"][f"{key}s"] = bids_path.read_sidecar(
+            f"{key}s", inherit=True, on_error="ignore"
+        )
+    return metadata
 
 
 def _handle_participants_reading(participants_fname, raw, subject):

@@ -41,6 +41,7 @@ Detailed list of changes
 - :func:`mne_bids.read_raw_bids` now accepts path-like inputs (``str`` or :class:`pathlib.Path`), converting them via :func:`mne_bids.get_bids_path_from_fname`, by `Bruno Aristimunha`_ (:gh:`1695`)
 - Add ``fnames`` parameter to :func:`mne_bids.find_matching_paths` to filter pre-collected file paths without walking the filesystem, by `Bruno Aristimunha`_ (:gh:`1698`)
 - Extend :meth:`BIDSPath.find_matching_sidecar` with ``inherit=False`` and ``candidates=None`` to list applicable sidecar files from the dataset root down (including from pre-collected paths or URLs), add :meth:`BIDSPath.read_sidecar` to read the closest or, with ``inherit=True``, the merged inherited JSON sidecars, and merge inherited JSON sidecars in :func:`mne_bids.read_raw_bids` (including ``events.json``, so inherited HED annotations are no longer lost) and :func:`mne_bids.read_epochs_bids`, by `Bruno Aristimunha`_ (:gh:`1708`)
+- Add :meth:`BIDSPath.get_metadata` to combine the merged JSON sidecars with the recording's rows of the data summary files (``participants.tsv``, ``sessions.tsv`` and ``scans.tsv``, all columns) and their column descriptions, by `Bruno Aristimunha`_ (:gh:`1724`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
