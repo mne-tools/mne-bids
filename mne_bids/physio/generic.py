@@ -1,6 +1,5 @@
 """Utilities for reading 'generic' physiological BIDS data."""
 
-import gzip
 import json
 from pathlib import Path
 from warnings import warn
@@ -59,19 +58,17 @@ def _read_physioevents(bids_path, ch_names="auto"):
     encoding = "utf-8-sig"
 
     _validate_type(ch_names, (list, tuple, str, type(None)), item_name="ch_names")
-    physio_json_fpath = bids_path.find_matching_sidecar(
-        suffix="physio", extension=".json"
-    )
-    physio_sidecar = _read_json(physio_json_fpath)
 
     # Make annotations channel-agnostic
     if ch_names is None:
         ch_names = tuple()
     # Pull names from TSV file. Assumes MNE ch_names are identical to these column names
     elif ch_names == "auto":
-        ch_names = tuple(
-            name for name in physio_sidecar["Columns"] if name != "timestamp"
+        physio_json_fpath = bids_path.find_matching_sidecar(
+            suffix="physio", extension=".json"
         )
+        physio_sidecar = json.loads(physio_json_fpath.read_text(encoding=encoding))
+        ch_names = tuple(physio_sidecar.get("Columns", []))
     # MNE channel names were passed in from the call site
     else:
         ch_names = tuple(ch_names)
@@ -82,44 +79,37 @@ def _read_physioevents(bids_path, ch_names="auto"):
     )
 
     events = _from_tsv(events_fname)
-    events.setdefault("duration", ["0"] * len(events["onset"]))
+    events.setdefault("duration", ["0"] * len(events["onset"]))  # optional column
     annot_kwargs, _ = _make_annotation_kwargs(events, events_fname)
-    events_json = _read_json(events_fname.with_suffix("").with_suffix(".json"))
-    source = events_json["OnsetSource"]
-    if source == "n/a":
-        annot_kwargs["onset"] /= physio_sidecar["SamplingFrequency"]
-    else:
-        columns = physio_sidecar["Columns"]
-        _check_option("OnsetSource", source, columns)
+    physio_sidecar = json.loads(
+        bids_path.find_matching_sidecar(suffix="physio", extension=".json").read_text(
+            encoding=encoding
+        )
+    )
+    events_json = events_fname.with_suffix("").with_suffix(".json")
+    source = json.loads(events_json.read_text(encoding=encoding))["OnsetSource"]
+    sfreq = physio_sidecar["SamplingFrequency"]
+    if source == "n/a":  # sample indices
+        annot_kwargs["onset"] = annot_kwargs["onset"] / sfreq
+    else:  # values of a column of the physio file, e.g. device timestamps
+        timestamps = np.asarray(_from_tsv(bids_path.fpath, dtypes=float)[source])
         unit = physio_sidecar.get(source, {}).get("Units")
-        scales = {"s": 1, "ms": 1e-3, "us": 1e-6, "µs": 1e-6, "ns": 1e-9}
-        if unit is None:
-            from scipy.interpolate import interp1d
-
-            timestamps = np.asarray(_from_tsv(bids_path.fpath, dtypes=float)[source])
-            if (
-                len(timestamps) < 2
-                or not np.isfinite(timestamps).all()
-                or np.any(np.diff(timestamps) <= 0)
-            ):
-                raise ValueError("OnsetSource must increase between samples.")
-            to_seconds = interp1d(
-                timestamps,
-                np.arange(len(timestamps)) / physio_sidecar["SamplingFrequency"],
-                bounds_error=False,
-                fill_value="extrapolate",
-                assume_sorted=True,
+        if unit is None:  # without units, use the sample index of each onset
+            annot_kwargs["onset"] = (
+                np.searchsorted(timestamps, annot_kwargs["onset"]) / sfreq
             )
-            annot_kwargs["onset"] = to_seconds(annot_kwargs["onset"])
         else:
+            scales = {"s": 1, "ms": 1e-3, "us": 1e-6, "µs": 1e-6, "ns": 1e-9}
             _check_option("OnsetSource units", unit, scales)
-            with gzip.open(bids_path.fpath, "rt", encoding=encoding) as fid:
-                first = float(fid.readline().split("\t")[columns.index(source)])
-            annot_kwargs["onset"] = (annot_kwargs["onset"] - first) * scales[unit]
+            annot_kwargs["onset"] = (annot_kwargs["onset"] - timestamps[0]) * scales[
+                unit
+            ]
     n_annots = len(annot_kwargs["onset"])
-    tuples = [ch_names] * n_annots
-    arr = np.empty(n_annots, dtype=object)
-    arr[:] = tuples
-    annot_kwargs["ch_names"] = arr
+    if ch_names:
+        # This is the best way I could work out to create a 1D array of tuples
+        tuples = [ch_names] * n_annots
+        arr = np.empty(len(tuples), dtype=object)
+        arr[:] = tuples
+        annot_kwargs["ch_names"] = arr
 
     return annot_kwargs

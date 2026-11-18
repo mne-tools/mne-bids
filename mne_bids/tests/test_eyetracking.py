@@ -8,7 +8,6 @@ import sys
 import mne
 import numpy as np
 import pytest
-from mne._fiff.constants import FIFF
 from mne.datasets import testing
 from mne.io import RawArray, read_raw_egi, read_raw_eyelink
 from mne.utils import check_version
@@ -156,56 +155,6 @@ def test_physioevents_onset_source(
     )
 
 
-@pytest.mark.parametrize(
-    "mismatch", ["sampling frequency", "timestamps", "start time", "timestamp units"]
-)
-def test_read_eyetrack_binocular_alignment(synthetic_eyetrack, mismatch):
-    """Reject eyes that cannot be combined sample for sample."""
-    path = synthetic_eyetrack.copy().update(recording="eye2").fpath
-    if mismatch != "timestamps":
-        json_path = path.with_suffix("").with_suffix(".json")
-        metadata = json.loads(json_path.read_text())
-        if mismatch == "sampling frequency":
-            metadata["SamplingFrequency"] = 200
-        elif mismatch == "start time":
-            metadata["StartTime"] = 0.1
-        else:
-            metadata["timestamp"]["Units"] = "ms"
-        _write_json(json_path, metadata, overwrite=True)
-    else:
-        data = _from_tsv(path, dtypes=float)
-        data["timestamp"] = np.array(data["timestamp"]) + 0.01
-        _write_tsv(path, data, compress=True, overwrite=True)
-    with pytest.raises(ValueError, match=f"same {mismatch}"):
-        mne_bids.physio.read_raw_bids_eyetrack(synthetic_eyetrack)
-
-
-@pytest.mark.parametrize(
-    "unit,scale,fiff",
-    [
-        ("pixel", 1, FIFF.FIFF_UNIT_PX),
-        ("m", 1, FIFF.FIFF_UNIT_M),
-        ("mm", 1e-3, FIFF.FIFF_UNIT_M),
-        ("deg", np.pi / 180, FIFF.FIFF_UNIT_RAD),
-    ],
-)
-def test_read_eyetrack_optional_channel_metadata(synthetic_eyetrack, unit, scale, fiff):
-    """Optional channel metadata can be absent and meter units retain their meaning."""
-    json_path = synthetic_eyetrack.copy().update(extension=".json").fpath
-    metadata = json.loads(json_path.read_text())
-    for name in ("x_coordinate", "y_coordinate"):
-        metadata[name]["Units"] = unit
-    for name in ("timestamp", "pupil_size", "confidence"):
-        metadata.pop(name)
-    _write_json(json_path, metadata, overwrite=True)
-    raw = mne_bids.physio.read_raw_bids_eyetrack(synthetic_eyetrack)
-    assert raw.get_channel_types()[:4] == ["eyegaze", "eyegaze", "pupil", "misc"]
-    assert raw.info["chs"][0]["unit"] == fiff
-    expected = np.repeat(np.arange(1, 5)[:, None], 100, axis=1).astype(float)
-    expected[:2] *= scale
-    np.testing.assert_allclose(raw.get_data(picks=[0, 1, 2, 3]), expected)
-
-
 def _add_screen_metadata(calibrations):
     """Add BIDS-required screen metadata to eyetracking calibrations."""
     calibrations = [cal.copy() for cal in calibrations]
@@ -294,27 +243,12 @@ def test_eyetracking_calibration_roundtrip(tmp_path, eyetrack_bpath):
         write_eyetrack_calibration(dupe_bpath, calibrations)
 
     # Read
-    cals_in = mne_bids.physio.read_eyetrack_calibration(
-        eyetrack_bpath.copy().update(recording=None)
-    )
+    cals_in = mne_bids.physio.read_eyetrack_calibration(eyetrack_bpath)
     for cal, cal_in in zip(calibrations, cals_in):
         for key in ("eye", "model"):
             assert cal[key] == cal_in[key]
         for key in ("avg_error", "max_error"):
             np.testing.assert_allclose(cal[key], cal_in[key])
-        assert cal_in["calibration_count"] == 1
-
-    for recording in ("cardiac", "respiratory"):
-        generic = bpath.copy().update(recording=recording).fpath
-        generic.write_text(json.dumps({"PhysioType": "generic"}))
-    right_calibration = {**calibrations[1], "avg_error": 0.4}
-    assert write_eyetrack_calibration(eyetrack_bpath, [right_calibration]) == [
-        eye2_json
-    ]
-    assert json.loads(eye1_json.read_text()) == eye1
-    assert json.loads(eye2_json.read_text())["AverageCalibrationError"] == 0.4
-    with pytest.raises(ValueError, match="at least one calibration"):
-        write_eyetrack_calibration(eyetrack_bpath, [])
 
 
 @testing.requires_testing_data
@@ -356,7 +290,7 @@ def test_write_eyetracking_mono(_bids_validate, raw_eye_and_cals, eyetrack_bpath
     """Test writing monocular eyetracking data."""
     raw, cals = raw_eye_and_cals
     raw.drop_channels([f"xpos_{eye}", f"ypos_{eye}", f"pupil_{eye}"])
-    cal = cals[1] if eye == "left" else cals[0]
+    cal = cals[0] if eye == "left" else cals[1]
     write_raw_bids(
         raw,
         eyetrack_bpath,

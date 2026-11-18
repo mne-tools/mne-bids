@@ -5,9 +5,10 @@ from pathlib import Path
 
 import mne
 import numpy as np
+from mne._fiff.constants import FIFF
 from mne.utils import _check_option, _validate_type, logger, warn
 
-from mne_bids.config import UNITS_FIFF_TO_BIDS_MAP
+from mne_bids.config import UNITS_BIDS_TO_FIFF_MAP, UNITS_FIFF_TO_BIDS_MAP
 from mne_bids.path import BIDSPath
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import _write_json, _write_tsv
@@ -365,9 +366,12 @@ def write_eyetrack_calibration(
 
     Notes
     -----
-    This function uses each sidecar's ``RecordedEye`` field to route calibration
-    metadata to the correct eye. Supplying calibrations for one eye leaves the
-    other eye's metadata unchanged.
+    This function routes calibration metadata to the correct per-eye physio sidecar(s):
+
+    - Binocular recordings: left eye -> ``<match>_recording-eye1_physio.json``,
+      right eye -> ``<match>_recording-eye2_physio.json``
+    - Monocular recordings: whichever eye was recorded ->
+      ``<match>_recording-eye1_physio.json``
 
     If more than one calibration was run on the participant, this function will write
     the last calibration in the sequence passed to the ``calibrations`` parameter.
@@ -378,8 +382,6 @@ def write_eyetrack_calibration(
 
     if isinstance(calibrations, mne.preprocessing.eyetracking.Calibration):
         calibrations = [calibrations]
-    if len(calibrations) == 0:
-        raise ValueError("Provide at least one calibration.")
 
     cals_by_eye = {"left": [], "right": []}
     for cal in calibrations:
@@ -390,32 +392,31 @@ def write_eyetrack_calibration(
                 f"'left' or 'right' in its 'eye' key. Got {eye} "
             )
         cals_by_eye[eye].append(cal)
-    base_path = bids_path.copy().update(
-        recording=None, suffix="physio", extension=".json"
-    )
-    sidecars = {}
-    for candidate in base_path.match(ignore_json=False):
-        sidecar = json.loads(candidate.fpath.read_text(encoding="utf-8-sig"))
-        eye = sidecar.get("RecordedEye")
-        if not cals_by_eye.get(eye):
-            continue
-        if eye in sidecars:
-            raise ValueError(f"Multiple eyetracking sidecars found for {eye!r}.")
-        sidecars[eye] = (candidate.fpath, sidecar)
-    for eye, cals in cals_by_eye.items():
-        if cals and eye not in sidecars:
-            raise FileNotFoundError(
-                f"Eyetracking sidecar not found for {eye!r} at {base_path.directory}. "
-                "Write the BIDS dataset first using write_raw_bids."
-            )
+    eyes_present = {eye for eye, cals in cals_by_eye.items() if len(cals)}
+
+    # Determine monocular vs binocular mapping to the *_physio.tsv files
+    if eyes_present == {"left", "right"}:
+        eye_to_recording = {"left": "eye1", "right": "eye2"}
+    else:
+        only_eye = next(iter(eyes_present))
+        eye_to_recording = {only_eye: "eye1"}
+
+    # Construct base path eye1 and/or eye2 <match>_physio.tsv files
+    base_path = bids_path.copy().update(suffix="physio", extension=".json")
 
     updated_sidecar_fpaths = []
-    for eye, cals in cals_by_eye.items():
-        if not cals:
-            continue
-        sidecar_fpath, sidecar = sidecars[eye]
-        updates = _calibration_to_sidecar_updates(cals)
+    for eye, recording_tag in eye_to_recording.items():
+        sidecar_fpath = base_path.copy().update(recording=recording_tag).fpath
+        if not sidecar_fpath.exists():
+            msg = (
+                "Eyetracking sidecar not found at "
+                f"{sidecar_fpath}. Write the BIDS dataset first using write_raw_bids."
+            )
+            raise FileNotFoundError(msg)
+
+        updates = _calibration_to_sidecar_updates(cals_by_eye[eye])
         if updates:
+            sidecar = json.loads(sidecar_fpath.read_text(encoding="utf-8-sig"))
             sidecar.update(updates)
             _write_json(sidecar_fpath, sidecar, overwrite=True)
             updated_sidecar_fpaths.append(sidecar_fpath)
@@ -497,8 +498,6 @@ def read_eyetrack_calibration(bids_path: BIDSPath) -> list[dict]:
         )
         if unit is not None:
             mne_cal["unit"] = unit
-        if "CalibrationCount" in sidecar:
-            mne_cal["calibration_count"] = sidecar["CalibrationCount"]
         calibrations.append(mne_cal)
 
     if not calibrations:
@@ -529,6 +528,14 @@ def read_raw_bids_eyetrack(bids_path):
     from mne.preprocessing.eyetracking import set_channel_types_eyetrack
 
     ch_info = {}
+    # Mapping from FIFF units to the str codes wanted by set_channel_types_eyetrack
+    fiff_to_func = {
+        FIFF.FIFF_UNIT_PX: "px",
+        FIFF.FIFF_UNIT_NONE: "au",
+        FIFF.FIFF_UNIT_M: "m",
+        FIFF.FIFF_UNIT_RAD: "rad",
+    }
+
     raw_path = bids_path.fpath
 
     num_eyes = 1
@@ -563,25 +570,6 @@ def read_raw_bids_eyetrack(bids_path):
         )
         ch_info.update(eye2_ch_info)
         eye2_array = np.array(list(eye2_data_dict.values()))
-        eye2_sidecar = json.loads(
-            eye2_fpath.with_suffix("").with_suffix(".json").read_text()
-        )
-        if eye2_sidecar["SamplingFrequency"] != eye1_sfreq:
-            raise ValueError("Both eyes must have the same sampling frequency.")
-        if eye2_sidecar.get("StartTime") != physio_sidecar.get("StartTime"):
-            raise ValueError("Both eyes must have the same start time.")
-        eye1_units = physio_sidecar.get("timestamp", {}).get("Units")
-        eye2_units = eye2_sidecar.get("timestamp", {}).get("Units")
-        if (
-            eye1_units is not None
-            and eye2_units is not None
-            and eye1_units != eye2_units
-        ):
-            raise ValueError("Both eyes must have the same timestamp units.")
-        if eye1_array.shape[1] != eye2_array.shape[1] or not np.allclose(
-            eye1_array[0], eye2_array[0], rtol=0, atol=1e-9
-        ):
-            raise ValueError("Both eyes must have the same timestamps.")
 
         # timestamp is row 0. Exclude it
         data = np.concatenate([eye1_array[1:, :], eye2_array[1:, :]], axis=0)
@@ -598,14 +586,14 @@ def read_raw_bids_eyetrack(bids_path):
         if this_type == "eyegaze":
             et_info[this_name] = (
                 this_type,
-                ch_info[this_name]["unit"],
+                fiff_to_func[ch_info[this_name]["unit"]],
                 ch_info[this_name]["eye"],
                 ch_info[this_name]["axis"],
             )
         elif this_type == "pupil":
             et_info[this_name] = (
                 this_type,
-                ch_info[this_name]["unit"],
+                fiff_to_func[ch_info[this_name]["unit"]],
                 ch_info[this_name]["eye"],
             )
     set_channel_types_eyetrack(raw, mapping=et_info)
@@ -649,17 +637,13 @@ def _read_one_eye_physio(raw_tsv_fpath):
     ch_info = {}
     # The first column is 'timestamp' so skip it
     for col_idx, ch_name in enumerate(cols[1:], start=1):
+        unit_str = sidecar[ch_name]["Units"]
         ch_type = _infer_et_type(ch_name)
-        unit_str = (
-            sidecar[ch_name]["Units"]
-            if ch_type == "eyegaze"
-            else sidecar.get(ch_name, {}).get("Units", "arbitrary")
-        )
 
         # Append recording entity suffix (eye1/eye2) to channel names.
         ch_info[f"{ch_name}_{recording_entity}"] = dict(
             ch_type=ch_type,
-            unit=unit_str,
+            unit=UNITS_BIDS_TO_FIFF_MAP[unit_str],
             eye=recorded_eye,
             axis=(
                 "x"
