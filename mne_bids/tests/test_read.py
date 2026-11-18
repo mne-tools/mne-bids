@@ -2737,8 +2737,8 @@ def test_read_raw_bids_non_object_events_json(tmp_path, suffix):
     assert len(raw.annotations) > 0
 
 
-def test_get_sidecar_metadata(tmp_path):
-    """BIDSPath.get_sidecar_metadata and read_raw_bids merge inherited sidecars."""
+def test_read_sidecar(tmp_path):
+    """BIDSPath.read_sidecar and read_raw_bids merge inherited sidecars."""
     bids_root = tmp_path / "tiny_bids[1]"
     sh.copytree(tiny_bids_root, bids_root)
     _write_json(
@@ -2755,11 +2755,12 @@ def test_get_sidecar_metadata(tmp_path):
     bp = BIDSPath(
         subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
     )
-    meta = bp.get_sidecar_metadata()
+    meta = bp.read_sidecar(inherit=True)
     assert meta["PowerLineFrequency"] == 60 and meta["EEGReference"] == "Cz"
+    assert "EEGReference" not in bp.read_sidecar("eeg")  # the closest file only
     assert read_raw_bids(bp).info["line_freq"] == 60
 
     sidecar["PowerLineFrequency"] = 50
     _write_json(eeg_json, sidecar, overwrite=True)
-    assert bp.get_sidecar_metadata()["PowerLineFrequency"] == 50
+    assert bp.read_sidecar(inherit=True)["PowerLineFrequency"] == 50
     assert read_raw_bids(bp).info["line_freq"] == 50

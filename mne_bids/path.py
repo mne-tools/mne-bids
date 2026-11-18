@@ -1341,7 +1341,7 @@ class BIDSPath:
         suffix=None,
         extension=None,
         *,
-        inherited=False,
+        inherit=False,
         candidates=None,
         on_error="raise",
     ):
@@ -1354,7 +1354,7 @@ class BIDSPath:
             before the extension. E.g., ``'ieeg'``.
         extension : str | None
             The extension of the filename. E.g., ``'.json'``.
-        inherited : bool
+        inherit : bool
             If ``False`` (default), return the single closest matching sidecar.
             If ``True``, return all sidecars that apply under the BIDS
             inheritance principle, ordered from the dataset root down to the
@@ -1366,33 +1366,47 @@ class BIDSPath:
             If no matching sidecar file was found and this is set to
             ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a
             warning, and if ``'ignore'``, neither raise an exception nor a
-            warning, and return ``None`` (or ``[]`` when ``inherited=True``).
+            warning, and return ``None`` (or ``[]`` when ``inherit=True``).
 
         Returns
         -------
         sidecar_path : pathlib.Path | list of path-like | None
-            The path to the sidecar file when ``inherited=False``, or the list
+            The path to the sidecar file when ``inherit=False``, or the list
             of applicable sidecar paths from the root down when
-            ``inherited=True``.
+            ``inherit=True``.
         """
         return _find_matching_sidecar(
             self,
             suffix=suffix,
             extension=extension,
             on_error=on_error,
-            inherited=inherited,
+            inherit=inherit,
             candidates=candidates,
         )
 
-    def get_sidecar_metadata(self):
-        """Read and merge the JSON sidecar files that apply to this path.
+    def read_sidecar(self, suffix=None, *, inherit=False, on_error="raise"):
+        """Read the matching JSON sidecar file(s).
+
+        Parameters
+        ----------
+        suffix : str | None
+            The filename suffix. This is the entity after the last ``_``
+            before the extension. E.g., ``'ieeg'``.
+        inherit : bool
+            If ``False`` (default), read the single closest matching sidecar.
+            If ``True``, read all sidecars that apply under the BIDS
+            inheritance principle and merge them from the dataset root down,
+            so that lower files override higher ones.
+        on_error : 'raise' | 'warn' | 'ignore'
+            If no matching sidecar file was found and this is set to
+            ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a
+            warning, and if ``'ignore'``, neither raise an exception nor a
+            warning, and return an empty dictionary in both cases.
 
         Returns
         -------
-        metadata : dict
-            The JSON sidecars that apply under the BIDS inheritance principle,
-            merged from the dataset root down, so that lower files override
-            higher ones. Empty if no sidecar applies.
+        sidecar : dict
+            The content of the sidecar file(s).
 
         Notes
         -----
@@ -1400,7 +1414,7 @@ class BIDSPath:
         """
         from mne_bids.read import _read_sidecar_json
 
-        return _read_sidecar_json(self)
+        return _read_sidecar_json(self, suffix, on_error, inherit=inherit)
 
     @property
     def meg_calibration_fpath(self):
@@ -2016,7 +2030,7 @@ def _find_matching_sidecar(
     extension=None,
     on_error="raise",
     *,
-    inherited=False,
+    inherit=False,
     candidates=None,
 ):
     """Try to find a sidecar file with a given suffix for a data file.
@@ -2054,12 +2068,12 @@ def _find_matching_sidecar(
         )
     bids_root = Path(bids_path.root)
 
-    if inherited or candidates is not None:
+    if inherit or candidates is not None:
         sidecars = _find_inherited_sidecars(
             bids_path, suffix=suffix, extension=extension, candidates=candidates
         )
         if sidecars:
-            return sidecars if inherited else sidecars[-1]
+            return sidecars if inherit else sidecars[-1]
         msg = (
             f"Did not find any {suffix or bids_path.suffix}{extension or ''} "
             f"associated with {bids_path.basename}."
@@ -2068,7 +2082,7 @@ def _find_matching_sidecar(
             raise RuntimeError(msg)
         elif on_error == "warn":
             warn(msg)
-        return [] if inherited else None
+        return [] if inherit else None
 
     # Try to shortcut the search
     shortcut_file = _find_matching_sidecar_shortcut(

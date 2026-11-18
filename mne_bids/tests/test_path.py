@@ -1072,7 +1072,7 @@ def test_find_best_candidates(candidate_list, best_candidates):
 @pytest.mark.parametrize(
     "root", [None, "study[1]", "/data/ds", "hf://datasets/user/ds", "s3://bucket/ds/"]
 )
-def test_find_matching_sidecar_inherited(tmp_path, root):
+def test_find_matching_sidecar_inherit(tmp_path, root):
     """Test finding inherited sidecars on disk and from pre-collected candidates."""
     if root is None or root == "study[1]":
         ds = tmp_path / (root or "ds")
@@ -1084,7 +1084,7 @@ def test_find_matching_sidecar_inherited(tmp_path, root):
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text("{}")
         bp = BIDSPath(subject="01", task="rest", datatype="eeg", suffix="eeg", root=ds)
-        assert bp.find_matching_sidecar(extension=".json", inherited=True) == expected
+        assert bp.find_matching_sidecar(extension=".json", inherit=True) == expected
         return
     ds = root.rstrip("/")
     expected = [
@@ -1099,7 +1099,7 @@ def test_find_matching_sidecar_inherited(tmp_path, root):
         expected[0],
     ]
     bp = BIDSPath(subject="01", task="rest", datatype="eeg", suffix="eeg", root=root)
-    assert bp.find_matching_sidecar(inherited=True, candidates=candidates) == expected
+    assert bp.find_matching_sidecar(inherit=True, candidates=candidates) == expected
     assert bp.find_matching_sidecar(candidates=candidates) == expected[-1]
 
 

@@ -545,12 +545,15 @@ def _read_json_object(fname):
     return content
 
 
-def _read_sidecar_json(bids_path, suffix=None, on_error="ignore"):
+def _read_sidecar_json(bids_path, suffix=None, on_error="ignore", *, inherit=True):
     """Read and merge inherited JSON sidecars from the dataset root down."""
+    fnames = _find_matching_sidecar(
+        bids_path, suffix=suffix, extension=".json", on_error=on_error, inherit=inherit
+    )
+    if not inherit:
+        fnames = [] if fnames is None else [fnames]
     sidecar = {}
-    for fname in _find_matching_sidecar(
-        bids_path, suffix=suffix, extension=".json", on_error=on_error, inherited=True
-    ):
+    for fname in fnames:
         sidecar.update(_read_json_object(fname))
     return sidecar
 
@@ -1624,7 +1627,7 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
     # Try to find an associated sidecar .json to get information about the
     # recording snapshot
     sidecar_fnames = _find_matching_sidecar(
-        bids_path, suffix=datatype, extension=".json", on_error="warn", inherited=True
+        bids_path, suffix=datatype, extension=".json", on_error="warn", inherit=True
     )
     if sidecar_fnames:
         raw = _handle_info_reading(sidecar_fnames, raw)
