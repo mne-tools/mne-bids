@@ -365,6 +365,8 @@ def _handle_participants_reading(participants_fname, raw, subject):
     bad_key_vals = list()
     for col_name, value in participants_tsv.items():
         orig_value = value = value[row_ind]
+        if col_name == "handedness" and "hand" not in participants_tsv:
+            col_name = "hand"  # the BIDS name; MNE-BIDS writes "hand"
         if col_name in ("sex", "hand"):
             value = _map_options(what=col_name, key=value, fro="bids", to="mne")
             # We don't know how to translate to MNE, so skip.

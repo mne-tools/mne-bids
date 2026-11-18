@@ -455,10 +455,11 @@ def test_read_participants_data(tmp_path):
         ("l", 2, "m", 1),
     ],
 )
+@pytest.mark.parametrize("column", ["hand", "handedness"])  # BIDS uses handedness
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_read_participants_handedness_and_sex_mapping(
-    hand_bids, hand_mne, sex_bids, sex_mne, tmp_path
+    hand_bids, hand_mne, sex_bids, sex_mne, column, tmp_path
 ):
     """Test we're correctly mapping handedness and sex between BIDS and MNE."""
     bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg")
@@ -470,7 +471,8 @@ def test_read_participants_handedness_and_sex_mapping(
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     participants_tsv = _from_tsv(participants_tsv_fpath)
-    participants_tsv["hand"][0] = hand_bids
+    participants_tsv[column] = participants_tsv.pop("hand")
+    participants_tsv[column][0] = hand_bids
     participants_tsv["sex"][0] = sex_bids
     _to_tsv(participants_tsv, participants_tsv_fpath)
 
