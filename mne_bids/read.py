@@ -893,30 +893,22 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
 
 
 def _assemble_hed_from_sidecar(events_dict, events_json_fname):
-    """Assemble per-row HED strings from column annotations in events.json.
-
-    ``events_json_fname`` is one file, or the inherited files from the root
-    down, merged so that lower files override higher ones.
-    """
+    """Assemble per-row HED strings from column annotations in events.json."""
     if events_json_fname is None:
         return None
+
     sidecar = {}
-    for fname in np.atleast_1d(events_json_fname):
-        try:
-            with _open_lock(fname, encoding="utf-8") as f:
-                content = json.load(f)
-        except FileNotFoundError:
-            continue
-        except (json.JSONDecodeError, OSError) as exc:
-            warn(
-                f"Could not read HED annotations from {fname}: {exc}. "
-                "Skipping sidecar HED assembly."
-            )
-            continue
-        if not isinstance(content, dict):
-            warn(f"{fname} is not a JSON object. Skipping sidecar HED assembly.")
-            continue
-        sidecar.update(content)
+    try:  # one file, or the inherited files from the root down
+        for fname in np.atleast_1d(events_json_fname):
+            sidecar.update(_read_json_object(fname))
+    except FileNotFoundError:
+        return None
+    except (json.JSONDecodeError, OSError) as exc:
+        warn(
+            f"Could not read HED annotations from {events_json_fname}: {exc}. "
+            "Skipping sidecar HED assembly."
+        )
+        return None
 
     # Collect columns that have HED annotations in the sidecar
     hed_columns = {}
