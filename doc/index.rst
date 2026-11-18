@@ -73,4 +73,5 @@ data type you used:
    Use<use>
    API<api>
    CLI<generated/cli>
+   Glossary<glossary>
    Contribute<contribute>
