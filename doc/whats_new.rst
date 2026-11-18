@@ -55,7 +55,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- :func:`mne_bids.read_raw_bids` now uses the age ``Units`` from ``participants.json`` (for example months) when setting the birthday, instead of always assuming years, by `Bruno Aristimunha`_ (:gh:`1720`)
+- :func:`mne_bids.read_raw_bids` now uses the age ``Units`` from ``participants.json`` (for example months) when setting the birthday, instead of always assuming years, by `Bruno Aristimunha`_ (:gh:`1721`)
 - :func:`mne_bids.read_raw_bids` now leaves the birthday unset when a participant age is non-finite or would produce an out-of-range date, preserving other participant metadata instead of failing, by `Bruno Aristimunha`_ (:gh:`1709`)
 - :func:`mne_bids.read_raw_bids` no longer fails with an ``AttributeError`` when an ``events.json`` sidecar is not a JSON object (for example ``[]``), by `Bruno Aristimunha`_ (:gh:`1703`)
 - Read ``events.tsv`` files with reserved column names or negative durations (with a warning), and TSV files with non-UTF-8 bytes past the first 64 KiB, by `Bruno Aristimunha`_ (:gh:`1714`)
