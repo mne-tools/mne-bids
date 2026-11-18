@@ -11,13 +11,13 @@ import os.path as op
 import pickle
 import shutil as sh
 import timeit
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path, PurePath
 
 import mne
 import pytest
-from bidsschematools.schema import load_schema
 from mne.datasets import testing
 from mne.io import anonymize_info, read_raw_fif
 from test_read import _read_raw_fif, warning_str
@@ -35,7 +35,13 @@ from mne_bids import (
     write_meg_crosstalk,
     write_raw_bids,
 )
-from mne_bids.config import ALLOWED_DATATYPES, ALLOWED_PATH_ENTITIES_SHORT
+from mne_bids.config import (
+    _BIDS_DATATYPES,
+    ALLOWED_DATATYPES,
+    ALLOWED_FILENAME_SUFFIX,
+    ALLOWED_PATH_ENTITIES_SHORT,
+    ENTITY_VALUE_TYPE,
+)
 from mne_bids.path import (
     _DATATYPE_LIST,
     _filter_fnames,
@@ -926,8 +932,22 @@ def test_schema_entities_order_and_validation():
         params = get_entities_from_fname("sub-01_foo-bar_eeg.edf", on_error="warn")
     assert params["subject"] == "01" and params["foo"] == "bar"
 
-    schema = load_schema()
-    schema_order = [schema.objects.entities[key].name for key in schema.rules.entities]
+    # the hand-maintained tables in config.py follow the BIDS schema
+    schema = pytest.importorskip("bidsschematools.schema").load_schema()
+    entities = [schema.objects.entities[key] for key in schema.rules.entities]
+    schema_order = [entity.name for entity in entities]
+    assert {e.name: e.format for e in entities} == {
+        k: ENTITY_VALUE_TYPE[v] for k, v in ALLOWED_PATH_ENTITIES_SHORT.items()
+    }
+    assert _BIDS_DATATYPES == sorted(d.value for d in schema.objects.datatypes.values())
+    assert {
+        suffix
+        for group in schema.rules.files.raw.values()
+        if isinstance(group, Mapping)
+        for rule in group.values()
+        if isinstance(rule, Mapping)
+        for suffix in rule.get("suffixes", ())
+    } <= set(ALLOWED_FILENAME_SUFFIX)
     long_names = list(ALLOWED_PATH_ENTITIES_SHORT.values())
     assert [k for k in ALLOWED_PATH_ENTITIES_SHORT if k != "split"] == [
         k for k in schema_order if k != "split"

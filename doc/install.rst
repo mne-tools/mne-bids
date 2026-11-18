@@ -12,7 +12,6 @@ Dependencies
 
 Required:
 
-* ``bidsschematools`` (>=1.2)
 * ``mne`` (>=1.8)
 * ``numpy`` (>=1.23)
 * ``scipy`` (>=1.9)

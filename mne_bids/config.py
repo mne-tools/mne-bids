@@ -4,12 +4,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import functools
-from collections.abc import Mapping
 
-from bidsschematools.schema import load_schema
 from mne.io.constants import FIFF
-
-_SCHEMA = load_schema()
 
 BIDS_VERSION = "1.9.0"
 
@@ -22,7 +18,26 @@ DOI = """https://doi.org/10.21105/joss.01896"""
 EPHY_ALLOWED_DATATYPES = ["eeg", "emg", "ieeg", "meg", "nirs"]
 
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh", "motion"]
-_BIDS_DATATYPES = sorted(dt.value for dt in _SCHEMA.objects.datatypes.values())
+# datatypes, suffixes and entities of the BIDS schema, checked against bidsschematools
+# in test_schema_entities_order_and_validation
+_BIDS_DATATYPES = [
+    "anat",
+    "beh",
+    "dwi",
+    "eeg",
+    "emg",
+    "fmap",
+    "func",
+    "ieeg",
+    "meg",
+    "micr",
+    "motion",
+    "mrs",
+    "nirs",
+    "perf",
+    "pet",
+    "phenotype",
+]
 
 MEG_CONVERT_FORMATS = ["FIF", "auto"]
 EEG_CONVERT_FORMATS = ["BrainVision", "EDF", "BDF", "EEGLAB", "auto"]
@@ -361,16 +376,16 @@ ALLOWED_FILENAME_SUFFIX = [
     "stim",
     "motion",
 ]
-ALLOWED_FILENAME_SUFFIX += sorted(
-    {
-        suffix
-        for group in _SCHEMA.rules.files.raw.values()
-        if isinstance(group, Mapping)
-        for rule in group.values()
-        if isinstance(rule, Mapping)
-        for suffix in rule.get("suffixes", ())
-    }.difference(ALLOWED_FILENAME_SUFFIX)
-)
+ALLOWED_FILENAME_SUFFIX += """
+    2PE ADC BF CARS CONF Chimap DF DIC FA FLAIR FLUO IRT1 M0map MEGRE MESE MP2RAGE
+    MPE MPM MTR MTRmap MTS MTVmap MTsat MWFmap NLO OCT PC PD PDT2 PDmap PDw PLI
+    R1map R2map R2starmap RB1COR RB1map S0map SEM SPIM SR T1map T1rho T2map T2star
+    T2starmap T2starw TB1AFI TB1DAM TB1EPI TB1RFM TB1SRGE TB1TFL TB1map TEM UNIT1
+    VFA XPCT angio asl aslcontext asllabeling blood bold cbv colFA defacemask dwi
+    epi expADC fieldmap inplaneT1 inplaneT2 m0scan magnitude magnitude1 magnitude2
+    mrsi mrsref noRF pet phase phase1 phase2 phasediff photo physioevents sbref svs
+    trace uCT unloc
+""".split()
 
 # converts suffix to known path modalities
 SUFFIX_TO_DATATYPE = {
@@ -394,15 +409,41 @@ ALLOWED_FILENAME_EXTENSIONS = (
     + [".mrk"]  # KIT/Yokogawa/Ricoh marker coil
 )
 
-# allowed BIDSPath entities (short name -> long name)
-_SCHEMA_ENTITIES = {k: _SCHEMA.objects.entities[k] for k in _SCHEMA.rules.entities}
+# allowed BIDSPath entities (short name -> long name), in BIDS filename order
 ALLOWED_PATH_ENTITIES_SHORT = {
-    **{
-        e.name: k
-        for k, e in _SCHEMA_ENTITIES.items()
-        if e.name not in ("split", "desc")
-    },
+    "sub": "subject",
+    "tpl": "template",
+    "ses": "session",
+    "cohort": "cohort",
+    "sample": "sample",
+    "task": "task",
     "tracksys": "tracking_system",
+    "acq": "acquisition",
+    "nuc": "nucleus",
+    "voi": "volume",
+    "ce": "ceagent",
+    "trc": "tracer",
+    "stain": "stain",
+    "rec": "reconstruction",
+    "dir": "direction",
+    "run": "run",
+    "mod": "modality",
+    "echo": "echo",
+    "flip": "flip",
+    "inv": "inversion",
+    "mt": "mtransfer",
+    "part": "part",
+    "proc": "processing",
+    "hemi": "hemisphere",
+    "space": "space",
+    "recording": "recording",
+    "chunk": "chunk",
+    "atlas": "atlas",
+    "seg": "segmentation",
+    "scale": "scale",
+    "res": "resolution",
+    "den": "density",
+    "label": "label",
     "split": "split",
     "desc": "description",
 }
@@ -500,12 +541,8 @@ ALLOWED_SPACES["motion"] = None
 
 # See: https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa: E501
 ENTITY_VALUE_TYPE = {
-    **{
-        ALLOWED_PATH_ENTITIES_SHORT[entity.name]: entity.format
-        for entity in _SCHEMA_ENTITIES.values()
-    },
-    "suffix": "label",
-    "extension": "label",
+    **dict.fromkeys(ALLOWED_PATH_ENTITIES, "label"),
+    **dict.fromkeys(("run", "echo", "flip", "inversion", "split", "chunk"), "index"),
 }
 
 # mapping from supported BIDs coordinate frames -> MNE
