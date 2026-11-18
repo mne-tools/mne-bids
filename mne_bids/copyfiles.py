@@ -640,7 +640,8 @@ def copyfile_eeglab(src, dest):
     if has_fdt_link:
         fdt_fname = eeg["data"][0, 0][0]
 
-        assert fdt_fname.endswith(".fdt"), f"Unexpected fdt name: {fdt_fname}"
+        if not fdt_fname.endswith(".fdt"):
+            raise ValueError(f"Unexpected fdt name: {fdt_fname}")
         head, _ = op.split(src)
         fdt_path = op.join(head, fdt_fname)
 
