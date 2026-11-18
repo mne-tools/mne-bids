@@ -2757,7 +2757,10 @@ def test_read_sidecar(tmp_path):
     )
     meta = bp.read_sidecar(inherit=True)
     assert meta["PowerLineFrequency"] == 60 and meta["EEGReference"] == "Cz"
-    assert "EEGReference" not in bp.read_sidecar("eeg")  # the closest file only
+    assert "EEGReference" not in bp.read_sidecar()  # the closest file only
+    assert bp.read_sidecar("nosuchsuffix", on_error="ignore") == {}
+    with pytest.raises(RuntimeError, match="nosuchsuffix"):
+        bp.read_sidecar("nosuchsuffix")
     assert read_raw_bids(bp).info["line_freq"] == 60
 
     sidecar["PowerLineFrequency"] = 50

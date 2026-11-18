@@ -1391,7 +1391,8 @@ class BIDSPath:
         ----------
         suffix : str | None
             The filename suffix. This is the entity after the last ``_``
-            before the extension. E.g., ``'ieeg'``.
+            before the extension. E.g., ``'ieeg'``. If ``None``, the suffix,
+            or else the datatype, of this path is used.
         inherit : bool
             If ``False`` (default), read the single closest matching sidecar.
             If ``True``, read all sidecars that apply under the BIDS
@@ -1414,6 +1415,7 @@ class BIDSPath:
         """
         from mne_bids.read import _read_sidecar_json
 
+        suffix = suffix or self.suffix or self.datatype
         return _read_sidecar_json(self, suffix, on_error, inherit=inherit)
 
     @property

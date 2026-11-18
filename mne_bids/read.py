@@ -546,7 +546,7 @@ def _read_json_object(fname):
 
 
 def _read_sidecar_json(bids_path, suffix=None, on_error="ignore", *, inherit=True):
-    """Read and merge inherited JSON sidecars from the dataset root down."""
+    """Read the closest JSON sidecar, or merge the inherited ones from the root down."""
     fnames = _find_matching_sidecar(
         bids_path, suffix=suffix, extension=".json", on_error=on_error, inherit=inherit
     )
