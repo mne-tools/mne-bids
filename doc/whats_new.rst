@@ -45,6 +45,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+- :func:`mne_bids.write_raw_bids` now writes the handedness of participants to the ``handedness`` column of ``participants.tsv``, as BIDS names it, instead of ``hand``; :func:`mne_bids.read_raw_bids` reads both columns into ``subject_info["hand"]`` and prefers ``handedness`` unless it is ``n/a``, by `Bruno Aristimunha`_ (:gh:`1723`)
 - Sidecar files are now written to a temporary file and moved into place, so reading them no longer takes a file lock, and a sidecar whose content would not change is no longer rewritten, by `Hamza Abdelhedi`_ (:gh:`1680`)
 
 🛠 Requirements
@@ -55,7 +56,6 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- :func:`mne_bids.read_raw_bids` now reads the BIDS ``handedness`` column of ``participants.tsv`` into ``subject_info``, as it already did for the ``hand`` column that MNE-BIDS writes, by `Bruno Aristimunha`_ (:gh:`1723`)
 - :func:`mne_bids.read_raw_bids` now leaves the birthday unset when a participant age is non-finite or would produce an out-of-range date, preserving other participant metadata instead of failing, by `Bruno Aristimunha`_ (:gh:`1709`)
 - :func:`mne_bids.read_raw_bids` no longer fails with an ``AttributeError`` when an ``events.json`` sidecar is not a JSON object (for example ``[]``), by `Bruno Aristimunha`_ (:gh:`1703`)
 - Read ``events.tsv`` files with reserved column names or negative durations (with a warning), and TSV files with non-UTF-8 bytes past the first 64 KiB, by `Bruno Aristimunha`_ (:gh:`1714`)

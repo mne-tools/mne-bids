@@ -719,7 +719,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         {
             "age": [subject_age],
             "sex": [sex],
-            "hand": [hand],
+            "handedness": [hand],
             "weight": [weight],
             "height": [height],
         }
@@ -769,7 +769,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
                     "participant_id": subject_id,
                     "age": subject_age,
                     "sex": sex,
-                    "hand": hand,
+                    "handedness": hand,
                     "weight": weight,
                     "height": height,
                 },
@@ -838,7 +838,7 @@ def _participants_json(fname, overwrite=False):
             "Description": "Sex of the participant",
             "Levels": {"F": "female", "M": "male", "O": "other"},
         },
-        "hand": {
+        "handedness": {
             "Description": "Handedness of the participant",
             "Levels": {"R": "right", "L": "left", "A": "ambidextrous"},
         },

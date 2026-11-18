@@ -362,11 +362,20 @@ def _handle_participants_reading(participants_fname, raw, subject):
     id his_id last_name first_name middle_name birthday sex hand weight height
     """.strip().split()
     )
+    # BIDS calls the column handedness, MNE-BIDS < 0.21 wrote hand: prefer
+    # handedness unless it is n/a for this participant
+    hand_cols = [col for col in ("handedness", "hand") if col in participants_tsv]
+    hand_col = next(
+        (col for col in hand_cols if participants_tsv[col][row_ind] != "n/a"),
+        next(iter(hand_cols), None),
+    )
     bad_key_vals = list()
     for col_name, value in participants_tsv.items():
         orig_value = value = value[row_ind]
-        if col_name == "handedness" and "hand" not in participants_tsv:
-            col_name = "hand"  # the BIDS name; MNE-BIDS writes "hand"
+        if col_name in ("hand", "handedness"):
+            if col_name != hand_col:
+                continue
+            col_name = "hand"
         if col_name in ("sex", "hand"):
             value = _map_options(what=col_name, key=value, fro="bids", to="mne")
             # We don't know how to translate to MNE, so skip.
