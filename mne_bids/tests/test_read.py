@@ -2757,10 +2757,19 @@ def test_read_sidecar(tmp_path):
     sidecar = json.loads(eeg_json.read_text(encoding="utf-8"))
     del sidecar["PowerLineFrequency"], sidecar["EEGReference"]
     _write_json(eeg_json, sidecar, overwrite=True)
+    # the HED of trial_type is inherited from the dataset-level events.json
+    events_json = eeg_json.with_name("sub-01_ses-eeg_task-rest_events.json")
+    events = json.loads(events_json.read_text(encoding="utf-8"))
+    _write_json(
+        bids_root / "task-rest_events.json", {"trial_type": events.pop("trial_type")}
+    )
+    _write_json(events_json, events, overwrite=True)
 
     bp = BIDSPath(
         subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
     )
+    hed = [e.get("HED") for e in read_raw_bids(bp).annotations.extras]
+    assert hed == ["Experiment-structure", "Sensory-event, Visual-presentation"]
     meta = bp.read_sidecar(inherit=True)
     assert meta["PowerLineFrequency"] == 60 and meta["EEGReference"] == "Cz"
     assert "EEGReference" not in bp.read_sidecar()  # the closest file only

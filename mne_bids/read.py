@@ -893,26 +893,30 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
 
 
 def _assemble_hed_from_sidecar(events_dict, events_json_fname):
-    """Assemble per-row HED strings from column annotations in events.json."""
+    """Assemble per-row HED strings from column annotations in events.json.
+
+    ``events_json_fname`` is one file, or the inherited files from the root
+    down, merged so that lower files override higher ones.
+    """
     if events_json_fname is None:
         return None
-
-    try:
-        with _open_lock(events_json_fname, encoding="utf-8") as f:
-            sidecar = json.load(f)
-    except FileNotFoundError:
-        return None
-    except (json.JSONDecodeError, OSError) as exc:
-        warn(
-            f"Could not read HED annotations from {events_json_fname}: {exc}. "
-            "Skipping sidecar HED assembly."
-        )
-        return None
-    if not isinstance(sidecar, dict):
-        warn(
-            f"{events_json_fname} is not a JSON object. Skipping sidecar HED assembly."
-        )
-        return None
+    sidecar = {}
+    for fname in np.atleast_1d(events_json_fname):
+        try:
+            with _open_lock(fname, encoding="utf-8") as f:
+                content = json.load(f)
+        except FileNotFoundError:
+            continue
+        except (json.JSONDecodeError, OSError) as exc:
+            warn(
+                f"Could not read HED annotations from {fname}: {exc}. "
+                "Skipping sidecar HED assembly."
+            )
+            continue
+        if not isinstance(content, dict):
+            warn(f"{fname} is not a JSON object. Skipping sidecar HED assembly.")
+            continue
+        sidecar.update(content)
 
     # Collect columns that have HED annotations in the sidecar
     hed_columns = {}
@@ -1577,7 +1581,11 @@ def read_raw_bids(
     )
     if events_fname is not None:
         events_json_fname = _find_matching_sidecar(
-            bids_path, suffix="events", extension=".json", on_error="ignore"
+            bids_path,
+            suffix="events",
+            extension=".json",
+            on_error="ignore",
+            inherit=True,
         )
         raw, event_id = _handle_events_reading(
             events_fname,
