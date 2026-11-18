@@ -342,6 +342,39 @@ def read_participants(fname, *, content=None):
     return participants
 
 
+# days per age unit allowed by BIDS in participants.json, years by default
+_AGE_UNIT_DAYS = {
+    "year": 365.25,
+    "month": 365.25 / 12,
+    "week": 7,
+    "day": 1,
+    "hour": 1 / 24,
+    "minute": 1 / 1440,
+    "second": 1 / 86400,
+}
+
+
+def _age_unit_days(participants_fname):
+    """Return the number of days per unit of the participants.tsv age column."""
+    json_fname = participants_fname.with_suffix(".json")
+    sidecar = {}
+    if json_fname.is_file():
+        try:
+            with _open_lock(json_fname, encoding="utf-8-sig") as fin:
+                sidecar = json.load(fin)
+        except (OSError, ValueError) as exc:  # ValueError covers bad JSON or bytes
+            warn(f"Could not read {json_fname.name} ({exc}); assuming age in years.")
+    age = sidecar.get("age") if isinstance(sidecar, dict) else None
+    units = age.get("Units", "year") if isinstance(age, dict) else "year"
+    days = _AGE_UNIT_DAYS.get(str(units).lower().removesuffix("s"))
+    if days is None:
+        warn(
+            f"Unknown age Units {units!r} in {json_fname.name}; "
+            "not setting the birthday."
+        )
+    return days
+
+
 def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _participants_tsv(
         participants_fname, participants_fname.read_bytes()
@@ -380,14 +413,15 @@ def _handle_participants_reading(participants_fname, raw, subject):
             except ValueError:
                 value = None
         elif col_name == "age":
-            if raw.info["meas_date"] is None:
+            age_days = _age_unit_days(participants_fname)
+            if raw.info["meas_date"] is None or age_days is None:
                 value = None
             elif value is not None:
                 try:
                     value = float(value)
                     value = (
                         raw.info["meas_date"]
-                        - timedelta(days=int(np.ceil(365.25 * value)))
+                        - timedelta(days=int(np.ceil(age_days * value)))
                     ).date()
                 except (ValueError, OverflowError):
                     value = None
