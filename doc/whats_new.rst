@@ -55,7 +55,9 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
+- :func:`mne_bids.read_raw_bids` now leaves the birthday unset when a participant age is non-finite or would produce an out-of-range date, preserving other participant metadata instead of failing, by `Bruno Aristimunha`_ (:gh:`1709`)
 - :func:`mne_bids.read_raw_bids` no longer fails with an ``AttributeError`` when an ``events.json`` sidecar is not a JSON object (for example ``[]``), by `Bruno Aristimunha`_ (:gh:`1703`)
+- Read ``events.tsv`` files with reserved column names or negative durations (with a warning), and TSV files with non-UTF-8 bytes past the first 64 KiB, by `Bruno Aristimunha`_ (:gh:`1714`)
 - Fix readers seeing a partially written sidecar while another process was rewriting it, by `Hamza Abdelhedi`_ (:gh:`1680`)
 - Fix parallel :func:`mne_bids.write_raw_bids` calls for BTi/4D data overwriting each other's ``.bidsignore`` changes, by `Hamza Abdelhedi`_ (:gh:`1680`)
 - :func:`find_matching_paths` and :meth:`BIDSPath.match` now follow symbolic links to directories, and no longer return hidden files (or files inside hidden directories), which could happen when a dataset was searched without ``datatypes`` and without ``ignore_nosub``, by `Hamza Abdelhedi`_ (:gh:`1678`)
