@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.mark_channels &#8212; MNE-BIDS 0.20.0.dev46+g3fe1c01f7 documentation</title>
+    <title>mne_bids.mark_channels &#8212; MNE-BIDS 0.21.0.dev17+g1f5d0be05 documentation</title>
   
   
   
@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -38,12 +38,12 @@
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=81d8d220" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../_static/documentation_options.js?v=12b65623"></script>
+    <script src="../_static/documentation_options.js?v=fcd93578"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -68,24 +68,25 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.mark_channels';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.22.0';
-        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_version = '0.23.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://mne.tools/mne-bids/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
-            false;
+            true;
         </script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mne_bids.get_anat_landmarks" href="mne_bids.get_anat_landmarks.html" />
-    <link rel="prev" title="mne_bids.write_anat" href="mne_bids.write_anat.html" />
+    <link rel="prev" title="mne_bids.deface_mri" href="mne_bids.deface_mri.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.mark_channels.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.20.0.dev46+g3fe1c01f7" />
+  <meta name="docsearch:version" content="0.21.0.dev17+g1f5d0be05" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -154,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.20.0.dev46+g3fe1c01f7 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev17+g1f5d0be05 documentation</p>
   
 </a></div>
     
@@ -474,6 +475,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.make_dataset_description.html">mne_bids.make_dataset_description</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.make_report.html">mne_bids.make_report</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.write_anat.html">mne_bids.write_anat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.deface_mri.html">mne_bids.deface_mri</a></li>
 <li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">mne_bids.mark_channels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.get_anat_landmarks.html">mne_bids.get_anat_landmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.update_anat_landmarks.html">mne_bids.update_anat_landmarks</a></li>
@@ -493,6 +495,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.anonymize_dataset.html">mne_bids.anonymize_dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.find_matching_paths.html">mne_bids.find_matching_paths</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.events_file_to_annotation_kwargs.html">mne_bids.events_file_to_annotation_kwargs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.open_lock.html">mne_bids.open_lock</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.stats.count_events.html">mne_bids.stats.count_events</a></li>
@@ -583,7 +586,7 @@ attribute <strong>may</strong> be set. If <code class="docutils literal notransl
 type (e.g., only EEG or MEG data) is present in the dataset, it will be
 selected automatically.</p>
 </dd>
-<dt><strong>ch_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The name(s) of the channel(s) to mark with a <code class="docutils literal notranslate"><span class="pre">status</span></code> (and optionally a
+<dt><strong>ch_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The name(s) of the channel(s) to mark with a <code class="docutils literal notranslate"><span class="pre">status</span></code> (and optionally a
 <code class="docutils literal notranslate"><span class="pre">description</span></code>). The special value <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code> will mark all channels.</p>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 0.19: </span>In version 0.18 and older, an empty list would mark <em>all</em> channels.
@@ -591,15 +594,15 @@ In version 0.19 and newer, an empty list will be a no-op (no channels
 will be marked/changed).</p>
 </div>
 </dd>
-<dt><strong>status</strong><span class="classifier">‘good’ | ‘bad’ | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The status of the channels (‘good’, or ‘bad’). If it is a list, then must be a
+<dt><strong>status</strong><span class="classifier">‘good’ | ‘bad’ | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The status of the channels (‘good’, or ‘bad’). If it is a list, then must be a
 list of ‘good’, or ‘bad’ that has the same length as <code class="docutils literal notranslate"><span class="pre">ch_names</span></code>.</p>
 </dd>
-<dt><strong>descriptions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Descriptions of the reasons that lead to the marking (‘good’ or ‘bad’) of the
+<dt><strong>descriptions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Descriptions of the reasons that lead to the marking (‘good’ or ‘bad’) of the
 channel(s). If a list, it must match the length of <code class="docutils literal notranslate"><span class="pre">ch_names</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no descriptions are added.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
-verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.14)"><span class="xref std std-ref">logging documentation</span></a> and
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
+verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.15)"><span class="xref std std-ref">logging documentation</span></a> and
 <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
 argument.</p>
 </dd>
@@ -656,12 +659,12 @@ channel.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mne_bids.write_anat.html"
+       href="mne_bids.deface_mri.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">mne_bids.write_anat</p>
+        <p class="prev-next-title">mne_bids.deface_mri</p>
       </div>
     </a>
     <a class="right-next"
@@ -710,8 +713,8 @@ channel.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -722,7 +725,7 @@ channel.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-09-28.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-10-26.
       <br/>
     
   </p>
@@ -731,7 +734,7 @@ channel.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
   </p>
 </div>
       
@@ -744,7 +747,7 @@ channel.</p>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
 </p></div>
       
     </div>
