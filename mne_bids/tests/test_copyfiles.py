@@ -239,6 +239,15 @@ def test_copyfile_eeglab(tmp_path, fname):
     assert isinstance(raw, mne.io.BaseRaw)
 
 
+def test_copyfile_eeglab_invalid_fdt(tmp_path):
+    """Reject an unexpected companion file extension before copying it."""
+    from scipy.io import savemat
+
+    savemat(tmp_path / "a.set", {"EEG": {"data": "a.bin"}}, appendmat=False)
+    with pytest.raises(ValueError, match="Unexpected fdt name: a.bin"):
+        copyfile_eeglab(tmp_path / "a.set", tmp_path / "b.set")
+
+
 def test_copyfile_kit(tmp_path):
     """Test copying and renaming KIT files to a new location."""
     output_path = str(tmp_path)
