@@ -2309,7 +2309,7 @@ def _share_dir_listings():
     Reading one recording looks up several sidecars in the same few directories.
     On network filesystems every lookup is a round trip to the server.
     """
-    token = _DIR_LISTINGS.set({})
+    token = _DIR_LISTINGS.set(_DIR_LISTINGS.get() or {})  # nested: reuse
     try:
         yield
     finally:
