@@ -1438,7 +1438,8 @@ class BIDSPath:
             ``"sidecar"`` (as ``read_sidecar(inherit=True)``), the rows of
             ``participants.tsv``, ``sessions.tsv`` and ``scans.tsv`` under
             ``"participant"``, ``"session"`` and ``"scan"`` (``n/a`` becomes
-            None), and their JSON column descriptions under ``"columns"``.
+            None), and their JSON data dictionaries (column descriptions)
+            under ``"data_dictionary"``.
 
         Notes
         -----

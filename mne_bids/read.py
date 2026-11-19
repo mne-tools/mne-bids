@@ -368,7 +368,7 @@ def _get_metadata(bids_path):
         ),
     )
     metadata = dict(sidecar=bids_path.read_sidecar(inherit=True, on_error="ignore"))
-    metadata["columns"] = {}
+    metadata["data_dictionary"] = {}
     for key, (fname, id_col, row_id) in files.items():
         table = _participants_tsv(fname, fname.read_bytes()) if fname.is_file() else {}
         ids = table.get(id_col, [])
@@ -379,7 +379,7 @@ def _get_metadata(bids_path):
             for col, val in zip(table, row)
             if col != id_col
         }
-        metadata["columns"][f"{key}s"] = bids_path.read_sidecar(
+        metadata["data_dictionary"][f"{key}s"] = bids_path.read_sidecar(
             f"{key}s", inherit=True, on_error="ignore"
         )
     return metadata

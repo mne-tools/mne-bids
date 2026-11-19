@@ -2829,9 +2829,9 @@ def test_read_sidecar(tmp_path):
     for kwargs in (dict(extension=".eeg"), dict(extension=".vhdr", datatype=None)):
         other = bp.copy().update(suffix="eeg", **kwargs).get_metadata()
         assert other["scan"] == meta["scan"]
-    assert meta["columns"]["participants"]["age"]["Units"] == "years"
-    assert "pathology" in meta["columns"]["sessions"]
-    assert meta["columns"]["scans"] == {"acq_time": {"Units": "s"}}
+    assert meta["data_dictionary"]["participants"]["age"]["Units"] == "years"
+    assert "pathology" in meta["data_dictionary"]["sessions"]
+    assert meta["data_dictionary"]["scans"] == {"acq_time": {"Units": "s"}}
 
     sidecar["PowerLineFrequency"] = 50
     _write_json(eeg_json, sidecar, overwrite=True)
