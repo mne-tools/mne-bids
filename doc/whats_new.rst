@@ -46,7 +46,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- :func:`mne_bids.write_raw_bids` now writes the handedness of participants to the ``handedness`` column of ``participants.tsv``, as BIDS names it, instead of ``hand``; :func:`mne_bids.read_raw_bids` reads both columns into ``subject_info["hand"]`` and prefers ``handedness`` unless it is ``n/a``, by `Bruno Aristimunha`_ (:gh:`1723`)
+- :func:`mne_bids.write_raw_bids` now writes the handedness of participants to the ``handedness`` column of ``participants.tsv``, as BIDS names it, instead of ``hand``. Datasets written by earlier versions of MNE-BIDS are still read correctly, because :func:`mne_bids.read_raw_bids` falls back to the ``hand`` column when ``handedness`` is missing or ``n/a``. A dataset that is read and then re-written gets a ``handedness`` column instead of ``hand``, by `Bruno Aristimunha`_ (:gh:`1723`)
 - :func:`mne_bids.get_entities_from_fname` with ``on_error="warn"`` or  ``"ignore"`` now keeps an entity that is not in the BIDS schema. Thus, ``BIDSPath(**get_entities_from_fname(fname, on_error="warn"))`` can raise a ``TypeError``.  By `Bruno Aristimunha`_ (:gh:`1715`)
 -  :attr:`BIDSPath.entities` and :func:`mne_bids.get_entities_from_fname` now return all 35 BIDS entities, by `Bruno Aristimunha`_ (:gh:`1715`).
 -  The ``rec`` and ``dir`` parts of a BIDS filename are returned as the ``reconstruction`` and ``direction`` entities, by `Bruno Aristimunha`_ (:gh:`1715`)
