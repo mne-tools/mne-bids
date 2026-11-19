@@ -375,9 +375,7 @@ def _get_metadata(bids_path):
         i = ids.index(row_id) if row_id in ids else None
         row = () if i is None else [col[i] for col in table.values()]
         metadata[key] = {
-            col: None if val == "n/a" else val
-            for col, val in zip(table, row)
-            if col != id_col
+            col: None if val == "n/a" else val for col, val in zip(table, row)
         }
         metadata["data_dictionary"][f"{key}s"] = bids_path.read_sidecar(
             f"{key}s", inherit=True, on_error="ignore"

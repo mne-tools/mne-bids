@@ -2817,15 +2817,19 @@ def test_read_sidecar(tmp_path):
         bp.read_sidecar("nosuchsuffix")
     assert read_raw_bids(bp).info["line_freq"] == 60
 
-    # get_metadata adds the rows of the data summary files and their columns
+    # get_metadata includes complete TSV rows and their data dictionaries.
     _write_json(bids_root / "scans.json", {"acq_time": {"Units": "s"}})  # inherited
     meta = bp.copy().update(suffix="eeg", extension=".vhdr").get_metadata()
     assert meta["sidecar"] == bp.read_sidecar(inherit=True)
     assert meta["participant"] == dict(
-        age="29", sex="F", hand="A", weight=None, height=None
+        participant_id="sub-01", age="29", sex="F", hand="A", weight=None, height=None
     )
+    assert meta["session"]["session_id"] == "ses-eeg"
     assert meta["session"]["pathology"] == "Parkinson's disease"
-    assert meta["scan"] == {"acq_time": "2000-01-01T12:00:00.000000Z"}
+    assert meta["scan"] == {
+        "filename": "eeg/sub-01_ses-eeg_task-rest_eeg.vhdr",
+        "acq_time": "2000-01-01T12:00:00.000000Z",
+    }
     # scans.tsv lists the .vhdr, also for the .eeg and without a datatype
     for kwargs in (dict(extension=".eeg"), dict(extension=".vhdr", datatype=None)):
         other = bp.copy().update(suffix="eeg", **kwargs).get_metadata()
