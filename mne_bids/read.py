@@ -350,7 +350,7 @@ def _get_metadata(bids_path):
         bids_path = bids_path.copy().update(datatype=bids_path.suffix)
     root, sub, ses = bids_path.root, bids_path.subject, bids_path.session
     # scans.tsv lists multi-file formats by the file passed to readers
-    header = {".eeg": ".vhdr", ".vmrk": ".vhdr", ".fdt": ".set"}
+    header = {".eeg": ".vhdr", ".vmrk": ".vhdr", ".fdt": ".set", ".dat": ".lay"}
     scan = bids_path.fpath
     scan = scan.with_suffix(header.get(scan.suffix, scan.suffix))
     # data summary files have fixed locations in BIDS, so no directory listing
@@ -371,7 +371,9 @@ def _get_metadata(bids_path):
     metadata["columns"] = {}
     for key, (fname, id_col, row_id) in files.items():
         table = _participants_tsv(fname, fname.read_bytes()) if fname.is_file() else {}
-        row = dict(zip(table.get(id_col, []), zip(*table.values()))).get(row_id, ())
+        ids = table.get(id_col, [])
+        i = ids.index(row_id) if row_id in ids else None
+        row = () if i is None else [col[i] for col in table.values()]
         metadata[key] = {
             col: None if val == "n/a" else val
             for col, val in zip(table, row)
