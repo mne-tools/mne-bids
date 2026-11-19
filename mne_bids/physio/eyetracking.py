@@ -558,7 +558,6 @@ def read_raw_bids_eyetrack(bids_path):
     )
     ch_info.update(eye1_ch_info)
     eye1_array = np.array(list(eye1_data_dict.values()))
-    # TODO: Use timestamp to offset physioevents onsets when it does not start at 0
 
     json_sidecar_fpath = raw_path.with_suffix("").with_suffix(".json")
     physio_sidecar = json.loads(json_sidecar_fpath.read_text())
@@ -573,7 +572,7 @@ def read_raw_bids_eyetrack(bids_path):
         eye2_array = np.array(list(eye2_data_dict.values()))
 
         # timestamp is row 0. Exclude it
-        data = np.concat([eye1_array[1:, :], eye2_array[1:, :]], axis=0)
+        data = np.concatenate([eye1_array[1:, :], eye2_array[1:, :]], axis=0)
     else:
         data = eye1_array[1:, :]  # timestamp is row 0. Exclude it
 
@@ -691,16 +690,18 @@ def _read_eyetrack_physioevents(bids_path, raw=None):
         return eye, ev, sidecar
 
     ocular_events = {}
-    eye1_eye, eye1_ev, eye1_info = _get_recording_physioevents(bids_path)
-    ocular_events[eye1_eye] = eye1_ev
-
-    eye2_bpath = bids_path.copy().update(recording="eye2")
-    eye2_physioevents = eye2_bpath.find_matching_sidecar(
-        suffix="physioevents", extension=".tsv.gz", on_error="ignore"
-    )
-    if eye2_physioevents is not None:
-        eye2_eye, eye2_ev, eye2_info = _get_recording_physioevents(eye2_bpath)
-        ocular_events[eye2_eye] = eye2_ev
+    paths = [bids_path]
+    if bids_path.recording == "eye1":
+        paths.append(bids_path.copy().update(recording="eye2"))
+    for path in paths:
+        events = path.find_matching_sidecar(
+            suffix="physioevents", extension=".tsv.gz", on_error="ignore"
+        )
+        if events is not None:
+            eye, ev, sidecar = _get_recording_physioevents(path)
+            ocular_events[eye] = ev
+    if not ocular_events:
+        return {key: np.empty(0, dtype=object) for key in KEYS}
 
     # binocular
     eyes = set(ocular_events)
@@ -708,7 +709,7 @@ def _read_eyetrack_physioevents(bids_path, raw=None):
         merged = merge_binocular_physioevents(
             ocular_events["left"],
             ocular_events["right"],
-            sfreq=eye1_info["SamplingFrequency"],
+            sfreq=sidecar["SamplingFrequency"],
         )
         return _mark_blinks_bad(merged)
 
