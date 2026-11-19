@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev37+g5b8c1668e documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev38+g137821af4 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=84b59632"></script>
+    <script src="../../_static/documentation_options.js?v=d6fa3fe2"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev37+g5b8c1668e" />
+  <meta name="docsearch:version" content="0.21.0.dev38+g137821af4" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev37+g5b8c1668e documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev38+g137821af4 documentation</p>
   
 </a></div>
     
@@ -850,6 +850,39 @@
 
 
 
+<span class="c1"># days per age unit allowed by BIDS in participants.json, years by default</span>
+<span class="n">_AGE_UNIT_DAYS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"year"</span><span class="p">:</span> <span class="mf">365.25</span><span class="p">,</span>
+    <span class="s2">"month"</span><span class="p">:</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">"week"</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s2">"day"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"hour"</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">24</span><span class="p">,</span>
+    <span class="s2">"minute"</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">1440</span><span class="p">,</span>
+    <span class="s2">"second"</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">86400</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_age_unit_days</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Return the number of days per unit of the participants.tsv age column."""</span>
+    <span class="n">json_fname</span> <span class="o">=</span> <span class="n">participants_fname</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".json"</span><span class="p">)</span>
+    <span class="n">sidecar</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">json_fname</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">json_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8-sig"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+                <span class="n">sidecar</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># ValueError covers bad JSON or bytes</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not read </span><span class="si">{</span><span class="n">json_fname</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">); assuming age in years."</span><span class="p">)</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="n">sidecar</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"age"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sidecar</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="n">age</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Units"</span><span class="p">,</span> <span class="s2">"year"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"year"</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="n">_AGE_UNIT_DAYS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">units</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="s2">"s"</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">days</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Unknown age Units </span><span class="si">{</span><span class="n">units</span><span class="si">!r}</span><span class="s2"> in </span><span class="si">{</span><span class="n">json_fname</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">; "</span>
+            <span class="s2">"not setting the birthday."</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">days</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
     <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_participants_tsv</span><span class="p">(</span>
         <span class="n">participants_fname</span><span class="p">,</span> <span class="n">participants_fname</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">()</span>
@@ -888,14 +921,15 @@
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s2">"age"</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"meas_date"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">age_days</span> <span class="o">=</span> <span class="n">_age_unit_days</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"meas_date"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">age_days</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"meas_date"</span><span class="p">]</span>
-                        <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">365.25</span> <span class="o">*</span> <span class="n">value</span><span class="p">)))</span>
+                        <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">age_days</span> <span class="o">*</span> <span class="n">value</span><span class="p">)))</span>
                     <span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">OverflowError</span><span class="p">):</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
