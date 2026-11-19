@@ -59,6 +59,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
+- :func:`mne_bids.read_raw_bids` now uses the age ``Units`` from ``participants.json`` (for example months) when setting the birthday, instead of always assuming years, by `Bruno Aristimunha`_ (:gh:`1721`)
 - Reject unexpected EEGLAB companion file extensions with a ``ValueError`` instead of an assertion, so validation is retained when Python runs with optimization enabled, by `Bruno Aristimunha`_ (:gh:`1710`)
 - :func:`mne_bids.read_raw_bids` now leaves the birthday unset when a participant age is non-finite or would produce an out-of-range date, preserving other participant metadata instead of failing, by `Bruno Aristimunha`_ (:gh:`1709`)
 - :func:`mne_bids.read_raw_bids` no longer fails with an ``AttributeError`` when an ``events.json`` sidecar is not a JSON object (for example ``[]``), by `Bruno Aristimunha`_ (:gh:`1703`)

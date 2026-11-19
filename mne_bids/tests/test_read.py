@@ -3,6 +3,7 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import codecs
 import contextlib
 import json
 import logging
@@ -443,6 +444,38 @@ def test_read_participants_data(tmp_path):
         _to_tsv(participants_tsv, participants_tsv_fpath)
         info = read_raw_bids(bids_path=bids_path).info["subject_info"]
         assert info["sex"] == 1 and ("birthday" in info) == (age == "24")
+    # the age "Units" in participants.json scale the age (default: years)
+    participants_tsv["age"][0] = "24"
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    participants_json = participants_tsv_fpath.with_suffix(".json")
+    sidecar = json.loads(participants_json.read_text(encoding="utf-8"))
+    for units, days in (("years", 8766), ("Month", 731), ("week", 168)):
+        sidecar["age"]["Units"] = units
+        _write_json(participants_json, sidecar, overwrite=True)
+        info = read_raw_bids(bids_path=bids_path).info
+        assert (
+            info["meas_date"].date() - info["subject_info"]["birthday"]
+        ).days == days
+    sidecar["age"]["Units"] = "foo"
+    _write_json(participants_json, sidecar, overwrite=True)
+    with pytest.warns(RuntimeWarning, match="Unknown age Units 'foo'"):
+        assert "birthday" not in read_raw_bids(bids_path=bids_path).info["subject_info"]
+    # years without Units or participants.json, and when it cannot be parsed
+    del sidecar["age"]["Units"]
+    _write_json(participants_json, sidecar, overwrite=True)
+    for content in (codecs.BOM_UTF8 + participants_json.read_bytes(), b"{", None):
+        if content is None:
+            participants_json.unlink()
+        else:
+            participants_json.write_bytes(content)
+        if content == b"{":
+            with pytest.warns(RuntimeWarning, match="Could not read"):
+                info = read_raw_bids(bids_path=bids_path).info
+        else:
+            info = read_raw_bids(bids_path=bids_path).info
+        assert (
+            info["meas_date"].date() - info["subject_info"]["birthday"]
+        ).days == 8766
 
 
 @pytest.mark.parametrize(
