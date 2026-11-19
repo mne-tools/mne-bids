@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev38+g137821af4 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.21.0.dev39+gcc024a804 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=d6fa3fe2"></script>
+    <script src="../../_static/documentation_options.js?v=2e05bff1"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev38+g137821af4" />
+  <meta name="docsearch:version" content="0.21.0.dev39+gcc024a804" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev38+g137821af4 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev39+gcc024a804 documentation</p>
   
 </a></div>
     
@@ -1076,13 +1076,37 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_json_object</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Read a JSON sidecar, which BIDS requires to be a JSON object."""</span>
+    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2"> is not a JSON object, ignoring it."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">return</span> <span class="n">content</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">inherit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Read the closest JSON sidecar, or merge the inherited ones from the root down."""</span>
+    <span class="n">fnames</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span> <span class="n">inherit</span><span class="o">=</span><span class="n">inherit</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inherit</span><span class="p">:</span>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">fnames</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="n">fnames</span><span class="p">]</span>
+    <span class="n">sidecar</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
+        <span class="n">sidecar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_read_json_object</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sidecar</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fnames</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Read associated sidecar JSON and populate raw.</span>
 
 <span class="sd">    Handle PowerLineFrequency of recording.</span>
 <span class="sd">    """</span>
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
-        <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+    <span class="n">sidecar_json</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">sidecar_fname</span> <span class="ow">in</span> <span class="n">sidecar_fnames</span><span class="p">:</span>  <span class="c1"># inherited, from the root down</span>
+        <span class="n">sidecar_json</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_read_json_object</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">))</span>
 
     <span class="c1"># read in the sidecar JSON's and raw object's line frequency</span>
     <span class="n">json_linefreq</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"PowerLineFrequency"</span><span class="p">)</span>
@@ -1416,20 +1440,16 @@
     <span class="k">if</span> <span class="n">events_json_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">events_json_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">sidecar</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">sidecar</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">try</span><span class="p">:</span>  <span class="c1"># one file, or the inherited files from the root down</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">events_json_fname</span><span class="p">):</span>
+            <span class="n">sidecar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_read_json_object</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">except</span> <span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">"Could not read HED annotations from </span><span class="si">{</span><span class="n">events_json_fname</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">. "</span>
             <span class="s2">"Skipping sidecar HED assembly."</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sidecar</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">events_json_fname</span><span class="si">}</span><span class="s2"> is not a JSON object. Skipping sidecar HED assembly."</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
@@ -1867,6 +1887,7 @@
 
 <div class="viewcode-block" id="read_raw_bids">
 <a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a>
+<span class="nd">@_share_dir_listings</span><span class="p">()</span>  <span class="c1"># the sidecars sit in the same few directories</span>
 <span class="nd">@verbose</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_raw_bids</span><span class="p">(</span>
     <span class="n">bids_path</span><span class="p">,</span>
@@ -1995,17 +2016,14 @@
     <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
 
-    <span class="n">sidecar_json_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
-        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"ignore"</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">sidecar_json_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">sidecar_json_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
-            <span class="n">recording_type</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"RecordingType"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">recording_type</span> <span class="o">==</span> <span class="s2">"epoched"</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">_EPOCHED_EXTS</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s1">'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '</span>
-                <span class="s2">"instead of read_raw_bids()."</span>
-            <span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">_read_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"RecordingType"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"epoched"</span>
+        <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">_EPOCHED_EXTS</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s1">'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '</span>
+            <span class="s2">"instead of read_raw_bids()."</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s2">".pdf"</span><span class="p">:</span>
         <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">"</span>
@@ -2103,7 +2121,11 @@
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">events_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">events_json_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
-            <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">"events"</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"ignore"</span>
+            <span class="n">bids_path</span><span class="p">,</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="s2">"events"</span><span class="p">,</span>
+            <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">,</span>
+            <span class="n">on_error</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span>
+            <span class="n">inherit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">raw</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_handle_events_reading</span><span class="p">(</span>
             <span class="n">events_fname</span><span class="p">,</span>
@@ -2168,11 +2190,11 @@
 
     <span class="c1"># Try to find an associated sidecar .json to get information about the</span>
     <span class="c1"># recording snapshot</span>
-    <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
-        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"warn"</span>
+    <span class="n">sidecar_fnames</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"warn"</span><span class="p">,</span> <span class="n">inherit</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">sidecar_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sidecar_fnames</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fnames</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
     <span class="c1"># read in associated scans filename</span>
     <span class="n">scans_fname</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
@@ -2277,17 +2299,14 @@
 <span class="nd">@verbose</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_read_epochs_from_continuous</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Slice a continuous file flagged ``RecordingType="epoched"`` into Epochs."""</span>
-    <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
-        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span>
-    <span class="p">)</span>
-    <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)[</span><span class="s2">"EpochLength"</span><span class="p">])</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> sidecar is missing 'EpochLength'; "</span>
-                <span class="s2">"required to slice an 'epoched' continuous file."</span>
-            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+    <span class="n">sidecar</span> <span class="o">=</span> <span class="n">_read_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"raise"</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sidecar</span><span class="p">[</span><span class="s2">"EpochLength"</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> sidecar is missing 'EpochLength'; "</span>
+            <span class="s2">"required to slice an 'epoched' continuous file."</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
     <span class="n">raw</span> <span class="o">=</span> <span class="n">_get_readers</span><span class="p">(</span><span class="s2">"_continuous_epoched_reader"</span><span class="p">)[</span><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span><span class="p">](</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">extra_params</span> <span class="ow">or</span> <span class="p">{})</span>
     <span class="p">)</span>

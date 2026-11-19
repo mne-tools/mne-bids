@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.21.0.dev38+g137821af4 documentation</title>
+    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.21.0.dev39+gcc024a804 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=d6fa3fe2"></script>
+    <script src="../_static/documentation_options.js?v=2e05bff1"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev38+g137821af4" />
+  <meta name="docsearch:version" content="0.21.0.dev39+gcc024a804" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev38+g137821af4 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev39+gcc024a804 documentation</p>
   
 </a></div>
     
@@ -495,7 +495,6 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.update_sidecar_json.html">mne_bids.update_sidecar_json</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.anonymize_dataset.html">mne_bids.anonymize_dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.find_matching_paths.html">mne_bids.find_matching_paths</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mne_bids.find_inherited_sidecars.html">mne_bids.find_inherited_sidecars</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.events_file_to_annotation_kwargs.html">mne_bids.events_file_to_annotation_kwargs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.open_lock.html">mne_bids.open_lock</a></li>
 </ul>
@@ -681,7 +680,7 @@ The following filename suffix’s are accepted:
 <td><p>Find the corresponding empty-room file of an MEG recording.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_matching_sidecar" title="mne_bids.BIDSPath.find_matching_sidecar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_matching_sidecar</span></code></a>([suffix, extension, ...])</p></td>
-<td><p>Get the matching sidecar JSON path.</p></td>
+<td><p>Get the matching sidecar path(s).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.get_empty_room_candidates" title="mne_bids.BIDSPath.get_empty_room_candidates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_empty_room_candidates</span></code></a>()</p></td>
 <td><p>Get the list of empty-room candidates for the given file.</p></td>
@@ -692,10 +691,13 @@ The following filename suffix’s are accepted:
 <tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.mkdir" title="mne_bids.BIDSPath.mkdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mkdir</span></code></a>([exist_ok])</p></td>
 <td><p>Create the directory structure of the BIDS path.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.rm" title="mne_bids.BIDSPath.rm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rm</span></code></a>(*[, safe_remove, verbose])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.read_sidecar" title="mne_bids.BIDSPath.read_sidecar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_sidecar</span></code></a>([suffix, inherit, on_error])</p></td>
+<td><p>Read the matching JSON sidecar file(s).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.rm" title="mne_bids.BIDSPath.rm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rm</span></code></a>(*[, safe_remove, verbose])</p></td>
 <td><p>Safely delete a set of files from a BIDS dataset.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
 <td><p>Update in-place BIDS entity key/value pairs in object.</p></td>
 </tr>
 </tbody>
@@ -920,8 +922,8 @@ Returns <code class="docutils literal notranslate"><span class="pre">None</span>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.find_matching_sidecar">
-<span class="sig-name descname"><span class="pre">find_matching_sidecar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.find_matching_sidecar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.find_matching_sidecar" title="Link to this definition">#</a></dt>
-<dd><p>Get the matching sidecar JSON path.</p>
+<span class="sig-name descname"><span class="pre">find_matching_sidecar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">inherit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.find_matching_sidecar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.find_matching_sidecar" title="Link to this definition">#</a></dt>
+<dd><p>Get the matching sidecar path(s).</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
@@ -930,16 +932,26 @@ before the extension. E.g., <code class="docutils literal notranslate"><span cla
 </dd>
 <dt><strong>extension</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The extension of the filename. E.g., <code class="docutils literal notranslate"><span class="pre">'.json'</span></code>.</p>
 </dd>
+<dt><strong>inherit</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), return the single closest matching sidecar.
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return all sidecars that apply under the BIDS
+inheritance principle, ordered from the dataset root down to the
+recording directory.</p>
+</dd>
+<dt><strong>candidates</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.15)"><span>iterable</span></a> of <a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.13)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Pre-collected paths or URLs to choose from instead of listing
+directories on disk. Items are returned in their input type.</p>
+</dd>
 <dt><strong>on_error</strong><span class="classifier">‘raise’ | ‘warn’ | ‘ignore’</span></dt><dd><p>If no matching sidecar file was found and this is set to
 <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>, raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>. If <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>, emit a
 warning, and if <code class="docutils literal notranslate"><span class="pre">'ignore'</span></code>, neither raise an exception nor a
-warning, and return <code class="docutils literal notranslate"><span class="pre">None</span></code> in both cases.</p>
+warning, and return <code class="docutils literal notranslate"><span class="pre">None</span></code> (or <code class="docutils literal notranslate"><span class="pre">[]</span></code> when <code class="docutils literal notranslate"><span class="pre">inherit=True</span></code>).</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>sidecar_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The path to the sidecar JSON file.</p>
+<dt><strong>sidecar_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.13)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The path to the sidecar file when <code class="docutils literal notranslate"><span class="pre">inherit=False</span></code>, or the list
+of applicable sidecar paths from the root down when
+<code class="docutils literal notranslate"><span class="pre">inherit=True</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -1119,6 +1131,42 @@ Otherwise, do nothing (default).</p>
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.processing">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">processing</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><a class="headerlink" href="#mne_bids.BIDSPath.processing" title="Link to this definition">#</a></dt>
 <dd><p>The processing label.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_bids.BIDSPath.read_sidecar">
+<span class="sig-name descname"><span class="pre">read_sidecar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">inherit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.read_sidecar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.read_sidecar" title="Link to this definition">#</a></dt>
+<dd><p>Read the matching JSON sidecar file(s).</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>suffix</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The filename suffix. This is the entity after the last <code class="docutils literal notranslate"><span class="pre">_</span></code>
+before the extension. E.g., <code class="docutils literal notranslate"><span class="pre">'ieeg'</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the suffix,
+or else the datatype, of this path is used.</p>
+</dd>
+<dt><strong>inherit</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), read the single closest matching sidecar.
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, read all sidecars that apply under the BIDS
+inheritance principle and merge them from the dataset root down,
+so that lower files override higher ones.</p>
+</dd>
+<dt><strong>on_error</strong><span class="classifier">‘raise’ | ‘warn’ | ‘ignore’</span></dt><dd><p>If no matching sidecar file was found and this is set to
+<code class="docutils literal notranslate"><span class="pre">'raise'</span></code>, raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>. If <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>, emit a
+warning, and if <code class="docutils literal notranslate"><span class="pre">'ignore'</span></code>, neither raise an exception nor a
+warning, and return an empty dictionary in both cases.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>sidecar</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>The content of the sidecar file(s).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.21.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py property">
@@ -1516,6 +1564,7 @@ or updates for ‘root’ or ‘datatype’.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.nucleus"><code class="docutils literal notranslate"><span class="pre">BIDSPath.nucleus</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.part"><code class="docutils literal notranslate"><span class="pre">BIDSPath.part</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.processing"><code class="docutils literal notranslate"><span class="pre">BIDSPath.processing</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.read_sidecar"><code class="docutils literal notranslate"><span class="pre">BIDSPath.read_sidecar()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.reconstruction"><code class="docutils literal notranslate"><span class="pre">BIDSPath.reconstruction</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.recording"><code class="docutils literal notranslate"><span class="pre">BIDSPath.recording</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.resolution"><code class="docutils literal notranslate"><span class="pre">BIDSPath.resolution</span></code></a></li>

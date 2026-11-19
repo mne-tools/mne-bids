@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.21.0.dev38+g137821af4 documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.21.0.dev39+gcc024a804 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=d6fa3fe2"></script>
+    <script src="../../_static/documentation_options.js?v=2e05bff1"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev38+g137821af4" />
+  <meta name="docsearch:version" content="0.21.0.dev39+gcc024a804" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev38+g137821af4 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev39+gcc024a804 documentation</p>
   
 </a></div>
     
@@ -1880,8 +1880,16 @@
 
 <div class="viewcode-block" id="BIDSPath.find_matching_sidecar">
 <a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_matching_sidecar">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">find_matching_sidecar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"raise"</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Get the matching sidecar JSON path.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_matching_sidecar</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">inherit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">on_error</span><span class="o">=</span><span class="s2">"raise"</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Get the matching sidecar path(s).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1890,23 +1898,72 @@
 <span class="sd">            before the extension. E.g., ``'ieeg'``.</span>
 <span class="sd">        extension : str | None</span>
 <span class="sd">            The extension of the filename. E.g., ``'.json'``.</span>
+<span class="sd">        inherit : bool</span>
+<span class="sd">            If ``False`` (default), return the single closest matching sidecar.</span>
+<span class="sd">            If ``True``, return all sidecars that apply under the BIDS</span>
+<span class="sd">            inheritance principle, ordered from the dataset root down to the</span>
+<span class="sd">            recording directory.</span>
+<span class="sd">        candidates : iterable of path-like | None</span>
+<span class="sd">            Pre-collected paths or URLs to choose from instead of listing</span>
+<span class="sd">            directories on disk. Items are returned in their input type.</span>
 <span class="sd">        on_error : 'raise' | 'warn' | 'ignore'</span>
 <span class="sd">            If no matching sidecar file was found and this is set to</span>
 <span class="sd">            ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a</span>
 <span class="sd">            warning, and if ``'ignore'``, neither raise an exception nor a</span>
-<span class="sd">            warning, and return ``None`` in both cases.</span>
+<span class="sd">            warning, and return ``None`` (or ``[]`` when ``inherit=True``).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        sidecar_path : pathlib.Path | None</span>
-<span class="sd">            The path to the sidecar JSON file.</span>
+<span class="sd">        sidecar_path : pathlib.Path | list of path-like | None</span>
+<span class="sd">            The path to the sidecar file when ``inherit=False``, or the list</span>
+<span class="sd">            of applicable sidecar paths from the root down when</span>
+<span class="sd">            ``inherit=True``.</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span>
             <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span>
             <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
+            <span class="n">inherit</span><span class="o">=</span><span class="n">inherit</span><span class="p">,</span>
+            <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BIDSPath.read_sidecar">
+<a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.read_sidecar">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_sidecar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">inherit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"raise"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Read the matching JSON sidecar file(s).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        suffix : str | None</span>
+<span class="sd">            The filename suffix. This is the entity after the last ``_``</span>
+<span class="sd">            before the extension. E.g., ``'ieeg'``. If ``None``, the suffix,</span>
+<span class="sd">            or else the datatype, of this path is used.</span>
+<span class="sd">        inherit : bool</span>
+<span class="sd">            If ``False`` (default), read the single closest matching sidecar.</span>
+<span class="sd">            If ``True``, read all sidecars that apply under the BIDS</span>
+<span class="sd">            inheritance principle and merge them from the dataset root down,</span>
+<span class="sd">            so that lower files override higher ones.</span>
+<span class="sd">        on_error : 'raise' | 'warn' | 'ignore'</span>
+<span class="sd">            If no matching sidecar file was found and this is set to</span>
+<span class="sd">            ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a</span>
+<span class="sd">            warning, and if ``'ignore'``, neither raise an exception nor a</span>
+<span class="sd">            warning, and return an empty dictionary in both cases.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sidecar : dict</span>
+<span class="sd">            The content of the sidecar file(s).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        .. versionadded:: 0.21</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.read</span><span class="w"> </span><span class="kn">import</span> <span class="n">_read_sidecar_json</span>
+
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">suffix</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span>
+        <span class="k">return</span> <span class="n">_read_sidecar_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">on_error</span><span class="p">,</span> <span class="n">inherit</span><span class="o">=</span><span class="n">inherit</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
@@ -2549,7 +2606,15 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"raise"</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_matching_sidecar</span><span class="p">(</span>
+    <span class="n">bids_path</span><span class="p">,</span>
+    <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">on_error</span><span class="o">=</span><span class="s2">"raise"</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">inherit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Try to find a sidecar file with a given suffix for a data file.</span>
 
 <span class="sd">    Parameters</span>
@@ -2584,6 +2649,22 @@
             <span class="s2">"The root of the BIDSPath must be set to find a matching sidecar file."</span>
         <span class="p">)</span>
     <span class="n">bids_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">inherit</span> <span class="ow">or</span> <span class="n">candidates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sidecars</span> <span class="o">=</span> <span class="n">_find_inherited_sidecars</span><span class="p">(</span>
+            <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">sidecars</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sidecars</span> <span class="k">if</span> <span class="n">inherit</span> <span class="k">else</span> <span class="n">sidecars</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Did not find any </span><span class="si">{</span><span class="n">suffix</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span><span class="si">}{</span><span class="n">extension</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"associated with </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s2">"raise"</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s2">"warn"</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">inherit</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="c1"># Try to shortcut the search</span>
     <span class="n">shortcut_file</span> <span class="o">=</span> <span class="n">_find_matching_sidecar_shortcut</span><span class="p">(</span>
@@ -2712,65 +2793,53 @@
     <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="find_inherited_sidecars">
-<a class="viewcode-back" href="../../generated/mne_bids.find_inherited_sidecars.html#mne_bids.find_inherited_sidecars">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">find_inherited_sidecars</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">".json"</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Choose the sidecar files that apply to a recording from a list of files.</span>
-
-<span class="sd">    Under the BIDS `inheritance principle</span>
-<span class="sd">    &lt;https://bids-specification.readthedocs.io/en/stable/common-principles.html#the-inheritance-principle&gt;`__,</span>
-<span class="sd">    a sidecar file applies to a recording if it has the same suffix, every</span>
-<span class="sd">    entity in its name is in the recording's name with the same value, and it</span>
-<span class="sd">    is stored in the recording's directory or in one above it, up to the</span>
-<span class="sd">    dataset root.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    fname : str</span>
-<span class="sd">        The path of the recording.</span>
-<span class="sd">    candidates : iterable of str</span>
-<span class="sd">        The files to choose from, for example the files of a dataset listing.</span>
-<span class="sd">    root : str | None</span>
-<span class="sd">        The root of the dataset, spelled as at the start of ``fname`` and of</span>
-<span class="sd">        ``candidates``. If ``None``, the directory above the ``sub-*``</span>
-<span class="sd">        directory of ``fname`` is used.</span>
-<span class="sd">    extension : str</span>
-<span class="sd">        The extension of the sidecar files.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    sidecars : list of str</span>
-<span class="sd">        The candidates that apply, ordered from the dataset root down, so that</span>
-<span class="sd">        merging JSON sidecars in this order lets lower files override higher</span>
-<span class="sd">        ones.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    .. versionadded:: 0.21</span>
-<span class="sd">    """</span>
-    <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">root</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">""</span><span class="p">))</span>  <span class="c1"># without a trailing separator</span>
-    <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">)]</span>  <span class="c1"># from the recording's directory up to root</span>
-    <span class="k">while</span> <span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">root</span> <span class="ow">and</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"sub-"</span><span class="p">):</span>
-            <span class="n">root</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-    <span class="k">if</span> <span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">root</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[]</span>  <span class="c1"># fname is not inside root</span>
-    <span class="n">suffix</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">tail</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">suffix</span><span class="si">}{</span><span class="n">extension</span><span class="si">}</span><span class="s2">"</span>
-    <span class="n">entities</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_inherited_sidecars</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Find all sidecar files that apply to a recording, from the root down."""</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span><span class="p">:</span>
+        <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"The datatype of the BIDSPath must be set to find inherited sidecar files."</span>
+        <span class="p">)</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="n">suffix</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
+    <span class="n">extension</span> <span class="o">=</span> <span class="n">extension</span> <span class="ow">or</span> <span class="n">_ext_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="ow">or</span> <span class="s2">".json"</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">extension</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"."</span><span class="p">):</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">".</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">tail</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">suffix</span><span class="si">}{</span><span class="n">extension</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+    <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="n">root</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">parts</span><span class="p">:</span>
+        <span class="n">levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">levels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">part</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">candidates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">levels</span>
+            <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">_sidecar_glob</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">)),</span> <span class="sa">f</span><span class="s2">"*</span><span class="si">{</span><span class="n">tail</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+        <span class="p">]</span>
+    <span class="n">rec_entities</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
     <span class="n">sidecars</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
-        <span class="n">directory</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">directory</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">levels</span> <span class="ow">or</span> <span class="ow">not</span> <span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">tail</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">tail</span><span class="p">):</span>
             <span class="k">continue</span>
-        <span class="n">found</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">)</span>
-        <span class="n">found</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">found</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">found</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">entities</span><span class="p">:</span>
-            <span class="n">sidecars</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">-</span><span class="n">levels</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">directory</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">found</span><span class="p">),</span> <span class="n">candidate</span><span class="p">))</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">candidate</span> <span class="k">for</span> <span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sidecars</span><span class="p">)]</span></div>
-
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="s2">"://"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="n">path</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">levels</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">tail</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">tail</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">found</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">rec_entities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">sidecars</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">levels</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">found</span><span class="p">),</span> <span class="n">path</span><span class="p">,</span> <span class="n">fname</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">fname</span> <span class="k">for</span> <span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="n">fname</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sidecars</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[:</span><span class="mi">3</span><span class="p">])]</span>
 
 
 <span class="n">_ext_map</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># these sidecar files should only ever have these extensions</span>
@@ -2790,7 +2859,7 @@
 <span class="sd">    Reading one recording looks up several sidecars in the same few directories.</span>
 <span class="sd">    On network filesystems every lookup is a round trip to the server.</span>
 <span class="sd">    """</span>
-    <span class="n">token</span> <span class="o">=</span> <span class="n">_DIR_LISTINGS</span><span class="o">.</span><span class="n">set</span><span class="p">({})</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">_DIR_LISTINGS</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">_DIR_LISTINGS</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">or</span> <span class="p">{})</span>  <span class="c1"># nested: reuse</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">yield</span>
     <span class="k">finally</span><span class="p">:</span>
