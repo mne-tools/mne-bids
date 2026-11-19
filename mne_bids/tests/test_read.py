@@ -42,6 +42,7 @@ from mne_bids.read import (
     _handle_channels_reading,
     _handle_events_reading,
     _handle_scans_reading,
+    _make_annotation_kwargs,
     _read_hed_version,
     _read_raw,
     events_file_to_annotation_kwargs,
@@ -1856,6 +1857,11 @@ def test_write_read_fif_split_file(tmp_path, monkeypatch):
     # reset scans.tsv file for downstream tests
     scan_data["acq_time"][0] = scan_data["acq_time"][1]
     _to_tsv(scan_data, scans_tsv)
+    bids_path.fpath.unlink()
+    with pytest.warns(RuntimeWarning, match="Split raw file detected"):
+        assert len(read_raw_bids(bids_path.update(split="01"))) < len(raw)
+    with pytest.raises(ValueError, match="Split raw file"):
+        read_raw_bids(bids_path, extra_params={"on_split_missing": "raise"})
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
@@ -2739,3 +2745,34 @@ def test_read_raw_bids_non_object_events_json(tmp_path):
     with pytest.warns(RuntimeWarning, match="not a JSON object"):
         raw = read_raw_bids(bids_path)
     assert len(raw.annotations) > 0
+
+
+@pytest.mark.parametrize("col", ["description", "ch_names", "hed_string"])
+def test_malformed_events_tsv(tmp_path, col):
+    """Reserved extra columns and negative durations are sanitized with warnings."""
+    fname = tmp_path / "events.tsv"
+    fname.write_text(f"onset\tduration\ttrial_type\t{col}\n0.1\t-0.2\tgo\tleft\n")
+    with (
+        pytest.warns(RuntimeWarning, match="negative duration"),
+        pytest.warns(RuntimeWarning, match="reserved"),
+    ):
+        kw = events_file_to_annotation_kwargs(fname)
+    assert list(kw["duration"]) == [0.0] and kw["extras"] == [{f"events_{col}": "left"}]
+
+
+def test_reserved_events_columns_keep_hed_and_existing_columns(tmp_path):
+    """Renaming a reserved column keeps sidecar HED and never overwrites a column."""
+    events_dict = {
+        "onset": ["0.1"],
+        "duration": ["0"],
+        "description": ["left"],
+        "events_description": ["kept"],
+    }
+    sidecar = tmp_path / "events.json"
+    sidecar.write_text('{"description": {"HED": {"left": "Left-side-of"}}}')
+    with pytest.warns(RuntimeWarning, match="'events_description_1'"):
+        kw, events_dict = _make_annotation_kwargs(events_dict)
+    assert kw["extras"] == [
+        {"events_description": "kept", "events_description_1": "left"}
+    ]
+    assert _assemble_hed_from_sidecar(events_dict, sidecar) == ["Left-side-of"]

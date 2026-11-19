@@ -809,6 +809,10 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float
     )
 
+    if (durs < 0).any():
+        warn("Events contain negative durations; setting them to zero.")
+        durs = np.maximum(durs, 0)
+
     extras = None
     extra_columns = list(
         set(events_dict)
@@ -823,6 +827,18 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
         }
     )
     if extra_columns:
+        # rename reserved Annotations names in the extras only: events_dict keeps
+        # the file's column names, which the events.json HED is matched against
+        extra_keys = []
+        for col in extra_columns:
+            key = col
+            if col in ("description", "ch_names", "hed_string"):
+                key, n = f"events_{col}", 0
+                while key in events_dict or key in extra_keys:
+                    n += 1
+                    key = f"events_{col}_{n}"
+                warn(f"Events column {col!r} is a reserved name; renaming to {key!r}.")
+            extra_keys.append(key)
         # infer types (int, float or str)
         for col in extra_columns:
             vals = [str(v) for v in events_dict[col]]
@@ -833,10 +849,10 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
                     events_dict[col] = [float(v) for v in vals]
                 except ValueError:
                     events_dict[col] = vals
-            extras = [
-                dict(zip(extra_columns, values))
-                for values in zip(*[events_dict[col] for col in extra_columns])
-            ]
+        extras = [
+            dict(zip(extra_keys, values))
+            for values in zip(*[events_dict[col] for col in extra_columns])
+        ]
 
     hed_strings = events_dict.get("HED")
 
@@ -1516,6 +1532,8 @@ def read_raw_bids(
 
     if raw_path.suffix == ".fif" and "allow_maxshield" not in extra_params:
         extra_params["allow_maxshield"] = True
+    if raw_path.suffix == ".fif":
+        extra_params.setdefault("on_split_missing", "warn")
     raw = _read_raw(
         raw_path,
         electrode=None,
