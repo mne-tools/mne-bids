@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.get_entities_from_fname &#8212; MNE-BIDS 0.21.0.dev36+gc9a74623a documentation</title>
+    <title>mne_bids.get_entities_from_fname &#8212; MNE-BIDS 0.21.0.dev37+g5b8c1668e documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=be4c2227"></script>
+    <script src="../_static/documentation_options.js?v=84b59632"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev36+gc9a74623a" />
+  <meta name="docsearch:version" content="0.21.0.dev37+g5b8c1668e" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev36+gc9a74623a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev37+g5b8c1668e documentation</p>
   
 </a></div>
     
@@ -615,8 +615,9 @@ the values to the entity values encoded in the filename.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fname</span> <span class="o">=</span> <span class="s1">'sub-01_ses-exp_run-02_meg.fif'</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-<span class="go">{'subject': '01', 'session': 'exp', 'task': None, 'tracking_system': None, 'acquisition': None, 'run': '02', 'processing': None, 'space': None, 'recording': None, 'split': None, 'description': None}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">entities</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">entities</span><span class="p">[</span><span class="s1">'subject'</span><span class="p">],</span> <span class="n">entities</span><span class="p">[</span><span class="s1">'session'</span><span class="p">],</span> <span class="n">entities</span><span class="p">[</span><span class="s1">'run'</span><span class="p">],</span> <span class="n">entities</span><span class="p">[</span><span class="s1">'task'</span><span class="p">]</span>
+<span class="go">('01', 'exp', '02', None)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -699,7 +700,7 @@ the values to the entity values encoded in the filename.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-11-18.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-11-19.
       <br/>
     
   </p>
