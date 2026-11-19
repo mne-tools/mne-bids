@@ -1201,6 +1201,9 @@ def test_find_matching_sidecar_inherit(tmp_path, root):
     bp = BIDSPath(subject="01", task="rest", datatype="eeg", suffix="eeg", root=root)
     assert bp.find_matching_sidecar(inherit=True, candidates=candidates) == expected
     assert bp.find_matching_sidecar(candidates=candidates) == expected[-1]
+    rel = [fname.removeprefix(f"{ds}/") for fname in candidates]  # e.g. a repo listing
+    expected = [fname.removeprefix(f"{ds}/") for fname in expected]
+    assert bp.find_matching_sidecar(inherit=True, candidates=rel) == expected
 
 
 def test_find_matching_sidecar_basic(bids_root, tmp_path, path_counter, fast_sidecar):

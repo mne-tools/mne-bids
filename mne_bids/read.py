@@ -632,15 +632,13 @@ def _read_sidecar_json(bids_path, suffix=None, on_error="ignore", *, inherit=Tru
     return sidecar
 
 
-def _handle_info_reading(sidecar_fname, raw):
+def _handle_info_reading(sidecar_fnames, raw):
     """Read associated sidecar JSON and populate raw.
 
     Handle PowerLineFrequency of recording.
     """
     sidecar_json = {}
-    for sidecar_fname in (
-        sidecar_fname if isinstance(sidecar_fname, list) else [sidecar_fname]
-    ):
+    for sidecar_fname in sidecar_fnames:  # inherited, from the root down
         sidecar_json.update(_read_json_object(sidecar_fname))
 
     # read in the sidecar JSON's and raw object's line frequency
@@ -1417,6 +1415,7 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     return raw
 
 
+@_share_dir_listings()  # the sidecars sit in the same few directories
 @verbose
 def read_raw_bids(
     bids_path,
