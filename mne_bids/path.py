@@ -16,6 +16,7 @@ from collections.abc import Iterable
 from contextlib import contextmanager
 from datetime import datetime
 from io import StringIO
+from operator import attrgetter
 from os import path as op
 from pathlib import Path
 from textwrap import indent
@@ -25,6 +26,7 @@ from mne.utils import _check_fname, _validate_type, logger, verbose
 
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
+    _BIDS_DATATYPES,
     ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_DATATYPES,
     ALLOWED_FILENAME_EXTENSIONS,
@@ -241,6 +243,8 @@ def _find_matched_empty_room(bids_path):
 LONG_TO_SHORT_ENTITY = {
     long: short for short, long in ALLOWED_PATH_ENTITIES_SHORT.items()
 }
+_UNSET_ENTITIES = dict.fromkeys(f"_{key}" for key in LONG_TO_SHORT_ENTITY)
+_get_entity_values = attrgetter(*_UNSET_ENTITIES)
 
 
 class BIDSPath:
@@ -314,6 +318,9 @@ class BIDSPath:
         ``'ieeg'``.
     check : bool
         If ``True``, enforces BIDS conformity. Defaults to ``True``.
+    **entities : dict
+        Additional BIDS schema entities by long name (e.g., ``echo``,
+        ``reconstruction``, ``direction``, ``tracer``, ``part``).
 
     Attributes
     ----------
@@ -419,6 +426,7 @@ class BIDSPath:
         extension=None,
         datatype=None,
         check=True,
+        **entities,
     ):
         if all(
             ii is None
@@ -435,10 +443,12 @@ class BIDSPath:
                 root,
                 suffix,
                 extension,
+                *entities.values(),
             ]
         ):
             raise ValueError("At least one parameter must be given.")
 
+        vars(self).update(_UNSET_ENTITIES)
         self.update(
             subject=subject,
             session=session,
@@ -456,24 +466,13 @@ class BIDSPath:
             suffix=suffix,
             extension=extension,
             check=check,
+            **{key: val for key, val in entities.items() if val is not None},
         )
 
     @property
     def entities(self):
         """Return dictionary of the BIDS entities."""
-        return {
-            "subject": self.subject,
-            "session": self.session,
-            "task": self.task,
-            "tracking_system": self.tracking_system,
-            "acquisition": self.acquisition,
-            "run": self.run,
-            "processing": self.processing,
-            "space": self.space,
-            "recording": self.recording,
-            "split": self.split,
-            "description": self.description,
-        }
+        return dict(zip(LONG_TO_SHORT_ENTITY, _get_entity_values(self)))
 
     def __getstate__(self):
         """Get the object state."""
@@ -484,6 +483,7 @@ class BIDSPath:
 
     def __setstate__(self, state):
         """Set the object state."""
+        vars(self).update(_UNSET_ENTITIES)
         self.update(**state)
 
     def __hash__(self):
@@ -1066,11 +1066,15 @@ class BIDSPath:
                 continue
 
             if key == "datatype":
-                if val is not None and val not in ALLOWED_DATATYPES and self.check:
+                if (
+                    val is not None
+                    and val not in ALLOWED_DATATYPES
+                    and val not in _BIDS_DATATYPES
+                    and self.check
+                ):
                     raise ValueError(
                         f"datatype ({val}) is not valid. "
-                        f"Should be one of "
-                        f"{ALLOWED_DATATYPES}"
+                        f"Should be one of {_BIDS_DATATYPES}"
                     )
                 else:
                     continue
@@ -1158,11 +1162,18 @@ class BIDSPath:
                 "BIDS root directory path to `root` via "
                 "BIDSPath.update()."
             )
+        entities = {key: [val] for key, val in self.entities.items() if val is not None}
         kwargs = {
-            f"{key}s": [val] if val is not None else val
-            for key, val in self.entities.items()
+            f"{key}s": val
+            for key, val in entities.items()
+            if key in _FIND_KEYWORD_ENTITIES
         }
         kwargs.update(
+            entities={
+                key: val
+                for key, val in entities.items()
+                if key not in _FIND_KEYWORD_ENTITIES
+            },
             root=self.root,
             check=check,
             ignore_json=ignore_json,
@@ -1481,6 +1492,20 @@ class BIDSPath:
             path = None
 
         return path
+
+
+for _short, _long in ALLOWED_PATH_ENTITIES_SHORT.items():
+    if _long not in vars(BIDSPath):
+        setattr(
+            BIDSPath,
+            _long,
+            property(
+                attrgetter(f"_{_long}"),
+                lambda self, value, key=_long: self.update(**{key: value}),
+                doc=f"The ``{_short}`` entity.",
+            ),
+        )
+del _short, _long
 
 
 def _get_matching_bidspaths_from_filesystem(bids_path):
@@ -1856,6 +1881,21 @@ def _parse_bids_fname(fpath, assume_exists=False):
     )
 
 
+_SEGMENT_FIX_KEYS = (
+    "sub",
+    "ses",
+    "task",
+    "tracksys",
+    "acq",
+    "run",
+    "proc",
+    "space",
+    "recording",
+    "split",
+    "desc",
+)
+
+
 def _suggest_fix_for_segment(segment, known_keys):
     """Decompose a multi-hyphen segment into valid BIDS key-value pairs.
 
@@ -1936,18 +1976,9 @@ def get_entities_from_fname(fname, on_error="raise", *, verbose=None):
     Examples
     --------
     >>> fname = 'sub-01_ses-exp_run-02_meg.fif'
-    >>> get_entities_from_fname(fname)
-    {'subject': '01', \
-'session': 'exp', \
-'task': None, \
-'tracking_system': None, \
-'acquisition': None, \
-'run': '02', \
-'processing': None, \
-'space': None, \
-'recording': None, \
-'split': None, \
-'description': None}
+    >>> entities = get_entities_from_fname(fname)
+    >>> entities['subject'], entities['session'], entities['run'], entities['task']
+    ('01', 'exp', '02', None)
     """
     if on_error not in ("warn", "raise", "ignore", "autofix"):
         raise ValueError(
@@ -1976,7 +2007,7 @@ def get_entities_from_fname(fname, on_error="raise", *, verbose=None):
                 fixed_segments.append(segment)
                 continue
 
-            fix = _suggest_fix_for_segment(segment, fname_vals)
+            fix = _suggest_fix_for_segment(segment, _SEGMENT_FIX_KEYS)
             msg = (
                 f'Found segment "{segment}" with multiple hyphens '
                 f'in filename "{fname}". This likely indicates a '
@@ -2009,17 +2040,16 @@ def get_entities_from_fname(fname, on_error="raise", *, verbose=None):
                 msg = f'Unexpected entity "{key}" found in filename "{fname}"'
                 if on_error == "raise":
                     raise KeyError(msg)
-                else:
-                    warn(msg)
-                    continue
-            if fname_vals.index(key) < idx_key:
+                warn(msg)
+            elif fname_vals.index(key) < idx_key:
                 msg = (
                     f"Entities in filename not ordered correctly."
                     f' "{key}" should have occurred earlier in the '
                     f'filename "{fname}"'
                 )
                 raise ValueError(msg)
-            idx_key = fname_vals.index(key)
+            else:
+                idx_key = fname_vals.index(key)
 
         key_short_hand = ALLOWED_PATH_ENTITIES_SHORT.get(key, key)
         params[key_short_hand] = value
@@ -2865,23 +2895,7 @@ def _literal_suffix(pattern):
     return "".join(reversed(out))
 
 
-def _filter_fnames(
-    fnames,
-    *,
-    subject=None,
-    session=None,
-    task=None,
-    acquisition=None,
-    run=None,
-    processing=None,
-    recording=None,
-    space=None,
-    split=None,
-    description=None,
-    suffix=None,
-    extension=None,
-    tracking_system=None,
-):
+def _filter_fnames(fnames, *, suffix=None, extension=None, **entities):
     """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
     Input can be str or list of str.
@@ -2894,69 +2908,34 @@ def _filter_fnames(
     -------
     list of pathlib.Path
     """
-    subject = _ensure_tuple(subject)
-    session = _ensure_tuple(session)
-    task = _ensure_tuple(task)
-    acquisition = _ensure_tuple(acquisition)
-    run = _ensure_tuple(run)
-    processing = _ensure_tuple(processing)
-    space = _ensure_tuple(space)
-    recording = _ensure_tuple(recording)
-    split = _ensure_tuple(split)
-    description = _ensure_tuple(description)
     suffix = _ensure_tuple(suffix)
     extension = _ensure_tuple(extension)
-    tracking_system = _ensure_tuple(tracking_system)
 
     leading_path_str = r".*\/?"  # nothing or something ending with a `/`
-    sub_str = r"sub-(" + "|".join(subject) + ")" if subject else r"sub-([^_]+)"
-    ses_str = r"_ses-(" + "|".join(session) + ")" if session else r"(|_ses-([^_]+))"
-    task_str = r"_task-(" + "|".join(task) + ")" if task else r"(|_task-([^_]+))"
-    acq_str = (
-        r"_acq-(" + "|".join(acquisition) + ")" if acquisition else r"(|_acq-([^_]+))"
+    entities_str = ""
+    for short, long in ALLOWED_PATH_ENTITIES_SHORT.items():
+        values = _ensure_tuple(entities.get(long))
+        group = (
+            rf"{short}-("
+            + ("|".join(re.escape(v) for v in values) if values else r"[^_]+")
+            + ")"
+        )
+        if long == "subject":
+            entities_str += group
+        elif values:
+            entities_str += "_" + group
+        else:
+            entities_str += f"(|_{group})"
+    suffix_str = (
+        r"_(" + "|".join(re.escape(s) for s in suffix) + ")" if suffix else r"_([^_]+)"
     )
-    run_str = r"_run-(" + "|".join(run) + ")" if run else r"(|_run-([^_]+))"
-    proc_str = (
-        r"_proc-(" + "|".join(processing) + ")" if processing else r"(|_proc-([^_]+))"
-    )
-    space_str = r"_space-(" + "|".join(space) + ")" if space else r"(|_space-([^_]+))"
-    rec_str = (
-        r"_recording-(" + "|".join(recording) + ")"
-        if recording
-        else r"(|_recording-([^_]+))"
-    )
-    split_str = r"_split-(" + "|".join(split) + ")" if split else r"(|_split-([^_]+))"
-    desc_str = (
-        r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"
-    )
-    suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
     ext_str = (
         r"(" + "|".join(re.escape(ext) for ext in extension) + ")$"
         if extension
         else r"\.([^_]+)"
     )
-    tracksys_str = (
-        r"_tracksys-(" + "|".join(tracking_system) + ")"
-        if tracking_system
-        else r"(|_tracksys-([^_]+))"
-    )
 
-    regexp = (
-        leading_path_str
-        + sub_str
-        + ses_str
-        + task_str
-        + tracksys_str
-        + acq_str
-        + run_str
-        + proc_str
-        + space_str
-        + rec_str
-        + split_str
-        + desc_str
-        + suffix_str
-        + ext_str
-    )
+    regexp = leading_path_str + entities_str + suffix_str + ext_str
 
     # Convert to str so we can apply the regexp ...
     fnames = [str(f) for f in fnames]
@@ -2978,6 +2957,11 @@ def _filter_fnames(
     return fnames_filtered
 
 
+_FIND_KEYWORD_ENTITIES = tuple(
+    ALLOWED_PATH_ENTITIES_SHORT[k] for k in _SEGMENT_FIX_KEYS
+)
+
+
 def find_matching_paths(
     root,
     subjects=None,
@@ -2992,6 +2976,7 @@ def find_matching_paths(
     descriptions=None,
     *,
     tracking_systems=None,
+    entities=None,
     suffixes=None,
     extensions=None,
     datatypes=None,
@@ -3047,6 +3032,15 @@ def find_matching_paths(
         ``tracksys-omcA``.
 
         .. versionadded:: 0.19
+    entities : dict | None
+        The values to match for the BIDS entities that have no keyword argument
+        of their own, by entity name (as in :attr:`mne_bids.BIDSPath.entities`).
+        For example, ``entities={"echo": "1"}`` matches filenames containing
+        ``echo-1``, and ``entities={"reconstruction": ["norm", "raw"]}`` those
+        containing ``rec-norm`` or ``rec-raw``. Each value can be a str, an
+        array-like of str, or None.
+
+        .. versionadded:: 0.21
     suffixes : str | array-like of str | None
         The filename suffix. This is the entity after the
         last ``_`` before the extension. E.g., ``'channels'``.
@@ -3085,6 +3079,18 @@ def find_matching_paths(
     bids_paths : list of mne_bids.BIDSPath
         The matching paths.
     """
+    entities = dict() if entities is None else entities
+    allowed = [
+        entity
+        for entity in ALLOWED_PATH_ENTITIES_SHORT.values()
+        if entity not in _FIND_KEYWORD_ENTITIES
+    ]
+    unknown = sorted(set(entities).difference(allowed))
+    if unknown:
+        raise ValueError(
+            f"entities got {unknown}, but its keys must be among {allowed}; the "
+            "other entities have keyword arguments of their own, such as subjects."
+        )
     entities_opt = dict()
     if subjects is not None:
         if isinstance(subjects, str):
@@ -3120,6 +3126,7 @@ def find_matching_paths(
         tracking_system=tracking_systems,
         suffix=suffixes,
         extension=extensions,
+        **entities,
     )
 
     bids_paths = _fnames_to_bidspaths(fpaths_filtered, root, check=check)
