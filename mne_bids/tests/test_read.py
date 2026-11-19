@@ -2785,6 +2785,7 @@ def test_read_sidecar(tmp_path):
     """BIDSPath.read_sidecar and read_raw_bids merge inherited sidecars."""
     bids_root = tmp_path / "tiny_bids[1]"
     sh.copytree(tiny_bids_root, bids_root)
+    # Move the line frequency and EEG reference from the session to the dataset root.
     _write_json(
         bids_root / "task-rest_eeg.json",
         {"PowerLineFrequency": 60, "EEGReference": "Cz"},
@@ -2795,7 +2796,7 @@ def test_read_sidecar(tmp_path):
     sidecar = json.loads(eeg_json.read_text(encoding="utf-8"))
     del sidecar["PowerLineFrequency"], sidecar["EEGReference"]
     _write_json(eeg_json, sidecar, overwrite=True)
-    # the HED of trial_type is inherited from the dataset-level events.json
+    # Move the trial_type column's HED definitions to the dataset root as well.
     events_json = eeg_json.with_name("sub-01_ses-eeg_task-rest_events.json")
     events = json.loads(events_json.read_text(encoding="utf-8"))
     _write_json(
