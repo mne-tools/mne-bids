@@ -507,9 +507,11 @@ def test_read_participants_handedness_and_sex_mapping(
     participants_tsv["handedness"][0] = hand_bids
     if column == "hand":  # written by MNE-BIDS < 0.21
         participants_tsv["hand"] = participants_tsv.pop("handedness")
-    elif column != "handedness":  # handedness is preferred unless it is n/a
-        participants_tsv["hand"] = ["A" if column == "both" else hand_bids]
-        participants_tsv["handedness"][0] = hand_bids if column == "both" else "n/a"
+    elif column in ("both", "n/a"):
+        participants_tsv["hand"] = ["A"]
+        if column == "n/a":
+            participants_tsv["handedness"][0] = "n/a"
+            hand_mne = 0
     participants_tsv["sex"][0] = sex_bids
     _to_tsv(participants_tsv, participants_tsv_fpath)
 

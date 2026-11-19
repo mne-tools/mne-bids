@@ -396,12 +396,9 @@ def _handle_participants_reading(participants_fname, raw, subject):
     """.strip().split()
     )
     row = {col: values[row_ind] for col, values in participants_tsv.items()}
-    # BIDS calls the column handedness, MNE-BIDS < 0.21 wrote hand: use
-    # handedness, unless it is n/a and there is a hand column to fall back to
+    # MNE-BIDS < 0.21 wrote "hand". It can be a custom column when both exist.
     if "handedness" in row:
-        handedness = row.pop("handedness")
-        if handedness != "n/a" or "hand" not in row:
-            row["hand"] = handedness
+        row["hand"] = row.pop("handedness")
     bad_key_vals = list()
     for col_name, value in row.items():
         orig_value = value
