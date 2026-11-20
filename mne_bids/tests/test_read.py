@@ -515,7 +515,11 @@ def test_read_participants_handedness_and_sex_mapping(
     participants_tsv["sex"][0] = sex_bids
     _to_tsv(participants_tsv, participants_tsv_fpath)
 
-    raw = read_raw_bids(bids_path=bids_path)
+    if column in ("both", "n/a"):  # hand is then a custom column
+        with pytest.warns(RuntimeWarning, match="Unable to map.*\nhand: A"):
+            raw = read_raw_bids(bids_path=bids_path)
+    else:
+        raw = read_raw_bids(bids_path=bids_path)
     assert raw.info["subject_info"]["hand"] is hand_mne
     assert raw.info["subject_info"]["sex"] is sex_mne
 
