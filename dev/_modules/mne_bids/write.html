@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.21.0.dev39+gcc024a804 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.21.0.dev40+g30974e317 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=2e05bff1"></script>
+    <script src="../../_static/documentation_options.js?v=7ea0df1c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev39+gcc024a804" />
+  <meta name="docsearch:version" content="0.21.0.dev40+g30974e317" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev39+gcc024a804 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev40+g30974e317 documentation</p>
   
 </a></div>
     
@@ -1224,7 +1224,7 @@
         <span class="p">{</span>
             <span class="s2">"age"</span><span class="p">:</span> <span class="p">[</span><span class="n">subject_age</span><span class="p">],</span>
             <span class="s2">"sex"</span><span class="p">:</span> <span class="p">[</span><span class="n">sex</span><span class="p">],</span>
-            <span class="s2">"hand"</span><span class="p">:</span> <span class="p">[</span><span class="n">hand</span><span class="p">],</span>
+            <span class="s2">"handedness"</span><span class="p">:</span> <span class="p">[</span><span class="n">hand</span><span class="p">],</span>
             <span class="s2">"weight"</span><span class="p">:</span> <span class="p">[</span><span class="n">weight</span><span class="p">],</span>
             <span class="s2">"height"</span><span class="p">:</span> <span class="p">[</span><span class="n">height</span><span class="p">],</span>
         <span class="p">}</span>
@@ -1265,6 +1265,18 @@
             <span class="n">orig_data</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">orig_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"hand"</span> <span class="ow">in</span> <span class="n">orig_data</span> <span class="ow">and</span> <span class="s2">"handedness"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">:</span>
+                <span class="c1"># Only carry old rows forward when the data dictionary identifies</span>
+                <span class="c1"># the pre-0.21 handedness column. A custom "hand" may mean anything.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">columns</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+                        <span class="n">fpath</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".json"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s2">"utf-8-sig"</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                    <span class="n">columns</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">match</span> <span class="n">columns</span><span class="p">:</span>
+                    <span class="k">case</span> <span class="p">{</span><span class="s2">"hand"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Description"</span><span class="p">:</span> <span class="s2">"Handedness of the participant"</span><span class="p">}}:</span>
+                        <span class="n">orig_data</span><span class="p">[</span><span class="s2">"handedness"</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig_data</span><span class="p">[</span><span class="s2">"hand"</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="c1"># whether the new data exists identically in the previous data</span>
             <span class="c1"># Use .get() with empty list default in case participant_id column is empty</span>
             <span class="n">existing_participants</span> <span class="o">=</span> <span class="n">orig_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"participant_id"</span><span class="p">,</span> <span class="p">[])</span>
@@ -1274,7 +1286,7 @@
                     <span class="s2">"participant_id"</span><span class="p">:</span> <span class="n">subject_id</span><span class="p">,</span>
                     <span class="s2">"age"</span><span class="p">:</span> <span class="n">subject_age</span><span class="p">,</span>
                     <span class="s2">"sex"</span><span class="p">:</span> <span class="n">sex</span><span class="p">,</span>
-                    <span class="s2">"hand"</span><span class="p">:</span> <span class="n">hand</span><span class="p">,</span>
+                    <span class="s2">"handedness"</span><span class="p">:</span> <span class="n">hand</span><span class="p">,</span>
                     <span class="s2">"weight"</span><span class="p">:</span> <span class="n">weight</span><span class="p">,</span>
                     <span class="s2">"height"</span><span class="p">:</span> <span class="n">height</span><span class="p">,</span>
                 <span class="p">},</span>
@@ -1343,7 +1355,7 @@
             <span class="s2">"Description"</span><span class="p">:</span> <span class="s2">"Sex of the participant"</span><span class="p">,</span>
             <span class="s2">"Levels"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"F"</span><span class="p">:</span> <span class="s2">"female"</span><span class="p">,</span> <span class="s2">"M"</span><span class="p">:</span> <span class="s2">"male"</span><span class="p">,</span> <span class="s2">"O"</span><span class="p">:</span> <span class="s2">"other"</span><span class="p">},</span>
         <span class="p">},</span>
-        <span class="s2">"hand"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"handedness"</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">"Description"</span><span class="p">:</span> <span class="s2">"Handedness of the participant"</span><span class="p">,</span>
             <span class="s2">"Levels"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"R"</span><span class="p">:</span> <span class="s2">"right"</span><span class="p">,</span> <span class="s2">"L"</span><span class="p">:</span> <span class="s2">"left"</span><span class="p">,</span> <span class="s2">"A"</span><span class="p">:</span> <span class="s2">"ambidextrous"</span><span class="p">},</span>
         <span class="p">},</span>
@@ -1352,7 +1364,7 @@
     <span class="p">}</span>
 
     <span class="c1"># make sure to append any JSON fields added by the user</span>
-    <span class="c1"># Note: mne-bids will overwrite age, sex and hand fields</span>
+    <span class="c1"># Note: mne-bids will overwrite age, sex and handedness fields</span>
     <span class="c1"># if `overwrite` is True</span>
     <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
     <span class="n">fpath</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1401,7 +1413,7 @@
                     <span class="p">)</span>
 
         <span class="c1"># Merge new schema with any existing user-added fields</span>
-        <span class="c1"># The new_data schema will overwrite age, sex, hand as intended</span>
+        <span class="c1"># The new_data schema will overwrite age, sex, handedness as intended</span>
         <span class="k">if</span> <span class="n">orig_data</span><span class="p">:</span>
             <span class="c1"># Keep any user-added fields not in new_data</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -2641,7 +2653,7 @@
 <span class="sd">        will be overwritten with the exception of the ``*_participants.tsv``</span>
 <span class="sd">        and ``*_scans.tsv`` files. For these files, parts of pre-existing data</span>
 <span class="sd">        that match the current data will be replaced. For</span>
-<span class="sd">        ``*_participants.tsv``, specifically, age, sex and hand fields will be</span>
+<span class="sd">        ``*_participants.tsv``, specifically, age, sex and handedness fields will be</span>
 <span class="sd">        overwritten, while any manually added fields in ``participants.json``</span>
 <span class="sd">        and ``participants.tsv`` by a user will be retained.</span>
 <span class="sd">        If ``False``, no existing data will be overwritten or</span>
@@ -4522,7 +4534,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-11-19.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-11-20.
       <br/>
     
   </p>

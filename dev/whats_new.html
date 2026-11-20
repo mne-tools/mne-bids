@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.21.0.dev39+gcc024a804 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.21.0.dev40+g30974e317 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=2e05bff1"></script>
+    <script src="_static/documentation_options.js?v=7ea0df1c"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev39+gcc024a804" />
+  <meta name="docsearch:version" content="0.21.0.dev40+g30974e317" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev39+gcc024a804 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev40+g30974e317 documentation</p>
   
 </a></div>
     
@@ -558,6 +558,7 @@
 <section id="api-and-behavior-changes">
 <h4>🧐 API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Link to this heading">#</a></h4>
 <ul class="simple">
+<li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> now writes the BIDS <code class="docutils literal notranslate"><span class="pre">handedness</span></code> column in <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code>, including when re-writing a dataset. <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> uses this column even when its value is <code class="docutils literal notranslate"><span class="pre">n/a</span></code>. It reads the legacy <code class="docutils literal notranslate"><span class="pre">hand</span></code> column when <code class="docutils literal notranslate"><span class="pre">handedness</span></code> is absent. When adding a participant to an older MNE-BIDS dataset, the writer carries forward handedness values identified by its original <code class="docutils literal notranslate"><span class="pre">participants.json</span></code> description, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1723">#1723</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.get_entities_from_fname.html#mne_bids.get_entities_from_fname" title="mne_bids.get_entities_from_fname"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_entities_from_fname()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">on_error=&quot;warn&quot;</span></code> or  <code class="docutils literal notranslate"><span class="pre">&quot;ignore&quot;</span></code> now keeps an entity that is not in the BIDS schema. Thus, <code class="docutils literal notranslate"><span class="pre">BIDSPath(**get_entities_from_fname(fname,</span> <span class="pre">on_error=&quot;warn&quot;))</span></code> can raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.  By <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1715">#1715</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities"><code class="xref py py-attr docutils literal notranslate"><span class="pre">BIDSPath.entities</span></code></a> and <a class="reference internal" href="generated/mne_bids.get_entities_from_fname.html#mne_bids.get_entities_from_fname" title="mne_bids.get_entities_from_fname"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_entities_from_fname()</span></code></a> now return all 35 BIDS entities, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1715">#1715</a>).</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">rec</span></code> and <code class="docutils literal notranslate"><span class="pre">dir</span></code> parts of a BIDS filename are returned as the <code class="docutils literal notranslate"><span class="pre">reconstruction</span></code> and <code class="docutils literal notranslate"><span class="pre">direction</span></code> entities, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1715">#1715</a>)</p></li>
@@ -696,7 +697,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-11-19.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2026-11-20.
       <br/>
     
   </p>
