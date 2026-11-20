@@ -719,7 +719,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         {
             "age": [subject_age],
             "sex": [sex],
-            "hand": [hand],
+            "handedness": [hand],
             "weight": [weight],
             "height": [height],
         }
@@ -760,6 +760,18 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             orig_data = None
 
         if orig_data is not None:
+            if "hand" in orig_data and "handedness" not in orig_data:
+                # Only carry old rows forward when the data dictionary identifies
+                # the pre-0.21 handedness column. A custom "hand" may mean anything.
+                try:
+                    columns = json.loads(
+                        fpath.with_suffix(".json").read_text("utf-8-sig")
+                    )
+                except (FileNotFoundError, ValueError):
+                    columns = {}
+                match columns:
+                    case {"hand": {"Description": "Handedness of the participant"}}:
+                        orig_data["handedness"] = orig_data["hand"].copy()
             # whether the new data exists identically in the previous data
             # Use .get() with empty list default in case participant_id column is empty
             existing_participants = orig_data.get("participant_id", [])
@@ -769,7 +781,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
                     "participant_id": subject_id,
                     "age": subject_age,
                     "sex": sex,
-                    "hand": hand,
+                    "handedness": hand,
                     "weight": weight,
                     "height": height,
                 },
@@ -838,7 +850,7 @@ def _participants_json(fname, overwrite=False):
             "Description": "Sex of the participant",
             "Levels": {"F": "female", "M": "male", "O": "other"},
         },
-        "hand": {
+        "handedness": {
             "Description": "Handedness of the participant",
             "Levels": {"R": "right", "L": "left", "A": "ambidextrous"},
         },
@@ -847,7 +859,7 @@ def _participants_json(fname, overwrite=False):
     }
 
     # make sure to append any JSON fields added by the user
-    # Note: mne-bids will overwrite age, sex and hand fields
+    # Note: mne-bids will overwrite age, sex and handedness fields
     # if `overwrite` is True
     fpath = Path(fname)
     fpath.parent.mkdir(parents=True, exist_ok=True)
@@ -896,7 +908,7 @@ def _participants_json(fname, overwrite=False):
                     )
 
         # Merge new schema with any existing user-added fields
-        # The new_data schema will overwrite age, sex, hand as intended
+        # The new_data schema will overwrite age, sex, handedness as intended
         if orig_data:
             # Keep any user-added fields not in new_data
             for key in orig_data.keys():
@@ -2128,7 +2140,7 @@ def write_raw_bids(
         will be overwritten with the exception of the ``*_participants.tsv``
         and ``*_scans.tsv`` files. For these files, parts of pre-existing data
         that match the current data will be replaced. For
-        ``*_participants.tsv``, specifically, age, sex and hand fields will be
+        ``*_participants.tsv``, specifically, age, sex and handedness fields will be
         overwritten, while any manually added fields in ``participants.json``
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
