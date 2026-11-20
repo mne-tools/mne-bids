@@ -1435,7 +1435,7 @@ class BIDSPath:
         Returns
         -------
         metadata : dict
-            ``"sidecar"`` (as ``read_sidecar(inherit=True)``), the complete rows of
+            ``"sidecar"`` (as ``read_sidecar(inherit=True)``), the rows of
             ``participants.tsv``, ``sessions.tsv`` and ``scans.tsv`` under
             ``"participant"``, ``"session"`` and ``"scan"`` (``n/a`` becomes
             None), and their JSON data dictionaries (column descriptions)
