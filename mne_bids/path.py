@@ -1445,7 +1445,7 @@ class BIDSPath:
         -----
         .. versionadded:: 0.21
         """
-        from mne_bids.read import _get_metadata
+        from mne_bids.read import _get_metadata  # avoid circular import
 
         return _get_metadata(self)
 

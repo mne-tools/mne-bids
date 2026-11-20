@@ -299,14 +299,14 @@ def _verbose_list_index(lst, val, *, allow_all=False):
         raise ValueError(f"{exc}{extra}") from None
 
 
-@lru_cache(maxsize=3)
+@lru_cache(maxsize=1)
 def _participants_tsv(participants_fname, content):
     """Parse participants.tsv once per content of the file.
 
     ``content`` is the file's bytes. Reading them on every call is much cheaper
     than parsing and, unlike file metadata, cannot miss a rewrite (some network
-    filesystems only store modification times in seconds). Only the last three
-    tables are kept (participants, sessions and scans for ``get_metadata``).
+    filesystems only store modification times in seconds). Only the last table
+    is kept, so a file that is rewritten often does not pile up in memory.
     """
     return _from_tsv(participants_fname, content=content)
 
@@ -370,7 +370,7 @@ def _get_metadata(bids_path):
     metadata = dict(sidecar=bids_path.read_sidecar(inherit=True, on_error="ignore"))
     metadata["data_dictionary"] = {}
     for key, (fname, id_col, row_id) in files.items():
-        table = _participants_tsv(fname, fname.read_bytes()) if fname.is_file() else {}
+        table = _from_tsv(fname) if fname.is_file() else {}
         ids = table.get(id_col, [])
         i = ids.index(row_id) if row_id in ids else None
         row = () if i is None else [col[i] for col in table.values()]
