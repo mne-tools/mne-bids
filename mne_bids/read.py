@@ -574,13 +574,37 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     return raw
 
 
-def _handle_info_reading(sidecar_fname, raw):
+def _read_json_object(fname):
+    """Read a JSON sidecar, which BIDS requires to be a JSON object."""
+    with _open_lock(fname, encoding="utf-8") as fin:
+        content = json.load(fin)
+    if not isinstance(content, dict):
+        warn(f"{fname} is not a JSON object, ignoring it.")
+        return {}
+    return content
+
+
+def _read_sidecar_json(bids_path, suffix=None, on_error="ignore", *, inherit=True):
+    """Read the closest JSON sidecar, or merge the inherited ones from the root down."""
+    fnames = _find_matching_sidecar(
+        bids_path, suffix=suffix, extension=".json", on_error=on_error, inherit=inherit
+    )
+    if not inherit:
+        fnames = [] if fnames is None else [fnames]
+    sidecar = {}
+    for fname in fnames:
+        sidecar.update(_read_json_object(fname))
+    return sidecar
+
+
+def _handle_info_reading(sidecar_fnames, raw):
     """Read associated sidecar JSON and populate raw.
 
     Handle PowerLineFrequency of recording.
     """
-    with _open_lock(sidecar_fname, encoding="utf-8") as fin:
-        sidecar_json = json.load(fin)
+    sidecar_json = {}
+    for sidecar_fname in sidecar_fnames:  # inherited, from the root down
+        sidecar_json.update(_read_json_object(sidecar_fname))
 
     # read in the sidecar JSON's and raw object's line frequency
     json_linefreq = sidecar_json.get("PowerLineFrequency")
@@ -911,20 +935,16 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
     if events_json_fname is None:
         return None
 
-    try:
-        with _open_lock(events_json_fname, encoding="utf-8") as f:
-            sidecar = json.load(f)
+    sidecar = {}
+    try:  # one file, or the inherited files from the root down
+        for fname in np.atleast_1d(events_json_fname):
+            sidecar.update(_read_json_object(fname))
     except FileNotFoundError:
         return None
     except (json.JSONDecodeError, OSError) as exc:
         warn(
             f"Could not read HED annotations from {events_json_fname}: {exc}. "
             "Skipping sidecar HED assembly."
-        )
-        return None
-    if not isinstance(sidecar, dict):
-        warn(
-            f"{events_json_fname} is not a JSON object. Skipping sidecar HED assembly."
         )
         return None
 
@@ -1360,6 +1380,7 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     return raw
 
 
+@_share_dir_listings()  # the sidecars sit in the same few directories
 @verbose
 def read_raw_bids(
     bids_path,
@@ -1488,17 +1509,14 @@ def read_raw_bids(
     if suffix is None:
         bids_path.update(suffix=datatype)
 
-    sidecar_json_fname = _find_matching_sidecar(
-        bids_path, suffix=datatype, extension=".json", on_error="ignore"
-    )
-    if sidecar_json_fname is not None:
-        with _open_lock(sidecar_json_fname, encoding="utf-8") as fin:
-            recording_type = json.load(fin).get("RecordingType")
-        if recording_type == "epoched" and bids_path.fpath.suffix in _EPOCHED_EXTS:
-            raise RuntimeError(
-                'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
-                "instead of read_raw_bids()."
-            )
+    if (
+        _read_sidecar_json(bids_path, suffix=datatype).get("RecordingType") == "epoched"
+        and bids_path.fpath.suffix in _EPOCHED_EXTS
+    ):
+        raise RuntimeError(
+            'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
+            "instead of read_raw_bids()."
+        )
 
     if bids_path.extension == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
@@ -1596,7 +1614,11 @@ def read_raw_bids(
     )
     if events_fname is not None:
         events_json_fname = _find_matching_sidecar(
-            bids_path, suffix="events", extension=".json", on_error="ignore"
+            bids_path,
+            suffix="events",
+            extension=".json",
+            on_error="ignore",
+            inherit=True,
         )
         raw, event_id = _handle_events_reading(
             events_fname,
@@ -1660,11 +1682,11 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
 
     # Try to find an associated sidecar .json to get information about the
     # recording snapshot
-    sidecar_fname = _find_matching_sidecar(
-        bids_path, suffix=datatype, extension=".json", on_error="warn"
+    sidecar_fnames = _find_matching_sidecar(
+        bids_path, suffix=datatype, extension=".json", on_error="warn", inherit=True
     )
-    if sidecar_fname is not None:
-        raw = _handle_info_reading(sidecar_fname, raw)
+    if sidecar_fnames:
+        raw = _handle_info_reading(sidecar_fnames, raw)
 
     # read in associated scans filename
     scans_fname = BIDSPath(
@@ -1766,17 +1788,14 @@ def read_epochs_bids(
 @verbose
 def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
     """Slice a continuous file flagged ``RecordingType="epoched"`` into Epochs."""
-    sidecar_fname = _find_matching_sidecar(
-        bids_path, suffix=bids_path.datatype, extension=".json"
-    )
-    with _open_lock(sidecar_fname, encoding="utf-8") as fp:
-        try:
-            duration = float(json.load(fp)["EpochLength"])
-        except KeyError:
-            raise RuntimeError(
-                f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
-                "required to slice an 'epoched' continuous file."
-            ) from None
+    sidecar = _read_sidecar_json(bids_path, suffix=bids_path.datatype, on_error="raise")
+    try:
+        duration = float(sidecar["EpochLength"])
+    except KeyError:
+        raise RuntimeError(
+            f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
+            "required to slice an 'epoched' continuous file."
+        ) from None
     raw = _get_readers("_continuous_epoched_reader")[bids_path.fpath.suffix](
         bids_path.fpath, preload=False, verbose=verbose, **(extra_params or {})
     )

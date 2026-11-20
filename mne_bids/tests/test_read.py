@@ -2772,7 +2772,8 @@ def test_read_participants(tmp_path):
         read_participants(fname)
 
 
-def test_read_raw_bids_non_object_events_json(tmp_path):
+@pytest.mark.parametrize("suffix", ["eeg", "events"])
+def test_read_raw_bids_non_object_events_json(tmp_path, suffix):
     """An events.json sidecar that is not an object is skipped with a warning."""
     bids_root = tmp_path / "tiny_bids"
     sh.copytree(tiny_bids_root, bids_root)
@@ -2781,7 +2782,7 @@ def test_read_raw_bids_non_object_events_json(tmp_path):
         / "sub-01"
         / "ses-eeg"
         / "eeg"
-        / "sub-01_ses-eeg_task-rest_events.json"
+        / f"sub-01_ses-eeg_task-rest_{suffix}.json"
     )
     events_json.write_text("[]")
     bids_path = BIDSPath(
@@ -2790,6 +2791,48 @@ def test_read_raw_bids_non_object_events_json(tmp_path):
     with pytest.warns(RuntimeWarning, match="not a JSON object"):
         raw = read_raw_bids(bids_path)
     assert len(raw.annotations) > 0
+
+
+def test_read_sidecar(tmp_path):
+    """BIDSPath.read_sidecar and read_raw_bids merge inherited sidecars."""
+    bids_root = tmp_path / "tiny_bids[1]"
+    sh.copytree(tiny_bids_root, bids_root)
+    # Move the line frequency and EEG reference from the session to the dataset root.
+    _write_json(
+        bids_root / "task-rest_eeg.json",
+        {"PowerLineFrequency": 60, "EEGReference": "Cz"},
+    )
+    eeg_json = (
+        bids_root / "sub-01" / "ses-eeg" / "eeg" / "sub-01_ses-eeg_task-rest_eeg.json"
+    )
+    sidecar = json.loads(eeg_json.read_text(encoding="utf-8"))
+    del sidecar["PowerLineFrequency"], sidecar["EEGReference"]
+    _write_json(eeg_json, sidecar, overwrite=True)
+    # Move the trial_type column's HED definitions to the dataset root as well.
+    events_json = eeg_json.with_name("sub-01_ses-eeg_task-rest_events.json")
+    events = json.loads(events_json.read_text(encoding="utf-8"))
+    _write_json(
+        bids_root / "task-rest_events.json", {"trial_type": events.pop("trial_type")}
+    )
+    _write_json(events_json, events, overwrite=True)
+
+    bp = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
+    )
+    hed = [e.get("HED") for e in read_raw_bids(bp).annotations.extras]
+    assert hed == ["Experiment-structure", "Sensory-event, Visual-presentation"]
+    meta = bp.read_sidecar(inherit=True)
+    assert meta["PowerLineFrequency"] == 60 and meta["EEGReference"] == "Cz"
+    assert "EEGReference" not in bp.read_sidecar()  # the closest file only
+    assert bp.read_sidecar("nosuchsuffix", on_error="ignore") == {}
+    with pytest.raises(RuntimeError, match="nosuchsuffix"):
+        bp.read_sidecar("nosuchsuffix")
+    assert read_raw_bids(bp).info["line_freq"] == 60
+
+    sidecar["PowerLineFrequency"] = 50
+    _write_json(eeg_json, sidecar, overwrite=True)
+    assert bp.read_sidecar(inherit=True)["PowerLineFrequency"] == 50
+    assert read_raw_bids(bp).info["line_freq"] == 50
 
 
 @pytest.mark.parametrize("col", ["description", "ch_names", "hed_string"])
