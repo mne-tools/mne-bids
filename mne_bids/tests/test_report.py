@@ -94,3 +94,8 @@ analysis (2.0 +/- 0.0 were removed from analysis)."""  # noqa: E501
 
     expected_report = "\n".join(textwrap.wrap(expected_report, width=80))
     assert report == expected_report
+    scans = tmp_path / "sub-01" / "ses-01" / "sub-01_ses-01_scans.tsv"
+    scans.write_text(
+        scans.read_text() + "func/sub-01_ses-01_task-rest_bold.nii.gz\tn/a\n"
+    )
+    assert make_report(bids_root) == expected_report

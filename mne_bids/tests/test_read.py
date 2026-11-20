@@ -3,6 +3,7 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import codecs
 import contextlib
 import json
 import logging
@@ -443,6 +444,38 @@ def test_read_participants_data(tmp_path):
         _to_tsv(participants_tsv, participants_tsv_fpath)
         info = read_raw_bids(bids_path=bids_path).info["subject_info"]
         assert info["sex"] == 1 and ("birthday" in info) == (age == "24")
+    # the age "Units" in participants.json scale the age (default: years)
+    participants_tsv["age"][0] = "24"
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    participants_json = participants_tsv_fpath.with_suffix(".json")
+    sidecar = json.loads(participants_json.read_text(encoding="utf-8"))
+    for units, days in (("years", 8766), ("Month", 731), ("week", 168)):
+        sidecar["age"]["Units"] = units
+        _write_json(participants_json, sidecar, overwrite=True)
+        info = read_raw_bids(bids_path=bids_path).info
+        assert (
+            info["meas_date"].date() - info["subject_info"]["birthday"]
+        ).days == days
+    sidecar["age"]["Units"] = "foo"
+    _write_json(participants_json, sidecar, overwrite=True)
+    with pytest.warns(RuntimeWarning, match="Unknown age Units 'foo'"):
+        assert "birthday" not in read_raw_bids(bids_path=bids_path).info["subject_info"]
+    # years without Units or participants.json, and when it cannot be parsed
+    del sidecar["age"]["Units"]
+    _write_json(participants_json, sidecar, overwrite=True)
+    for content in (codecs.BOM_UTF8 + participants_json.read_bytes(), b"{", None):
+        if content is None:
+            participants_json.unlink()
+        else:
+            participants_json.write_bytes(content)
+        if content == b"{":
+            with pytest.warns(RuntimeWarning, match="Could not read"):
+                info = read_raw_bids(bids_path=bids_path).info
+        else:
+            info = read_raw_bids(bids_path=bids_path).info
+        assert (
+            info["meas_date"].date() - info["subject_info"]["birthday"]
+        ).days == 8766
 
 
 @pytest.mark.parametrize(
@@ -2727,7 +2760,8 @@ def test_read_participants(tmp_path):
         read_participants(fname)
 
 
-def test_read_raw_bids_non_object_events_json(tmp_path):
+@pytest.mark.parametrize("suffix", ["eeg", "events"])
+def test_read_raw_bids_non_object_events_json(tmp_path, suffix):
     """An events.json sidecar that is not an object is skipped with a warning."""
     bids_root = tmp_path / "tiny_bids"
     sh.copytree(tiny_bids_root, bids_root)
@@ -2736,7 +2770,7 @@ def test_read_raw_bids_non_object_events_json(tmp_path):
         / "sub-01"
         / "ses-eeg"
         / "eeg"
-        / "sub-01_ses-eeg_task-rest_events.json"
+        / f"sub-01_ses-eeg_task-rest_{suffix}.json"
     )
     events_json.write_text("[]")
     bids_path = BIDSPath(
@@ -2745,6 +2779,48 @@ def test_read_raw_bids_non_object_events_json(tmp_path):
     with pytest.warns(RuntimeWarning, match="not a JSON object"):
         raw = read_raw_bids(bids_path)
     assert len(raw.annotations) > 0
+
+
+def test_read_sidecar(tmp_path):
+    """BIDSPath.read_sidecar and read_raw_bids merge inherited sidecars."""
+    bids_root = tmp_path / "tiny_bids[1]"
+    sh.copytree(tiny_bids_root, bids_root)
+    # Move the line frequency and EEG reference from the session to the dataset root.
+    _write_json(
+        bids_root / "task-rest_eeg.json",
+        {"PowerLineFrequency": 60, "EEGReference": "Cz"},
+    )
+    eeg_json = (
+        bids_root / "sub-01" / "ses-eeg" / "eeg" / "sub-01_ses-eeg_task-rest_eeg.json"
+    )
+    sidecar = json.loads(eeg_json.read_text(encoding="utf-8"))
+    del sidecar["PowerLineFrequency"], sidecar["EEGReference"]
+    _write_json(eeg_json, sidecar, overwrite=True)
+    # Move the trial_type column's HED definitions to the dataset root as well.
+    events_json = eeg_json.with_name("sub-01_ses-eeg_task-rest_events.json")
+    events = json.loads(events_json.read_text(encoding="utf-8"))
+    _write_json(
+        bids_root / "task-rest_events.json", {"trial_type": events.pop("trial_type")}
+    )
+    _write_json(events_json, events, overwrite=True)
+
+    bp = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
+    )
+    hed = [e.get("HED") for e in read_raw_bids(bp).annotations.extras]
+    assert hed == ["Experiment-structure", "Sensory-event, Visual-presentation"]
+    meta = bp.read_sidecar(inherit=True)
+    assert meta["PowerLineFrequency"] == 60 and meta["EEGReference"] == "Cz"
+    assert "EEGReference" not in bp.read_sidecar()  # the closest file only
+    assert bp.read_sidecar("nosuchsuffix", on_error="ignore") == {}
+    with pytest.raises(RuntimeError, match="nosuchsuffix"):
+        bp.read_sidecar("nosuchsuffix")
+    assert read_raw_bids(bp).info["line_freq"] == 60
+
+    sidecar["PowerLineFrequency"] = 50
+    _write_json(eeg_json, sidecar, overwrite=True)
+    assert bp.read_sidecar(inherit=True)["PowerLineFrequency"] == 50
+    assert read_raw_bids(bp).info["line_freq"] == 50
 
 
 @pytest.mark.parametrize("col", ["description", "ch_names", "hed_string"])
