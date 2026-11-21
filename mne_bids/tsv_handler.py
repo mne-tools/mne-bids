@@ -348,57 +348,30 @@ def _nansafe_to_str(value):
     return str(value)
 
 
-@lru_cache(maxsize=4)
-def _tsv_cached(fname, content):
-    """Parse a TSV file once per file content.
-
-    ``content`` is the file's bytes. Reading them on every call is much cheaper
-    than parsing and, unlike file metadata, cannot miss a rewrite (some network
-    filesystems only store modification times in seconds). Only the last four
-    tables are kept (e.g. ``participants.tsv``, ``sessions.tsv`` and
-    ``scans.tsv``), so rewritten or per-recording files do not pile up.
-    """
-    return _from_tsv(fname, content=content)
-
-
-@lru_cache(maxsize=4)
-def _tsv_index_cached(fname, content, key_col, prefix="", posix=False):
-    table = _tsv_cached(fname, content)
+@lru_cache(maxsize=3)
+def _tsv_rows_cached(fname, content, key_col, prefix):
+    """Parse a TSV file once per file content (participants, sessions, scans)."""
+    table = _from_tsv(fname, content=content)
     if key_col not in table:
         raise ValueError(f"{fname} has no {key_col} column.")
-    index = {}
-    duplicates = []
-    for i, raw_id in enumerate(table[key_col]):
-        key = (raw_id.replace("\\", "/") if posix else raw_id).removeprefix(prefix)
-        if key in index:
+    rows, duplicates = {}, []
+    for values in zip(*table.values()):
+        row = dict(zip(table, values))
+        raw_id = row.pop(key_col)
+        key = raw_id.removeprefix(prefix)
+        if key in rows:
             duplicates.append(raw_id)
         else:
-            index[key] = i
-    return table, index, tuple(duplicates)
+            rows[key] = {k: None if v == "n/a" else v for k, v in row.items()}
+    return rows, tuple(duplicates)
 
 
-def _tsv_index(fname, key_col, prefix="", *, content=None, posix=False):
+def _read_tsv_rows(fname, key_col, prefix="", *, content=None):
     from .utils import warn  # avoid circular import
 
     if content is None:
         content = Path(fname).read_bytes()
-    table, index, duplicates = _tsv_index_cached(
-        str(fname), content, key_col, prefix, posix
-    )
+    rows, duplicates = _tsv_rows_cached(str(fname), content, key_col, prefix)
     for dup in duplicates:
         warn(f"Duplicate {key_col} {dup!r} in {fname}; keeping the first row.")
-    return table, index
-
-
-def _tsv_row(table, row_ind, exclude_col):
-    return {
-        col: None if (val := vals[row_ind]) == "n/a" else val
-        for col, vals in table.items()
-        if col != exclude_col
-    }
-
-
-def _read_tsv_row(fname, key_col, row_id, prefix="", *, content=None):
-    table, index = _tsv_index(fname, key_col, prefix, content=content)
-    row_ind = index.get(row_id)
-    return {} if row_ind is None else _tsv_row(table, row_ind, key_col)
+    return rows

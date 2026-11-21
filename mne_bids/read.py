@@ -10,6 +10,7 @@ import warnings
 from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
+from functools import lru_cache
 from pathlib import Path
 
 import mne
@@ -31,13 +32,13 @@ from mne_bids.dig import _read_dig_bids
 from mne_bids.path import (
     BIDSPath,
     _find_matching_sidecar,
+    _find_scan_row,
     _infer_datatype,
-    _match_scan_row,
     _parse_ext,
     _share_dir_listings,
     get_bids_path_from_fname,
 )
-from mne_bids.tsv_handler import _drop, _from_tsv, _tsv_cached, _tsv_index, _tsv_row
+from mne_bids.tsv_handler import _drop, _from_tsv, _read_tsv_rows
 from mne_bids.utils import (
     _convert_dt_to_utc,
     _get_ch_type_mapping,
@@ -298,6 +299,18 @@ def _verbose_list_index(lst, val, *, allow_all=False):
         raise ValueError(f"{exc}{extra}") from None
 
 
+@lru_cache(maxsize=1)
+def _participants_tsv(participants_fname, content):
+    """Parse participants.tsv once per content of the file.
+
+    ``content`` is the file's bytes. Reading them on every call is much cheaper
+    than parsing and, unlike file metadata, cannot miss a rewrite (some network
+    filesystems only store modification times in seconds). Only the last table
+    is kept, so a file that is rewritten often does not pile up in memory.
+    """
+    return _from_tsv(participants_fname, content=content)
+
+
 def read_participants(fname, *, content=None):
     """Read a ``participants.tsv`` file.
 
@@ -320,8 +333,8 @@ def read_participants(fname, *, content=None):
     -----
     .. versionadded:: 0.21
     """
-    table, index = _tsv_index(fname, "participant_id", "sub-", content=content)
-    return {key: _tsv_row(table, i, "participant_id") for key, i in index.items()}
+    rows = _read_tsv_rows(fname, "participant_id", "sub-", content=content)
+    return {k: v.copy() for k, v in rows.items()}
 
 
 # days per age unit allowed by BIDS in participants.json, years by default
@@ -358,8 +371,8 @@ def _age_unit_days(participants_fname):
 
 
 def _handle_participants_reading(participants_fname, raw, subject):
-    participants_tsv = _tsv_cached(
-        str(participants_fname), participants_fname.read_bytes()
+    participants_tsv = _participants_tsv(
+        participants_fname, participants_fname.read_bytes()
     )
     subjects = participants_tsv["participant_id"]
     if subject not in subjects:
@@ -447,17 +460,19 @@ def _handle_participants_reading(participants_fname, raw, subject):
 
 def _handle_scans_reading(scans_fname, raw, bids_path):
     """Read associated scans.tsv and set meas_date."""
-    scans_fname = Path(scans_fname)
-    scans_tsv, index = _tsv_index(scans_fname, "filename", posix=True)
+    scans_tsv = _from_tsv(scans_fname)
     fname = bids_path.fpath.name
-    fnames = [Path(f) for f in scans_tsv["filename"]]
+
+    fnames = scans_tsv["filename"]
+    fnames = [Path(fname) for fname in fnames]
     if not fnames:  # header-only scans.tsv
         return raw
-    acq_times = scans_tsv.get("acq_time", ["n/a"] * len(fnames))
+    if "acq_time" in scans_tsv:
+        acq_times = scans_tsv["acq_time"]
+    else:
+        acq_times = ["n/a"] * len(fnames)
 
-    row_ind, data_fname = _match_scan_row(
-        bids_path.fpath, bids_path.datatype, scans_fname, index
-    )
+    row_ind, data_fname = _find_scan_row(fnames, bids_path.fpath, bids_path.datatype)
     if row_ind is None:
         matches = get_close_matches(str(data_fname), [str(f) for f in fnames])
         hint = f" Did you mean one of {matches}?" if matches else ""

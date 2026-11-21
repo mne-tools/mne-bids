@@ -41,10 +41,8 @@ from mne_bids.tsv_handler import (
     _detect_file_encoding,
     _drop,
     _from_tsv,
-    _read_tsv_row,
+    _read_tsv_rows,
     _to_tsv,
-    _tsv_index,
-    _tsv_row,
 )
 from mne_bids.utils import (
     _check_empty_room_basename,
@@ -1455,47 +1453,65 @@ class BIDSPath:
         """
         if self.root is None:
             raise ValueError("The root of the BIDSPath must be set to read metadata.")
-        bp = self
-        if bp.datatype is None and bp.suffix in ALLOWED_DATATYPES:
-            bp = bp.copy().update(datatype=bp.suffix)
-        root = Path(bp.root)
-
+        bp = (
+            self.copy().update(datatype=self.suffix)
+            if self.datatype is None and self.suffix in ALLOWED_DATATYPES
+            else self
+        )
+        root, sub, ses = Path(bp.root), bp.subject, bp.session
         with _share_dir_listings():
-            sidecar = (
-                bp.read_sidecar(inherit=True, on_error="ignore")
-                if (bp.datatype or bp.suffix)
-                else {}
-            )
-            participants_tsv = root / "participants.tsv"
-            participant = (
-                _read_tsv_row(participants_tsv, "participant_id", bp.subject, "sub-")
-                if bp.subject is not None and participants_tsv.is_file()
-                else {}
-            )
-            sessions_tsv = (
+            participants = root / "participants.tsv"
+            sessions = (
                 BIDSPath(
-                    subject=bp.subject, suffix="sessions", extension=".tsv", root=root
+                    subject=sub, suffix="sessions", extension=".tsv", root=root
                 ).fpath
-                if bp.subject is not None and bp.session is not None
+                if sub and ses
                 else None
             )
-            session = (
-                _read_tsv_row(sessions_tsv, "session_id", bp.session, "ses-")
-                if sessions_tsv is not None and _sidecar_is_file(sessions_tsv, root)
-                else {}
+            scans = (
+                bp.find_matching_sidecar(
+                    suffix="scans", extension=".tsv", on_error="ignore"
+                )
+                if sub and (bp.datatype or bp.suffix or bp.extension)
+                else None
             )
-            scan = _read_scan_metadata(bp)
-            data_dictionary = {
-                kind: bp.read_sidecar(kind, inherit=True, on_error="ignore")
-                for kind in ("participants", "sessions", "scans")
-            }
-        return dict(
-            sidecar=sidecar,
-            participant=participant,
-            session=session,
-            scan=scan,
-            data_dictionary=data_dictionary,
-        )
+            scan = {}
+            if scans is not None:
+                try:
+                    rec_fpath = bp.fpath
+                except (RuntimeError, ValueError):
+                    rec_fpath = None
+                if rec_fpath is not None:
+                    rows = _read_tsv_rows(scans, "filename")
+                    ind, _ = _find_scan_row(
+                        [Path(k) for k in rows], rec_fpath, bp.datatype, scans.parent
+                    )
+                    if ind is not None:
+                        scan = list(rows.values())[ind].copy()
+            return dict(
+                sidecar=(
+                    bp.read_sidecar(inherit=True, on_error="ignore")
+                    if (bp.datatype or bp.suffix)
+                    else {}
+                ),
+                participant=(
+                    _read_tsv_rows(participants, "participant_id", "sub-")
+                    .get(sub, {})
+                    .copy()
+                    if sub and participants.is_file()
+                    else {}
+                ),
+                session=(
+                    _read_tsv_rows(sessions, "session_id", "ses-").get(ses, {}).copy()
+                    if sessions and _sidecar_is_file(sessions, root)
+                    else {}
+                ),
+                scan=scan,
+                data_dictionary={
+                    kind: bp.read_sidecar(kind, inherit=True, on_error="ignore")
+                    for kind in ("participants", "sessions", "scans")
+                },
+            )
 
     @property
     def meg_calibration_fpath(self):
@@ -2370,49 +2386,27 @@ _ext_map = {  # these sidecar files should only ever have these extensions
     "electrodes": ".tsv",
 }
 
-_SCAN_ALT_SUFFIXES = {
-    ext: group
-    for group in ((".vhdr", ".eeg", ".vmrk"), (".set", ".fdt"), (".lay", ".dat"))
-    for ext in group
-}
-_SCAN_ALT_SUFFIXES[".pdf"] = (".pdf", "")
+_SCAN_COMPANIONS = (
+    (".vhdr", ".eeg", ".vmrk"),
+    (".set", ".fdt"),
+    (".lay", ".dat"),
+    (".pdf", ""),
+)
 
 
-def _match_scan_row(rec_fpath, datatype, scans_fname, index):
+def _find_scan_row(fnames, rec_fpath, datatype, scans_dir=None):
     """Find the row index in ``scans.tsv`` matching ``rec_fpath``."""
-    scans_dir = Path(scans_fname).parent
-    base_fnames = []
-    if rec_fpath.is_relative_to(scans_dir):
-        base_fnames.append(rec_fpath.relative_to(scans_dir))
-    dt_fname = Path(datatype or "") / rec_fpath.name
-    if dt_fname not in base_fnames:
-        base_fnames.append(dt_fname)
-    for base in base_fnames:
-        for ext in (base.suffix, *_SCAN_ALT_SUFFIXES.get(base.suffix, ())):
-            cand = base.with_suffix(ext).as_posix()
-            if cand in index:
-                return index[cand], base
-    return None, dt_fname
-
-
-def _read_scan_metadata(bids_path):
-    """Read the ``scans.tsv`` row for ``bids_path``, if it points to a recording."""
-    if bids_path.subject is None or not (
-        bids_path.datatype or bids_path.suffix or bids_path.extension
-    ):
-        return {}
-    scans_fpath = bids_path.find_matching_sidecar(
-        suffix="scans", extension=".tsv", on_error="ignore"
+    bases = [Path(datatype or "") / rec_fpath.name]
+    if scans_dir and rec_fpath.is_relative_to(scans_dir):
+        bases.insert(0, rec_fpath.relative_to(scans_dir))
+    exts = next(
+        (g for g in _SCAN_COMPANIONS if rec_fpath.suffix in g), (rec_fpath.suffix,)
     )
-    if scans_fpath is None:
-        return {}
-    try:
-        rec_fpath = bids_path.fpath
-    except (RuntimeError, ValueError):
-        return {}
-    table, index = _tsv_index(scans_fpath, "filename", posix=True)
-    row_ind, _ = _match_scan_row(rec_fpath, bids_path.datatype, scans_fpath, index)
-    return {} if row_ind is None else _tsv_row(table, row_ind, "filename")
+    for base in bases:
+        for ext in (base.suffix, *(e for e in exts if e != base.suffix)):
+            if (cand := base.with_suffix(ext)) in fnames:
+                return fnames.index(cand), cand
+    return None, bases[-1]
 
 
 _DIR_LISTINGS = contextvars.ContextVar("_DIR_LISTINGS", default=None)
