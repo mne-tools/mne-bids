@@ -378,7 +378,7 @@ def test_read_participants_data(tmp_path):
     # if modifying participants tsv, then read_raw_bids reflects that
     participants_tsv_fpath = tmp_path / "participants.tsv"
     participants_tsv = _from_tsv(participants_tsv_fpath)
-    participants_tsv["hand"][0] = "n/a"
+    participants_tsv["handedness"][0] = "n/a"
     participants_tsv["outcome"] = ["good"]  # e.g. clinical tutorial from MNE-Python
     _to_tsv(participants_tsv, participants_tsv_fpath)
     with pytest.warns(RuntimeWarning, match="Unable to map"):
@@ -391,7 +391,7 @@ def test_read_participants_data(tmp_path):
 
     # make sure things are read even if the entries don't make sense
     participants_tsv = _from_tsv(participants_tsv_fpath)
-    participants_tsv["hand"][0] = "righty"
+    participants_tsv["handedness"][0] = "righty"
     participants_tsv["sex"][0] = "malesy"
     # 'n/a' values should get omitted
     participants_tsv["weight"] = ["n/a"]
@@ -488,10 +488,11 @@ def test_read_participants_data(tmp_path):
         ("l", 2, "m", 1),
     ],
 )
+@pytest.mark.parametrize("column", ["handedness", "hand", "both", "n/a"])
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_read_participants_handedness_and_sex_mapping(
-    hand_bids, hand_mne, sex_bids, sex_mne, tmp_path
+    hand_bids, hand_mne, sex_bids, sex_mne, column, tmp_path
 ):
     """Test we're correctly mapping handedness and sex between BIDS and MNE."""
     bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg")
@@ -503,11 +504,22 @@ def test_read_participants_handedness_and_sex_mapping(
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     participants_tsv = _from_tsv(participants_tsv_fpath)
-    participants_tsv["hand"][0] = hand_bids
+    participants_tsv["handedness"][0] = hand_bids
+    if column == "hand":  # written by MNE-BIDS < 0.21
+        participants_tsv["hand"] = participants_tsv.pop("handedness")
+    elif column in ("both", "n/a"):
+        participants_tsv["hand"] = ["A"]
+        if column == "n/a":
+            participants_tsv["handedness"][0] = "n/a"
+            hand_mne = 0
     participants_tsv["sex"][0] = sex_bids
     _to_tsv(participants_tsv, participants_tsv_fpath)
 
-    raw = read_raw_bids(bids_path=bids_path)
+    if column in ("both", "n/a"):  # hand is then a custom column
+        with pytest.warns(RuntimeWarning, match="Unable to map.*\nhand: A"):
+            raw = read_raw_bids(bids_path=bids_path)
+    else:
+        raw = read_raw_bids(bids_path=bids_path)
     assert raw.info["subject_info"]["hand"] is hand_mne
     assert raw.info["subject_info"]["sex"] is sex_mne
 

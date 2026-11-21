@@ -436,9 +436,15 @@ def _handle_participants_reading(participants_fname, raw, subject):
     id his_id last_name first_name middle_name birthday sex hand weight height
     """.strip().split()
     )
+    row = {col: values[row_ind] for col, values in participants_tsv.items()}
     bad_key_vals = list()
-    for col_name, value in participants_tsv.items():
-        orig_value = value = value[row_ind]
+    # MNE-BIDS < 0.21 wrote "hand". It can be a custom column when both exist.
+    if "handedness" in row:
+        if "hand" in row:
+            bad_key_vals.append(("hand", row["hand"], None))
+        row["hand"] = row.pop("handedness")
+    for col_name, value in row.items():
+        orig_value = value
         if col_name in ("sex", "hand"):
             value = _map_options(what=col_name, key=value, fro="bids", to="mne")
             # We don't know how to translate to MNE, so skip.
