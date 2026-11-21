@@ -2767,6 +2767,11 @@ def test_read_participants(tmp_path):
         == expected
     )
 
+    fname.write_text("participant_id\tage\nsub-01\t24\nsub-01\t99\nn/a\t30\n")
+    with pytest.warns(RuntimeWarning, match="Duplicate participant_id 'sub-01'"):
+        rows = read_participants(fname)
+    assert rows["01"] == {"age": "24"} and rows["n/a"] == {"age": "30"}
+
     fname.write_text("age\tsex\n24\tF\n")
     with pytest.raises(ValueError, match="participant_id"):
         read_participants(fname)
@@ -2829,14 +2834,19 @@ def test_read_sidecar(tmp_path):
         bp.read_sidecar("nosuchsuffix")
     assert read_raw_bids(bp).info["line_freq"] == 60
 
-    # get_metadata includes TSV rows and their data dictionaries.
+    # read_metadata includes TSV rows and their data dictionaries.
+    with pytest.raises(ValueError, match="root"):
+        BIDSPath(subject="01").read_metadata()
     _write_json(bids_root / "scans.json", {"acq_time": {"Units": "s"}})  # inherited
-    meta = bp.copy().update(suffix="eeg", extension=".vhdr").get_metadata()
-    assert meta["sidecar"] == bp.read_sidecar(inherit=True)
+    sub_only = BIDSPath(subject="01", root=bids_root).read_metadata()
+    assert sub_only["sidecar"] == {} and sub_only["scan"] == {}
     assert (
-        meta["participant"]
-        == read_participants(bids_root / "participants.tsv")[bp.subject]
+        sub_only["participant"]
+        == read_participants(bids_root / "participants.tsv")["01"]
     )
+    meta = bp.copy().update(suffix="eeg", extension=".vhdr").read_metadata()
+    assert meta["sidecar"] == bp.read_sidecar(inherit=True)
+    assert meta["participant"] == sub_only["participant"]
     assert meta["participant"] == dict(
         age="29", sex="F", hand="A", weight=None, height=None
     )
@@ -2847,8 +2857,16 @@ def test_read_sidecar(tmp_path):
     assert meta["scan"] == {"acq_time": "2000-01-01T12:00:00.000000Z"}
     # scans.tsv lists the .vhdr, also for the .eeg and without a datatype
     for kwargs in (dict(extension=".eeg"), dict(extension=".vhdr", datatype=None)):
-        other = bp.copy().update(suffix="eeg", **kwargs).get_metadata()
+        other = bp.copy().update(suffix="eeg", **kwargs).read_metadata()
         assert other["scan"] == meta["scan"]
+    # also when scans.tsv itself lists .eeg instead of .vhdr, or is absent
+    scans_tsv = bids_root / "sub-01" / "ses-eeg" / "sub-01_ses-eeg_scans.tsv"
+    orig_scans = scans_tsv.read_text(encoding="utf-8")
+    scans_tsv.write_text(orig_scans.replace(".vhdr", ".eeg"), encoding="utf-8")
+    assert bp.read_metadata()["scan"] == meta["scan"]
+    scans_tsv.unlink()
+    assert bp.read_metadata()["scan"] == {}
+    scans_tsv.write_text(orig_scans, encoding="utf-8")
     assert meta["data_dictionary"]["participants"]["age"]["Units"] == "years"
     assert "pathology" in meta["data_dictionary"]["sessions"]
     assert meta["data_dictionary"]["scans"] == {"acq_time": {"Units": "s"}}

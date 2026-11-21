@@ -10,7 +10,6 @@ import warnings
 from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
-from functools import lru_cache
 from pathlib import Path
 
 import mne
@@ -22,7 +21,6 @@ from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     _EPOCHED_EXTS,
     ALLOWED_DATATYPE_EXTENSIONS,
-    ALLOWED_DATATYPES,
     ANNOTATIONS_TO_KEEP,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
@@ -34,11 +32,12 @@ from mne_bids.path import (
     BIDSPath,
     _find_matching_sidecar,
     _infer_datatype,
+    _match_scan_row,
     _parse_ext,
     _share_dir_listings,
     get_bids_path_from_fname,
 )
-from mne_bids.tsv_handler import _drop, _from_tsv
+from mne_bids.tsv_handler import _drop, _from_tsv, _tsv_cached, _tsv_index, _tsv_row
 from mne_bids.utils import (
     _convert_dt_to_utc,
     _get_ch_type_mapping,
@@ -299,29 +298,6 @@ def _verbose_list_index(lst, val, *, allow_all=False):
         raise ValueError(f"{exc}{extra}") from None
 
 
-@lru_cache(maxsize=1)
-def _participants_tsv(participants_fname, content):
-    """Parse participants.tsv once per content of the file.
-
-    ``content`` is the file's bytes. Reading them on every call is much cheaper
-    than parsing and, unlike file metadata, cannot miss a rewrite (some network
-    filesystems only store modification times in seconds). Only the last table
-    is kept, so a file that is rewritten often does not pile up in memory.
-    """
-    return _from_tsv(participants_fname, content=content)
-
-
-def _read_tsv_rows(fname, key_col, prefix="", *, content=None):
-    table = _from_tsv(fname, content=content)
-    if key_col not in table:
-        raise ValueError(f"{fname} has no {key_col} column.")
-    rows = {}
-    for values in zip(*table.values()):
-        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
-        rows[row.pop(key_col).removeprefix(prefix)] = row
-    return rows
-
-
 def read_participants(fname, *, content=None):
     """Read a ``participants.tsv`` file.
 
@@ -344,43 +320,8 @@ def read_participants(fname, *, content=None):
     -----
     .. versionadded:: 0.21
     """
-    return _read_tsv_rows(fname, "participant_id", "sub-", content=content)
-
-
-@_share_dir_listings()  # the sidecars sit in the same few directories
-def _get_metadata(bids_path):
-    """Combine the inherited JSON sidecars with the data summary file rows."""
-    if bids_path.datatype is None and bids_path.suffix in ALLOWED_DATATYPES:
-        bids_path = bids_path.copy().update(datatype=bids_path.suffix)
-    root, sub, ses = bids_path.root, bids_path.subject, bids_path.session
-    # scans.tsv lists multi-file formats by the file passed to readers
-    header = {".eeg": ".vhdr", ".vmrk": ".vhdr", ".fdt": ".set", ".dat": ".lay"}
-    scan = bids_path.fpath
-    scan = scan.with_suffix(header.get(scan.suffix, scan.suffix))
-    # data summary files have fixed locations in BIDS, so no directory listing
-    scans = BIDSPath(
-        subject=sub, session=ses, suffix="scans", extension=".tsv", root=root
-    )
-    sessions = BIDSPath(subject=sub, suffix="sessions", extension=".tsv", root=root)
-    files = dict(
-        participant=(Path(root) / "participants.tsv", "participant_id", "sub-", sub),
-        session=(sessions.fpath, "session_id", "ses-", ses),
-        scan=(
-            scans.fpath,
-            "filename",
-            "",
-            scan.relative_to(scans.directory).as_posix(),
-        ),
-    )
-    metadata = dict(sidecar=bids_path.read_sidecar(inherit=True, on_error="ignore"))
-    metadata["data_dictionary"] = {}
-    for key, (fname, id_col, prefix, row_id) in files.items():
-        rows = _read_tsv_rows(fname, id_col, prefix) if fname.is_file() else {}
-        metadata[key] = rows.get(row_id, {})
-        metadata["data_dictionary"][f"{key}s"] = bids_path.read_sidecar(
-            f"{key}s", inherit=True, on_error="ignore"
-        )
-    return metadata
+    table, index = _tsv_index(fname, "participant_id", "sub-", content=content)
+    return {key: _tsv_row(table, i, "participant_id") for key, i in index.items()}
 
 
 # days per age unit allowed by BIDS in participants.json, years by default
@@ -417,8 +358,8 @@ def _age_unit_days(participants_fname):
 
 
 def _handle_participants_reading(participants_fname, raw, subject):
-    participants_tsv = _participants_tsv(
-        participants_fname, participants_fname.read_bytes()
+    participants_tsv = _tsv_cached(
+        str(participants_fname), participants_fname.read_bytes()
     )
     subjects = participants_tsv["participant_id"]
     if subject not in subjects:
@@ -506,50 +447,25 @@ def _handle_participants_reading(participants_fname, raw, subject):
 
 def _handle_scans_reading(scans_fname, raw, bids_path):
     """Read associated scans.tsv and set meas_date."""
-    scans_tsv = _from_tsv(scans_fname)
+    scans_fname = Path(scans_fname)
+    scans_tsv, index = _tsv_index(scans_fname, "filename", posix=True)
     fname = bids_path.fpath.name
-
-    # get the row corresponding to the file
-    # use string concatenation instead of os.path
-    # to work nicely with windows
-    data_fname = Path(bids_path.datatype) / fname
-    fnames = scans_tsv["filename"]
-    fnames = [Path(fname) for fname in fnames]
+    fnames = [Path(f) for f in scans_tsv["filename"]]
     if not fnames:  # header-only scans.tsv
         return raw
-    if "acq_time" in scans_tsv:
-        acq_times = scans_tsv["acq_time"]
-    else:
-        acq_times = ["n/a"] * len(fnames)
+    acq_times = scans_tsv.get("acq_time", ["n/a"] * len(fnames))
 
-    # There are three possible extensions for BrainVision
-    # First gather all the possible extensions
-    acq_suffixes = set(fname.suffix for fname in fnames)
-    # Add the filename extension for the bids folder
-    acq_suffixes.add(Path(data_fname).suffix)
-
-    if all(suffix in (".vhdr", ".eeg", ".vmrk") for suffix in acq_suffixes):
-        ext = fnames[0].suffix
-        data_fname = Path(data_fname).with_suffix(ext)
-    try:
-        row_ind = fnames.index(data_fname)
-    except ValueError:
-        row_ind = None
-        if fname.endswith(".pdf"):
-            alt_fname = Path(bids_path.datatype) / Path(fname).with_suffix("")
-            try:
-                row_ind = fnames.index(alt_fname)
-                data_fname = alt_fname
-            except ValueError:
-                pass
-        if row_ind is None:
-            matches = get_close_matches(str(data_fname), [str(f) for f in fnames])
-            hint = f" Did you mean one of {matches}?" if matches else ""
-            warn(
-                f"{data_fname} is not listed in {scans_fname.name}.{hint} "
-                "Leaving raw.info['meas_date'] unchanged."
-            )
-            return raw
+    row_ind, data_fname = _match_scan_row(
+        bids_path.fpath, bids_path.datatype, scans_fname, index
+    )
+    if row_ind is None:
+        matches = get_close_matches(str(data_fname), [str(f) for f in fnames])
+        hint = f" Did you mean one of {matches}?" if matches else ""
+        warn(
+            f"{data_fname} is not listed in {scans_fname.name}.{hint} "
+            "Leaving raw.info['meas_date'] unchanged."
+        )
+        return raw
 
     # check whether all split files have the same acq_time
     # and throw an error if they don't
