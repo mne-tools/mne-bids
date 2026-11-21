@@ -1429,6 +1429,26 @@ class BIDSPath:
         suffix = suffix or self.suffix or self.datatype
         return _read_sidecar_json(self, suffix, on_error, inherit=inherit)
 
+    def get_metadata(self):
+        """Get the JSON sidecars and the data summary file rows of this path.
+
+        Returns
+        -------
+        metadata : dict
+            ``"sidecar"`` (as ``read_sidecar(inherit=True)``), the rows of
+            ``participants.tsv``, ``sessions.tsv`` and ``scans.tsv`` under
+            ``"participant"``, ``"session"`` and ``"scan"`` (``n/a`` becomes
+            None), and their JSON data dictionaries (column descriptions)
+            under ``"data_dictionary"``.
+
+        Notes
+        -----
+        .. versionadded:: 0.21
+        """
+        from mne_bids.read import _get_metadata  # avoid circular import
+
+        return _get_metadata(self)
+
     @property
     def meg_calibration_fpath(self):
         """Find the matching Elekta/Neuromag/MEGIN fine-calibration file.

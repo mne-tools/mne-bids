@@ -22,6 +22,7 @@ from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     _EPOCHED_EXTS,
     ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_DATATYPES,
     ANNOTATIONS_TO_KEEP,
     EPHY_ALLOWED_DATATYPES,
     UNITS_BIDS_TO_FIFF_MAP,
@@ -310,6 +311,17 @@ def _participants_tsv(participants_fname, content):
     return _from_tsv(participants_fname, content=content)
 
 
+def _read_tsv_rows(fname, key_col, prefix="", *, content=None):
+    table = _from_tsv(fname, content=content)
+    if key_col not in table:
+        raise ValueError(f"{fname} has no {key_col} column.")
+    rows = {}
+    for values in zip(*table.values()):
+        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
+        rows[row.pop(key_col).removeprefix(prefix)] = row
+    return rows
+
+
 def read_participants(fname, *, content=None):
     """Read a ``participants.tsv`` file.
 
@@ -332,14 +344,43 @@ def read_participants(fname, *, content=None):
     -----
     .. versionadded:: 0.21
     """
-    table = _from_tsv(fname, content=content)
-    if "participant_id" not in table:
-        raise ValueError(f"{fname} has no participant_id column.")
-    participants = {}
-    for values in zip(*table.values()):
-        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
-        participants[row.pop("participant_id").removeprefix("sub-")] = row
-    return participants
+    return _read_tsv_rows(fname, "participant_id", "sub-", content=content)
+
+
+@_share_dir_listings()  # the sidecars sit in the same few directories
+def _get_metadata(bids_path):
+    """Combine the inherited JSON sidecars with the data summary file rows."""
+    if bids_path.datatype is None and bids_path.suffix in ALLOWED_DATATYPES:
+        bids_path = bids_path.copy().update(datatype=bids_path.suffix)
+    root, sub, ses = bids_path.root, bids_path.subject, bids_path.session
+    # scans.tsv lists multi-file formats by the file passed to readers
+    header = {".eeg": ".vhdr", ".vmrk": ".vhdr", ".fdt": ".set", ".dat": ".lay"}
+    scan = bids_path.fpath
+    scan = scan.with_suffix(header.get(scan.suffix, scan.suffix))
+    # data summary files have fixed locations in BIDS, so no directory listing
+    scans = BIDSPath(
+        subject=sub, session=ses, suffix="scans", extension=".tsv", root=root
+    )
+    sessions = BIDSPath(subject=sub, suffix="sessions", extension=".tsv", root=root)
+    files = dict(
+        participant=(Path(root) / "participants.tsv", "participant_id", "sub-", sub),
+        session=(sessions.fpath, "session_id", "ses-", ses),
+        scan=(
+            scans.fpath,
+            "filename",
+            "",
+            scan.relative_to(scans.directory).as_posix(),
+        ),
+    )
+    metadata = dict(sidecar=bids_path.read_sidecar(inherit=True, on_error="ignore"))
+    metadata["data_dictionary"] = {}
+    for key, (fname, id_col, prefix, row_id) in files.items():
+        rows = _read_tsv_rows(fname, id_col, prefix) if fname.is_file() else {}
+        metadata[key] = rows.get(row_id, {})
+        metadata["data_dictionary"][f"{key}s"] = bids_path.read_sidecar(
+            f"{key}s", inherit=True, on_error="ignore"
+        )
+    return metadata
 
 
 # days per age unit allowed by BIDS in participants.json, years by default

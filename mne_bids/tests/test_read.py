@@ -2829,6 +2829,30 @@ def test_read_sidecar(tmp_path):
         bp.read_sidecar("nosuchsuffix")
     assert read_raw_bids(bp).info["line_freq"] == 60
 
+    # get_metadata includes TSV rows and their data dictionaries.
+    _write_json(bids_root / "scans.json", {"acq_time": {"Units": "s"}})  # inherited
+    meta = bp.copy().update(suffix="eeg", extension=".vhdr").get_metadata()
+    assert meta["sidecar"] == bp.read_sidecar(inherit=True)
+    assert (
+        meta["participant"]
+        == read_participants(bids_root / "participants.tsv")[bp.subject]
+    )
+    assert meta["participant"] == dict(
+        age="29", sex="F", hand="A", weight=None, height=None
+    )
+    assert meta["session"] == {
+        "acq_time": "2000-01-01T12:00:00.000000Z",
+        "pathology": "Parkinson's disease",
+    }
+    assert meta["scan"] == {"acq_time": "2000-01-01T12:00:00.000000Z"}
+    # scans.tsv lists the .vhdr, also for the .eeg and without a datatype
+    for kwargs in (dict(extension=".eeg"), dict(extension=".vhdr", datatype=None)):
+        other = bp.copy().update(suffix="eeg", **kwargs).get_metadata()
+        assert other["scan"] == meta["scan"]
+    assert meta["data_dictionary"]["participants"]["age"]["Units"] == "years"
+    assert "pathology" in meta["data_dictionary"]["sessions"]
+    assert meta["data_dictionary"]["scans"] == {"acq_time": {"Units": "s"}}
+
     sidecar["PowerLineFrequency"] = 50
     _write_json(eeg_json, sidecar, overwrite=True)
     assert bp.read_sidecar(inherit=True)["PowerLineFrequency"] == 50
