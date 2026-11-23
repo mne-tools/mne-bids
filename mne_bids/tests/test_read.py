@@ -2870,6 +2870,25 @@ def test_read_sidecar(tmp_path):
     assert meta["data_dictionary"]["participants"]["age"]["Units"] == "years"
     assert "pathology" in meta["data_dictionary"]["sessions"]
     assert meta["data_dictionary"]["scans"] == {"acq_time": {"Units": "s"}}
+    # An underspecified path matching several recordings cannot pick a scan
+    # row (scans.tsv is optional): return an empty one and keep the rest.
+    # Only the RuntimeError is caught; datatype-inference errors still raise.
+    other_task = eeg_json.with_name("sub-01_ses-eeg_task-other_eeg.vhdr")
+    other_task.write_text("")
+    try:
+        partial = BIDSPath(
+            subject="01", session="eeg", datatype="eeg", root=bids_root
+        ).read_metadata()
+    finally:
+        other_task.unlink()
+    assert partial["scan"] == {} and partial["participant"] == meta["participant"]
+    no_ephys_dir = bids_root / "sub-99" / "ses-eeg"
+    no_ephys_dir.mkdir(parents=True)
+    (no_ephys_dir / "sub-99_ses-eeg_scans.tsv").write_text("filename\tacq_time\n")
+    with pytest.raises(ValueError, match="No electrophysiological data found"):
+        BIDSPath(
+            subject="99", session="eeg", extension=".vhdr", root=bids_root
+        ).read_metadata()
 
     sidecar["PowerLineFrequency"] = 50
     _write_json(eeg_json, sidecar, overwrite=True)

@@ -1447,19 +1447,28 @@ class BIDSPath:
                 Sidecar metadata, as returned by
                 :meth:`read_sidecar(inherit=True) <mne_bids.BIDSPath.read_sidecar>`.
             * ``"participant"``: dict
-                This participants row from `participants.tsv`_.
+                This participant's row from `participants.tsv`_.
             * ``"session"``: dict
-                This sessions rows from `sessions.tsv`_.
+                This session's row from `sessions.tsv`_.
             * ``"scan"``: dict
-                This recordings row from `scans.tsv`_.
+                This recording's row from `scans.tsv`_.
+            * ``"data_dictionary"``: dict
+                Column descriptions from the inherited ``participants.json``,
+                ``sessions.json``, and ``scans.json`` sidecars, keyed by
+                ``"participants"``, ``"sessions"``, and ``"scans"``.
 
-            Any ``n/a`` values in TSV files are converted to ``None``. Column
-            descriptions (e.g. from ``scans.json``) are stored as dictionaries under a
-            ``"data_dictionary"`` key (e.g. ``metadata["scan"]["data_dictionary"]``).
+            Any ``n/a`` values in TSV files are converted to ``None``.
 
         Notes
         -----
         .. versionadded:: 0.21
+
+        The `scans.tsv`_ and `sessions.tsv`_ files are optional in BIDS, so
+        missing files or rows return empty dicts instead of raising. Only
+        ``"scan"`` needs this path to resolve to a single recording file;
+        underspecified paths that match several recordings or datatypes
+        likewise return an empty ``"scan"`` dict while the remaining
+        entries are still read.
         """
         if self.root is None:
             raise ValueError("The root of the BIDSPath must be set to read metadata.")
@@ -1489,7 +1498,10 @@ class BIDSPath:
             if scans is not None:
                 try:
                     rec_fpath = bp.fpath
-                except (RuntimeError, ValueError):
+                except RuntimeError:
+                    # scans.tsv is optional in BIDS, so do not raise here:
+                    # underspecified paths need not resolve to one recording
+                    # (several files or datatypes may match). Leave empty.
                     rec_fpath = None
                 if rec_fpath is not None:
                     rows = _read_tsv_rows(scans, "filename")
