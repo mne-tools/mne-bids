@@ -355,8 +355,8 @@ def _tsv_rows_cached(fname, content, key_col, prefix):
     if key_col not in table:
         raise ValueError(f"{fname} has no {key_col} column.")
     rows, duplicates = {}, []
-    for values in zip(*table.values()):
-        row = dict(zip(table, values))
+    for values in zip(*table.values(), strict=True):
+        row = dict(zip(table, values, strict=True))
         raw_id = row.pop(key_col)
         key = raw_id.removeprefix(prefix)
         if key in rows:

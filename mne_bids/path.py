@@ -1477,7 +1477,7 @@ class BIDSPath:
             if self.datatype is None and self.suffix in ALLOWED_DATATYPES
             else self
         )
-        root, sub, ses = Path(bp.root), bp.subject, bp.session
+        root, sub, ses = bp.root, bp.subject, bp.session
         with _share_dir_listings():
             participants = root / "participants.tsv"
             sessions = (

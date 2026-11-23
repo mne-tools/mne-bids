@@ -2834,7 +2834,22 @@ def test_read_sidecar(tmp_path):
         bp.read_sidecar("nosuchsuffix")
     assert read_raw_bids(bp).info["line_freq"] == 60
 
-    # read_metadata includes TSV rows and their data dictionaries.
+    sidecar["PowerLineFrequency"] = 50
+    _write_json(eeg_json, sidecar, overwrite=True)
+    assert bp.read_sidecar(inherit=True)["PowerLineFrequency"] == 50
+    assert read_raw_bids(bp).info["line_freq"] == 50
+
+
+def test_read_metadata(tmp_path):
+    """BIDSPath.read_metadata returns TSV rows and their data dictionaries."""
+    bids_root = tmp_path / "tiny_bids[1]"
+    sh.copytree(tiny_bids_root, bids_root)
+    eeg_json = (
+        bids_root / "sub-01" / "ses-eeg" / "eeg" / "sub-01_ses-eeg_task-rest_eeg.json"
+    )
+    bp = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
+    )
     with pytest.raises(ValueError, match="root"):
         BIDSPath(subject="01").read_metadata()
     _write_json(bids_root / "scans.json", {"acq_time": {"Units": "s"}})  # inherited
@@ -2889,11 +2904,6 @@ def test_read_sidecar(tmp_path):
         BIDSPath(
             subject="99", session="eeg", extension=".vhdr", root=bids_root
         ).read_metadata()
-
-    sidecar["PowerLineFrequency"] = 50
-    _write_json(eeg_json, sidecar, overwrite=True)
-    assert bp.read_sidecar(inherit=True)["PowerLineFrequency"] == 50
-    assert read_raw_bids(bp).info["line_freq"] == 50
 
 
 @pytest.mark.parametrize("col", ["description", "ch_names", "hed_string"])
