@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.21.0.dev41+g59c2677e0 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.21.0.dev42+gaf8e711a4 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=4ff2a4b0"></script>
+    <script src="_static/documentation_options.js?v=a88b284d"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -86,7 +86,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev41+g59c2677e0" />
+  <meta name="docsearch:version" content="0.21.0.dev42+gaf8e711a4" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -155,7 +155,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev41+g59c2677e0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev42+gaf8e711a4 documentation</p>
   
 </a></div>
     
@@ -536,6 +536,7 @@
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a></p></li>
 <li><p><a class="reference external" href="https://larsoner.com/">Eric Larson</a></p></li>
+<li><p><a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a></p></li>
 </ul>
 </section>
 <section id="detailed-list-of-changes">
@@ -593,6 +594,7 @@
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> no longer sets fNIRS channels whose <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> type is <code class="docutils literal notranslate"><span class="pre">NIRSCWHBO</span></code>, <code class="docutils literal notranslate"><span class="pre">NIRSCWHBR</span></code> or <code class="docutils literal notranslate"><span class="pre">NIRSCWOPTICALDENSITY</span></code> to <code class="docutils literal notranslate"><span class="pre">misc</span></code>: they get the MNE types <code class="docutils literal notranslate"><span class="pre">hbo</span></code>, <code class="docutils literal notranslate"><span class="pre">hbr</span></code> and <code class="docutils literal notranslate"><span class="pre">fnirs_od</span></code>, and <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> is written with these BIDS types for such channels instead of raising a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1701">#1701</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.find_matching_paths()</span></code></a> and <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.match()</span></code></a> now return MEF3 <code class="docutils literal notranslate"><span class="pre">.mefd</span></code> recordings, which are directories, as they do CTF <code class="docutils literal notranslate"><span class="pre">.ds</span></code> directories, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1707">#1707</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now matches fNIRS channels on the <code class="docutils literal notranslate"><span class="pre">source</span></code>, <code class="docutils literal notranslate"><span class="pre">detector</span></code> and <code class="docutils literal notranslate"><span class="pre">wavelength_nominal</span></code> columns of <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> when their names differ from the names MNE gives SNIRF channels (for example <code class="docutils literal notranslate"><span class="pre">S1-D1-690.0</span></code> in OpenNeuro ds004830), instead of raising a channel mismatch error, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1704">#1704</a>)</p></li>
+<li><p>Fix BrainVision anonymization overwriting all <code class="docutils literal notranslate"><span class="pre">New</span> <span class="pre">Segment</span></code> dates and the impedance time with the recording start, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1731">#1731</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">

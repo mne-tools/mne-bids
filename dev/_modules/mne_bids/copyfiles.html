@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.21.0.dev41+g59c2677e0 documentation</title>
+    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.21.0.dev42+gaf8e711a4 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../../_static/documentation_options.js?v=4ff2a4b0"></script>
+    <script src="../../_static/documentation_options.js?v=a88b284d"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -83,7 +83,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.21.0.dev41+g59c2677e0" />
+  <meta name="docsearch:version" content="0.21.0.dev42+gaf8e711a4" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -152,7 +152,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.21.0.dev41+g59c2677e0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.21.0.dev42+gaf8e711a4 documentation</p>
   
 </a></div>
     
@@ -518,6 +518,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sh</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -816,33 +818,34 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_replace_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Overwrite file, replacing end of lines matching pattern with replace."""</span>
-    <span class="n">new_content</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_replace_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">repl</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Overwrite file, substituting matches of ``pattern`` in each line."""</span>
     <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="p">:</span>
-            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">replace</span><span class="p">)]</span> <span class="o">+</span> <span class="n">replace</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
-            <span class="n">new_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">new_content</span> <span class="o">=</span> <span class="p">[</span><span class="n">pattern</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">repl</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="p">]</span>
 
     <span class="k">with</span> <span class="n">_open_lock</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
         <span class="n">fout</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">new_content</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_anonymize_brainvision</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Anonymize vmrk and vhdr files in place using ``date`` datetime object."""</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_shift_brainvision_date</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">daysback</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Move a matched New Segment date back by ``daysback`` days, or remove it."""</span>
+    <span class="n">prefix</span><span class="p">,</span> <span class="n">date_str</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date_str</span><span class="p">,</span> <span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">%H%M%S</span><span class="si">%f</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># e.g., "00000000000000000000", which means "no date"</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">daysback</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">"0"</span> <span class="o">*</span> <span class="mi">20</span>
+    <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="n">date</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">daysback</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">%H%M%S</span><span class="si">%f</span><span class="s2">"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_anonymize_brainvision</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">daysback</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Move the New Segment dates in the vmrk file back by ``daysback`` days."""</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">vmrk_file</span> <span class="o">=</span> <span class="n">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">)</span>
-
-    <span class="c1"># Go through VMRK</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^Mk\d+=New Segment,.*,\d+,\d+,\d+,\d</span><span class="si">{20}</span><span class="s2">$"</span><span class="p">)</span>
-    <span class="n">replace</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">%H%M%S</span><span class="si">%f</span><span class="s2">"</span><span class="p">)</span>
-    <span class="n">_replace_file</span><span class="p">(</span><span class="n">vmrk_file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
-
-    <span class="c1"># Go through VHDR</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^Impedance \[kOhm\] at \d\d:\d\d:\d\d :$"</span><span class="p">)</span>
-    <span class="n">replace</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"at </span><span class="si">{</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%H:%M:%S'</span><span class="p">)</span><span class="si">}</span><span class="s2"> :"</span>
-    <span class="n">_replace_file</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+    <span class="c1"># Match every line from which mne.io.read_raw_brainvision reads a date</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^(\s*Mk\d+=New Segment,.*,\d+,\d+,-?\d+,)(\d</span><span class="si">{20}</span><span class="s2">)(?=\s*$)"</span><span class="p">)</span>
+    <span class="n">repl</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">_shift_brainvision_date</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">)</span>
+    <span class="n">_replace_file</span><span class="p">(</span><span class="n">vmrk_file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">repl</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="copyfile_brainvision">
@@ -960,9 +963,7 @@
         <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
         <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="s2">".vhdr"</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">anonymize_info</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">)</span>
-        <span class="n">_anonymize_brainvision</span><span class="p">(</span>
-            <span class="n">fname_dest</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".vhdr"</span><span class="p">),</span> <span class="n">date</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"meas_date"</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">_anonymize_brainvision</span><span class="p">(</span><span class="n">fname_dest</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".vhdr"</span><span class="p">),</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">".eeg"</span><span class="p">,</span> <span class="s2">".vhdr"</span><span class="p">,</span> <span class="s2">".vmrk"</span><span class="p">]:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_dest</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">ext</span><span class="p">))</span>
