@@ -1441,11 +1441,21 @@ class BIDSPath:
         Returns
         -------
         metadata : dict
-            ``"sidecar"`` (as ``read_sidecar(inherit=True)``), the rows of
-            ``participants.tsv``, ``sessions.tsv`` and ``scans.tsv`` under
-            ``"participant"``, ``"session"`` and ``"scan"`` (``n/a`` becomes
-            None), and their JSON data dictionaries (column descriptions)
-            under ``"data_dictionary"``.
+            Dictionary containing BIDS metadata with the following keys:
+
+            * ``"sidecar"``: dict
+                Sidecar metadata, as returned by
+                :meth:`read_sidecar(inherit=True) <mne_bids.BIDSPath.read_sidecar>`.
+            * ``"participant"``: dict
+                This participants row from `participants.tsv`_.
+            * ``"session"``: dict
+                This sessions rows from `sessions.tsv`_.
+            * ``"scan"``: dict
+                This recordings row from `scans.tsv`_.
+
+            Any ``n/a`` values in TSV files are converted to ``None``. Column
+            descriptions (e.g. from ``scans.json``) are stored as dictionaries under a
+            ``"data_dictionary"`` key (e.g. ``metadata["scan"]["data_dictionary"]``).
 
         Notes
         -----
