@@ -26,6 +26,7 @@ The following authors had contributed before. Thank you for sticking around! �
 
 * `Bruno Aristimunha`_
 * `Eric Larson`_
+* `Stefan Appelhoff`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,6 +81,7 @@ Detailed list of changes
 - :func:`mne_bids.read_raw_bids` no longer sets fNIRS channels whose ``channels.tsv`` type is ``NIRSCWHBO``, ``NIRSCWHBR`` or ``NIRSCWOPTICALDENSITY`` to ``misc``: they get the MNE types ``hbo``, ``hbr`` and ``fnirs_od``, and ``channels.tsv`` is written with these BIDS types for such channels instead of raising a ``KeyError``, by `Bruno Aristimunha`_ (:gh:`1701`)
 - :func:`mne_bids.find_matching_paths` and :meth:`mne_bids.BIDSPath.match` now return MEF3 ``.mefd`` recordings, which are directories, as they do CTF ``.ds`` directories, by `Bruno Aristimunha`_ (:gh:`1707`)
 - :func:`mne_bids.read_raw_bids` now matches fNIRS channels on the ``source``, ``detector`` and ``wavelength_nominal`` columns of ``channels.tsv`` when their names differ from the names MNE gives SNIRF channels (for example ``S1-D1-690.0`` in OpenNeuro ds004830), instead of raising a channel mismatch error, by `Bruno Aristimunha`_ (:gh:`1704`)
+- Fix BrainVision anonymization overwriting all ``New Segment`` dates and the impedance time with the recording start, by `Stefan Appelhoff`_ (:gh:`1731`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
