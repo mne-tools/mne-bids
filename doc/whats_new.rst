@@ -11,20 +11,22 @@ What's new?
 
 .. _changes_0_21:
 
-Version 0.21 (unreleased)
--------------------------
+Version 0.21
+------------
 
 👩🏽‍💻 Authors
 ~~~~~~~~~~~~~~~
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* `Hamza Abdelhedi`_
-* `Shubham Padkonde`_
+
+* `Erica R Peterson`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Bruno Aristimunha`_
+* `Eric Larson`_
+* `Hamza Abdelhedi`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
