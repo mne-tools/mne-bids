@@ -6,9 +6,11 @@
 import json
 import os
 import re
+import warnings
 from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
+from functools import lru_cache
 from inspect import signature
 from pathlib import Path
 
@@ -33,6 +35,7 @@ from mne_bids.path import (
     _find_matching_sidecar,
     _infer_datatype,
     _parse_ext,
+    _share_dir_listings,
     get_bids_path_from_fname,
 )
 from mne_bids.physio import (
@@ -315,8 +318,87 @@ def _verbose_list_index(lst, val, *, allow_all=False):
         raise ValueError(f"{exc}{extra}") from None
 
 
+@lru_cache(maxsize=1)
+def _participants_tsv(participants_fname, content):
+    """Parse participants.tsv once per content of the file.
+
+    ``content`` is the file's bytes. Reading them on every call is much cheaper
+    than parsing and, unlike file metadata, cannot miss a rewrite (some network
+    filesystems only store modification times in seconds). Only the last table
+    is kept, so a file that is rewritten often does not pile up in memory.
+    """
+    return _from_tsv(participants_fname, content=content)
+
+
+def read_participants(fname, *, content=None):
+    """Read a ``participants.tsv`` file.
+
+    Parameters
+    ----------
+    fname : path-like
+        Path to the ``participants.tsv`` file.
+    content : bytes | None
+        The file's bytes, if already read, to be parsed instead of reading
+        ``fname``. If ``None``, the file is read from ``fname``.
+
+    Returns
+    -------
+    participants : dict
+        The rows keyed by subject label (``participant_id`` without the
+        ``sub-`` prefix), each a dict from column name to value. Values are
+        strings, and ``n/a`` becomes None.
+
+    Notes
+    -----
+    .. versionadded:: 0.21
+    """
+    table = _from_tsv(fname, content=content)
+    if "participant_id" not in table:
+        raise ValueError(f"{fname} has no participant_id column.")
+    participants = {}
+    for values in zip(*table.values()):
+        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
+        participants[row.pop("participant_id").removeprefix("sub-")] = row
+    return participants
+
+
+# days per age unit allowed by BIDS in participants.json, years by default
+_AGE_UNIT_DAYS = {
+    "year": 365.25,
+    "month": 365.25 / 12,
+    "week": 7,
+    "day": 1,
+    "hour": 1 / 24,
+    "minute": 1 / 1440,
+    "second": 1 / 86400,
+}
+
+
+def _age_unit_days(participants_fname):
+    """Return the number of days per unit of the participants.tsv age column."""
+    json_fname = participants_fname.with_suffix(".json")
+    sidecar = {}
+    if json_fname.is_file():
+        try:
+            with _open_lock(json_fname, encoding="utf-8-sig") as fin:
+                sidecar = json.load(fin)
+        except (OSError, ValueError) as exc:  # ValueError covers bad JSON or bytes
+            warn(f"Could not read {json_fname.name} ({exc}); assuming age in years.")
+    age = sidecar.get("age") if isinstance(sidecar, dict) else None
+    units = age.get("Units", "year") if isinstance(age, dict) else "year"
+    days = _AGE_UNIT_DAYS.get(str(units).lower().removesuffix("s"))
+    if days is None:
+        warn(
+            f"Unknown age Units {units!r} in {json_fname.name}; "
+            "not setting the birthday."
+        )
+    return days
+
+
 def _handle_participants_reading(participants_fname, raw, subject):
-    participants_tsv = _from_tsv(participants_fname)
+    participants_tsv = _participants_tsv(
+        participants_fname, participants_fname.read_bytes()
+    )
     subjects = participants_tsv["participant_id"]
     if subject not in subjects:
         warn(f"Subject {subject!r} is not listed in {participants_fname.name}")
@@ -333,9 +415,15 @@ def _handle_participants_reading(participants_fname, raw, subject):
     id his_id last_name first_name middle_name birthday sex hand weight height
     """.strip().split()
     )
+    row = {col: values[row_ind] for col, values in participants_tsv.items()}
     bad_key_vals = list()
-    for col_name, value in participants_tsv.items():
-        orig_value = value = value[row_ind]
+    # MNE-BIDS < 0.21 wrote "hand". It can be a custom column when both exist.
+    if "handedness" in row:
+        if "hand" in row:
+            bad_key_vals.append(("hand", row["hand"], None))
+        row["hand"] = row.pop("handedness")
+    for col_name, value in row.items():
+        orig_value = value
         if col_name in ("sex", "hand"):
             value = _map_options(what=col_name, key=value, fro="bids", to="mne")
             # We don't know how to translate to MNE, so skip.
@@ -351,18 +439,18 @@ def _handle_participants_reading(participants_fname, raw, subject):
             except ValueError:
                 value = None
         elif col_name == "age":
-            if raw.info["meas_date"] is None:
+            age_days = _age_unit_days(participants_fname)
+            if raw.info["meas_date"] is None or age_days is None:
                 value = None
             elif value is not None:
                 try:
                     value = float(value)
-                except Exception:
-                    value = None
-                else:
                     value = (
                         raw.info["meas_date"]
-                        - timedelta(days=int(np.ceil(365.25 * value)))
+                        - timedelta(days=int(np.ceil(age_days * value)))
                     ).date()
+                except (ValueError, OverflowError):
+                    value = None
         else:
             if value == "n/a":
                 value = None
@@ -506,13 +594,37 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     return raw
 
 
-def _handle_info_reading(sidecar_fname, raw):
+def _read_json_object(fname):
+    """Read a JSON sidecar, which BIDS requires to be a JSON object."""
+    with _open_lock(fname, encoding="utf-8") as fin:
+        content = json.load(fin)
+    if not isinstance(content, dict):
+        warn(f"{fname} is not a JSON object, ignoring it.")
+        return {}
+    return content
+
+
+def _read_sidecar_json(bids_path, suffix=None, on_error="ignore", *, inherit=True):
+    """Read the closest JSON sidecar, or merge the inherited ones from the root down."""
+    fnames = _find_matching_sidecar(
+        bids_path, suffix=suffix, extension=".json", on_error=on_error, inherit=inherit
+    )
+    if not inherit:
+        fnames = [] if fnames is None else [fnames]
+    sidecar = {}
+    for fname in fnames:
+        sidecar.update(_read_json_object(fname))
+    return sidecar
+
+
+def _handle_info_reading(sidecar_fnames, raw):
     """Read associated sidecar JSON and populate raw.
 
     Handle PowerLineFrequency of recording.
     """
-    with _open_lock(sidecar_fname, encoding="utf-8") as fin:
-        sidecar_json = json.load(fin)
+    sidecar_json = {}
+    for sidecar_fname in sidecar_fnames:  # inherited, from the root down
+        sidecar_json.update(_read_json_object(sidecar_fname))
 
     # read in the sidecar JSON's and raw object's line frequency
     json_linefreq = sidecar_json.get("PowerLineFrequency")
@@ -781,6 +893,10 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float
     )
 
+    if (durs < 0).any():
+        warn("Events contain negative durations; setting them to zero.")
+        durs = np.maximum(durs, 0)
+
     extras = None
     extra_columns = list(
         set(events_dict)
@@ -795,6 +911,18 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
         }
     )
     if extra_columns:
+        # rename reserved Annotations names in the extras only: events_dict keeps
+        # the file's column names, which the events.json HED is matched against
+        extra_keys = []
+        for col in extra_columns:
+            key = col
+            if col in ("description", "ch_names", "hed_string"):
+                key, n = f"events_{col}", 0
+                while key in events_dict or key in extra_keys:
+                    n += 1
+                    key = f"events_{col}_{n}"
+                warn(f"Events column {col!r} is a reserved name; renaming to {key!r}.")
+            extra_keys.append(key)
         # infer types (int, float or str)
         for col in extra_columns:
             vals = [str(v) for v in events_dict[col]]
@@ -805,10 +933,10 @@ def _make_annotation_kwargs(events_dict, events_fname=None):
                     events_dict[col] = [float(v) for v in vals]
                 except ValueError:
                     events_dict[col] = vals
-            extras = [
-                dict(zip(extra_columns, values))
-                for values in zip(*[events_dict[col] for col in extra_columns])
-            ]
+        extras = [
+            dict(zip(extra_keys, values))
+            for values in zip(*[events_dict[col] for col in extra_columns])
+        ]
 
     hed_strings = events_dict.get("HED")
 
@@ -827,9 +955,10 @@ def _assemble_hed_from_sidecar(events_dict, events_json_fname):
     if events_json_fname is None:
         return None
 
-    try:
-        with open(events_json_fname, encoding="utf-8") as f:
-            sidecar = json.load(f)
+    sidecar = {}
+    try:  # one file, or the inherited files from the root down
+        for fname in np.atleast_1d(events_json_fname):
+            sidecar.update(_read_json_object(fname))
     except FileNotFoundError:
         return None
     except (json.JSONDecodeError, OSError) as exc:
@@ -883,7 +1012,7 @@ def _read_hed_version(bids_root):
         return None
     desc_path = Path(bids_root) / "dataset_description.json"
     try:
-        with open(desc_path, encoding="utf-8") as f:
+        with _open_lock(desc_path, encoding="utf-8") as f:
             return json.load(f).get("HEDVersion")
     except FileNotFoundError:
         return None
@@ -1161,6 +1290,23 @@ def _reconcile_channel_names(raw, channels_dict, on_ch_mismatch, channels_fname)
         )
         return True
 
+    # SNIRF stores no channel names: MNE builds them from source, detector and
+    # wavelength, so use those columns when the names they give are the raw ones.
+    if {"source", "detector", "wavelength_nominal"} <= channels_dict.keys() and all(
+        re.fullmatch(r"\d+(\.\d+)?", wavelength)
+        for wavelength in channels_dict["wavelength_nominal"]
+    ):
+        nirs_names = [
+            f"{source}_{detector} {int(float(wavelength))}"
+            for source, detector, wavelength in zip(
+                channels_dict["source"],
+                channels_dict["detector"],
+                channels_dict["wavelength_nominal"],
+            )
+        ]
+        if set(nirs_names) == set(raw.ch_names):
+            ch_names_tsv = channels_dict["name"] = nirs_names
+
     if list(raw.ch_names) != ch_names_tsv:
         return _handle_channel_mismatch(
             raw, on_ch_mismatch, ch_names_tsv, channels_fname
@@ -1282,6 +1428,7 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     return raw
 
 
+@_share_dir_listings()  # the sidecars sit in the same few directories
 @verbose
 def read_raw_bids(
     bids_path,
@@ -1298,12 +1445,13 @@ def read_raw_bids(
 
     Parameters
     ----------
-    bids_path : BIDSPath
-        The file to read. The :class:`mne_bids.BIDSPath` instance passed here
-        **must** have the ``.root`` attribute set. The ``.datatype`` attribute
-        **may** be set. If ``.datatype`` is not set and only one data type
-        (e.g., only EEG or MEG data) is present in the dataset, it will be
-        selected automatically.
+    bids_path : BIDSPath | path-like
+        The file to read. If a path-like is passed, it is converted with
+        :func:`get_bids_path_from_fname`. If a :class:`mne_bids.BIDSPath`
+        instance is passed, it **must** have the ``.root`` attribute set. The
+        ``.datatype`` attribute **may** be set. If ``.datatype`` is not set and
+        only one data type (e.g., only EEG or MEG data) is present in the
+        dataset, it will be selected automatically.
 
         .. note::
            If ``bids_path`` points to a symbolic link of a ``.fif`` file
@@ -1364,10 +1512,14 @@ def read_raw_bids(
         and ``on_ch_mismatch`` is 'raise'.
     """
     if not isinstance(bids_path, BIDSPath):
-        raise RuntimeError(
-            '"bids_path" must be a BIDSPath object. Please '
-            "instantiate using mne_bids.BIDSPath()."
-        )
+        if isinstance(bids_path, str | os.PathLike):
+            bids_path = get_bids_path_from_fname(bids_path, check=False)
+        else:
+            raise RuntimeError(
+                '"bids_path" must be a BIDSPath object or path-like. '
+                f"Got {type(bids_path)}: {bids_path}. Please "
+                "instantiate using mne_bids.BIDSPath()."
+            )
     for required in ["root", "subject"]:
         if not getattr(bids_path, required):
             raise RuntimeError(
@@ -1405,17 +1557,14 @@ def read_raw_bids(
     if suffix is None:
         bids_path.update(suffix=datatype)
 
-    sidecar_json_fname = _find_matching_sidecar(
-        bids_path, suffix=datatype, extension=".json", on_error="ignore"
-    )
-    if sidecar_json_fname is not None:
-        with open(sidecar_json_fname, encoding="utf-8") as fin:
-            recording_type = json.load(fin).get("RecordingType")
-        if recording_type == "epoched" and bids_path.fpath.suffix in _EPOCHED_EXTS:
-            raise RuntimeError(
-                'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
-                "instead of read_raw_bids()."
-            )
+    if (
+        _read_sidecar_json(bids_path, suffix=datatype).get("RecordingType") == "epoched"
+        and bids_path.fpath.suffix in _EPOCHED_EXTS
+    ):
+        raise RuntimeError(
+            'RecordingType is "epoched"; use mne_bids.read_epochs_bids() '
+            "instead of read_raw_bids()."
+        )
 
     if bids_path.extension == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
@@ -1489,6 +1638,8 @@ def read_raw_bids(
 
     if raw_path.suffix == ".fif" and "allow_maxshield" not in extra_params:
         extra_params["allow_maxshield"] = True
+    if raw_path.suffix == ".fif":
+        extra_params.setdefault("on_split_missing", "warn")
     raw = _read_raw(
         raw_path,
         electrode=None,
@@ -1511,7 +1662,11 @@ def read_raw_bids(
     )
     if events_fname is not None:
         events_json_fname = _find_matching_sidecar(
-            bids_path, suffix="events", extension=".json", on_error="ignore"
+            bids_path,
+            suffix="events",
+            extension=".json",
+            on_error="ignore",
+            inherit=True,
         )
         raw, event_id = _handle_events_reading(
             events_fname,
@@ -1529,6 +1684,7 @@ def read_raw_bids(
     return raw
 
 
+@_share_dir_listings()  # the sidecars sit in the same few directories
 def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
     """Apply BIDS sidecars to a Raw or Epochs object."""
     datatype = bids_path.datatype
@@ -1576,15 +1732,13 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
                     datatype=datatype,
                 )
 
-    # Eyetracking-only data is under the 'beh' modality. There will be no '*_beh.json'
-    if bids_path.datatype != "beh":
-        # Try to find an associated sidecar .json to get information about the
-        # recording snapshot
-        sidecar_fname = _find_matching_sidecar(
-            bids_path, suffix=datatype, extension=".json", on_error="warn"
-        )
-        if sidecar_fname is not None:
-            raw = _handle_info_reading(sidecar_fname, raw)
+    # Try to find an associated sidecar .json to get information about the
+    # recording snapshot
+    sidecar_fnames = _find_matching_sidecar(
+        bids_path, suffix=datatype, extension=".json", on_error="warn", inherit=True
+    )
+    if sidecar_fnames:
+        raw = _handle_info_reading(sidecar_fnames, raw)
 
     # read in associated scans filename
     scans_fname = BIDSPath(
@@ -1625,8 +1779,8 @@ def read_epochs_bids(
 ):
     """Read epoched BIDS data (RecordingType="epoched") as :class:`mne.Epochs`.
 
-    EEGLAB ``.set`` files are read with the dedicated MNE epochs reader.
-    Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``"epoched"``
+    EEGLAB ``.set`` and FIF ``.fif`` files are read with the dedicated MNE epochs
+    readers. Continuous formats (``.edf`` / ``.bdf`` / ``.vhdr``) flagged ``"epoched"``
     in the sidecar are sliced into trials of length ``EpochLength`` (from the
     sidecar). When ``events.tsv`` is present its onsets give the trial starts
     (``sample`` / ``begSample`` / ``onset`` columns are tried in that order;
@@ -1668,9 +1822,15 @@ def read_epochs_bids(
     ext = bids_path.fpath.suffix
     epoch_reader = _get_readers("epoch_reader")
     if ext in epoch_reader:
-        epochs = epoch_reader[ext](
-            bids_path.fpath, verbose=verbose, **(extra_params or {})
-        )
+        with warnings.catch_warnings():
+            # BIDS names an epoched FIF file like any other recording
+            # (``*_meg.fif``), not ``*-epo.fif`` as older MNE versions expect.
+            warnings.filterwarnings(
+                "ignore", message=".*does not conform to MNE naming conventions.*"
+            )
+            epochs = epoch_reader[ext](
+                bids_path.fpath, verbose=verbose, **(extra_params or {})
+            )
     elif ext in _get_readers("_continuous_epoched_reader"):
         epochs = _read_epochs_from_continuous(
             bids_path, extra_params=extra_params, verbose=verbose
@@ -1686,17 +1846,14 @@ def read_epochs_bids(
 @verbose
 def _read_epochs_from_continuous(bids_path, *, extra_params=None, verbose=None):
     """Slice a continuous file flagged ``RecordingType="epoched"`` into Epochs."""
-    sidecar_fname = _find_matching_sidecar(
-        bids_path, suffix=bids_path.datatype, extension=".json"
-    )
-    with open(sidecar_fname, encoding="utf-8") as fp:
-        try:
-            duration = float(json.load(fp)["EpochLength"])
-        except KeyError:
-            raise RuntimeError(
-                f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
-                "required to slice an 'epoched' continuous file."
-            ) from None
+    sidecar = _read_sidecar_json(bids_path, suffix=bids_path.datatype, on_error="raise")
+    try:
+        duration = float(sidecar["EpochLength"])
+    except KeyError:
+        raise RuntimeError(
+            f"{bids_path.fpath.name} sidecar is missing 'EpochLength'; "
+            "required to slice an 'epoched' continuous file."
+        ) from None
     raw = _get_readers("_continuous_epoched_reader")[bids_path.fpath.suffix](
         bids_path.fpath, preload=False, verbose=verbose, **(extra_params or {})
     )
@@ -1888,7 +2045,8 @@ def get_head_mri_trans(
         )
 
     # Get MRI landmarks from the JSON sidecar
-    t1w_json = json.loads(t1w_json_path.read_text(encoding="utf-8"))
+    with _open_lock(t1w_json_path, encoding="utf-8") as fid:
+        t1w_json = json.load(fid)
     mri_coords_dict = t1w_json.get("AnatomicalLandmarkCoordinates", dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]

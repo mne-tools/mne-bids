@@ -26,6 +26,7 @@ from mne_bids.path import (
 from mne_bids.read import (
     get_head_mri_trans,
     read_epochs_bids,
+    read_participants,
     read_raw_bids,
     events_file_to_annotation_kwargs,
 )
@@ -39,7 +40,9 @@ from mne_bids.write import (
     write_meg_crosstalk,
     get_anat_landmarks,
     anonymize_dataset,
+    deface_mri,
 )
+from mne_bids._fileio import open_lock
 from mne_bids.sidecar_updates import update_sidecar_json, update_anat_landmarks
 from mne_bids.inspect import inspect_dataset
 from mne_bids.dig import (

@@ -69,6 +69,17 @@ def test_get_ch_type_mapping():
     for ch_type in mne_valid_types:
         assert ch_type in map_mne_to_bids
 
+    # fNIRS continuous-wave types map both ways
+    map_bids_to_mne = _get_ch_type_mapping(fro="bids", to="mne")
+    for bids_type, mne_type in (
+        ("NIRSCWAMPLITUDE", "fnirs_cw_amplitude"),
+        ("NIRSCWOPTICALDENSITY", "fnirs_od"),
+        ("NIRSCWHBO", "hbo"),
+        ("NIRSCWHBR", "hbr"),
+    ):
+        assert map_bids_to_mne[bids_type] == mne_type
+        assert map_mne_to_bids[mne_type] == bids_type
+
 
 def test_handle_datatype():
     """Test the automatic extraction of datatype from the data."""

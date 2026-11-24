@@ -98,14 +98,29 @@ def test_copyfile_brainvision(tmp_path):
     raw = mne.io.read_raw_brainvision(new_name)
     assert Path(raw.filenames[0]) == (new_name.parent / "tested_conversion.eeg")
 
-    # Test with anonymization
+    # Test with anonymization, with more New Segment markers in the copy
     raw = mne.io.read_raw_brainvision(raw_fname)
     prev_date = raw.info["meas_date"]
+    vmrk_fname = new_name.with_suffix(".vmrk")
+    with open(vmrk_fname, "a", encoding="utf-8") as f:
+        f.write("Mk15=New Segment,,7800,1,0,20131113170000000000\n")
+        f.write("Mk16=New Segment,,7850,1,-1,20131113180000000000 \n")
+    anon_name = bids_root / "anonymized.vhdr"
     anonymize = {"daysback": 32459}
-    copyfile_brainvision(raw_fname, new_name, anonymize)
-    raw = mne.io.read_raw_brainvision(new_name)
+    copyfile_brainvision(new_name, anon_name, anonymize)
+    raw = mne.io.read_raw_brainvision(anon_name)
     new_date = raw.info["meas_date"]
     assert new_date == (prev_date - datetime.timedelta(days=32459))
+    vmrk = anon_name.with_suffix(".vmrk").read_text(encoding="utf-8")
+    assert "Mk15=New Segment,,7800,1,0,19241231170000000000\n" in vmrk
+    assert "Mk16=New Segment,,7850,1,-1,19241231180000000000 \n" in vmrk
+    assert "Impedance [kOhm] at 16:12:27 :" in anon_name.read_text(encoding="utf-8")
+
+    # Without a recording date, all dates are removed
+    vmrk = vmrk_fname.read_text(encoding="utf-8")
+    vmrk_fname.write_text(vmrk.replace("20131113161403794232", "0" * 20), "utf-8")
+    copyfile_brainvision(new_name, anon_name, anonymize)
+    assert "2013" not in anon_name.with_suffix(".vmrk").read_text(encoding="utf-8")
 
 
 def test_copyfile_edf(tmp_path):
@@ -239,6 +254,15 @@ def test_copyfile_eeglab(tmp_path, fname):
         raw = mne.io.read_raw_eeglab(new_name, preload=True)
         assert "EEG 001" in raw.ch_names
     assert isinstance(raw, mne.io.BaseRaw)
+
+
+def test_copyfile_eeglab_invalid_fdt(tmp_path):
+    """Reject an unexpected companion file extension before copying it."""
+    from scipy.io import savemat
+
+    savemat(tmp_path / "a.set", {"EEG": {"data": "a.bin"}}, appendmat=False)
+    with pytest.raises(ValueError, match="Unexpected fdt name: a.bin"):
+        copyfile_eeglab(tmp_path / "a.set", tmp_path / "b.set")
 
 
 def test_copyfile_kit(tmp_path):

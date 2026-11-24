@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import codecs
+import gzip
 from collections import OrderedDict as odict
 
 import numpy as np
@@ -138,15 +139,17 @@ def test_contains_row_different_types():
         ("name\tunit\nEEG\tµV\n".encode(), "utf-8"),
         (codecs.BOM_UTF8 + b"name\tunit\nEEG\tuV\n", "utf-8-sig"),
         ("name\tunit\nEEG\tµV\n".encode("utf-16"), "utf-16"),
-        (b"name\tunit\nEEG\t\xb5V\n", "latin-1"),
+        (b"name\tunit\nEEG\t\xb5V\n", "cp1252"),  # \xb5: µ (micro sign)
+        (b"name\tunit\nEEG\t\x81\n", "latin-1"),  # \x81: undefined in cp1252
     ],
-    ids=["ascii", "utf8", "utf8-bom", "utf16", "latin1"],
+    ids=["ascii", "utf8", "utf8-bom", "utf16", "cp1252", "latin1"],
 )
 def test_detect_file_encoding(tmp_path, payload, expected):
     """Encoding is detected deterministically from BOM and UTF-8 validity."""
     fpath = tmp_path / "test.tsv"
     fpath.write_bytes(payload)
     assert _detect_file_encoding(fpath) == expected
+    assert _from_tsv(fpath)["name"] == ["EEG"]
 
 
 def test_from_tsv_latin1_logs_info(tmp_path):
@@ -157,6 +160,23 @@ def test_from_tsv_latin1_logs_info(tmp_path):
         d = _from_tsv(tsv)
     assert d["unit"] == ["µV"]
     assert "non-UTF-8" in log.getvalue()
+
+
+@pytest.mark.parametrize("ext", [".tsv", ".tsv.gz"])
+@pytest.mark.parametrize(
+    "last, expected",
+    [(b"\xb5V\n", "µV"), (b"\xe9", "é")],  # cp1252 bytes; \xe9 without a newline
+)
+def test_from_tsv_non_utf8_past_first_chunk(tmp_path, ext, last, expected):
+    """A non-UTF-8 byte after the first 64 KiB chunk still reads."""
+    rows = b"EEG\tV\n" * 20_000 + b"EEG\t" + last
+    tsv = tmp_path / f"channels{ext}"
+    if ext == ".tsv.gz":  # compressed TSVs are headerless
+        tsv.write_bytes(gzip.compress(rows))
+        (tmp_path / "channels.json").write_text('{"Columns": ["name", "unit"]}')
+    else:
+        tsv.write_bytes(b"name\tunit\n" + rows)
+    assert _from_tsv(tsv)["unit"][-1] == expected
 
 
 def test_from_tsv_strips_whitespace_and_normalizes_decimal_commas(tmp_path):

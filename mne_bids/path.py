@@ -3,15 +3,20 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import contextvars
 import copy
+import fnmatch
 import glob
 import inspect
 import json
 import os
 import re
 import shutil as sh
+from collections.abc import Iterable
+from contextlib import contextmanager
 from datetime import datetime
 from io import StringIO
+from operator import attrgetter
 from os import path as op
 from pathlib import Path
 from textwrap import indent
@@ -21,6 +26,7 @@ from mne.utils import _check_fname, _validate_type, logger, verbose
 
 from mne_bids._fileio import _open_lock
 from mne_bids.config import (
+    _BIDS_DATATYPES,
     ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_DATATYPES,
     ALLOWED_FILENAME_EXTENSIONS,
@@ -237,6 +243,8 @@ def _find_matched_empty_room(bids_path):
 LONG_TO_SHORT_ENTITY = {
     long: short for short, long in ALLOWED_PATH_ENTITIES_SHORT.items()
 }
+_UNSET_ENTITIES = dict.fromkeys(f"_{key}" for key in LONG_TO_SHORT_ENTITY)
+_get_entity_values = attrgetter(*_UNSET_ENTITIES)
 
 
 class BIDSPath:
@@ -310,6 +318,9 @@ class BIDSPath:
         ``'ieeg'``.
     check : bool
         If ``True``, enforces BIDS conformity. Defaults to ``True``.
+    **entities : dict
+        Additional BIDS schema entities by long name (e.g., ``echo``,
+        ``reconstruction``, ``direction``, ``tracer``, ``part``).
 
     Attributes
     ----------
@@ -415,6 +426,7 @@ class BIDSPath:
         extension=None,
         datatype=None,
         check=True,
+        **entities,
     ):
         if all(
             ii is None
@@ -431,10 +443,12 @@ class BIDSPath:
                 root,
                 suffix,
                 extension,
+                *entities.values(),
             ]
         ):
             raise ValueError("At least one parameter must be given.")
 
+        vars(self).update(_UNSET_ENTITIES)
         self.update(
             subject=subject,
             session=session,
@@ -452,24 +466,13 @@ class BIDSPath:
             suffix=suffix,
             extension=extension,
             check=check,
+            **{key: val for key, val in entities.items() if val is not None},
         )
 
     @property
     def entities(self):
         """Return dictionary of the BIDS entities."""
-        return {
-            "subject": self.subject,
-            "session": self.session,
-            "task": self.task,
-            "acquisition": self.acquisition,
-            "run": self.run,
-            "processing": self.processing,
-            "space": self.space,
-            "recording": self.recording,
-            "split": self.split,
-            "description": self.description,
-            "tracking_system": self.tracking_system,
-        }
+        return dict(zip(LONG_TO_SHORT_ENTITY, _get_entity_values(self)))
 
     def __getstate__(self):
         """Get the object state."""
@@ -480,6 +483,7 @@ class BIDSPath:
 
     def __setstate__(self, state):
         """Set the object state."""
+        vars(self).update(_UNSET_ENTITIES)
         self.update(**state)
 
     def __hash__(self):
@@ -1054,17 +1058,23 @@ class BIDSPath:
         if check is not None:
             self.check = check
 
+        # ``_validate_type`` is slow, so call it only to raise its error message
         for key, val in kwargs.items():
             if key == "root":
-                _validate_type(val, types=("path-like", None), item_name=key)
+                if val is not None and not isinstance(val, str | os.PathLike):
+                    _validate_type(val, types=("path-like", None), item_name=key)
                 continue
 
             if key == "datatype":
-                if val is not None and val not in ALLOWED_DATATYPES and self.check:
+                if (
+                    val is not None
+                    and val not in ALLOWED_DATATYPES
+                    and val not in _BIDS_DATATYPES
+                    and self.check
+                ):
                     raise ValueError(
                         f"datatype ({val}) is not valid. "
-                        f"Should be one of "
-                        f"{ALLOWED_DATATYPES}"
+                        f"Should be one of {_BIDS_DATATYPES}"
                     )
                 else:
                     continue
@@ -1074,11 +1084,13 @@ class BIDSPath:
                     f"Key must be one of {ALLOWED_PATH_ENTITIES}, got {key}"
                 )
 
-            if ENTITY_VALUE_TYPE[key] == "label":
-                _validate_type(val, types=(None, str), item_name=key)
-            else:
-                assert ENTITY_VALUE_TYPE[key] == "index"
-                _validate_type(val, types=(int, str, None), item_name=key)
+            if val is not None and not isinstance(val, str):
+                if ENTITY_VALUE_TYPE[key] == "label":
+                    _validate_type(val, types=(None, str), item_name=key)
+                else:
+                    assert ENTITY_VALUE_TYPE[key] == "index"
+                    _validate_type(val, types=(int, str, None), item_name=key)
+            if ENTITY_VALUE_TYPE[key] == "index":
                 if isinstance(val, str) and not val.isdigit() and self.check:
                     raise ValueError(f"{key} is not an index (Got {val})")
                 elif isinstance(val, int):
@@ -1105,9 +1117,7 @@ class BIDSPath:
             # set entity value, ensuring `root` is a Path
             if val is not None and key == "root":
                 val = Path(val).expanduser()
-            old_kwargs[key] = (
-                getattr(self, f"{key}") if hasattr(self, f"_{key}") else None
-            )
+            old_kwargs[key] = getattr(self, f"_{key}", None)
             setattr(self, f"_{key}", val)
 
         # Perform a check of the entities and revert changes if check fails
@@ -1152,11 +1162,18 @@ class BIDSPath:
                 "BIDS root directory path to `root` via "
                 "BIDSPath.update()."
             )
+        entities = {key: [val] for key, val in self.entities.items() if val is not None}
         kwargs = {
-            f"{key}s": [val] if val is not None else val
-            for key, val in self.entities.items()
+            f"{key}s": val
+            for key, val in entities.items()
+            if key in _FIND_KEYWORD_ENTITIES
         }
         kwargs.update(
+            entities={
+                key: val
+                for key, val in entities.items()
+                if key not in _FIND_KEYWORD_ENTITIES
+            },
             root=self.root,
             check=check,
             ignore_json=ignore_json,
@@ -1185,8 +1202,10 @@ class BIDSPath:
         if self.check:
             _check_empty_room_basename(self)
 
+            # these acq labels are reserved for MEG fine-calibration/crosstalk files
             if (
                 self.acquisition in ("calibration", "crosstalk")
+                and self.datatype in (None, "meg")
                 and self.task is not None
             ):
                 raise ValueError(
@@ -1328,8 +1347,16 @@ class BIDSPath:
         """
         return _find_empty_room_candidates(self)
 
-    def find_matching_sidecar(self, suffix=None, extension=None, *, on_error="raise"):
-        """Get the matching sidecar JSON path.
+    def find_matching_sidecar(
+        self,
+        suffix=None,
+        extension=None,
+        *,
+        inherit=False,
+        candidates=None,
+        on_error="raise",
+    ):
+        """Get the matching sidecar path(s).
 
         Parameters
         ----------
@@ -1338,23 +1365,69 @@ class BIDSPath:
             before the extension. E.g., ``'ieeg'``.
         extension : str | None
             The extension of the filename. E.g., ``'.json'``.
+        inherit : bool
+            If ``False`` (default), return the single closest matching sidecar.
+            If ``True``, return all sidecars that apply under the BIDS
+            inheritance principle, ordered from the dataset root down to the
+            recording directory.
+        candidates : iterable of path-like | None
+            Pre-collected paths or URLs to choose from instead of listing
+            directories on disk. Items are returned in their input type.
         on_error : 'raise' | 'warn' | 'ignore'
             If no matching sidecar file was found and this is set to
             ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a
             warning, and if ``'ignore'``, neither raise an exception nor a
-            warning, and return ``None`` in both cases.
+            warning, and return ``None`` (or ``[]`` when ``inherit=True``).
 
         Returns
         -------
-        sidecar_path : pathlib.Path | None
-            The path to the sidecar JSON file.
+        sidecar_path : pathlib.Path | list of path-like | None
+            The path to the sidecar file when ``inherit=False``, or the list
+            of applicable sidecar paths from the root down when
+            ``inherit=True``.
         """
         return _find_matching_sidecar(
             self,
             suffix=suffix,
             extension=extension,
             on_error=on_error,
+            inherit=inherit,
+            candidates=candidates,
         )
+
+    def read_sidecar(self, suffix=None, *, inherit=False, on_error="raise"):
+        """Read the matching JSON sidecar file(s).
+
+        Parameters
+        ----------
+        suffix : str | None
+            The filename suffix. This is the entity after the last ``_``
+            before the extension. E.g., ``'ieeg'``. If ``None``, the suffix,
+            or else the datatype, of this path is used.
+        inherit : bool
+            If ``False`` (default), read the single closest matching sidecar.
+            If ``True``, read all sidecars that apply under the BIDS
+            inheritance principle and merge them from the dataset root down,
+            so that lower files override higher ones.
+        on_error : 'raise' | 'warn' | 'ignore'
+            If no matching sidecar file was found and this is set to
+            ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a
+            warning, and if ``'ignore'``, neither raise an exception nor a
+            warning, and return an empty dictionary in both cases.
+
+        Returns
+        -------
+        sidecar : dict
+            The content of the sidecar file(s).
+
+        Notes
+        -----
+        .. versionadded:: 0.21
+        """
+        from mne_bids.read import _read_sidecar_json
+
+        suffix = suffix or self.suffix or self.datatype
+        return _read_sidecar_json(self, suffix, on_error, inherit=inherit)
 
     @property
     def meg_calibration_fpath(self):
@@ -1419,6 +1492,20 @@ class BIDSPath:
             path = None
 
         return path
+
+
+for _short, _long in ALLOWED_PATH_ENTITIES_SHORT.items():
+    if _long not in vars(BIDSPath):
+        setattr(
+            BIDSPath,
+            _long,
+            property(
+                attrgetter(f"_{_long}"),
+                lambda self, value, key=_long: self.update(**{key: value}),
+                doc=f"The ``{_short}`` entity.",
+            ),
+        )
+del _short, _long
 
 
 def _get_matching_bidspaths_from_filesystem(bids_path):
@@ -1720,11 +1807,11 @@ def _parse_ext(raw_fname):
     return fname, ext
 
 
-def _infer_datatype_from_path(fname: Path):
+def _infer_datatype_from_path(fname: Path, assume_exists=False):
     # get the parent
-    if fname.exists():
+    if assume_exists or fname.exists():
         datatype = fname.parent.name
-        if any([datatype.startswith(entity) for entity in ["sub", "ses"]]):
+        if datatype.startswith(("sub", "ses")):
             datatype = None
     elif fname.stem.split("_")[-1] in ("meg", "eeg", "ieeg"):
         datatype = fname.stem.split("_")[-1]
@@ -1754,8 +1841,15 @@ def get_bids_path_from_fname(fname, check=True, *, verbose=None):
         The BIDSPath object.
     """
     fpath = Path(fname)
-    fname = fpath.name
+    bids_path = BIDSPath(**_parse_bids_fname(fpath), check=check)
+    if verbose:
+        logger.info(f"From {fpath}, formed a BIDSPath: {bids_path}.")
+    return bids_path
 
+
+def _parse_bids_fname(fpath, assume_exists=False):
+    """Parse a file path into keyword arguments for :class:`BIDSPath`."""
+    fname = fpath.name
     entities = get_entities_from_fname(fname)
 
     # parse suffix and extension
@@ -1765,44 +1859,41 @@ def get_bids_path_from_fname(fname, check=True, *, verbose=None):
         suffix, extension = _get_bids_suffix_and_ext(suffix)
     else:
         suffix = None
-        extension = Path(fname).suffix  # already starts with a period
-        if extension == "":
-            extension = None
+        extension = fpath.suffix or None  # already starts with a period
 
-    if extension is not None:
-        assert extension.startswith(".")  # better safe than sorry
+    # The root is above the subject, session, and datatype folders (a scans file
+    # sits directly in the subject or session folder). ``parents`` stops at the
+    # top-level folder, as ``.parent`` does.
+    root_level = (
+        (entities["subject"] is not None)
+        + (entities["session"] is not None)
+        + (suffix != "scans")
+    )
+    parents = fpath.parents
+    root = parents[min(root_level, len(parents) - 1)]
 
-    datatype = _infer_datatype_from_path(fpath)
-
-    # find root and datatype if it exists
-    if fpath.parent == "":
-        root = None
-    else:
-        root_level = 0
-        # determine root if it's there
-        if entities["subject"] is not None:
-            root_level += 1
-        if entities["session"] is not None:
-            root_level += 1
-        if suffix != "scans":
-            root_level += 1
-
-        if root_level:
-            root = fpath.parent
-            for _ in range(root_level):
-                root = root.parent
-
-    bids_path = BIDSPath(
+    return dict(
         root=root,
-        datatype=datatype,
+        datatype=_infer_datatype_from_path(fpath, assume_exists),
         suffix=suffix,
         extension=extension,
         **entities,
-        check=check,
     )
-    if verbose:
-        logger.info(f"From {fpath}, formed a BIDSPath: {bids_path}.")
-    return bids_path
+
+
+_SEGMENT_FIX_KEYS = (
+    "sub",
+    "ses",
+    "task",
+    "tracksys",
+    "acq",
+    "run",
+    "proc",
+    "space",
+    "recording",
+    "split",
+    "desc",
+)
 
 
 def _suggest_fix_for_segment(segment, known_keys):
@@ -1885,18 +1976,9 @@ def get_entities_from_fname(fname, on_error="raise", *, verbose=None):
     Examples
     --------
     >>> fname = 'sub-01_ses-exp_run-02_meg.fif'
-    >>> get_entities_from_fname(fname)
-    {'subject': '01', \
-'session': 'exp', \
-'task': None, \
-'acquisition': None, \
-'run': '02', \
-'processing': None, \
-'space': None, \
-'recording': None, \
-'split': None, \
-'description': None, \
-'tracking_system': None}
+    >>> entities = get_entities_from_fname(fname)
+    >>> entities['subject'], entities['session'], entities['run'], entities['task']
+    ('01', 'exp', '02', None)
     """
     if on_error not in ("warn", "raise", "ignore", "autofix"):
         raise ValueError(
@@ -1925,7 +2007,7 @@ def get_entities_from_fname(fname, on_error="raise", *, verbose=None):
                 fixed_segments.append(segment)
                 continue
 
-            fix = _suggest_fix_for_segment(segment, fname_vals)
+            fix = _suggest_fix_for_segment(segment, _SEGMENT_FIX_KEYS)
             msg = (
                 f'Found segment "{segment}" with multiple hyphens '
                 f'in filename "{fname}". This likely indicates a '
@@ -1958,24 +2040,31 @@ def get_entities_from_fname(fname, on_error="raise", *, verbose=None):
                 msg = f'Unexpected entity "{key}" found in filename "{fname}"'
                 if on_error == "raise":
                     raise KeyError(msg)
-                else:
-                    warn(msg)
-                    continue
-            if fname_vals.index(key) < idx_key:
+                warn(msg)
+            elif fname_vals.index(key) < idx_key:
                 msg = (
                     f"Entities in filename not ordered correctly."
                     f' "{key}" should have occurred earlier in the '
                     f'filename "{fname}"'
                 )
                 raise ValueError(msg)
-            idx_key = fname_vals.index(key)
+            else:
+                idx_key = fname_vals.index(key)
 
         key_short_hand = ALLOWED_PATH_ENTITIES_SHORT.get(key, key)
         params[key_short_hand] = value
     return params
 
 
-def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="raise"):
+def _find_matching_sidecar(
+    bids_path,
+    suffix=None,
+    extension=None,
+    on_error="raise",
+    *,
+    inherit=False,
+    candidates=None,
+):
     """Try to find a sidecar file with a given suffix for a data file.
 
     Parameters
@@ -2010,6 +2099,22 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
             "The root of the BIDSPath must be set to find a matching sidecar file."
         )
     bids_root = Path(bids_path.root)
+
+    if inherit or candidates is not None:
+        sidecars = _find_inherited_sidecars(
+            bids_path, suffix=suffix, extension=extension, candidates=candidates
+        )
+        if sidecars:
+            return sidecars if inherit else sidecars[-1]
+        msg = (
+            f"Did not find any {suffix or bids_path.suffix}{extension or ''} "
+            f"associated with {bids_path.basename}."
+        )
+        if on_error == "raise":
+            raise RuntimeError(msg)
+        elif on_error == "warn":
+            warn(msg)
+        return [] if inherit else None
 
     # Try to shortcut the search
     shortcut_file = _find_matching_sidecar_shortcut(
@@ -2097,7 +2202,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     # Actually search now!
     candidate_list = []
     for search_str in search_strs_complete:
-        candidate_list.extend(glob.iglob(search_str))
+        candidate_list.extend(_sidecar_glob(search_str))
     best_candidates = _find_best_candidates(bids_path.entities, candidate_list)
 
     # If no candidates found within subject directory, search at dataset root
@@ -2138,11 +2243,105 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     return None
 
 
+def _find_inherited_sidecars(bids_path, suffix=None, extension=None, candidates=None):
+    """Find all sidecar files that apply to a recording, from the root down."""
+    if bids_path.datatype is None and bids_path.suffix in ALLOWED_DATATYPES:
+        bids_path = bids_path.copy().update(datatype=bids_path.suffix)
+    if bids_path.datatype is None:
+        raise ValueError(
+            "The datatype of the BIDSPath must be set to find inherited sidecar files."
+        )
+    suffix = suffix or bids_path.suffix or bids_path.datatype
+    extension = extension or _ext_map.get(suffix) or bids_path.extension or ".json"
+    if not extension.startswith("."):
+        extension = f".{extension}"
+    tail = f"{suffix}{extension}"
+    root = Path(bids_path.root)
+    levels = [root]
+    for part in bids_path.directory.relative_to(root).parts:
+        levels.append(levels[-1] / part)
+    if candidates is None:
+        candidates = [
+            Path(fname)
+            for level in levels
+            for fname in _sidecar_glob(op.join(glob.escape(str(level)), f"*{tail}"))
+        ]
+    rec_entities = {k: v for k, v in bids_path.entities.items() if v is not None}
+    sidecars = []
+    for fname in candidates:
+        if not os.fspath(fname).endswith(tail):
+            continue
+        path = Path(fname)
+        if (
+            not path.is_absolute()
+            and "://" not in str(fname)
+            and not path.is_relative_to(root)
+        ):
+            path = root / path
+        if path.parent not in levels or (
+            path.name != tail and not path.name.endswith(f"_{tail}")
+        ):
+            continue
+        found = {
+            k: v
+            for k, v in get_entities_from_fname(path.name, on_error="ignore").items()
+            if v is not None
+        }
+        if found.items() <= rec_entities.items():
+            sidecars.append((levels.index(path.parent), len(found), path, fname))
+    return [fname for *_, fname in sorted(sidecars, key=lambda item: item[:3])]
+
+
 _ext_map = {  # these sidecar files should only ever have these extensions
     "scans": ".tsv",
     "coordsystem": ".json",
     "electrodes": ".tsv",
 }
+
+
+_DIR_LISTINGS = contextvars.ContextVar("_DIR_LISTINGS", default=None)
+
+
+@contextmanager
+def _share_dir_listings():
+    """List each directory once for all sidecar lookups made inside the block.
+
+    Reading one recording looks up several sidecars in the same few directories.
+    On network filesystems every lookup is a round trip to the server.
+    """
+    token = _DIR_LISTINGS.set(_DIR_LISTINGS.get() or {})  # nested: reuse
+    try:
+        yield
+    finally:
+        _DIR_LISTINGS.reset(token)
+
+
+def _listed(dir_):
+    """Return the entries of ``dir_`` by name, or None when listings are not shared."""
+    listings = _DIR_LISTINGS.get()
+    if listings is None:
+        return None
+    if dir_ not in listings:
+        listings[dir_] = {entry.name: entry for entry in _scandir(dir_)}
+    return listings[dir_]
+
+
+def _sidecar_is_file(path, bids_root):
+    """Like ``path.is_file()``, answered from a shared directory listing if any."""
+    # The root can hold thousands of subject folders: ask for the one file there.
+    entries = None if path.parent == bids_root else _listed(str(path.parent))
+    if entries is None:
+        return path.is_file()
+    return path.name in entries and entries[path.name].is_file()
+
+
+def _sidecar_glob(search_str):
+    """Like ``glob.iglob(search_str)``, answered from a shared listing if any."""
+    dir_, pattern = os.path.split(search_str)
+    entries = None if glob.has_magic(dir_) else _listed(dir_)
+    if entries is None:
+        return glob.iglob(search_str)
+    return [os.path.join(dir_, name) for name in fnmatch.filter(entries, pattern)]
 
 
 def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
@@ -2189,10 +2388,10 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
             # we need to check with task as well
             if suffix != "scans" and bids_path.task is not None:
                 shortcut_file = dir_ / f"{entity_str}task-{bids_path.task}_{path_end}"
-                if shortcut_file.is_file():
+                if _sidecar_is_file(shortcut_file, bids_root):
                     return shortcut_file
             shortcut_file = dir_ / f"{entity_str}{path_end}"
-            if shortcut_file.is_file():
+            if _sidecar_is_file(shortcut_file, bids_root):
                 return shortcut_file
     # Ensure we can use our fast path in .fpath
     # knowing that extension and suffix are not None already
@@ -2206,7 +2405,7 @@ def _find_matching_sidecar_shortcut(bids_path, suffix=None, extension=None):
             )
             .fpath
         )
-        if fast_path.is_file():
+        if _sidecar_is_file(fast_path, bids_root):
             return fast_path
 
 
@@ -2260,10 +2459,6 @@ def get_datatypes(root, *, verbose=None):
 # Helpers for testing glob accesses
 def _path_glob(root, pattern):
     return root.glob(pattern)
-
-
-def _path_rglob(root, pattern):
-    return root.rglob(pattern)
 
 
 @verbose
@@ -2479,7 +2674,10 @@ def get_entity_vals(
             for im in include_match
             for f in _path_glob(root, im + search_str)
             if not any(f.is_relative_to(d) for d in ignore_dirs_set)
-            and not (ignore_hidden and any(p.startswith(".") for p in f.parts))
+            and not (
+                ignore_hidden
+                and any(p.startswith(".") for p in f.relative_to(root).parts)
+            )
         ]
     else:
         filenames = []
@@ -2697,23 +2895,7 @@ def _literal_suffix(pattern):
     return "".join(reversed(out))
 
 
-def _filter_fnames(
-    fnames,
-    *,
-    subject=None,
-    session=None,
-    task=None,
-    acquisition=None,
-    run=None,
-    processing=None,
-    recording=None,
-    space=None,
-    split=None,
-    description=None,
-    suffix=None,
-    extension=None,
-    tracking_system=None,
-):
+def _filter_fnames(fnames, *, suffix=None, extension=None, **entities):
     """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
     Input can be str or list of str.
@@ -2726,65 +2908,34 @@ def _filter_fnames(
     -------
     list of pathlib.Path
     """
-    subject = _ensure_tuple(subject)
-    session = _ensure_tuple(session)
-    task = _ensure_tuple(task)
-    acquisition = _ensure_tuple(acquisition)
-    run = _ensure_tuple(run)
-    processing = _ensure_tuple(processing)
-    space = _ensure_tuple(space)
-    recording = _ensure_tuple(recording)
-    split = _ensure_tuple(split)
-    description = _ensure_tuple(description)
     suffix = _ensure_tuple(suffix)
     extension = _ensure_tuple(extension)
-    tracking_system = _ensure_tuple(tracking_system)
 
     leading_path_str = r".*\/?"  # nothing or something ending with a `/`
-    sub_str = r"sub-(" + "|".join(subject) + ")" if subject else r"sub-([^_]+)"
-    ses_str = r"_ses-(" + "|".join(session) + ")" if session else r"(|_ses-([^_]+))"
-    task_str = r"_task-(" + "|".join(task) + ")" if task else r"(|_task-([^_]+))"
-    acq_str = (
-        r"_acq-(" + "|".join(acquisition) + ")" if acquisition else r"(|_acq-([^_]+))"
+    entities_str = ""
+    for short, long in ALLOWED_PATH_ENTITIES_SHORT.items():
+        values = _ensure_tuple(entities.get(long))
+        group = (
+            rf"{short}-("
+            + ("|".join(re.escape(v) for v in values) if values else r"[^_]+")
+            + ")"
+        )
+        if long == "subject":
+            entities_str += group
+        elif values:
+            entities_str += "_" + group
+        else:
+            entities_str += f"(|_{group})"
+    suffix_str = (
+        r"_(" + "|".join(re.escape(s) for s in suffix) + ")" if suffix else r"_([^_]+)"
     )
-    run_str = r"_run-(" + "|".join(run) + ")" if run else r"(|_run-([^_]+))"
-    proc_str = (
-        r"_proc-(" + "|".join(processing) + ")" if processing else r"(|_proc-([^_]+))"
-    )
-    space_str = r"_space-(" + "|".join(space) + ")" if space else r"(|_space-([^_]+))"
-    rec_str = (
-        r"_recording-(" + "|".join(recording) + ")"
-        if recording
-        else r"(|_recording-([^_]+))"
-    )
-    split_str = r"_split-(" + "|".join(split) + ")" if split else r"(|_split-([^_]+))"
-    desc_str = (
-        r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"
-    )
-    suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
-    ext_str = r"(" + "|".join(extension) + ")$" if extension else r"\.([^_]+)"
-    tracksys_str = (
-        r"tracksys-(" + "|".join(tracking_system) + ")"
-        if tracking_system
-        else r"(|tracksys-([^_]+))"
+    ext_str = (
+        r"(" + "|".join(re.escape(ext) for ext in extension) + ")$"
+        if extension
+        else r"\.([^_]+)"
     )
 
-    regexp = (
-        leading_path_str
-        + sub_str
-        + ses_str
-        + task_str
-        + acq_str
-        + run_str
-        + proc_str
-        + space_str
-        + rec_str
-        + split_str
-        + desc_str
-        + suffix_str
-        + ext_str
-        + tracksys_str
-    )
+    regexp = leading_path_str + entities_str + suffix_str + ext_str
 
     # Convert to str so we can apply the regexp ...
     fnames = [str(f) for f in fnames]
@@ -2806,6 +2957,11 @@ def _filter_fnames(
     return fnames_filtered
 
 
+_FIND_KEYWORD_ENTITIES = tuple(
+    ALLOWED_PATH_ENTITIES_SHORT[k] for k in _SEGMENT_FIX_KEYS
+)
+
+
 def find_matching_paths(
     root,
     subjects=None,
@@ -2820,12 +2976,14 @@ def find_matching_paths(
     descriptions=None,
     *,
     tracking_systems=None,
+    entities=None,
     suffixes=None,
     extensions=None,
     datatypes=None,
     check=False,
     ignore_json=False,
     ignore_nosub=False,
+    fnames=None,
 ):
     """Get list of all matching paths for all matching entity values.
 
@@ -2874,6 +3032,15 @@ def find_matching_paths(
         ``tracksys-omcA``.
 
         .. versionadded:: 0.19
+    entities : dict | None
+        The values to match for the BIDS entities that have no keyword argument
+        of their own, by entity name (as in :attr:`mne_bids.BIDSPath.entities`).
+        For example, ``entities={"echo": "1"}`` matches filenames containing
+        ``echo-1``, and ``entities={"reconstruction": ["norm", "raw"]}`` those
+        containing ``rec-norm`` or ``rec-raw``. Each value can be a str, an
+        array-like of str, or None.
+
+        .. versionadded:: 0.21
     suffixes : str | array-like of str | None
         The filename suffix. This is the entity after the
         last ``_`` before the extension. E.g., ``'channels'``.
@@ -2897,12 +3064,33 @@ def find_matching_paths(
     ignore_nosub : bool
         If ``True``, ignores all files that are not of the form ``root/sub-*``.
         Defaults to ``False``.
+    fnames : iterable of path-like | None
+        File paths to filter instead of listing the files in ``root``, for
+        example the members of an archive or the listing of a remote dataset.
+        Each path must be inside ``root`` or relative to it, and is not checked
+        for existence. The returned :class:`BIDSPath` objects are ``root``
+        joined with these paths. URLs are not accepted: pass the part after the
+        dataset root, for example ``"sub-01/eeg/sub-01_task-rest_eeg.edf"``.
+
+        .. versionadded:: 0.21
 
     Returns
     -------
     bids_paths : list of mne_bids.BIDSPath
         The matching paths.
     """
+    entities = dict() if entities is None else entities
+    allowed = [
+        entity
+        for entity in ALLOWED_PATH_ENTITIES_SHORT.values()
+        if entity not in _FIND_KEYWORD_ENTITIES
+    ]
+    unknown = sorted(set(entities).difference(allowed))
+    if unknown:
+        raise ValueError(
+            f"entities got {unknown}, but its keys must be among {allowed}; the "
+            "other entities have keyword arguments of their own, such as subjects."
+        )
     entities_opt = dict()
     if subjects is not None:
         if isinstance(subjects, str):
@@ -2920,6 +3108,7 @@ def find_matching_paths(
         ignore_json=ignore_json,
         ignore_nosub=ignore_nosub,
         entities=entities_opt,
+        fnames=fnames,
     )
 
     fpaths_filtered = _filter_fnames(
@@ -2937,6 +3126,7 @@ def find_matching_paths(
         tracking_system=tracking_systems,
         suffix=suffixes,
         extension=extensions,
+        **entities,
     )
 
     bids_paths = _fnames_to_bidspaths(fpaths_filtered, root, check=check)
@@ -2944,7 +3134,12 @@ def find_matching_paths(
 
 
 def _return_root_paths(
-    root, datatype=None, ignore_json=True, ignore_nosub=False, entities=None
+    root,
+    datatype=None,
+    ignore_json=True,
+    ignore_nosub=False,
+    entities=None,
+    fnames=None,
 ):
     """Return all file paths + .ds paths in root with entity-aware optimization.
 
@@ -2966,6 +3161,8 @@ def _return_root_paths(
     entities : dict | None
         Dictionary of BIDS entities to enable targeted directory scanning.
         If provided with 'subject', will scan only that subject's directory.
+    fnames : iterable of path-like | None
+        Paths to filter instead of listing the files in ``root``.
 
     Returns
     -------
@@ -2974,107 +3171,90 @@ def _return_root_paths(
         parameters.
     """
     root = Path(root)  # if root is str
-
-    # OPTIMIZATION: Use entity-aware path construction when entities available
+    datatypes = None if datatype is None else _ensure_tuple(datatype)
+    # Start from the subject (and session) directory when they are known
+    start = ()
     if entities and entities.get("subject"):
-        # Build targeted search path starting from subject directory
-        search_parts = [f"sub-{entities['subject']}"]
-
-        # Add session if available
+        ignore_nosub = False
+        start = (f"sub-{entities['subject']}",)
         if entities.get("session"):
-            search_parts.append(f"ses-{entities['session']}")
-
-        # Add datatype-specific path
-        if datatype is not None:
-            datatype = _ensure_tuple(datatype)
-            if len(datatype) == 1:
-                # Single datatype - construct direct path
-                search_parts.extend(["**", datatype[0]])
-                search_str = "/".join(search_parts) + "/*.*"
-            else:
-                # Multiple datatypes - search each separately
-                paths = []
-                for dt in datatype:
-                    dt_search_parts = search_parts + ["**", dt]
-                    dt_search_str = "/".join(dt_search_parts) + "/*.*"
-                    paths.extend(
-                        [
-                            Path(root, fn)
-                            for fn in glob.iglob(
-                                dt_search_str, root_dir=root, recursive=True
-                            )
-                        ]
-                    )
-                return _filter_paths_optimized(paths, ignore_json)
-        else:
-            # No datatype specified - search all datatypes under subject
-            search_parts.append("**")
-            search_str = "/".join(search_parts) + "/*.*"
-
-        # Single search with optimized path
-        paths = [
-            Path(root, fn)
-            for fn in glob.iglob(search_str, root_dir=root, recursive=True)
-        ]
-
-    else:
-        # FALLBACK: Original implementation when entities not available
-        # or subject unknown
-        if datatype is None and not ignore_nosub:
-            paths = _path_rglob(root, "*.*")
-        else:
-            if datatype is not None:
-                datatype = _ensure_tuple(datatype)
-                # If multiple datatypes are provided, search each separately
-                # (glob does not support alternation with '|').
-                paths = []
-                for dt in datatype:
-                    dt_search = f"**/{dt}/*.*"
-                    if ignore_nosub:
-                        dt_search = f"sub-*/{dt_search}"
-                    paths.extend(
-                        [
-                            Path(root, fn)
-                            for fn in glob.iglob(
-                                dt_search, root_dir=root, recursive=True
-                            )
-                        ]
-                    )
-            else:
-                search_str = "**/*.*"
-                if ignore_nosub:
-                    search_str = f"sub-*/{search_str}"
-                # TODO: Why is this not equivalent to list(root.rglob(search_str)) ?
-                # Most of the speedup is from using glob.iglob here.
-                paths = [
-                    Path(root, fn)
-                    for fn in glob.iglob(search_str, root_dir=root, recursive=True)
-                ]
-
-    return _filter_paths_optimized(paths, ignore_json)
-
-
-def _filter_paths_optimized(paths, ignore_json):
-    """Filter paths based on file type criteria - extracted for reuse."""
-    # Only keep files (not directories), ...
-    # and omit the JSON sidecars if `ignore_json` is True.
-    if ignore_json:
+            start += (f"ses-{entities['session']}",)
+    if fnames is not None:
+        if isinstance(fnames, str | os.PathLike) or not isinstance(fnames, Iterable):
+            raise TypeError(
+                f"fnames must be an iterable of path-like, got {type(fnames)}"
+            )
+        cands = {}
+        for f in fnames:
+            _validate_type(f, "path-like", "fnames item")
+            if "://" in str(f):
+                raise ValueError(
+                    f"fnames must be file paths, got the URL {f!r}: pass its path "
+                    "relative to the dataset root instead"
+                )
+            p = Path(f)
+            if p.is_relative_to(root):
+                p = p.relative_to(root)
+            rel = p.parts
+            if p.is_absolute() or ".." in rel:
+                raise ValueError(f"fnames item {f!r} is not inside root {root}")
+            for i in range(1, len(rel) + 1):
+                if i == len(rel) or rel[i - 1].endswith((".ds", ".mefd")):
+                    cands[rel[:i]] = None
         return [
-            p
-            for p in paths
-            if (p.is_file() and p.suffix != ".json")
-            # XXX: generalize with a private func that takes
-            # a config of which "data format" are to be expected like .ds
-            or (p.is_dir() and p.suffix == ".ds")
+            root.joinpath(*r)
+            for r in cands
+            if "." in r[-1]
+            and not any(x.startswith(".") for x in r)
+            and not (ignore_json and r[-1].endswith(".json"))
+            and not (ignore_nosub and not (len(r) > 1 and r[0].startswith("sub-")))
+            and (datatypes is None or (len(r) > 1 and r[-2] in datatypes))
+            and r[: len(start)] == start  # as the walk below, which starts there
         ]
-    else:
-        return [
-            p
-            for p in paths
-            if p.is_file()
-            # XXX: see above, generalize with private func
-            or (p.is_dir() and p.suffix == ".ds")
-        ]
+
+    # Walk the tree once. File types come from the directory listings, so no file
+    # needs a ``stat`` call of its own (a round trip on network filesystems).
+    paths = []
+
+    def visit(dir_, keep, top=False):
+        # ``keep``: whether the entries listed directly in ``dir_`` are returned.
+        # ``top``: whether ``dir_`` is the directory the walk starts from.
+        for entry in _scandir(dir_):
+            name = entry.name
+            try:
+                is_dir, is_file = entry.is_dir(), entry.is_file()
+            except OSError:
+                continue
+            # Return files and CTF .ds or MEF3 .mefd directories with an extension
+            # (so not README or LICENSE), and omit the JSON sidecars if
+            # `ignore_json` is True.
+            wanted = keep and "." in name
+            if wanted and is_dir and name.endswith((".ds", ".mefd")):
+                paths.append(Path(entry.path))
+            elif wanted and is_file and not (ignore_json and name.endswith(".json")):
+                paths.append(Path(entry.path))
+            # Go into every directory, a .ds directory included, except that
+            # `ignore_nosub` skips the directories of the starting directory that
+            # are not subject directories (derivatives, sourcedata, code, ...).
+            # Without `datatypes`, everything below is returned. With `datatypes`,
+            # only the entries of a directory named after one of them are.
+            if is_dir and not (top and ignore_nosub and not name.startswith("sub-")):
+                visit(entry.path, datatypes is None or name in datatypes)
+
+    # The entries of the starting directory itself are returned only by a search
+    # of the whole dataset: `datatypes` restricts the result to the datatype
+    # directories, and `ignore_nosub` to what is inside the sub-* directories.
+    visit(root.joinpath(*start), datatypes is None and not ignore_nosub, top=True)
+    return paths
+
+
+def _scandir(path):
+    """List the non-hidden entries of ``path`` (none if it cannot be listed)."""
+    try:
+        with os.scandir(path) as it:
+            return [entry for entry in it if not entry.name.startswith(".")]
+    except OSError:
+        return []
 
 
 def _fnames_to_bidspaths(fnames, root, check=False):
@@ -3103,13 +3283,19 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     """
     bids_paths = []
     for fname in fnames:
-        datatype = _infer_datatype_from_path(fname)
-        bids_path = get_bids_path_from_fname(fname, check=False)
-        inferred_root = bids_path.root
-        bids_path.root = root
-        bids_path.datatype = datatype
-        expected_fpath = bids_path.directory / bids_path.basename
-        if expected_fpath != Path(fname):
+        fpath = Path(fname)
+        try:
+            # the names come from a directory listing, so the files are known to exist
+            kwargs = _parse_bids_fname(fpath, assume_exists=True)
+            # Use ``root`` if it reproduces the path, else the root inferred from it
+            inferred_root, kwargs["root"] = kwargs["root"], root
+            bids_path = BIDSPath(**kwargs, check=False)
+        except ValueError as exc:
+            # not even an unchecked BIDSPath can hold this file (for example,
+            # FreeSurfer output in derivatives), so leave it out
+            logger.debug(f"Skipping {fpath}: {exc}")
+            continue
+        if bids_path.directory / bids_path.basename != fpath:
             bids_path.root = inferred_root
         bids_path.check = True
 

@@ -18,6 +18,26 @@ DOI = """https://doi.org/10.21105/joss.01896"""
 EPHY_ALLOWED_DATATYPES = ["eeg", "emg", "ieeg", "meg", "nirs"]
 
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh", "motion"]
+# datatypes, suffixes and entities of the BIDS schema, checked against bidsschematools
+# in test_schema_entities_order_and_validation
+_BIDS_DATATYPES = [
+    "anat",
+    "beh",
+    "dwi",
+    "eeg",
+    "emg",
+    "fmap",
+    "func",
+    "ieeg",
+    "meg",
+    "micr",
+    "motion",
+    "mrs",
+    "nirs",
+    "perf",
+    "pet",
+    "phenotype",
+]
 
 MEG_CONVERT_FORMATS = ["FIF", "auto"]
 EEG_CONVERT_FORMATS = ["BrainVision", "EDF", "BDF", "EEGLAB", "auto"]
@@ -159,7 +179,7 @@ _READER_NAMES = {
     ".mefd": "read_raw_mef",
 }
 
-_EPOCH_READER_NAMES = {".set": "read_epochs_eeglab"}
+_EPOCH_READER_NAMES = {".set": "read_epochs_eeglab", ".fif": "read_epochs"}
 
 # Continuous-format files where each "trial" is a fixed-length segment of the
 # file. Trial duration is read from the sidecar's ``EpochLength`` field.
@@ -204,16 +224,17 @@ def _get_readers(name):
     Returns
     -------
     readers : dict
-        Maps file extensions (or ``raw`` class names) to ``mne.io`` functions.
+        Maps file extensions (or ``raw`` class names) to MNE reader functions.
     """
+    import mne
     from mne import io
 
     # hasattr because a few readers need a newer MNE than we require: read_raw_mef
-    # (MNE >= 1.12) and read_raw_ant (MNE >= 1.9)
+    # (MNE >= 1.12) and read_raw_ant (MNE >= 1.9). mne.read_epochs is not in mne.io.
     return {
-        key: getattr(io, func)
+        key: getattr(io, func, None) or getattr(mne, func)
         for key, func in _LAZY_READERS[name].items()
-        if hasattr(io, func)
+        if hasattr(io, func) or hasattr(mne, func)
     }
 
 
@@ -355,6 +376,16 @@ ALLOWED_FILENAME_SUFFIX = [
     "stim",
     "motion",
 ]
+ALLOWED_FILENAME_SUFFIX += """
+    2PE ADC BF CARS CONF Chimap DF DIC FA FLAIR FLUO IRT1 M0map MEGRE MESE MP2RAGE
+    MPE MPM MTR MTRmap MTS MTVmap MTsat MWFmap NLO OCT PC PD PDT2 PDmap PDw PLI
+    R1map R2map R2starmap RB1COR RB1map S0map SEM SPIM SR T1map T1rho T2map T2star
+    T2starmap T2starw TB1AFI TB1DAM TB1EPI TB1RFM TB1SRGE TB1TFL TB1map TEM UNIT1
+    VFA XPCT angio asl aslcontext asllabeling blood bold cbv colFA defacemask dwi
+    epi expADC fieldmap inplaneT1 inplaneT2 m0scan magnitude magnitude1 magnitude2
+    mrsi mrsref noRF pet phase phase1 phase2 phasediff photo physioevents sbref svs
+    trace uCT unloc
+""".split()
 
 # converts suffix to known path modalities
 SUFFIX_TO_DATATYPE = {
@@ -378,35 +409,45 @@ ALLOWED_FILENAME_EXTENSIONS = (
     + [".mrk"]  # KIT/Yokogawa/Ricoh marker coil
 )
 
-# allowed BIDSPath entities
-ALLOWED_PATH_ENTITIES = (
-    "subject",
-    "session",
-    "task",
-    "run",
-    "processing",
-    "recording",
-    "space",
-    "acquisition",
-    "split",
-    "description",
-    "suffix",
-    "extension",
-    "tracking_system",
-)
+# allowed BIDSPath entities (short name -> long name), in BIDS filename order
 ALLOWED_PATH_ENTITIES_SHORT = {
     "sub": "subject",
+    "tpl": "template",
     "ses": "session",
+    "cohort": "cohort",
+    "sample": "sample",
     "task": "task",
+    "tracksys": "tracking_system",
     "acq": "acquisition",
+    "nuc": "nucleus",
+    "voi": "volume",
+    "ce": "ceagent",
+    "trc": "tracer",
+    "stain": "stain",
+    "rec": "reconstruction",
+    "dir": "direction",
     "run": "run",
+    "mod": "modality",
+    "echo": "echo",
+    "flip": "flip",
+    "inv": "inversion",
+    "mt": "mtransfer",
+    "part": "part",
     "proc": "processing",
+    "hemi": "hemisphere",
     "space": "space",
     "recording": "recording",
+    "chunk": "chunk",
+    "atlas": "atlas",
+    "seg": "segmentation",
+    "scale": "scale",
+    "res": "resolution",
+    "den": "density",
+    "label": "label",
     "split": "split",
     "desc": "description",
-    "tracksys": "tracking_system",
 }
+ALLOWED_PATH_ENTITIES = (*ALLOWED_PATH_ENTITIES_SHORT.values(), "suffix", "extension")
 
 # Annotations to never remove during reading or writing
 ANNOTATIONS_TO_KEEP = ("BAD_ACQ_SKIP",)
@@ -500,19 +541,8 @@ ALLOWED_SPACES["motion"] = None
 
 # See: https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa: E501
 ENTITY_VALUE_TYPE = {
-    "subject": "label",
-    "session": "label",
-    "task": "label",
-    "run": "index",
-    "processing": "label",
-    "recording": "label",
-    "space": "label",
-    "acquisition": "label",
-    "split": "index",
-    "description": "label",
-    "suffix": "label",
-    "extension": "label",
-    "tracking_system": "label",
+    **dict.fromkeys(ALLOWED_PATH_ENTITIES, "label"),
+    **dict.fromkeys(("run", "echo", "flip", "inversion", "split", "chunk"), "index"),
 }
 
 # mapping from supported BIDs coordinate frames -> MNE

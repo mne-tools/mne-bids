@@ -191,6 +191,9 @@ def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
         ias="Internal Active Shielding",
         dbs="Deep Brain Stimulation",
         fnirs_cw_amplitude="Near Infrared Spectroscopy (continuous wave)",
+        fnirs_od="Near Infrared Spectroscopy (continuous wave optical density)",
+        hbo="Near Infrared Spectroscopy (continuous wave oxyhemoglobin)",
+        hbr="Near Infrared Spectroscopy (continuous wave deoxyhemoglobin)",
         resp="Respiration",
         gsr="Galvanic skin response (electrodermal activity, EDA)",
         temperature="Temperature",
@@ -603,9 +606,8 @@ def _events_json(
     # make sure to append any JSON fields added by the user
     fname = Path(fname)
     if fname.exists():
-        orig_data = json.loads(
-            fname.read_text(encoding="utf-8"), object_pairs_hook=OrderedDict
-        )
+        with _open_lock(fname, encoding="utf-8") as fid:
+            orig_data = json.load(fid, object_pairs_hook=OrderedDict)
         new_data = {**orig_data, **new_data}
 
     _write_json(fname, new_data, overwrite=overwrite)
@@ -625,6 +627,12 @@ def _readme(datatype, fname):
     fname : str | mne_bids.BIDSPath
         Filename to save the README to.
     """
+    # Nothing to do, and no lock to take, when both references are already there.
+    if fname.is_file():
+        text = fname.read_text(_detect_file_encoding(fname))
+        if REFERENCES["mne-bids"] in text and REFERENCES[datatype] in text:
+            return
+
     # Hold the lock across read and write so concurrent writers cannot
     # observe a partially written file.
     with _open_lock(fname):
@@ -711,7 +719,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         {
             "age": [subject_age],
             "sex": [sex],
-            "hand": [hand],
+            "handedness": [hand],
             "weight": [weight],
             "height": [height],
         }
@@ -752,6 +760,18 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             orig_data = None
 
         if orig_data is not None:
+            if "hand" in orig_data and "handedness" not in orig_data:
+                # Only carry old rows forward when the data dictionary identifies
+                # the pre-0.21 handedness column. A custom "hand" may mean anything.
+                try:
+                    columns = json.loads(
+                        fpath.with_suffix(".json").read_text("utf-8-sig")
+                    )
+                except (FileNotFoundError, ValueError):
+                    columns = {}
+                match columns:
+                    case {"hand": {"Description": "Handedness of the participant"}}:
+                        orig_data["handedness"] = orig_data["hand"].copy()
             # whether the new data exists identically in the previous data
             # Use .get() with empty list default in case participant_id column is empty
             existing_participants = orig_data.get("participant_id", [])
@@ -761,7 +781,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
                     "participant_id": subject_id,
                     "age": subject_age,
                     "sex": sex,
-                    "hand": hand,
+                    "handedness": hand,
                     "weight": weight,
                     "height": height,
                 },
@@ -830,7 +850,7 @@ def _participants_json(fname, overwrite=False):
             "Description": "Sex of the participant",
             "Levels": {"F": "female", "M": "male", "O": "other"},
         },
-        "hand": {
+        "handedness": {
             "Description": "Handedness of the participant",
             "Levels": {"R": "right", "L": "left", "A": "ambidextrous"},
         },
@@ -839,16 +859,28 @@ def _participants_json(fname, overwrite=False):
     }
 
     # make sure to append any JSON fields added by the user
-    # Note: mne-bids will overwrite age, sex and hand fields
+    # Note: mne-bids will overwrite age, sex and handedness fields
     # if `overwrite` is True
     fpath = Path(fname)
     fpath.parent.mkdir(parents=True, exist_ok=True)
 
-    # Use _open_lock for atomic read-modify-write operation
-    with _open_lock(fpath, "a+", encoding="utf-8") as fid:
-        # Move to beginning of file for reading
-        fid.seek(0)
-        file_content = fid.read().strip()
+    # Nothing to do, and no lock to take, when the file already holds this schema
+    # next to the fields the user added.
+    if overwrite:
+        try:
+            current = fpath.read_text(encoding="utf-8")
+            merged = {**new_data, **json.loads(current), **new_data}
+            if json.dumps(merged, indent=4, ensure_ascii=False) + "\n" == current:
+                return
+        except (OSError, ValueError, TypeError):
+            pass
+
+    # Hold the lock across the read-modify-write so concurrent writers cannot
+    # interleave; the write itself replaces the file atomically.
+    with _open_lock(fpath):
+        file_content = (
+            fpath.read_text(encoding="utf-8").strip() if fpath.exists() else ""
+        )
 
         # Try to parse existing content
         orig_data = {}
@@ -876,22 +908,14 @@ def _participants_json(fname, overwrite=False):
                     )
 
         # Merge new schema with any existing user-added fields
-        # The new_data schema will overwrite age, sex, hand as intended
+        # The new_data schema will overwrite age, sex, handedness as intended
         if orig_data:
             # Keep any user-added fields not in new_data
             for key in orig_data.keys():
                 if key not in new_data:
                     new_data[key] = orig_data[key]
 
-        # Write JSON data atomically within the lock context
-        # I could not use the _write_json helper here because it also
-        # handles file locking and I need to manage that manually
-        json_output = json.dumps(new_data, indent=4, ensure_ascii=False)
-        fid.seek(0)
-        fid.truncate()
-        fid.write(json_output)
-        fid.write("\n")
-        logger.info(f"Writing '{fname}'...")
+        _write_json(fpath, new_data, overwrite=True, lock=False)
 
 
 def _check_fif_splits(raw_fname, fdir, datatype):
@@ -1353,32 +1377,81 @@ def _sidecar_json(
     return fname
 
 
-def _deface(image, landmarks, deface):
+def deface_mri(image, landmarks, *, offset=-5, theta=15):
+    """Remove identifying facial detail from an MRI.
+
+    This function blacks out MRI voxels anterior to a nearly vertical plane
+    set by the nasion location. Watershed surfaces made using a defaced
+    MRI will also have no identifying facial detail.
+
+    Parameters
+    ----------
+    image : nibabel.spatialimages.SpatialImage
+        Anatomical image as a nibabel object.
+    landmarks : array-like
+       Coordinates (x / y / z) of left pre-auricular, nasion, and right
+       pre-auricular points in MRI (voxel) coordinate space (3x3 list of
+       lists or array with nasion coords in the middle).
+    offset : int
+        Controls how close the blackout plane sits to the nasion point
+        in mm (an offset value of 5 will set the blackout plane 5 mm anterior
+        to the nasion, whereas -5 will move the plane posterior to the nasion).
+        Defaults to -5.
+    theta : float | int
+        Controls the angle of the blackout plane with respect to vertical
+        (expressed in degrees from 0 to 90). Defaults to 15.
+
+    Returns
+    -------
+    image : nibabel.spatialimages.SpatialImage
+        Defaced anatomical image as a nibabel object.
+
+    Raises
+    ------
+    TypeError
+        If image input is not an instance of
+        ``nibabel.spatialimages.SpatialImage``.
+    TypeError
+        If ``landmarks`` are not array-like (list of lists or array).
+    TypeError
+        If ``offset`` is not an integer.
+    TypeError
+        If ``theta`` is not an int or float.
+    ValueError
+        If ``theta`` is not between 0 and 90 degrees.
+    """
     nib = _import_nibabel("deface MRIs")
 
-    inset, theta = (5, 15.0)
-    if isinstance(deface, dict):
-        if "inset" in deface:
-            inset = deface["inset"]
-        if "theta" in deface:
-            theta = deface["theta"]
+    _validate_type(
+        image,
+        types=nib.spatialimages.SpatialImage,
+        item_name="image",
+        type_name="nibabel.spatialimages.SpatialImage",
+    )
 
-    if not _is_numeric(inset):
-        raise ValueError(f"inset must be numeric (float, int). Got {type(inset)}")
+    _validate_type(
+        landmarks,
+        types=(list, np.ndarray),
+        item_name="landmarks",
+        type_name="list of lists or numpy array",
+        extra="3x3 set of coordinates as a ",
+    )
 
-    if not _is_numeric(theta):
-        raise ValueError(f"theta must be numeric (float, int). Got {type(theta)}")
+    _validate_type(offset, types=int, item_name="offset", type_name="integer")
 
-    if inset < 0:
-        raise ValueError("inset should be positive, Got {inset}")
+    _validate_type(
+        theta, types=(int, float), item_name="theta", type_name="float or integer"
+    )
 
     if not 0 <= theta < 90:
-        raise ValueError("theta should be between 0 and 90 degrees. Got {theta}")
+        raise ValueError(f"theta should be between 0 and 90 degrees. Got {theta}")
 
     # get image data, make a copy
     image_data = image.get_fdata().copy()
 
-    # make indices to move around so that the image doesn't have to
+    # Voxel coordinate spaces depend on the acquisition device and are quite
+    # diverse, so we start by converting everything to an RAS coordinate system
+    # Construct an image index array in RAS space
     idxs = np.meshgrid(
         np.arange(image_data.shape[0]),
         np.arange(image_data.shape[1]),
@@ -1389,16 +1462,21 @@ def _deface(image, landmarks, deface):
     idxs = np.transpose(idxs, [1, 2, 3, 0])  # (*image_data.shape, 3)
     idxs = idxs.reshape(-1, 3)  # (n_voxels, 3)
 
+    # image.affine is the voxel to RAS transform given the original MRI
     # convert to RAS by applying affine
     idxs = nib.affines.apply_affine(image.affine, idxs)
 
+    # get nasion into RAS (in mm, which is what nibabel uses)
+    x, y, z = nib.affines.apply_affine(image.affine, landmarks)[1]
+
     # now comes the actual defacing
-    # 1. move center of voxels to (nasion - inset)
+    # defacing is performed by blacking out voxels ahead of a plane
+    # defined by the nasion.
+    # 1. move center of voxels to (nasion + offset)
     # 2. rotate the head by theta from vertical
     from mne.transforms import apply_trans, rotation, translation
 
-    x, y, z = nib.affines.apply_affine(image.affine, landmarks)[1]
-    idxs = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs)
+    idxs = apply_trans(translation(x=-x, y=-y - offset, z=-z), idxs)
     idxs = apply_trans(rotation(x=-np.pi / 2 + np.deg2rad(theta)), idxs)
     idxs = idxs.reshape(image_data.shape + (3,))
     mask = idxs[..., 2] < 0  # z < middle
@@ -1446,9 +1524,14 @@ def _ensure_bti_bidsignore(bids_root):
     else:
         lines = []
 
-    if pattern not in lines:
-        lines.append(pattern)
-        bidsignore_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if pattern in lines:
+        return
+    with _open_lock(bidsignore_path):
+        if bidsignore_path.exists():
+            lines = bidsignore_path.read_text(encoding="utf-8").splitlines()
+        if pattern not in lines:
+            lines.append(pattern)
+            _write_text(bidsignore_path, "\n".join(lines), overwrite=True, lock=False)
 
 
 def _write_raw_brainvision(raw, bids_fname, events, overwrite):
@@ -1597,6 +1680,7 @@ def make_dataset_description(
     generated_by=None,
     source_datasets=None,
     overwrite=False,
+    extra_fields=None,
     verbose=None,
 ):
     """Create a dataset_description.json file for a BIDS dataset.
@@ -1665,6 +1749,12 @@ def make_dataset_description(
         If overwrite is True, provided fields will overwrite previous data.
         If overwrite is False, no existing data will be overwritten or
         replaced.
+    extra_fields : dict | None
+        Additional top-level fields to write, for keys not covered by the
+        parameters above (e.g., ``{"PublicationYear": 2024}``). They follow
+        the same ``overwrite`` rules as the other fields.
+
+        .. versionadded:: 0.21
     %(verbose)s
 
     Notes
@@ -1729,7 +1819,7 @@ def make_dataset_description(
 
     # Prepare dataset_description.json
     fname = op.join(path, "dataset_description.json")
-    description = OrderedDict(
+    requested = OrderedDict(
         [
             ("Name", name),
             ("BIDSVersion", BIDS_VERSION),
@@ -1749,16 +1839,30 @@ def make_dataset_description(
         ]
     )
 
-    # Handle potentially existing file contents
-    with _open_lock(fname):
-        orig_cols = {}
-        if op.isfile(fname):
-            try:
-                with open(fname, encoding="utf-8") as fin:
-                    orig_cols = json.load(fin)
-            except (json.JSONDecodeError, OSError):
-                # File is empty, corrupted, or being written to by another process
-                pass
+    _validate_type(extra_fields, (dict, None), "extra_fields")
+    extra_fields = dict() if extra_fields is None else extra_fields
+    clash = sorted(set(extra_fields) & set(requested))
+    if clash:
+        raise ValueError(
+            f"extra_fields cannot set {clash}, use the corresponding parameters."
+        )
+
+    def _read():
+        try:
+            with _open_lock(fname, encoding="utf-8") as fin:
+                return fin.read()
+        except OSError:
+            return ""
+
+    def _merge(text, overwrite=overwrite):
+        """Combine the requested fields with those already in the file."""
+        description = requested.copy()
+        try:
+            orig_cols = json.loads(text)
+        except json.JSONDecodeError:
+            # File is missing, empty or corrupted
+            orig_cols = {}
+        if orig_cols:
             if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
                 warnings.warn(
                     "Conflicting BIDSVersion found in dataset_description.json! "
@@ -1787,7 +1891,21 @@ def make_dataset_description(
         # Preserve BIDS-spec keys we do not model (e.g. Description, DatasetLinks).
         for key, val in orig_cols.items():
             description.setdefault(key, val)
+        for key, val in extra_fields.items():
+            if overwrite or key not in orig_cols:
+                description[key] = val
+        return description
 
+    # Nothing to do, and no lock to take, when the file already holds the result.
+    text = _read()
+    description = _merge(text)
+    if json.dumps(description, indent=4, ensure_ascii=False) + "\n" == text:
+        return
+
+    # Handle potentially existing file contents
+    with _open_lock(fname):
+        if (current := _read()) != text:  # another writer got there first
+            description = _merge(current)
         _write_json(fname, description, overwrite=True, lock=False)
 
 
@@ -2022,7 +2140,7 @@ def write_raw_bids(
         will be overwritten with the exception of the ``*_participants.tsv``
         and ``*_scans.tsv`` files. For these files, parts of pre-existing data
         that match the current data will be replaced. For
-        ``*_participants.tsv``, specifically, age, sex and hand fields will be
+        ``*_participants.tsv``, specifically, age, sex and handedness fields will be
         overwritten, while any manually added fields in ``participants.json``
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
@@ -2999,8 +3117,8 @@ def write_anat(
         suffix exist, will use the first ones in the ``landmarks`` dictionary.
         If dict, accepts the following keys:
 
-        - ``inset``: how far back in voxels to start defacing
-          relative to the nasion (default 5)
+        - ``offset``: how far back in voxels to start defacing
+          relative to the nasion (default -5)
 
         - ``theta``: is the angle of the defacing shear in degrees relative
           to vertical (default 15).
@@ -3079,11 +3197,26 @@ def write_anat(
 
         if deface:
             landmarks_deface = landmarks.get("deface")
+            offset = -5
+            theta = 15
             if landmarks_deface is None:
                 # Take first one if none is specified for defacing.
                 landmarks_deface = next(iter(landmarks.items()))[1]
             _, landmarks_deface = _get_landmarks(landmarks_deface, image_nii)
-            image_nii = _deface(image_nii, landmarks_deface, deface)
+            if isinstance(deface, dict):
+                if "inset" in deface:  # make backwards compatible
+                    deface.update(offset=-deface["inset"])
+                if "offset" not in deface or "theta" not in deface:
+                    raise RuntimeError(
+                        f"When deface is a dict, keys must "
+                        f"include offset and theta, but got "
+                        f"{deface.keys()})"
+                    )
+                offset = deface["offset"]
+                theta = deface["theta"]
+            image_nii = deface_mri(
+                image_nii, landmarks_deface, offset=offset, theta=theta
+            )
 
     # Save anatomical data
     if op.exists(bids_path):
@@ -3721,7 +3854,8 @@ def anonymize_dataset(
 
         if bp_in.datatype == "anat":
             bp_anat_json = bp_in.copy().update(extension=".json")
-            anat_json = json.loads(bp_anat_json.fpath.read_text(encoding="utf-8"))
+            with _open_lock(bp_anat_json.fpath, encoding="utf-8") as fid:
+                anat_json = json.load(fid)
             landmarks = anat_json["AnatomicalLandmarkCoordinates"]
             landmarks_dig = mne.channels.make_dig_montage(
                 nasion=landmarks["NAS"],
@@ -3764,12 +3898,14 @@ def anonymize_dataset(
 
         # Enrich the JSON file
         if bp_in_json.fpath.exists():
-            json_in = json.loads(bp_in_json.fpath.read_text(encoding="utf-8"))
+            with _open_lock(bp_in_json.fpath, encoding="utf-8") as fid:
+                json_in = json.load(fid)
         else:
             json_in = dict()
 
         if bp_out_json.fpath.exists():
-            json_out = json.loads(bp_out_json.fpath.read_text(encoding="utf-8"))
+            with _open_lock(bp_out_json.fpath, encoding="utf-8") as fid:
+                json_out = json.load(fid)
         else:
             json_out = dict()
 

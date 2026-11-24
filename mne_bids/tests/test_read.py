@@ -3,6 +3,7 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import codecs
 import contextlib
 import json
 import logging
@@ -11,6 +12,7 @@ import os
 import os.path as op
 import re
 import shutil as sh
+import warnings
 from collections import OrderedDict
 from contextlib import nullcontext
 from datetime import UTC, date, datetime, timedelta, timezone
@@ -28,7 +30,7 @@ from numpy.testing import assert_almost_equal
 
 import mne_bids.utils
 import mne_bids.write
-from mne_bids import BIDSPath, read_epochs_bids
+from mne_bids import BIDSPath, read_epochs_bids, read_participants
 from mne_bids.config import (
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
@@ -41,6 +43,7 @@ from mne_bids.read import (
     _handle_channels_reading,
     _handle_events_reading,
     _handle_scans_reading,
+    _make_annotation_kwargs,
     _read_hed_version,
     _read_raw,
     events_file_to_annotation_kwargs,
@@ -217,7 +220,7 @@ def test_read_correct_inputs():
     """Test that inputs of read functions are correct."""
     bids_path = "sub-01_ses-01_meg.fif"
     with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
-        read_raw_bids(bids_path)
+        read_raw_bids(None)
 
     with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         get_head_mri_trans(bids_path)
@@ -256,6 +259,8 @@ def test_read_raw_bids_task_none_warns(tmp_path):
     write_raw_bids(
         raw, bids_path_valid, allow_preload=True, format="FIF", verbose=False
     )
+    for path in (bids_path_valid.fpath, str(bids_path_valid.fpath)):
+        assert read_raw_bids(path, verbose=False).ch_names == raw.ch_names
 
     meg_dir = tmp_path / "sub-01" / "meg"
     for fpath in meg_dir.iterdir():
@@ -373,7 +378,7 @@ def test_read_participants_data(tmp_path):
     # if modifying participants tsv, then read_raw_bids reflects that
     participants_tsv_fpath = tmp_path / "participants.tsv"
     participants_tsv = _from_tsv(participants_tsv_fpath)
-    participants_tsv["hand"][0] = "n/a"
+    participants_tsv["handedness"][0] = "n/a"
     participants_tsv["outcome"] = ["good"]  # e.g. clinical tutorial from MNE-Python
     _to_tsv(participants_tsv, participants_tsv_fpath)
     with pytest.warns(RuntimeWarning, match="Unable to map"):
@@ -386,7 +391,7 @@ def test_read_participants_data(tmp_path):
 
     # make sure things are read even if the entries don't make sense
     participants_tsv = _from_tsv(participants_tsv_fpath)
-    participants_tsv["hand"][0] = "righty"
+    participants_tsv["handedness"][0] = "righty"
     participants_tsv["sex"][0] = "malesy"
     # 'n/a' values should get omitted
     participants_tsv["weight"] = ["n/a"]
@@ -421,6 +426,57 @@ def test_read_participants_data(tmp_path):
         raw = read_raw_bids(bids_path=bids_path)
     assert raw.info["subject_info"] == dict()
 
+    # a rewrite that keeps the file size, within the timestamp resolution of the
+    # filesystem (1 s on some network filesystems), must still be picked up
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    raw.info["subject_info"] = {"sex": 2}
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    assert read_raw_bids(bids_path=bids_path).info["subject_info"]["sex"] == 2
+    stat = participants_tsv_fpath.stat()
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv["sex"][0] = "M"
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    os.utime(participants_tsv_fpath, ns=(stat.st_atime_ns, stat.st_mtime_ns))
+    assert participants_tsv_fpath.stat().st_size == stat.st_size
+    assert read_raw_bids(bids_path=bids_path).info["subject_info"]["sex"] == 1
+    for age in ("24", "nan", "inf", "2018"):
+        participants_tsv["age"][0] = age
+        _to_tsv(participants_tsv, participants_tsv_fpath)
+        info = read_raw_bids(bids_path=bids_path).info["subject_info"]
+        assert info["sex"] == 1 and ("birthday" in info) == (age == "24")
+    # the age "Units" in participants.json scale the age (default: years)
+    participants_tsv["age"][0] = "24"
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    participants_json = participants_tsv_fpath.with_suffix(".json")
+    sidecar = json.loads(participants_json.read_text(encoding="utf-8"))
+    for units, days in (("years", 8766), ("Month", 731), ("week", 168)):
+        sidecar["age"]["Units"] = units
+        _write_json(participants_json, sidecar, overwrite=True)
+        info = read_raw_bids(bids_path=bids_path).info
+        assert (
+            info["meas_date"].date() - info["subject_info"]["birthday"]
+        ).days == days
+    sidecar["age"]["Units"] = "foo"
+    _write_json(participants_json, sidecar, overwrite=True)
+    with pytest.warns(RuntimeWarning, match="Unknown age Units 'foo'"):
+        assert "birthday" not in read_raw_bids(bids_path=bids_path).info["subject_info"]
+    # years without Units or participants.json, and when it cannot be parsed
+    del sidecar["age"]["Units"]
+    _write_json(participants_json, sidecar, overwrite=True)
+    for content in (codecs.BOM_UTF8 + participants_json.read_bytes(), b"{", None):
+        if content is None:
+            participants_json.unlink()
+        else:
+            participants_json.write_bytes(content)
+        if content == b"{":
+            with pytest.warns(RuntimeWarning, match="Could not read"):
+                info = read_raw_bids(bids_path=bids_path).info
+        else:
+            info = read_raw_bids(bids_path=bids_path).info
+        assert (
+            info["meas_date"].date() - info["subject_info"]["birthday"]
+        ).days == 8766
+
 
 @pytest.mark.parametrize(
     ("hand_bids", "hand_mne", "sex_bids", "sex_mne"),
@@ -432,10 +488,11 @@ def test_read_participants_data(tmp_path):
         ("l", 2, "m", 1),
     ],
 )
+@pytest.mark.parametrize("column", ["handedness", "hand", "both", "n/a"])
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_read_participants_handedness_and_sex_mapping(
-    hand_bids, hand_mne, sex_bids, sex_mne, tmp_path
+    hand_bids, hand_mne, sex_bids, sex_mne, column, tmp_path
 ):
     """Test we're correctly mapping handedness and sex between BIDS and MNE."""
     bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg")
@@ -447,11 +504,22 @@ def test_read_participants_handedness_and_sex_mapping(
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     participants_tsv = _from_tsv(participants_tsv_fpath)
-    participants_tsv["hand"][0] = hand_bids
+    participants_tsv["handedness"][0] = hand_bids
+    if column == "hand":  # written by MNE-BIDS < 0.21
+        participants_tsv["hand"] = participants_tsv.pop("handedness")
+    elif column in ("both", "n/a"):
+        participants_tsv["hand"] = ["A"]
+        if column == "n/a":
+            participants_tsv["handedness"][0] = "n/a"
+            hand_mne = 0
     participants_tsv["sex"][0] = sex_bids
     _to_tsv(participants_tsv, participants_tsv_fpath)
 
-    raw = read_raw_bids(bids_path=bids_path)
+    if column in ("both", "n/a"):  # hand is then a custom column
+        with pytest.warns(RuntimeWarning, match="Unable to map.*\nhand: A"):
+            raw = read_raw_bids(bids_path=bids_path)
+    else:
+        raw = read_raw_bids(bids_path=bids_path)
     assert raw.info["subject_info"]["hand"] is hand_mne
     assert raw.info["subject_info"]["sex"] is sex_mne
 
@@ -1834,6 +1902,11 @@ def test_write_read_fif_split_file(tmp_path, monkeypatch):
     # reset scans.tsv file for downstream tests
     scan_data["acq_time"][0] = scan_data["acq_time"][1]
     _to_tsv(scan_data, scans_tsv)
+    bids_path.fpath.unlink()
+    with pytest.warns(RuntimeWarning, match="Split raw file detected"):
+        assert len(read_raw_bids(bids_path.update(split="01"))) < len(raw)
+    with pytest.raises(ValueError, match="Split raw file"):
+        read_raw_bids(bids_path, extra_params={"on_split_missing": "raise"})
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
@@ -2088,6 +2161,81 @@ def test_channel_mismatch_invalid_option(tmp_path):
     raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
     with pytest.raises(ValueError, match="on_ch_mismatch must be one of"):
         _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
+
+
+@pytest.mark.parametrize(
+    "ch_names, bids_type, mne_type",
+    [
+        (["S1_D1 760", "S1_D1 850"], "NIRSCWOPTICALDENSITY", "fnirs_od"),
+        (["S1_D1 hbo", "S2_D1 hbo"], "NIRSCWHBO", "hbo"),
+        (["S1_D1 hbr", "S2_D1 hbr"], "NIRSCWHBR", "hbr"),
+    ],
+    ids=["od", "hbo", "hbr"],
+)
+@pytest.mark.parametrize("raw_type", ["same", "misc"])
+def test_nirs_channel_types_from_tsv(tmp_path, ch_names, bids_type, mne_type, raw_type):
+    """Read the fNIRS types of channels.tsv as MNE fNIRS types, not ``misc``."""
+    # "same": the reader typed the channels already (SNIRF processed data);
+    # "misc": a reader that did not.
+    info = mne.create_info(
+        ch_names, sfreq=10, ch_types=mne_type if raw_type == "same" else "misc"
+    )
+    raw = mne.io.RawArray(np.ones((len(ch_names), 10)), info)
+    channels_fname = tmp_path / "channels.tsv"
+    _to_tsv(
+        OrderedDict([("name", ch_names), ("type", [bids_type] * len(ch_names))]),
+        channels_fname,
+    )
+    raw = _handle_channels_reading(channels_fname, raw)
+    assert raw.get_channel_types() == [mne_type] * len(ch_names)
+
+
+@testing.requires_testing_data
+@pytest.mark.parametrize("wavelength_fmt", ["{:.0f}", "{:.1f}"], ids=["760", "760.0"])
+def test_nirs_channel_names_from_columns(tmp_path, wavelength_fmt):
+    """Match NIRS channels on source, detector and wavelength, not on names."""
+    raw_fname = op.join(
+        data_path, "SNIRF", "MNE-NIRS", "20220217", "20220217_nirx_15_3_recording.snirf"
+    )
+    raw = mne.io.read_raw_snirf(raw_fname)
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype="nirs")
+    write_raw_bids(raw, bids_path)
+
+    # Name channels like OpenNeuro ds004830 does: S1-D1-760.0
+    channels_fname = bids_path.copy().update(suffix="channels", extension=".tsv")
+    channels = _from_tsv(channels_fname)
+    channels["wavelength_nominal"] = [
+        wavelength_fmt.format(float(w)) for w in channels["wavelength_nominal"]
+    ]
+    channels["name"] = [
+        f"{source}-{detector}-{wavelength}"
+        for source, detector, wavelength in zip(
+            channels["source"], channels["detector"], channels["wavelength_nominal"]
+        )
+    ]
+    _to_tsv(channels, channels_fname)
+
+    raw_bids = read_raw_bids(bids_path)
+    assert raw_bids.ch_names == raw.ch_names
+
+    # Columns that do not give the raw names leave the mismatch handling as it was
+    sources, detectors, wavelengths = (
+        channels[column] for column in ("source", "detector", "wavelength_nominal")
+    )
+    _to_tsv(
+        {**channels, "wavelength_nominal": ["n/a", *wavelengths[1:]]}, channels_fname
+    )
+    with pytest.raises(RuntimeError, match="Channel mismatch"):
+        read_raw_bids(bids_path, on_ch_mismatch="raise")
+
+    # Labels other than MNE's S1/D1 keep the channels.tsv names
+    tx_rx = {
+        "source": [source.replace("S", "Tx") for source in sources],
+        "detector": [detector.replace("D", "Rx") for detector in detectors],
+    }
+    _to_tsv({**channels, **tx_rx}, channels_fname)
+    raw_bids = read_raw_bids(bids_path, on_ch_mismatch="rename")
+    assert raw_bids.ch_names == channels["name"]
 
 
 def test_channel_mismatch_warn(tmp_path):
@@ -2529,14 +2677,21 @@ def test_read_hed_version_returns_none(tmp_path, bids_root):
 
 @testing.requires_testing_data
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
-def test_read_epochs_bids_eeglab(tmp_path):
-    """read_epochs_bids loads EEGLAB epoched data; read_raw_bids refuses it."""
+@pytest.mark.parametrize(("ext", "datatype"), [(".set", "eeg"), (".fif", "meg")])
+def test_read_epochs_bids_eeglab(tmp_path, ext, datatype):
+    """read_epochs_bids loads EEGLAB/FIF epoched data; read_raw_bids refuses it."""
     src = data_path / "EEGLAB" / "test_epochs.set"
-    bp = BIDSPath(subject="01", task="t", datatype="eeg", root=tmp_path)
+    bp = BIDSPath(subject="01", task="t", datatype=datatype, root=tmp_path)
     bp.directory.mkdir(parents=True)
-    sh.copy(src, bp.update(suffix="eeg", extension=".set").fpath)
-    sh.copy(src.with_suffix(".fdt"), bp.fpath.with_suffix(".fdt"))
+    bp.update(suffix=datatype, extension=ext)
     expected = mne.io.read_epochs_eeglab(src, verbose=False)
+    if ext == ".set":
+        sh.copy(src, bp.fpath)
+        sh.copy(src.with_suffix(".fdt"), bp.fpath.with_suffix(".fdt"))
+    else:  # BIDS does not name epoched FIF files as older MNE versions expect
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", message=".*naming conventions")
+            expected.save(bp.fpath, verbose=False)
     bp.copy().update(extension=".json").fpath.write_text(
         '{"TaskName": "t", "PowerLineFrequency": 60, "RecordingType": "epoched"}'
     )
@@ -2599,3 +2754,113 @@ def test_read_epochs_bids_continuous(tmp_path, ext, fmt, writer_pkg):
     assert epochs.get_data().shape == (n_ep, 2, n_per)
     assert set(epochs.event_id) == {"A", "B"}
     assert len(epochs["A"]) == 2 and len(epochs["B"]) == 1  # last 'B' was dropped
+
+
+def test_read_participants(tmp_path):
+    """Read participants.tsv into rows keyed by subject label."""
+    fname = tmp_path / "participants.tsv"
+    fname.write_text("participant_id\tage\tsex\nsub-01\t24\tF\nsub-02\tn/a\tM\n")
+    expected = {"01": {"age": "24", "sex": "F"}, "02": {"age": None, "sex": "M"}}
+    assert read_participants(fname) == expected
+    assert (
+        read_participants("hf://repo/participants.tsv", content=fname.read_bytes())
+        == expected
+    )
+
+    fname.write_text("age\tsex\n24\tF\n")
+    with pytest.raises(ValueError, match="participant_id"):
+        read_participants(fname)
+
+
+@pytest.mark.parametrize("suffix", ["eeg", "events"])
+def test_read_raw_bids_non_object_events_json(tmp_path, suffix):
+    """An events.json sidecar that is not an object is skipped with a warning."""
+    bids_root = tmp_path / "tiny_bids"
+    sh.copytree(tiny_bids_root, bids_root)
+    events_json = (
+        bids_root
+        / "sub-01"
+        / "ses-eeg"
+        / "eeg"
+        / f"sub-01_ses-eeg_task-rest_{suffix}.json"
+    )
+    events_json.write_text("[]")
+    bids_path = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
+    )
+    with pytest.warns(RuntimeWarning, match="not a JSON object"):
+        raw = read_raw_bids(bids_path)
+    assert len(raw.annotations) > 0
+
+
+def test_read_sidecar(tmp_path):
+    """BIDSPath.read_sidecar and read_raw_bids merge inherited sidecars."""
+    bids_root = tmp_path / "tiny_bids[1]"
+    sh.copytree(tiny_bids_root, bids_root)
+    # Move the line frequency and EEG reference from the session to the dataset root.
+    _write_json(
+        bids_root / "task-rest_eeg.json",
+        {"PowerLineFrequency": 60, "EEGReference": "Cz"},
+    )
+    eeg_json = (
+        bids_root / "sub-01" / "ses-eeg" / "eeg" / "sub-01_ses-eeg_task-rest_eeg.json"
+    )
+    sidecar = json.loads(eeg_json.read_text(encoding="utf-8"))
+    del sidecar["PowerLineFrequency"], sidecar["EEGReference"]
+    _write_json(eeg_json, sidecar, overwrite=True)
+    # Move the trial_type column's HED definitions to the dataset root as well.
+    events_json = eeg_json.with_name("sub-01_ses-eeg_task-rest_events.json")
+    events = json.loads(events_json.read_text(encoding="utf-8"))
+    _write_json(
+        bids_root / "task-rest_events.json", {"trial_type": events.pop("trial_type")}
+    )
+    _write_json(events_json, events, overwrite=True)
+
+    bp = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
+    )
+    hed = [e.get("HED") for e in read_raw_bids(bp).annotations.extras]
+    assert hed == ["Experiment-structure", "Sensory-event, Visual-presentation"]
+    meta = bp.read_sidecar(inherit=True)
+    assert meta["PowerLineFrequency"] == 60 and meta["EEGReference"] == "Cz"
+    assert "EEGReference" not in bp.read_sidecar()  # the closest file only
+    assert bp.read_sidecar("nosuchsuffix", on_error="ignore") == {}
+    with pytest.raises(RuntimeError, match="nosuchsuffix"):
+        bp.read_sidecar("nosuchsuffix")
+    assert read_raw_bids(bp).info["line_freq"] == 60
+
+    sidecar["PowerLineFrequency"] = 50
+    _write_json(eeg_json, sidecar, overwrite=True)
+    assert bp.read_sidecar(inherit=True)["PowerLineFrequency"] == 50
+    assert read_raw_bids(bp).info["line_freq"] == 50
+
+
+@pytest.mark.parametrize("col", ["description", "ch_names", "hed_string"])
+def test_malformed_events_tsv(tmp_path, col):
+    """Reserved extra columns and negative durations are sanitized with warnings."""
+    fname = tmp_path / "events.tsv"
+    fname.write_text(f"onset\tduration\ttrial_type\t{col}\n0.1\t-0.2\tgo\tleft\n")
+    with (
+        pytest.warns(RuntimeWarning, match="negative duration"),
+        pytest.warns(RuntimeWarning, match="reserved"),
+    ):
+        kw = events_file_to_annotation_kwargs(fname)
+    assert list(kw["duration"]) == [0.0] and kw["extras"] == [{f"events_{col}": "left"}]
+
+
+def test_reserved_events_columns_keep_hed_and_existing_columns(tmp_path):
+    """Renaming a reserved column keeps sidecar HED and never overwrites a column."""
+    events_dict = {
+        "onset": ["0.1"],
+        "duration": ["0"],
+        "description": ["left"],
+        "events_description": ["kept"],
+    }
+    sidecar = tmp_path / "events.json"
+    sidecar.write_text('{"description": {"HED": {"left": "Left-side-of"}}}')
+    with pytest.warns(RuntimeWarning, match="'events_description_1'"):
+        kw, events_dict = _make_annotation_kwargs(events_dict)
+    assert kw["extras"] == [
+        {"events_description": "kept", "events_description_1": "left"}
+    ]
+    assert _assemble_hed_from_sidecar(events_dict, sidecar) == ["Left-side-of"]

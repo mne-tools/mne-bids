@@ -22,12 +22,14 @@ mne_bids
    write_raw_bids
    read_raw_bids
    read_epochs_bids
+   read_participants
    write_meg_calibration
    write_meg_crosstalk
    BIDSPath
    make_dataset_description
    make_report
    write_anat
+   deface_mri
    mark_channels
    get_anat_landmarks
    update_anat_landmarks
@@ -47,6 +49,7 @@ mne_bids
    anonymize_dataset
    find_matching_paths
    events_file_to_annotation_kwargs
+   open_lock
 
 mne_bids.stats
 --------------

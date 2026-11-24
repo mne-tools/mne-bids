@@ -30,6 +30,7 @@
 .. _Ford McDonald: https://github.com/fordmcdonald
 .. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
 .. _Fu-Te Wong: https://github.com/zuxfoucault
+.. _Hamza Abdelhedi: https://github.com/BabaSanfour
 .. _Harrison Ritz: https://github.com/harrisonritz
 .. _Jean-Rémi King: https://kingjr.github.io
 .. _Jonathan Vanhoecke: https://sfb-retune.de/people/jonathan-vanhoecke/
@@ -54,6 +55,7 @@
 .. _Robert Luke: https://github.com/rob-luke
 .. _Romain Quentin: https://github.com/romquentin
 .. _Scott Huberty: https://github.com/scott-huberty
+.. _Shubham Padkonde: https://github.com/Shubham-Padkonde
 .. _Simon Kern: https://github.com/skjerns
 .. _Sin Kim: https://ohbm.github.io/osr2020/volunteers/sin_kim.html
 .. _Sophie Herbst: https://github.com/SophieHerbst

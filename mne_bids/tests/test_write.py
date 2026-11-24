@@ -64,7 +64,7 @@ from mne_bids.utils import (
     _write_json,
     get_anonymization_daysback,
 )
-from mne_bids.write import _get_fid_coords
+from mne_bids.write import _channels_tsv, _get_fid_coords, deface_mri
 
 base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
@@ -265,6 +265,22 @@ def _test_anonymize(root, raw, bids_path, events_fname=None, event_id=None):
     return root
 
 
+@pytest.mark.parametrize(
+    ("description", "expected"),
+    [("Handedness of the participant", "R"), ("Button box hand", "n/a"), (None, "n/a")],
+)
+def test_append_participant_with_hand_column(tmp_path, description, expected):
+    """Keep legacy handedness and custom hand columns when adding a subject."""
+    tsv = tmp_path / "participants.tsv"
+    _to_tsv({"participant_id": ["sub-01"], "hand": ["R"]}, tsv)
+    if description is not None:
+        _write_json(tsv.with_suffix(".json"), {"hand": {"Description": description}})
+    _write_parallel_subject(tmp_path, subject="02", run="01")
+    data = _from_tsv(tsv)
+    assert data["handedness"] == [expected, "L"]
+    assert data["hand"] == ["R", "n/a"]
+
+
 @testing.requires_testing_data
 def test_write_participants(_bids_validate, tmp_path):
     """Test participants.tsv/.json file writing.
@@ -302,7 +318,7 @@ def test_write_participants(_bids_validate, tmp_path):
     bids_path.update(subject="02")
     write_raw_bids(raw, bids_path, verbose=False)
     data = _from_tsv(participants_tsv)
-    data.pop("hand")
+    data.pop("handedness")
     _to_tsv(data, participants_tsv)
 
     # write in now another subject
@@ -313,9 +329,9 @@ def test_write_participants(_bids_validate, tmp_path):
 
     # hand should have been written properly with now 'n/a' for sub-01 and
     # sub-02, but 'L' for sub-D03
-    assert data["hand"][data["participant_id"].index("sub-01")] == "n/a"
-    assert data["hand"][data["participant_id"].index("sub-02")] == "n/a"
-    assert data["hand"][data["participant_id"].index("sub-D03")] == "L"
+    assert data["handedness"][data["participant_id"].index("sub-01")] == "n/a"
+    assert data["handedness"][data["participant_id"].index("sub-02")] == "n/a"
+    assert data["handedness"][data["participant_id"].index("sub-D03")] == "L"
 
     # check to make sure participant data is overwritten, but keeps the fields
     # if there are extra fields that were user defined
@@ -367,7 +383,7 @@ def test_write_participants(_bids_validate, tmp_path):
     write_raw_bids(raw=raw, bids_path=bids_path_er, verbose=False)
     participants_tsv = _from_tsv(participants_tsv)
     idx = participants_tsv["participant_id"].index("sub-emptyroom")
-    assert participants_tsv["hand"][idx] == "n/a"
+    assert participants_tsv["handedness"][idx] == "n/a"
     assert participants_tsv["sex"][idx] == "n/a"
     assert participants_tsv["age"][idx] == "n/a"
 
@@ -497,6 +513,16 @@ def test_make_dataset_description_preserves_unknown_keys(tmp_path):
     final = json.loads(fname.read_text())
     assert final["Description"] == "Free-form custom field"
     assert final["Name"] == "enriched"
+    # extra_fields writes unmodeled keys and follows the overwrite rules
+    make_dataset_description(path=tmp_path, name="x", extra_fields={"Year": 1})
+    make_dataset_description(path=tmp_path, name="x", extra_fields={"Year": 2})
+    assert json.loads(fname.read_text())["Year"] == 1
+    make_dataset_description(
+        path=tmp_path, name="x", extra_fields={"Year": 2}, overwrite=True
+    )
+    assert json.loads(fname.read_text())["Year"] == 2
+    with pytest.raises(ValueError, match="cannot set.*Name"):
+        make_dataset_description(path=tmp_path, name="x", extra_fields={"Name": "y"})
 
 
 def test_stamp_to_dt():
@@ -1316,10 +1342,16 @@ def test_bti(_bids_validate, tmp_path, dataset):
         source_datasets=s_ds,
         generated_by=gen_by,
         authors="a,b,c",
+        # a key the BIDS spec does not define: the validator below must accept it
+        extra_fields={"PublicationYear": 2026},
     )
+    with open(tmp_path / "dataset_description.json", encoding="utf-8") as fid:
+        assert json.load(fid)["PublicationYear"] == 2026
     bids_output_path = write_raw_bids(raw, bids_path, verbose=True)
 
     assert op.exists(tmp_path / "participants.tsv")
+    with open(tmp_path / "dataset_description.json", encoding="utf-8") as fid:
+        assert json.load(fid)["PublicationYear"] == 2026
     _bids_validate(tmp_path)
 
     if dataset == "inbuilt_linux":
@@ -1864,6 +1896,26 @@ def test_snirf(_bids_validate, tmp_path):
         write_raw_bids(raw, bids_path, overwrite=True)
 
 
+def test_channels_tsv_nirs_types(tmp_path):
+    """Optical density and hemoglobin channels get their BIDS types."""
+    ch_names = ["S1_D1 760", "S1_D1 850", "S1_D1 hbo", "S1_D1 hbr"]
+    ch_types = ["fnirs_od", "fnirs_od", "hbo", "hbr"]
+    info = mne.create_info(ch_names, sfreq=10, ch_types=ch_types)
+    raw_fname = tmp_path / "nirs_raw.fif"
+    mne.io.RawArray(np.ones((4, 10)), info).save(raw_fname)
+    raw = mne.io.read_raw_fif(raw_fname)
+    channels_fname = tmp_path / "channels.tsv"
+    _channels_tsv(raw, channels_fname, convert_fmt=None)
+    channels = _from_tsv(channels_fname)
+    assert channels["type"] == [
+        "NIRSCWOPTICALDENSITY",
+        "NIRSCWOPTICALDENSITY",
+        "NIRSCWHBO",
+        "NIRSCWHBR",
+    ]
+    assert "Other type of channel" not in channels["description"]
+
+
 def test_bdf(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for Biosemi data."""
     raw_fname = op.join(base_path, "edf", "tests", "data", "test.bdf")
@@ -2160,6 +2212,12 @@ def test_write_anat(_bids_validate, tmp_path):
     _check_anat_json(bids_path)
 
     # Now try some anat writing that will fail
+    # if deface is true but no landmarks provided, error should raise
+    with pytest.raises(ValueError, match="must be provided to deface"):
+        write_anat(
+            t1w_mgh, bids_path=bids_path, deface=True, verbose=True, overwrite=True
+        )
+
     # We already have some MRI data there
     with pytest.raises(IOError, match="`overwrite` is set to False"):
         write_anat(t1w_mgh, **dict(kwargs, overwrite=False))
@@ -2186,49 +2244,6 @@ def test_write_anat(_bids_validate, tmp_path):
     anat_dir2 = bids_path.directory
     assert "ses-None" not in anat_dir2.as_posix()
     assert op.exists(op.join(anat_dir2, "sub-01_T1w.nii.gz"))
-
-    # test deface
-    bids_path = write_anat(t1w_mgh, **kwargs)
-    anat_dir = bids_path.directory
-    t1w = nib.load(op.join(anat_dir, "sub-01_T1w.nii.gz"))
-    vox_sum = t1w.get_fdata().sum()
-
-    _check_anat_json(bids_path)
-
-    # Check that increasing inset leads to more voxels at 0
-    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset=25.0)))
-    anat_dir2 = bids_path.directory
-    t1w2 = nib.load(op.join(anat_dir2, "sub-01_T1w.nii.gz"))
-    vox_sum2 = t1w2.get_fdata().sum()
-
-    _check_anat_json(bids_path)
-
-    assert vox_sum > vox_sum2
-
-    # Check that increasing theta leads to more voxels at 0
-    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=45)))
-    anat_dir3 = bids_path.directory
-    t1w3 = nib.load(op.join(anat_dir3, "sub-01_T1w.nii.gz"))
-    vox_sum3 = t1w3.get_fdata().sum()
-
-    assert vox_sum > vox_sum3
-
-    with pytest.raises(ValueError, match="must be provided to deface"):
-        write_anat(
-            t1w_mgh, bids_path=bids_path, deface=True, verbose=True, overwrite=True
-        )
-
-    with pytest.raises(ValueError, match="inset must be numeric"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset="small")))
-
-    with pytest.raises(ValueError, match="inset should be positive"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset=-2.0)))
-
-    with pytest.raises(ValueError, match="theta must be numeric"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta="big")))
-
-    with pytest.raises(ValueError, match="theta should be between 0 and 90"):
-        write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=100)))
 
     # test using landmarks
     bids_path.update(acquisition=acq)
@@ -2796,6 +2811,8 @@ def test_write_meg_crosstalk(_bids_validate, tmp_path):
     # bad path when task is provided for crosstalk
     with pytest.raises(ValueError, match="task must be None if the acquisition is"):
         assert bids_path_erm.copy().update(acquisition="crosstalk").task == "noise"
+    # ... but for a non-MEG datatype "crosstalk" is an ordinary acq label
+    BIDSPath(subject="01", task="t", acquisition="crosstalk", datatype="eeg")
     # subject not set.
     bids_path = bids_path.copy().update(root=bids_root, subject=None)
     with pytest.raises(ValueError, match="must have root and subject set"):
@@ -4626,3 +4643,44 @@ def test_split_size_write(tmp_path):
     erm2 = f_erm.directory / f_erm.basename.replace("split-01", "split-02")
     assert bp2.exists()
     assert erm2.exists()
+
+
+@testing.requires_testing_data
+def test_deface_mri_errors(t1_image, mri_landmarks):
+    """Test error raising for mri defacing function."""
+    bad_theta_val = -5
+    offset = -5
+
+    with pytest.raises(ValueError, match="theta should be between"):
+        deface_mri(t1_image, mri_landmarks, offset=offset, theta=bad_theta_val)
+
+
+@testing.requires_testing_data
+def test_deface_mri(t1_image, mri_landmarks):
+    """Test that defacing completes successfully."""
+    from nibabel.spatialimages import SpatialImage
+
+    # reference mri
+    vox_sum = t1_image.get_fdata().sum()
+
+    # check default vals type output
+    defaced_mri = deface_mri(t1_image, mri_landmarks)
+    assert isinstance(defaced_mri, SpatialImage)
+    vox_sum1 = defaced_mri.get_fdata().sum()
+
+    # check the proportion of changed voxels is under 5% for default vals
+    orig = t1_image.get_fdata().ravel()
+    dfd = defaced_mri.get_fdata().ravel()
+    assert np.isclose(orig, dfd).mean() > 0.95
+
+    # Check that a more negative offset leads to more voxels at 0
+    off_df = deface_mri(t1_image, mri_landmarks, offset=-45, theta=15)
+    vox_sum2 = off_df.get_fdata().sum()
+
+    assert vox_sum > vox_sum1 > vox_sum2
+
+    # Check that increasing theta leads to more voxels at 0
+    tht_df = deface_mri(t1_image, mri_landmarks, offset=-5, theta=45)
+    vox_sum3 = tht_df.get_fdata().sum()
+
+    assert vox_sum > vox_sum1 > vox_sum3

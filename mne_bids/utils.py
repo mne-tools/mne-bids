@@ -13,7 +13,7 @@ import numpy as np
 from mne.utils import logger, verbose
 from mne.utils import warn as _warn
 
-from mne_bids._fileio import _open_lock
+from mne_bids._fileio import _has_text, _open_lock
 from mne_bids.tsv_handler import _to_tsv
 
 # This regex matches key-val pairs. Any characters are allowed in the key and
@@ -74,6 +74,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             temperature="TEMP",
             # NIRS
             fnirs_cw_amplitude="NIRSCWAMPLITUDE",
+            fnirs_od="NIRSCWOPTICALDENSITY",
+            hbo="NIRSCWHBO",
+            hbr="NIRSCWHBR",
             # MEG channels
             meggradaxial="MEGGRADAXIAL",
             megmag="MEGMAG",
@@ -105,6 +108,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             # NIRS
             NIRSCWAMPLITUDE="fnirs_cw_amplitude",
             NIRS="fnirs_cw_amplitude",
+            NIRSCWOPTICALDENSITY="fnirs_od",
+            NIRSCWHBO="hbo",
+            NIRSCWHBR="hbr",
             # No MEG channels for now (see Notes above)
             # Many to one mapping
             VEOG="eog",
@@ -233,10 +239,12 @@ def _write_json(fname, dictionary, *, overwrite=False, lock=True):
             f'"{fname}" already exists. Please set overwrite to True.'
         )
 
-    json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
+    json_output = json.dumps(dictionary, indent=4, ensure_ascii=False) + "\n"
+    if _has_text(fname, json_output):
+        logger.debug(f"{fname} contents are unchanged. Skipping write.")
+        return
     with _open_lock(fname, "w", encoding="utf-8", lock=lock) as fid:
         fid.write(json_output)
-        fid.write("\n")
 
     logger.info(f"Writing '{fname}'...")
 
@@ -262,6 +270,9 @@ def _write_text(fname, text, overwrite=False, lock=True):
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
+    if _has_text(fname, f"{text}\n"):
+        logger.debug(f"contents of {fname} have not changed. Not rewriting.")
+        return
     with _open_lock(fname, "w", encoding="utf-8", lock=lock) as fid:
         fid.write(text)
         fid.write("\n")
@@ -271,7 +282,7 @@ def _write_text(fname, text, overwrite=False, lock=True):
 
 def _check_key_val(key, val):
     """Perform checks on a value to make sure it adheres to the spec."""
-    if any(ii in val for ii in ["-", "_", "/"]):
+    if "-" in val or "_" in val or "/" in val:
         raise ValueError(
             f"Unallowed `-`, `_`, or `/` found in key/value pair {key}: {val}"
         )

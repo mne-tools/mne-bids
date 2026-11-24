@@ -11,6 +11,7 @@ import os.path as op
 import pickle
 import shutil as sh
 import timeit
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path, PurePath
@@ -33,7 +34,13 @@ from mne_bids import (
     write_meg_crosstalk,
     write_raw_bids,
 )
-from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
+from mne_bids.config import (
+    _BIDS_DATATYPES,
+    ALLOWED_DATATYPES,
+    ALLOWED_FILENAME_SUFFIX,
+    ALLOWED_PATH_ENTITIES_SHORT,
+    ENTITY_VALUE_TYPE,
+)
 from mne_bids.path import (
     _DATATYPE_LIST,
     _filter_fnames,
@@ -276,6 +283,16 @@ def test_get_entity_vals_ignore_hidden(bids_root):
     assert "hid" in vals_include_hidden
 
 
+def test_get_entity_vals_root_in_hidden_dir(tmp_path):
+    """Test that only directories below the root count as hidden."""
+    root = tmp_path / ".cache" / "ds"
+    fname = root / "sub-01" / "ses-a" / "meg" / "sub-01_ses-a_task-x_meg.fif"
+    fname.parent.mkdir(parents=True)
+    fname.touch()
+    assert get_entity_vals(root, "session") == ["a"]
+    assert get_entity_vals(root, "session", include_match="**/") == ["a"]
+
+
 @dataclass
 class _PathAccessCounter:
     calls: list[str]
@@ -331,12 +348,6 @@ def path_counter(monkeypatch):
         # Reroute Path.glob through iglob to count accesses
         return [root / f for f in glob.iglob(pattern, root_dir=root, recursive=True)]
 
-    def _path_rglob_iglob(root, pattern):
-        # Reroute Path.rglob through iglob to count accesses
-        return [
-            root / f for f in glob.iglob(f"**/{pattern}", root_dir=root, recursive=True)
-        ]
-
     def _iglob_count(*args, **kwargs):
         for fn in orig_iglob(*args, **kwargs):
             path_counter.count += 1
@@ -355,9 +366,17 @@ def path_counter(monkeypatch):
             )
             yield out
 
+    orig_scandir = mne_bids.path._scandir
+
+    def _scandir_count(path):
+        entries = orig_scandir(path)
+        path_counter.count += len(entries)
+        path_counter.files.extend(entry.path for entry in entries)
+        return entries
+
     monkeypatch.setattr(glob, "iglob", _iglob_count)
+    monkeypatch.setattr(mne_bids.path, "_scandir", _scandir_count)
     monkeypatch.setattr(mne_bids.path, "_path_glob", _path_glob_iglob)
-    monkeypatch.setattr(mne_bids.path, "_path_rglob", _path_rglob_iglob)
     monkeypatch.setattr(mne_bids.path, "_return_root_paths", _return_root_paths_count)
     monkeypatch.setattr(mne_bids, "get_entity_vals", get_entity_vals_count)
     monkeypatch.setattr(mne_bids, "get_datatypes", get_datatypes_count)
@@ -453,34 +472,16 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     fnames = mne_bids.path._return_root_paths(tmp_bids_root)
     assert len(fnames) == len(set(fnames))
     assert len(fnames) == 10956
-    max_count = 11642
+    # Number of directory entries listed while walking the tree.
+    max_count = 15253
     assert path_counter.count == max_count
 
     # apply nosub on find_matching_matchs with root level bids directory should
-    # yield a performance boost of order of length from bids_subdirectories.
-    setup = "import mne_bids\ntmp_bids_root=r'" + str(tmp_bids_root) + "'"
-    timed_all = min(
-        timeit.repeat(
-            "mne_bids.find_matching_paths(tmp_bids_root)",
-            setup=setup,
-            number=1,
-            repeat=3,
-        )
-    )
+    # yield a reduction in work of order of length from bids_subdirectories.
+    mne_bids.find_matching_paths(tmp_bids_root)
     assert path_counter.count == max_count
-    timed_ignored_nosub = min(
-        timeit.repeat(
-            "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
-            setup=setup,
-            number=1,
-            repeat=3,
-        )
-    )
-    assert path_counter.count == 621
-
-    # while this should be of same order, lets give it some space by a factor of 3
-    target = 3 * timed_all / len(bids_root_dense.bids_subdirectories)
-    assert timed_ignored_nosub < target
+    mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)
+    assert path_counter.count == 818
 
     # these should be equivalent
     out_1 = mne_bids.get_entity_vals(tmp_bids_root, "session")
@@ -507,15 +508,15 @@ def test_path_benchmark(bids_root_dense, monkeypatch, path_counter):
     assert len(paths) == expected_n_paths
     assert len(set(paths)) == len(paths)
     assert all(path.fpath.exists() for path in paths)
-    assert path_counter.count == 3420
+    assert path_counter.count == max_count
     path.subject = "1"  # add subject
     paths = path.match()
     assert len(paths) == n_sessions
-    assert path_counter.count == 20
+    assert path_counter.count == 89
     path.session = "2"  # add session
     paths = path.match()
     assert len(paths) == 1, paths
-    assert path_counter.count == 5
+    assert path_counter.count == 21
 
 
 def _scan_targeted_meg(root, entities=None):
@@ -805,6 +806,12 @@ def test_get_bids_path_from_fname(fname):
         assert str(bids_path.root) == "."
 
 
+def test_get_bids_path_from_fname_no_root_level():
+    """Test a scans file without subject or session, so no folders to strip."""
+    with pytest.raises(ValueError, match="scans.tsv file name can only contain"):
+        get_bids_path_from_fname("/bids_root/task-rest_scans.tsv", check=False)
+
+
 @pytest.mark.parametrize(
     "fname",
     [
@@ -826,19 +833,7 @@ def test_get_entities_from_fname(fname):
     assert params["task"] == "test"
     assert params["description"] == "filtered"
     assert params["split"] == "1"
-    assert list(params.keys()) == [
-        "subject",
-        "session",
-        "task",
-        "acquisition",
-        "run",
-        "processing",
-        "space",
-        "recording",
-        "split",
-        "description",
-        "tracking_system",
-    ]
+    assert list(params.keys()) == list(ALLOWED_PATH_ENTITIES_SHORT.values())
 
 
 @pytest.mark.parametrize(
@@ -864,19 +859,7 @@ def test_get_entities_from_fname_errors(fname):
     else:
         params = get_entities_from_fname(fname, on_error="raise")
 
-    expected_keys = [
-        "subject",
-        "session",
-        "task",
-        "acquisition",
-        "run",
-        "processing",
-        "space",
-        "recording",
-        "split",
-        "description",
-        "tracking_system",
-    ]
+    expected_keys = list(ALLOWED_PATH_ENTITIES_SHORT.values())
 
     assert params["subject"] == "01"
     assert params["session"] == "02"
@@ -887,6 +870,108 @@ def test_get_entities_from_fname_errors(fname):
         assert params["foo"] == "tfr"
         expected_keys.append("foo")
     assert list(params.keys()) == expected_keys
+
+
+@pytest.mark.parametrize(
+    ("fname", "expected"),
+    [
+        (
+            "sub-01_ses-01_task-rest_echo-1_part-mag_bold.nii.gz",
+            {"echo": "1", "part": "mag"},
+        ),
+        ("sub-01_rec-norm_T1w.nii.gz", {"reconstruction": "norm"}),
+        ("sub-01_dir-AP_dwi.nii.gz", {"direction": "AP"}),
+        (
+            "sub-01_trc-FDG_rec-acdyn_pet.nii.gz",
+            {"tracer": "FDG", "reconstruction": "acdyn"},
+        ),
+        (
+            "sub-01_acq-press_voi-pcc_svs.nii.gz",
+            {"acquisition": "press", "volume": "pcc"},
+        ),
+    ],
+)
+def test_mri_entities(fname, expected):
+    """Test MRI, PET and MRS entities are parsed and written back."""
+    bids_path = get_bids_path_from_fname(fname, check=False)
+    for key, val in expected.items():
+        assert getattr(bids_path, key) == val
+    assert bids_path.basename == fname and bids_path.extension == ".nii.gz"
+
+
+@pytest.mark.parametrize(
+    ("datatype", "suffix"),
+    [
+        ("func", "bold"),
+        ("dwi", "dwi"),
+        ("fmap", "epi"),
+        ("pet", "pet"),
+        ("perf", "asl"),
+    ],
+)
+def test_mri_datatypes(tmp_path, datatype, suffix):
+    """Test MRI and PET datatypes, suffixes, and .fpath resolution."""
+    bp = BIDSPath(subject="01", datatype=datatype, suffix=suffix, extension=".nii.gz")
+    assert bp.check and datatype not in ALLOWED_DATATYPES
+    assert str(bp) == f"sub-01/{datatype}/sub-01_{suffix}.nii.gz"
+    if datatype == "pet":
+        pet_dir = tmp_path / "sub-01" / "pet"
+        pet_dir.mkdir(parents=True)
+        (pet_dir / "sub-01_pet.nii.gz").touch()
+        bp = BIDSPath(root=tmp_path, subject="01", datatype="pet", suffix="pet")
+        assert bp.fpath == pet_dir / "sub-01_pet.nii.gz"
+        (pet_dir / "sub-01_pet.json").touch()
+        with pytest.raises(RuntimeError, match="more than one matching data file"):
+            bp.fpath
+
+
+def test_schema_entities_order_and_validation():
+    """Test schema entity order, unknown-entity warning, and validation."""
+    with pytest.warns(RuntimeWarning, match='Unexpected entity "foo"'):
+        params = get_entities_from_fname("sub-01_foo-bar_eeg.edf", on_error="warn")
+    assert params["subject"] == "01" and params["foo"] == "bar"
+
+    # the hand-maintained tables in config.py follow the BIDS schema
+    schema = pytest.importorskip("bidsschematools.schema").load_schema()
+    entities = [schema.objects.entities[key] for key in schema.rules.entities]
+    schema_order = [entity.name for entity in entities]
+    assert {e.name: e.format for e in entities} == {
+        k: ENTITY_VALUE_TYPE[v] for k, v in ALLOWED_PATH_ENTITIES_SHORT.items()
+    }
+    assert _BIDS_DATATYPES == sorted(d.value for d in schema.objects.datatypes.values())
+    assert {
+        suffix
+        for group in schema.rules.files.raw.values()
+        if isinstance(group, Mapping)
+        for rule in group.values()
+        if isinstance(rule, Mapping)
+        for suffix in rule.get("suffixes", ())
+    } <= set(ALLOWED_FILENAME_SUFFIX)
+    long_names = list(ALLOWED_PATH_ENTITIES_SHORT.values())
+    assert [k for k in ALLOWED_PATH_ENTITIES_SHORT if k != "split"] == [
+        k for k in schema_order if k != "split"
+    ]
+    assert long_names[-2:] == ["split", "description"]
+
+    bids_path = BIDSPath(
+        **{name: "1" for name in long_names},
+        suffix="T1w",
+        extension=".nii.gz",
+        check=False,
+    )
+    fname = "_".join(f"{key}-1" for key in ALLOWED_PATH_ENTITIES_SHORT) + "_T1w.nii.gz"
+    assert bids_path.basename == fname
+    assert get_entities_from_fname(fname) == bids_path.entities
+
+    bp = BIDSPath(subject="01", echo=2, reconstruction="norm")
+    assert bp.echo == "2" and bp.entities["echo"] == "2"
+    with pytest.raises(ValueError, match="echo is not an index"):
+        bp.update(echo="a")
+    with pytest.raises(TypeError, match="reconstruction must be an instance"):
+        BIDSPath(subject="01", reconstruction=1)
+    with pytest.raises(ValueError, match="Unallowed"):
+        BIDSPath(subject="01", reconstruction="a_b")
+    assert BIDSPath(echo=1).basename == "echo-1"
 
 
 @pytest.mark.parametrize(
@@ -931,6 +1016,21 @@ def test_get_entities_from_fname_missing_separator(
     params = get_entities_from_fname(fname, on_error="ignore")
     assert params["task"] == expected_warn_task
     assert params[expected_other_key] is None
+
+
+@pytest.mark.parametrize(
+    "fname, expected",
+    [
+        ("sub-01_task-dance-1_eeg.set", {"task": "dance", "ceagent": None}),
+        ("sub-01_task-xspace-MNI_eeg.set", {"task": "x", "space": "MNI"}),
+    ],
+)
+def test_get_entities_from_fname_autofix_short_keys(fname, expected):
+    """Test autofix does not split segments at the short schema keys."""
+    with pytest.warns(RuntimeWarning, match="missing underscore separator"):
+        params = get_entities_from_fname(fname, on_error="autofix")
+    for key, val in expected.items():
+        assert params[key] == val
 
 
 def test_get_entities_from_fname_missing_separator_three_entities():
@@ -1067,6 +1167,43 @@ def test_find_best_candidates(candidate_list, best_candidates):
     """Test matching of candidate sidecar files."""
     params = dict(subject="01", session="02", acquisition=None)
     assert _find_best_candidates(params, candidate_list) == best_candidates
+
+
+@pytest.mark.parametrize(
+    "root", [None, "study[1]", "/data/ds", "hf://datasets/user/ds", "s3://bucket/ds/"]
+)
+def test_find_matching_sidecar_inherit(tmp_path, root):
+    """Test finding inherited sidecars on disk and from pre-collected candidates."""
+    if root is None or root == "study[1]":
+        ds = tmp_path / (root or "ds")
+        expected = [
+            ds / "task-rest_eeg.json",
+            ds / "sub-01/eeg/sub-01_task-rest_eeg.json",
+        ]
+        for p in (*expected, ds / "task-rest_acq-x_eeg.json"):
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text("{}")
+        bp = BIDSPath(subject="01", task="rest", datatype="eeg", suffix="eeg", root=ds)
+        assert bp.find_matching_sidecar(extension=".json", inherit=True) == expected
+        return
+    ds = root.rstrip("/")
+    expected = [
+        f"{ds}/task-rest_eeg.json",
+        f"{ds}/sub-01/eeg/sub-01_task-rest_eeg.json",
+    ]
+    candidates = [
+        expected[1],
+        f"{ds}/task-rest_acq-x_eeg.json",  # acq-x is not in the recording
+        f"{ds}/sub-01/eeg/sub-01_task-rest_events.json",  # another suffix
+        f"{ds.rsplit('/', 1)[0]}/task-rest_eeg.json",  # outside root
+        expected[0],
+    ]
+    bp = BIDSPath(subject="01", task="rest", datatype="eeg", suffix="eeg", root=root)
+    assert bp.find_matching_sidecar(inherit=True, candidates=candidates) == expected
+    assert bp.find_matching_sidecar(candidates=candidates) == expected[-1]
+    rel = [fname.removeprefix(f"{ds}/") for fname in candidates]  # e.g. a repo listing
+    expected = [fname.removeprefix(f"{ds}/") for fname in expected]
+    assert bp.find_matching_sidecar(inherit=True, candidates=rel) == expected
 
 
 def test_find_matching_sidecar_basic(bids_root, tmp_path, path_counter, fast_sidecar):
@@ -1674,6 +1811,60 @@ def test_filter_fnames(entities, expected_n_matches):
     assert len(output) == expected_n_matches
 
 
+@pytest.mark.parametrize("extension", [None, ".tsv"])
+@pytest.mark.parametrize("extra_entities", ["", "_acq-wrist_run-01"])
+@pytest.mark.parametrize(
+    "tracking_system, expected_indices",
+    [(None, [0, 1, 2]), ("imu", [0]), (["imu", "optical"], [0, 1]), ("missing", [])],
+)
+def test_filter_fnames_tracking_system(
+    tmp_path, extension, extra_entities, tracking_system, expected_indices
+):
+    """Match tracking-system entities before the suffix and extension."""
+    motion_dir = tmp_path / "sub-01" / "motion"
+    motion_dir.mkdir(parents=True)
+    fnames = [
+        motion_dir / f"sub-01_task-walk_tracksys-imu{extra_entities}_motion.tsv",
+        motion_dir / f"sub-01_task-walk_tracksys-optical{extra_entities}_motion.tsv",
+        motion_dir / f"sub-01_task-walk{extra_entities}_motion.tsv",
+    ]
+    for fname in fnames:
+        fname.touch()
+    expected = {fnames[index] for index in expected_indices}
+    assert (
+        set(
+            _filter_fnames(fnames, tracking_system=tracking_system, extension=extension)
+        )
+        == expected
+    )
+    matches = find_matching_paths(
+        tmp_path, tracking_systems=tracking_system, extensions=extension
+    )
+    assert {path.fpath for path in matches} == expected
+
+
+@pytest.mark.parametrize("extension", [".tsv", ".nii.gz"])
+def test_filter_fnames_literal_extension(extension):
+    """Extension dots must not match arbitrary filename characters."""
+    valid = Path(f"sub-01_task-walk_motion{extension}")
+    invalid = Path(f"sub-01_task-walk_motion{extension.replace('.', 'X')}")
+    assert _filter_fnames([valid, invalid], extension=extension) == [valid]
+
+
+def test_filter_fnames_mri():
+    """Keep the files with any BIDS entity, such as echo or rec (gh-1702)."""
+    fnames = [
+        Path("sub-01/func/sub-01_task-rest_echo-1_bold.nii.gz"),
+        Path("sub-01/anat/sub-01_rec-norm_T1w.nii.gz"),
+        Path("sub-01/eeg/sub-01_task-rest_eeg.vhdr"),
+    ]
+    assert _filter_fnames(fnames) == sorted(fnames)
+    assert _filter_fnames(fnames, suffix=["bold", "T1w"]) == sorted(fnames[:2])
+    assert _filter_fnames(fnames, echo="1") == fnames[:1]
+    plus = [Path(f"sub-01_task-rest_desc-{d}_eeg.json") for d in ("a+b", "aab", "ab")]
+    assert _filter_fnames(plus, description="a+b") == [plus[0]]
+
+
 def test_match_basic(bids_root):
     """Test retrieval of matching basenames."""
     bids_path_01 = BIDSPath(root=bids_root)
@@ -1833,6 +2024,21 @@ def test_find_matching_paths(bids_root):
     paths_find = find_matching_paths(bids_root)
     assert paths_match == paths_find
 
+    # Hidden files and directories are left out by every search
+    data_file = paths_find[0].fpath
+    hidden_file = data_file.with_name(f".{data_file.name}.tmp")
+    hidden_dir = bids_root / ".hidden" / "sub-01" / "meg"
+    hidden_dir.mkdir(parents=True)
+    for fname in (hidden_file, hidden_dir / "sub-01_task-rest_meg.fif"):
+        fname.touch()
+    assert find_matching_paths(bids_root) == paths_find
+    for kwargs in ({"ignore_nosub": True}, {"datatypes": "meg"}):
+        found = find_matching_paths(bids_root, **kwargs)
+        parts = [path.fpath.relative_to(bids_root).parts for path in found]
+        assert parts and not any(p.startswith(".") for ps in parts for p in ps)
+    hidden_file.unlink()
+    sh.rmtree(hidden_dir.parents[1])
+
     # Datatype is important because handled differently
     bids_path_01 = BIDSPath(root=bids_root, datatype="meg")
     paths_match = bids_path_01.match(ignore_json=False)
@@ -1899,6 +2105,129 @@ def test_find_matching_paths(bids_root):
     )
     assert paths_match == paths_find
     bids_path_01.fpath.unlink()  # clean up created file
+
+
+def test_find_matching_paths_fnames(bids_root):
+    """Test find_matching_paths with pre-collected local and virtual fnames."""
+    files = [p for p in bids_root.rglob("*") if p.is_file()] + [
+        bids_root / "README",
+        bids_root / ".git" / "config",
+    ]
+    for fnames in (files, [p.relative_to(bids_root) for p in files]):
+        for kw in (
+            {},
+            dict(datatypes="meg", runs="02", ignore_json=True, ignore_nosub=True),
+        ):
+            assert find_matching_paths(
+                bids_root, fnames=fnames, **kw
+            ) == find_matching_paths(bids_root, **kw)
+
+    v = bids_root / "virtual_ds"
+    matched = find_matching_paths(
+        v,
+        fnames=[
+            "sub-01/nirs/sub-01_task-tap_nirs.snirf",
+            "sub-01/nirs/sub-01_task-tap_nirs.json",
+            "sub-01/meg/sub-01_task-rest_meg.ds/sub-01_task-rest_meg.meg4",
+            "sourcedata/sub-99/eeg/sub-99_task-rest_eeg.edf",
+        ],
+        datatypes=["nirs", "meg"],
+        suffixes=["nirs", "meg"],
+        ignore_json=True,
+        ignore_nosub=True,
+    )
+    assert [(bp.subject, bp.datatype, bp.extension) for bp in matched] == [
+        ("01", "meg", ".ds"),
+        ("01", "nirs", ".snirf"),
+    ]
+    with pytest.raises(TypeError, match="iterable of path-like"):
+        find_matching_paths(bids_root, fnames="sub-01_eeg.vhdr")
+
+
+def test_find_matching_paths_fnames_one_subject(tmp_path):
+    """Test that fnames give the same paths as the disk for one subject."""
+    for top in ("", "derivatives/pipe/"):
+        for sub in ("01", "02"):
+            for ses in ("a", "b"):
+                fname = f"sub-{sub}_ses-{ses}_task-t_meg.fif"
+                fpath = tmp_path / f"{top}sub-{sub}/ses-{ses}/meg/{fname}"
+                fpath.parent.mkdir(parents=True)
+                fpath.touch()
+    fnames = [p.relative_to(tmp_path) for p in tmp_path.rglob("*.fif")]
+    for kwargs in (
+        dict(subjects="01"),
+        dict(subjects="01", sessions="a"),
+        dict(subjects="01", datatypes="meg"),
+        dict(subjects=["01", "02"], sessions=["a", "b"]),
+        dict(sessions="a"),
+    ):
+        disk = find_matching_paths(tmp_path, **kwargs)
+        assert find_matching_paths(tmp_path, fnames=fnames, **kwargs) == disk, kwargs
+    # A single subject is only searched for in root/sub-<label>
+    found = find_matching_paths(tmp_path, fnames=fnames, subjects="01", sessions="a")
+    assert [p.fpath.relative_to(tmp_path).as_posix() for p in found] == [
+        "sub-01/ses-a/meg/sub-01_ses-a_task-t_meg.fif"
+    ]
+
+
+def test_find_matching_paths_fnames_outside_root(tmp_path):
+    """Test that fnames outside root, and URLs, are rejected rather than mangled."""
+    good = "sub-01/meg/sub-01_task-t_meg.fif"
+    for bad, match in (
+        (tmp_path.parent / "other" / good, "not inside root"),
+        (f"../{good}", "not inside root"),
+        (f"s3://bucket/ds/{good}", "URL"),
+    ):
+        with pytest.raises(ValueError, match=match):
+            find_matching_paths(tmp_path, fnames=[good, bad])
+
+
+def test_find_matching_paths_mefd(tmp_path):
+    """Test that a MEF3 .mefd directory is returned once, as one recording."""
+    mefd = tmp_path / "sub-01" / "ieeg" / "sub-01_task-rest_ieeg.mefd"
+    segment = mefd / "ch1.timd" / "ch1-000000.segd"
+    segment.mkdir(parents=True)
+    fnames = [segment / "ch1-000000.tdat", segment / "ch1-000000.tmet"]
+    for fname in fnames:
+        fname.touch()
+    for kwargs in (dict(), dict(fnames=fnames)):
+        paths = find_matching_paths(tmp_path, datatypes="ieeg", **kwargs)
+        assert [path.fpath for path in paths] == [mefd], kwargs
+
+
+@pytest.mark.parametrize("check", [False, True])
+def test_find_matching_paths_skips_non_bidspath(tmp_path, check):
+    """Test that files that cannot be a BIDSPath are skipped instead of raising."""
+    good = tmp_path / "sub-01" / "meg" / "sub-01_task-rest_meg.fif"
+    bad = [
+        # FreeSurfer output: the folder name is not a valid datatype label
+        tmp_path / "derivatives/freesurfer/sub-01/mri/flash/parameter_maps/flash5.mgz",
+        # scans files may only have subject and session entities
+        tmp_path / "sub-01" / "task-rest_scans.tsv",
+    ]
+    for fname in (good, *bad):
+        fname.parent.mkdir(parents=True, exist_ok=True)
+        fname.touch()
+    paths = find_matching_paths(tmp_path, check=check)
+    assert [path.fpath for path in paths] == [good]
+    paths = BIDSPath(root=tmp_path).match(check=check)
+    assert [path.fpath for path in paths] == [good]
+
+
+def test_match_entities_without_keyword(tmp_path):
+    """Match the entities that find_matching_paths has no keyword for."""
+    func_dir = tmp_path / "sub-01" / "func"
+    func_dir.mkdir(parents=True)
+    fnames = [func_dir / f"sub-01_task-rest_echo-{echo}_bold.nii.gz" for echo in "12"]
+    for fname in fnames:
+        fname.touch()
+    paths = BIDSPath(subject="01", task="rest", echo="1", root=tmp_path).match()
+    assert [path.fpath for path in paths] == fnames[:1]
+    paths = find_matching_paths(tmp_path, entities={"echo": ["1", "2"]})
+    assert [path.fpath for path in paths] == fnames
+    for key in ("subject", "foo"):
+        with pytest.raises(ValueError, match=f"entities got \\['{key}'\\]"):
+            find_matching_paths(tmp_path, entities={key: "01"})
 
 
 def test_return_root_paths_entity_aware(tmp_path):
@@ -2414,6 +2743,18 @@ def test_hash():
     bp3 = pickle.loads(pickle.dumps(bp1))  # test pickling
     assert bp1 == bp3
     assert hash(bp1) == hash(bp3)
+    bp_old = BIDSPath.__new__(BIDSPath)
+    bp_old.__setstate__(
+        dict(
+            subject="01",
+            root=Path("foo"),
+            suffix=None,
+            extension=None,
+            datatype="eeg",
+            check=True,
+        )
+    )
+    assert bp_old == bp1 and bp_old.__getstate__() == bp1.__getstate__()
     for bp_copy in (bp1.copy(), copy.copy(bp1), copy.deepcopy(bp1)):  # test copying
         assert bp_copy is not bp1
         assert bp_copy.__dict__ == bp1.__dict__

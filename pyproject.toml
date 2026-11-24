@@ -54,7 +54,7 @@ doc = [
   "openneuro-py",
   "pandas",
   "pillow",
-  "pydata-sphinx-theme",
+  "pydata-sphinx-theme>=0.22",  # version banner honors version_match
   "seaborn",
   "sphinx-copybutton",
   "sphinx>=7.4.7",
@@ -77,7 +77,7 @@ full = [
   "pymatreader",
 ]
 # Dependencies for running the test infrastructure
-test = ["curryreader", "mne_bids[full]", "packaging", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "pytest-timeout", "pytest-xdist", "ruff"]
+test = ["bidsschematools", "curryreader", "mne_bids[full]", "packaging", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "pytest-timeout", "pytest-xdist", "ruff"]
 
 [project.urls]
 "Bug Tracker" = "https://github.com/mne-tools/mne-bids/issues/"
@@ -158,6 +158,8 @@ filterwarnings = [
   "ignore:Participants file not found for.*:RuntimeWarning",
   "ignore:Setting the shape on a NumPy array[\\S\\s]*:DeprecationWarning",
   "ignore:The .*_event function was deprecated in Matplotlib.*:",
+  # pandas 3.1 deprecated inplace=, still used by MNE's eyelink reader and hedtools
+  "ignore:The inplace keyword in DataFrame.* is deprecated.*:",
   "ignore:There are channels without locations (n/a)*:RuntimeWarning",
   "ignore:tostring\\(\\) is deprecated.*:DeprecationWarning",
   "ignore:Writing of electrodes.tsv is not supported for datatype.*:RuntimeWarning",
@@ -166,6 +168,8 @@ markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
   "slow_windows: marks tests as slow on Windows (deselect with '-m \"not slow_windows\"')",
 ]
+# Delete each passing test's tmp_path at teardown (a full run otherwise keeps ~3 GB)
+tmp_path_retention_policy = "failed"
 
 [tool.ruff.lint]
 exclude = ["__init__.py"]

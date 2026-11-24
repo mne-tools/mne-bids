@@ -13,6 +13,8 @@ import os
 import os.path as op
 import re
 import shutil as sh
+from datetime import datetime, timedelta
+from functools import partial
 from pathlib import Path
 
 import numpy as np
@@ -302,33 +304,34 @@ def copyfile_kit(src, dest, subject_id, session_id, task, run, _init_kwargs):
             sh.copyfile(position_file, op.join(data_path, position_path.basename))
 
 
-def _replace_file(fname, pattern, replace):
-    """Overwrite file, replacing end of lines matching pattern with replace."""
-    new_content = []
+def _replace_file(fname, pattern, repl):
+    """Overwrite file, substituting matches of ``pattern`` in each line."""
     with _open_lock(fname, "r", encoding="utf-8") as fin:
-        for line in fin:
-            match = re.match(pattern, line)
-            if match:
-                line = match.group()[: -len(replace)] + replace + "\n"
-            new_content.append(line)
+        new_content = [pattern.sub(repl, line) for line in fin]
 
     with _open_lock(fname, "w", encoding="utf-8") as fout:
         fout.writelines(new_content)
 
 
-def _anonymize_brainvision(vhdr_file, date):
-    """Anonymize vmrk and vhdr files in place using ``date`` datetime object."""
+def _shift_brainvision_date(match, daysback):
+    """Move a matched New Segment date back by ``daysback`` days, or remove it."""
+    prefix, date_str = match.groups()
+    try:
+        date = datetime.strptime(date_str, "%Y%m%d%H%M%S%f")
+    except ValueError:  # e.g., "00000000000000000000", which means "no date"
+        date = None
+    if date is None or daysback is None:
+        return prefix + "0" * 20
+    return prefix + (date - timedelta(days=daysback)).strftime("%Y%m%d%H%M%S%f")
+
+
+def _anonymize_brainvision(vhdr_file, daysback):
+    """Move the New Segment dates in the vmrk file back by ``daysback`` days."""
     _, vmrk_file = _get_brainvision_paths(vhdr_file)
-
-    # Go through VMRK
-    pattern = re.compile(r"^Mk\d+=New Segment,.*,\d+,\d+,\d+,\d{20}$")
-    replace = date.strftime("%Y%m%d%H%M%S%f")
-    _replace_file(vmrk_file, pattern, replace)
-
-    # Go through VHDR
-    pattern = re.compile(r"^Impedance \[kOhm\] at \d\d:\d\d:\d\d :$")
-    replace = f"at {date.strftime('%H:%M:%S')} :"
-    _replace_file(vhdr_file, pattern, replace)
+    # Match every line from which mne.io.read_raw_brainvision reads a date
+    pattern = re.compile(r"^(\s*Mk\d+=New Segment,.*,\d+,\d+,-?\d+,)(\d{20})(?=\s*$)")
+    repl = partial(_shift_brainvision_date, daysback=daysback)
+    _replace_file(vmrk_file, pattern, repl)
 
 
 @verbose
@@ -444,9 +447,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, *, verbose=None):
         raw = read_raw_brainvision(vhdr_src, preload=False, verbose=verbose)
         daysback, keep_his, _ = _check_anonymize(anonymize, raw, ".vhdr")
         raw.info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
-        _anonymize_brainvision(
-            fname_dest.with_suffix(".vhdr"), date=raw.info["meas_date"]
-        )
+        _anonymize_brainvision(fname_dest.with_suffix(".vhdr"), daysback=daysback)
 
     for ext in [".eeg", ".vhdr", ".vmrk"]:
         _, fname = os.path.split(fname_dest.with_suffix(ext))
@@ -640,7 +641,8 @@ def copyfile_eeglab(src, dest):
     if has_fdt_link:
         fdt_fname = eeg["data"][0, 0][0]
 
-        assert fdt_fname.endswith(".fdt"), f"Unexpected fdt name: {fdt_fname}"
+        if not fdt_fname.endswith(".fdt"):
+            raise ValueError(f"Unexpected fdt name: {fdt_fname}")
         head, _ = op.split(src)
         fdt_path = op.join(head, fdt_fname)
 

@@ -5,6 +5,7 @@
 
 import codecs
 import gzip
+import io
 import json
 import re
 from collections import OrderedDict
@@ -14,7 +15,7 @@ from pathlib import Path
 import numpy as np
 from mne.utils import _validate_type, logger
 
-from mne_bids._fileio import _open_lock
+from mne_bids._fileio import _has_text, _open_lock
 
 # Match digit,digit not adjacent to other word chars; rewrites
 # European-locale decimal commas (e.g. "0,5") to "0.5" without touching
@@ -32,17 +33,12 @@ def _normalize_tsv_cell(value):
     return _DECIMAL_COMMA_RE.sub(r"\1.\2", stripped)
 
 
-def _detect_file_encoding(fname, chunk_size=65536):
-    """Detect the text encoding of a file from its first chunk.
-
-    Checks for a BOM and otherwise tests UTF-8 validity on a single chunk
-    (default 64 KiB), falling back to ``latin-1``. Avoids reading the full
-    file: enough to catch non-UTF-8 bytes in typical BIDS TSV files (e.g.
-    ``µV`` in ``channels.tsv``).
-    """
+def _detect_file_encoding(fname, chunk_size=65536, *, content=None):
+    # Only the first chunk is checked (chunk_size=None checks the whole file);
+    # ``content`` (bytes) is used instead of reading the file.
     fname = Path(fname)
     opener = gzip.open if fname.suffix == ".gz" else open
-    with opener(fname, "rb") as f:
+    with opener(fname, "rb") if content is None else io.BytesIO(content) as f:
         chunk = f.read(chunk_size)
     if chunk.startswith(codecs.BOM_UTF8):
         return "utf-8-sig"
@@ -50,10 +46,16 @@ def _detect_file_encoding(fname, chunk_size=65536):
         return "utf-16"
     decoder = codecs.getincrementaldecoder("utf-8")()
     try:
-        decoder.decode(chunk, final=False)
+        decoder.decode(chunk, final=chunk_size is None)
         return "utf-8"
     except UnicodeDecodeError:
-        return "latin-1"
+        # cp1252 is the usual Windows encoding (e.g. ``µV``); latin-1 decodes
+        # any byte, so it is the last resort
+        try:
+            chunk.decode("cp1252")
+            return "cp1252"
+        except UnicodeDecodeError:
+            return "latin-1"
 
 
 def _combine_rows(data1, data2, drop_column=None):
@@ -155,8 +157,7 @@ def _drop(data, values, column):
         Copy of the original data with 0 or more rows dropped.
 
     """
-    new_data = deepcopy(data)
-    new_data_col = np.array(new_data[column])
+    new_data_col = np.array(data[column])
 
     # Cast `values` to the same dtype as `new_data_col` to avoid a NumPy
     # FutureWarning, see
@@ -167,12 +168,13 @@ def _drop(data, values, column):
     values = np.array(values, dtype=dtype)
 
     mask = np.isin(new_data_col, values, invert=True)
-    for key in new_data.keys():
-        new_data[key] = np.array(new_data[key])[mask].tolist()
+    new_data = type(data)()
+    for key, column_data in data.items():
+        new_data[key] = np.array(column_data)[mask].tolist()
     return new_data
 
 
-def _from_tsv(fname, dtypes=None):
+def _from_tsv(fname, dtypes=None, *, content=None):
     """Read a tsv file into an OrderedDict.
 
     Parameters
@@ -182,6 +184,8 @@ def _from_tsv(fname, dtypes=None):
     dtypes : list, optional
         List of types to cast the values loaded as. This is specified column by
         column. Defaults to None. In this case all the data is loaded as strings.
+    content : bytes | None
+        The file's bytes, if already read. They are parsed instead of the file.
 
     Returns
     -------
@@ -193,12 +197,22 @@ def _from_tsv(fname, dtypes=None):
     fname = Path(fname)
     compressed = fname.suffix == ".gz"
 
-    encoding = _detect_file_encoding(fname)
+    def _load(encoding):
+        source = fname if content is None else io.StringIO(content.decode(encoding))
+        return np.loadtxt(
+            source, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
+        )
+
+    # parse as UTF-8 (utf-8-sig also strips a BOM) and only detect the encoding
+    # of the whole file when that fails, so valid files are read once (gh-1593)
+    encoding = "utf-8"
+    try:
+        data = _load("utf-8-sig")
+    except UnicodeDecodeError:
+        encoding = _detect_file_encoding(fname, chunk_size=None, content=content)
+        data = _load(encoding)
     if not encoding.startswith("utf-8"):
         logger.info(f"Reading non-UTF-8 TSV as {encoding}: '{fname}'")
-    data = np.loadtxt(
-        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding=encoding
-    )
     # Handle empty files - data may be empty or only have a header
     if data.size == 0:
         warn(f"TSV file is empty: '{fname}'")
@@ -262,7 +276,8 @@ def _get_column_names_from_json(fname, dtypes=None):
             f"  {sidecar_json}"
         )
 
-    sidecar = json.loads(sidecar_json.read_text(encoding="utf-8"))
+    with _open_lock(sidecar_json, encoding="utf-8") as fid:
+        sidecar = json.load(fid)
     column_names = sidecar["Columns"]
     _validate_type(column_names, list)
     return column_names, sidecar_json
@@ -287,9 +302,11 @@ def _to_tsv(data, fname, *, compress=False, lock=True):
     if compress:
         with _open_lock(fname, "wb") as f:
             f.write(gzip.compress(output.encode("utf-8")))
-    else:
+    elif not _has_text(fname, output):
         with _open_lock(fname, "w", encoding="utf-8", lock=lock) as f:
             f.write(output)
+    else:
+        logger.debug(f"{fname} contents are unchanged. Skipping write.")
 
 
 def _tsv_to_str(data, rows=5, *, include_header=True):

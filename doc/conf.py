@@ -148,7 +148,8 @@ html_css_files = ["style.css"]
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-switcher_version_match = "dev" if "dev" in release else version
+# X.Y: the docs have one directory (and one switcher entry) per minor version
+switcher_version_match = "dev" if "dev" in release else ".".join(release.split(".")[:2])
 html_theme_options = {
     "icon_links": [
         dict(
@@ -170,9 +171,10 @@ html_theme_options = {
     "navbar_end": ["theme-switcher", "version-switcher", "navbar-icon-links"],
     "analytics": dict(google_analytics_id="G-C8SH9E98QC"),
     "switcher": {
-        "json_url": "https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json",  # noqa: E501
+        "json_url": "https://mne.tools/mne-bids/versions.json",
         "version_match": switcher_version_match,
     },
+    "show_version_warning_banner": True,
 }
 
 html_context = {
