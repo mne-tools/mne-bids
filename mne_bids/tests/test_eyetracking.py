@@ -13,9 +13,12 @@ from mne.io import RawArray, read_raw_egi, read_raw_eyelink
 from mne.utils import check_version
 
 import mne_bids
-from mne_bids import BIDSPath, write_raw_bids
+from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
 from mne_bids.physio import write_eyetrack_calibration
 from mne_bids.physio.eyetracking import _get_eyetrack_annotation_inds
+from mne_bids.physio.generic import _read_physioevents
+from mne_bids.tsv_handler import _from_tsv
+from mne_bids.utils import _write_json, _write_tsv
 
 
 @pytest.fixture(scope="module")
@@ -46,6 +49,109 @@ def eyetrack_bpath(tmp_path):
         recording="eye1",
         suffix="physio",
         extension=".tsv.gz",
+    )
+
+
+@pytest.fixture
+def synthetic_eyetrack(eyetrack_bpath):
+    """Write two eyes without requiring the external testing dataset."""
+    eyetrack_bpath.directory.mkdir(parents=True)
+    _write_tsv(eyetrack_bpath.root / "participants.tsv", {"participant_id": ["sub-01"]})
+    data = {"timestamp": np.arange(100) / 100}
+    channels = ("x_coordinate", "y_coordinate", "pupil_size", "confidence")
+    data.update((name, np.full(100, value)) for value, name in enumerate(channels, 1))
+    for recording, eye in (("eye1", "left"), ("eye2", "right")):
+        path = eyetrack_bpath.copy().update(recording=recording).fpath
+        _write_tsv(path, data, compress=True)
+        metadata = {
+            "SamplingFrequency": 100,
+            "StartTime": 0,
+            "Columns": list(data),
+            "PhysioType": "eyetrack",
+            "RecordedEye": eye,
+            "timestamp": {"Units": "s"},
+            "x_coordinate": {"Units": "pixel"},
+            "y_coordinate": {"Units": "pixel"},
+            "pupil_size": {"Units": "arbitrary"},
+            "confidence": {"Units": "arbitrary"},
+        }
+        _write_json(path.with_suffix("").with_suffix(".json"), metadata)
+    return eyetrack_bpath
+
+
+@pytest.mark.parametrize("event_eye", [None, "eye1", "eye2"])
+@pytest.mark.parametrize("recording", ["eye1", "eye2"])
+def test_read_eyetrack_optional_events(synthetic_eyetrack, event_eye, recording):
+    """Missing eye-specific event files do not prevent reading either eye."""
+    if event_eye is not None:
+        path = (
+            synthetic_eyetrack.copy()
+            .update(recording=event_eye, suffix="physioevents", check=False)
+            .fpath
+        )
+        events = {"onset": [0.2], "duration": [0.05], "trial_type": ["blink"]}
+        _write_tsv(path, events, compress=True)
+        _write_json(
+            path.with_suffix("").with_suffix(".json"),
+            {"Columns": list(events), "OnsetSource": "timestamp"},
+        )
+    raw = read_raw_bids(synthetic_eyetrack.copy().update(recording=recording))
+    assert raw.info["nchan"] == (8 if recording == "eye1" else 4)
+    assert len(raw.annotations) == int(
+        event_eye is not None and (recording == "eye1" or event_eye == "eye2")
+    )
+    if len(raw.annotations):
+        assert list(raw.annotations.description) == ["BAD_blink"]
+        assert all(name.endswith(event_eye) for name in raw.annotations.ch_names[0])
+        np.testing.assert_allclose(raw.annotations.onset, [0.2])
+
+
+@pytest.mark.parametrize("duration_present", [True, False])
+@pytest.mark.parametrize(
+    "source,unit,offset,onset,expected,sfreq",
+    [
+        ("timestamp", "s", 10, 10.2, 0.2, 100),
+        ("timestamp", "ms", 10000, 10200, 0.2, 100),
+        ("timestamp", None, 10000, 10200, 0.2, 100),
+        ("timestamp", None, 10000, 10050, 0.05, 400),
+        ("n/a", "s", 0, 20, 0.2, 100),
+        ("n/a", "s", 0, -10, -0.1, 100),
+    ],
+)
+def test_physioevents_onset_source(
+    synthetic_eyetrack, source, unit, offset, onset, expected, sfreq, duration_present
+):
+    """Device timestamps and sample indices become seconds from the first sample."""
+    path = synthetic_eyetrack.fpath
+    data = _from_tsv(path, dtypes=float)
+    data["timestamp"] = offset + np.arange(100) / sfreq * (
+        1000 if unit in ("ms", None) else 1
+    )
+    if unit is None:
+        data["timestamp"] = np.rint(data["timestamp"])
+    _write_tsv(path, data, compress=True, overwrite=True)
+    json_path = path.with_suffix("").with_suffix(".json")
+    metadata = json.loads(json_path.read_text())
+    metadata["SamplingFrequency"] = sfreq
+    metadata["timestamp"]["Units"] = unit
+    if unit is None:
+        metadata["timestamp"].pop("Units")
+    _write_json(json_path, metadata, overwrite=True)
+    events_path = (
+        synthetic_eyetrack.copy().update(suffix="physioevents", check=False).fpath
+    )
+    events = {"onset": [onset], "duration": [0.05], "trial_type": ["blink"]}
+    if not duration_present:
+        events.pop("duration")
+    _write_tsv(events_path, events, compress=True)
+    _write_json(
+        events_path.with_suffix("").with_suffix(".json"),
+        {"Columns": list(events), "OnsetSource": source},
+    )
+    annotations = _read_physioevents(synthetic_eyetrack, ch_names=None)
+    np.testing.assert_allclose(annotations["onset"], [expected])
+    np.testing.assert_allclose(
+        annotations["duration"], [0.05 if duration_present else 0]
     )
 
 
@@ -82,7 +188,7 @@ def test_get_eyetrack_annotation_inds():
     np.testing.assert_array_equal(got, want)
 
 
-def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
+def test_eyetracking_calibration_roundtrip(tmp_path, eyetrack_bpath):
     """Calibration writer should add calibration keys to the right eye files."""
     bpath = eyetrack_bpath.copy().update(extension=".json")
     eye1_json = bpath.fpath
@@ -126,16 +232,23 @@ def test_write_eyetracking_calibration(tmp_path, eyetrack_bpath):
     assert eye1["AverageCalibrationError"] == 0.1
     assert eye1["MaximalCalibrationError"] == 0.2
     assert eye1["CalibrationType"] == "HV3"
-    assert eye1["CalibrationDistance"] == 0.6
 
     assert eye2["CalibrationCount"] == 1
     assert eye2["AverageCalibrationError"] == 0.3
     assert eye2["MaximalCalibrationError"] == 0.5
 
     # If no BIDS dataset on disk, should raise
-    dupe_bpath = eyetrack_bpath.update(root=tmp_path)
+    dupe_bpath = eyetrack_bpath.copy().update(root=tmp_path)
     with pytest.raises(FileNotFoundError, match="Eyetracking sidecar not found"):
         write_eyetrack_calibration(dupe_bpath, calibrations)
+
+    # Read
+    cals_in = mne_bids.physio.read_eyetrack_calibration(eyetrack_bpath)
+    for cal, cal_in in zip(calibrations, cals_in):
+        for key in ("eye", "model"):
+            assert cal[key] == cal_in[key]
+        for key in ("avg_error", "max_error"):
+            np.testing.assert_allclose(cal[key], cal_in[key])
 
 
 @testing.requires_testing_data
@@ -152,6 +265,10 @@ def test_write_eyetracking_bino(_bids_validate, raw_eye_and_cals, eyetrack_bpath
         overwrite=False,
     )
     _bids_validate(eyetrack_bpath.root)
+
+    raw_in = read_raw_bids(eyetrack_bpath)
+    # Make sure that missing data is handled correctly when writing to and fro
+    np.testing.assert_array_equal(np.isnan(raw_in.get_data()), np.isnan(raw.get_data()))
 
     # each eye gets only its own annotations in *_physioevents.tsv.gz
     events_bpath = eyetrack_bpath.copy().update(

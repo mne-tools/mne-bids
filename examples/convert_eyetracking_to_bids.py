@@ -31,7 +31,8 @@ from mne.datasets import testing
 from mne.datasets.eyelink import data_path as eyelink_data_path
 from mne.preprocessing.eyetracking import read_eyelink_calibration
 
-from mne_bids import BIDSPath, print_dir_tree, write_raw_bids
+from mne_bids import BIDSPath, print_dir_tree, read_raw_bids, write_raw_bids
+from mne_bids.physio import read_eyetrack_calibration
 
 # %%
 # Load example eyetracking data
@@ -121,6 +122,22 @@ print_dir_tree(bids_root)
 eye1_json = bids_path.fpath.with_suffix("").with_suffix(".json")
 print(f"Filepath: {eye1_json}")
 pprint(json.loads(eye1_json.read_text()), indent=2)
+
+# %%
+# Read the eyetracking data back from BIDS
+# ----------------------------------------
+# Note: The file recording entities (``'eye1'`` / ``'eye2'``) are appended to the
+# eyetracking data channel names.
+
+# %%
+raw_in = read_raw_bids(bids_path=bids_path)
+raw_in
+
+# %%
+raw_in.plot(scalings=dict(pupil="auto"))
+
+# %%
+cals_in = read_eyetrack_calibration(bids_path)
 
 # %%
 # Convert simultaneous EEG + eyetracking data to BIDS
@@ -213,5 +230,23 @@ eye1_json = bids_path_eeg.find_matching_sidecar(suffix="physio", extension=".jso
 print(f"Filepath: {eye1_json}")
 pprint(json.loads(eye1_json.read_text()), indent=2)
 
+# %%
+# Read back one eye's eyetracking recording from the simultaneous dataset.
+# ------------------------------------------------------------------------
+# Note that we will have to read the eyetracking data back into MNE-Python on its own.
+# In other words, we will need to also read the EEG data back in and merge the two
+# modalities as we did before (but won't repeat those steps here for the sake of
+# brevity.)
+
+# %%
+bids_path_eye1 = bids_path_eeg.copy().update(
+    suffix="physio",
+    extension=".tsv.gz",
+    recording="eye1",
+)
+raw_eye1 = read_raw_bids(bids_path_eye1)
+raw_eye1
+
+# %%
 shutil.rmtree(bids_root)
 shutil.rmtree(bids_root_simultaneous)

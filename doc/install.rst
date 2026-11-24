@@ -13,7 +13,7 @@ Dependencies
 Required:
 
 * ``mne`` (>=1.8)
-* ``numpy`` (>=1.23)
+* ``numpy`` (>=2.0)
 * ``scipy`` (>=1.9)
 
 Optional:

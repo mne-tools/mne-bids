@@ -34,6 +34,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
+- Add support for reading BIDS eyetracking recordings and their physiological events with :func:`mne_bids.read_raw_bids` and :func:`mne_bids.physio.read_raw_bids_eyetrack`, including optional physiological event files and onsets given as sample indices or device timestamps, by `Scott Huberty`_ and `Bruno Aristimunha`_ (:gh:`1512`)
 - Add :func:`mne_bids.read_participants` to read ``participants.tsv`` into rows keyed by subject label, also from the file's bytes for files that are not on a local disk, by `Bruno Aristimunha`_ (:gh:`1706`)
 - Expose MRI defacing function to public API as :func:`mne_bids.deface_mri` by `Erica Peterson`_ (:gh:`1544`)
 - Add an ``extra_fields`` parameter to :func:`make_dataset_description` to write additional top-level keys to ``dataset_description.json``, by `Bruno Aristimunha`_ (:gh:`1674`)
@@ -57,7 +58,7 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- None yet
+- ``numpy >= 2.0`` is now required, by `Scott Huberty`_ (:gh:`1512`)
 
 🪲 Bug fixes
 ^^^^^^^^^^^^

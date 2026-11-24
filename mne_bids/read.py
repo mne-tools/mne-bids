@@ -11,6 +11,7 @@ from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
 from functools import lru_cache
+from inspect import signature
 from pathlib import Path
 
 import mne
@@ -36,6 +37,9 @@ from mne_bids.path import (
     _parse_ext,
     _share_dir_listings,
     get_bids_path_from_fname,
+)
+from mne_bids.physio import (
+    read_raw_bids_eyetrack,
 )
 from mne_bids.tsv_handler import _drop, _from_tsv
 from mne_bids.utils import (
@@ -116,6 +120,21 @@ def _read_raw(
             f"extension but there is no IO support for this "
             f"file format yet."
         )
+    elif ext == ".tsv.gz":  # Physiological data
+        json_fpath = raw_path.with_suffix("").with_suffix(".json")
+        if not json_fpath.exists():
+            raise ValueError(
+                f"{raw_path} needs a corresponding {json_fpath}, but none exists"
+            )
+        physio_type = _read_json_object(json_fpath).get("PhysioType", "generic").lower()
+        if physio_type == "eyetrack":
+            bpath = get_bids_path_from_fname(raw_path)
+            raw = read_raw_bids_eyetrack(bpath)
+        else:  # e.g. 'generic'
+            raise ValueError(
+                "Only eyetracking <match>_physio.tsv files are supported.\n"
+                f"Got {physio_type}. Please open an issue with mne-bids developers."
+            )  # pragma: no cover
 
     # No supported data found ...
     # ---------------------------
@@ -1125,6 +1144,30 @@ def _handle_events_reading(
     return raw, event_id
 
 
+def _handle_physioevents_reading(bids_path, raw):
+    """Read physioevents sidecars and append them to existing annotations."""
+    from mne_bids.physio.eyetracking import _read_eyetrack_physioevents
+
+    if bids_path.suffix != "physio":
+        return raw
+
+    sidecar = bids_path.read_sidecar(suffix="physio", on_error="ignore")
+    physio_type = sidecar.get("PhysioType", "generic").lower()
+    if physio_type != "eyetrack":
+        return raw
+
+    # Eyetracking physioevents
+    annot_kwargs = _read_eyetrack_physioevents(bids_path, raw)
+
+    spec = signature(mne.Annotations)
+    # MNE <1.10 does not accept `extras`.
+    if "extras" not in spec.parameters:
+        annot_kwargs.pop("extras", None)
+    physio_annots = mne.Annotations(**annot_kwargs)
+    raw.set_annotations(raw.annotations + physio_annots)
+    return raw
+
+
 def _get_bads_from_tsv_data(tsv_data):
     """Extract names of bads from data read from channels.tsv."""
     idx = []
@@ -1626,8 +1669,9 @@ def read_raw_bids(
             bids_root=bids_root,
             events_json_fname=events_json_fname,
         )
-
     raw = _attach_sidecars(raw, bids_path, on_ch_mismatch=on_ch_mismatch)
+    # Read <match>_physioevents.{tsv.gz, json} files e.g. eyetrack blinks/saccades
+    raw = _handle_physioevents_reading(bids_path, raw)
 
     assert raw.annotations.orig_time == raw.info["meas_date"]
     if return_event_dict:
@@ -1641,15 +1685,18 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
     datatype = bids_path.datatype
     bids_root = bids_path.root
 
-    # Try to find an associated channels.tsv to get information about the
-    # status and type of present channels
-    channels_fname = _find_matching_sidecar(
-        bids_path, suffix="channels", extension=".tsv", on_error="warn"
-    )
-    if channels_fname is not None:
-        raw = _handle_channels_reading(
-            channels_fname, raw, on_ch_mismatch=on_ch_mismatch
+    # E.g. Eyetracking-only data will be in 'beh' sub-directory. It has no channels.tsv
+    # and e.g. for eyetrack-meg data, dont use channels.tsv when reading eyetrack data
+    if bids_path.datatype in EPHY_ALLOWED_DATATYPES and bids_path.suffix != "physio":
+        # Try to find an associated channels.tsv to get information about the
+        # status and type of present channels
+        channels_fname = _find_matching_sidecar(
+            bids_path, suffix="channels", extension=".tsv", on_error="warn"
         )
+        if channels_fname is not None:
+            raw = _handle_channels_reading(
+                channels_fname, raw, on_ch_mismatch=on_ch_mismatch
+            )
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
@@ -1681,12 +1728,21 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
                 )
 
     # Try to find an associated sidecar .json to get information about the
-    # recording snapshot
-    sidecar_fnames = _find_matching_sidecar(
-        bids_path, suffix=datatype, extension=".json", on_error="warn", inherit=True
+    # recording snapshot, unless we are dealing with eyetracking data on its own,
+    # which doesn't have a _beh.json
+    is_standalone_eyetrack = (
+        bids_path.datatype == "beh"
+        and bids_path.suffix == "physio"
+        and bids_path.read_sidecar(suffix="physio").get("PhysioType", "generic").lower()
+        == "eyetrack"
     )
-    if sidecar_fnames:
-        raw = _handle_info_reading(sidecar_fnames, raw)
+
+    if not is_standalone_eyetrack:
+        sidecar_fnames = _find_matching_sidecar(
+            bids_path, suffix=datatype, extension=".json", on_error="warn", inherit=True
+        )
+        if sidecar_fnames:
+            raw = _handle_info_reading(sidecar_fnames, raw)
 
     # read in associated scans filename
     scans_fname = BIDSPath(
@@ -1697,8 +1753,14 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
         root=bids_path.root,
     ).fpath
 
-    # Epochs without annotations crash in set_meas_date; skip the scans path.
-    if scans_fname.exists() and getattr(raw, "annotations", None) is not None:
+    # 1. Epochs without annotations crash in set_meas_date; skip the scans path.
+    # 2. physio data don't have concept of scans. But a scans file might exist anyways
+    #    if the physio data was collected alongside another modality e.g. EEG
+    if (
+        scans_fname.exists()
+        and getattr(raw, "annotations", None) is not None
+        and bids_path.suffix != "physio"
+    ):
         raw = _handle_scans_reading(scans_fname, raw, bids_path)
 
     # read in associated subject info from participants.tsv
