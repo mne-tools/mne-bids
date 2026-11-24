@@ -665,7 +665,7 @@ def _read_one_eye_physio(raw_tsv_fpath):
 
 
 def _read_eyetrack_physioevents(bids_path, raw=None):
-    from mne_bids.physio.generic import _read_json, _read_physioevents
+    from mne_bids.physio.generic import _read_physioevents
 
     KEYS = ("onset", "duration", "description", "ch_names")
 
@@ -680,8 +680,7 @@ def _read_eyetrack_physioevents(bids_path, raw=None):
 
     def _get_recording_physioevents(bpath):
         """Read physioevents for one recording, keyed by RecordedEye."""
-        physio_json = bpath.find_matching_sidecar(suffix="physio", extension=".json")
-        sidecar = _read_json(physio_json)
+        sidecar = bpath.read_sidecar(suffix="physio")
         eye = sidecar["RecordedEye"]
 
         ch_names = None

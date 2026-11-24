@@ -41,7 +41,6 @@ from mne_bids.path import (
 from mne_bids.physio import (
     read_raw_bids_eyetrack,
 )
-from mne_bids.physio.generic import _get_physio_type
 from mne_bids.tsv_handler import _drop, _from_tsv
 from mne_bids.utils import (
     _convert_dt_to_utc,
@@ -125,10 +124,10 @@ def _read_raw(
         json_fpath = raw_path.with_suffix("").with_suffix(".json")
         if not json_fpath.exists():
             raise ValueError(
-                f"Expected a corresponding JSON file for {raw_path}, but none exists"
+                f"{raw_path} needs a corresponding {json_fpath}, but none exists"
             )
-        physio_type = _get_physio_type(json_fpath)
-        if physio_type.lower() == "eyetrack":
+        physio_type = _read_json_object(json_fpath).get("PhysioType", "generic").lower()
+        if physio_type == "eyetrack":
             bpath = get_bids_path_from_fname(raw_path)
             raw = read_raw_bids_eyetrack(bpath)
         else:  # e.g. 'generic'
@@ -1152,13 +1151,9 @@ def _handle_physioevents_reading(bids_path, raw):
     if bids_path.suffix != "physio":
         return raw
 
-    physio_json_fname = _find_matching_sidecar(
-        bids_path, suffix="physio", extension=".json", on_error="ignore"
-    )
-    if physio_json_fname is None:
-        return raw
-    # TODO: create annotations from generic physioevents files in a standalone PR
-    if _get_physio_type(physio_json_fname).lower() != "eyetrack":
+    sidecar = bids_path.read_sidecar(suffix="physio", on_error="ignore")
+    physio_type = sidecar.get("PhysioType", "generic").lower()
+    if physio_type != "eyetrack":
         return raw
 
     # Eyetracking physioevents
@@ -1738,7 +1733,7 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
     is_standalone_eyetrack = (
         bids_path.datatype == "beh"
         and bids_path.suffix == "physio"
-        and _get_physio_type(bids_path.find_matching_sidecar("physio", ".json"))
+        and bids_path.read_sidecar(suffix="physio").get("PhysioType", "generic").lower()
         == "eyetrack"
     )
 
