@@ -1733,12 +1733,21 @@ def _attach_sidecars(raw, bids_path, *, on_ch_mismatch):
                 )
 
     # Try to find an associated sidecar .json to get information about the
-    # recording snapshot
-    sidecar_fnames = _find_matching_sidecar(
-        bids_path, suffix=datatype, extension=".json", on_error="warn", inherit=True
+    # recording snapshot, unless we are dealing with eyetracking data on its own,
+    # which doesn't have a _beh.json
+    is_standalone_eyetrack = (
+        bids_path.datatype == "beh"
+        and bids_path.suffix == "physio"
+        and _get_physio_type(bids_path.find_matching_sidecar("physio", ".json"))
+        == "eyetrack"
     )
-    if sidecar_fnames:
-        raw = _handle_info_reading(sidecar_fnames, raw)
+
+    if not is_standalone_eyetrack:
+        sidecar_fnames = _find_matching_sidecar(
+            bids_path, suffix=datatype, extension=".json", on_error="warn", inherit=True
+        )
+        if sidecar_fnames:
+            raw = _handle_info_reading(sidecar_fnames, raw)
 
     # read in associated scans filename
     scans_fname = BIDSPath(

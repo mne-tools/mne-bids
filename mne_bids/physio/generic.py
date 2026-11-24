@@ -15,7 +15,7 @@ def _get_physio_type(physio_json_fpath):
     """  # noqa: E501
     default = "generic"
     info = _read_json(physio_json_fpath)
-    physio_type = info.get("PhysioType", None)  # e.g. "eyetracking"
+    physio_type = info.get("PhysioType", None)  # e.g. "eyetrack"
 
     if not physio_type:
         warn(
