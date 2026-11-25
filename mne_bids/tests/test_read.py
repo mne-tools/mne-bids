@@ -2882,18 +2882,19 @@ def test_read_metadata(tmp_path):
     scans_tsv.unlink()
     assert bp.read_metadata()["scan"] == {}
     scans_tsv.write_text(orig_scans, encoding="utf-8")
-    assert meta["data_dictionary"]["participants"]["age"]["Units"] == "years"
-    assert "pathology" in meta["data_dictionary"]["sessions"]
-    assert meta["data_dictionary"]["scans"] == {"acq_time": {"Units": "s"}}
+    assert meta["data_dictionary"]["participant"]["age"]["Units"] == "years"
+    assert "pathology" in meta["data_dictionary"]["session"]
+    assert meta["data_dictionary"]["scan"] == {"acq_time": {"Units": "s"}}
     # An underspecified path matching several recordings cannot pick a scan
-    # row (scans.tsv is optional): return an empty one and keep the rest.
-    # Only the RuntimeError is caught; datatype-inference errors still raise.
+    # row: warn, return an empty one, and keep the rest. Only the
+    # RuntimeError is caught; datatype-inference errors still raise.
     other_task = eeg_json.with_name("sub-01_ses-eeg_task-other_eeg.vhdr")
     other_task.write_text("")
     try:
-        partial = BIDSPath(
-            subject="01", session="eeg", datatype="eeg", root=bids_root
-        ).read_metadata()
+        with pytest.warns(RuntimeWarning, match="more than one recording"):
+            partial = BIDSPath(
+                subject="01", session="eeg", datatype="eeg", root=bids_root
+            ).read_metadata()
     finally:
         other_task.unlink()
     assert partial["scan"] == {} and partial["participant"] == meta["participant"]

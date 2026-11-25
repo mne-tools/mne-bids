@@ -1455,7 +1455,7 @@ class BIDSPath:
             * ``"data_dictionary"``: dict
                 Column descriptions from the inherited ``participants.json``,
                 ``sessions.json``, and ``scans.json`` sidecars, keyed by
-                ``"participants"``, ``"sessions"``, and ``"scans"``.
+                ``"participant"``, ``"session"``, and ``"scan"``.
 
             Any ``n/a`` values in TSV files are converted to ``None``.
 
@@ -1487,9 +1487,7 @@ class BIDSPath:
                 if sub and ses
                 else None
             )
-            # scans.tsv is optional in BIDS: on_error="ignore" makes a
-            # missing file yield None (leaving "scan" empty) instead of
-            # raising "did not find any scans.tsv".
+            # scans.tsv is optional in BIDS
             scans = (
                 bp.find_matching_sidecar(
                     suffix="scans", extension=".tsv", on_error="ignore"
@@ -1507,6 +1505,11 @@ class BIDSPath:
                     # spanning several tasks or datatypes). No single
                     # scans.tsv row can be picked then, so leave "scan"
                     # empty and still return the remaining entries.
+                    warn(
+                        "The BIDSPath matches more than one recording "
+                        "file, so no unique scans.tsv row could be "
+                        "determined. Returning an empty 'scan' entry."
+                    )
                     rec_fpath = None
                 if rec_fpath is not None:
                     rows = _read_tsv_rows(scans, "filename")
@@ -1535,8 +1538,12 @@ class BIDSPath:
                 ),
                 scan=scan,
                 data_dictionary={
-                    kind: bp.read_sidecar(kind, inherit=True, on_error="ignore")
-                    for kind in ("participants", "sessions", "scans")
+                    key: bp.read_sidecar(suffix, inherit=True, on_error="ignore")
+                    for key, suffix in (
+                        ("participant", "participants"),
+                        ("session", "sessions"),
+                        ("scan", "scans"),
+                    )
                 },
             )
 
