@@ -1450,12 +1450,14 @@ class BIDSPath:
                 This participant's row from `participants.tsv`_.
             * ``"session"``: dict
                 This session's row from `sessions.tsv`_.
-            * ``"scan"``: dict
-                This recording's row from `scans.tsv`_.
+            * ``"scans"``: list of dicts
+                Rows from `scans.tsv`_ for the recording file(s) matching
+                this path: one row for a fully specified path, every
+                matching row for an underspecified one.
             * ``"data_dictionary"``: dict
                 Column descriptions from the inherited ``participants.json``,
                 ``sessions.json``, and ``scans.json`` sidecars, keyed by
-                ``"participant"``, ``"session"``, and ``"scan"``.
+                ``"participant"``, ``"session"``, and ``"scans"``.
 
             Any ``n/a`` values in TSV files are converted to ``None``.
 
@@ -1464,11 +1466,11 @@ class BIDSPath:
         .. versionadded:: 0.21
 
         The `scans.tsv`_ and `sessions.tsv`_ files are optional in BIDS, so
-        missing files or rows return empty dicts instead of raising. Only
-        ``"scan"`` needs this path to resolve to a single recording file;
-        underspecified paths that match several recordings or datatypes
-        likewise return an empty ``"scan"`` dict while the remaining
-        entries are still read.
+        missing files or rows return empty dicts/lists instead of raising.
+        Only ``"scans"`` needs this path to resolve to recording files; an
+        underspecified path that matches several recordings returns every
+        matching row (with a warning) while the remaining entries are
+        still read.
         """
         if self.root is None:
             raise ValueError("The root of the BIDSPath must be set to read metadata.")
@@ -1495,29 +1497,31 @@ class BIDSPath:
                 if sub and (bp.datatype or bp.suffix or bp.extension)
                 else None
             )
-            scan = {}
+            scan_rows = []
             if scans is not None:
                 try:
-                    rec_fpath = bp.fpath
+                    rec_fpaths = [bp.fpath]
                 except RuntimeError:
-                    # .fpath only raises when this path matches more than
-                    # one recording file (e.g. an underspecified path
-                    # spanning several tasks or datatypes). No single
-                    # scans.tsv row can be picked then, so leave "scan"
-                    # empty and still return the remaining entries.
+                    # .fpath only raises for an underspecified path
+                    # matching more than one recording file: return
+                    # every matching row instead of picking one.
                     warn(
                         "The BIDSPath matches more than one recording "
-                        "file, so no unique scans.tsv row could be "
-                        "determined. Returning an empty 'scan' entry."
+                        "file; returning every matching 'scans' row."
                     )
-                    rec_fpath = None
-                if rec_fpath is not None:
-                    rows = _read_tsv_rows(scans, "filename")
-                    ind, _ = _find_scan_row(
-                        [Path(k) for k in rows], rec_fpath, bp.datatype, scans.parent
+                    rec_fpaths = map(Path, _get_matching_bidspaths_from_filesystem(bp))
+                rows = _read_tsv_rows(scans, "filename")
+                fnames = [Path(k) for k in rows]
+                inds = {
+                    ind
+                    for rec in rec_fpaths
+                    if (
+                        ind := _find_scan_row(fnames, rec, bp.datatype, scans.parent)[0]
                     )
-                    if ind is not None:
-                        scan = list(rows.values())[ind].copy()
+                    is not None
+                }
+                vals = list(rows.values())
+                scan_rows = [vals[i].copy() for i in sorted(inds)]
             return dict(
                 sidecar=(
                     bp.read_sidecar(inherit=True, on_error="ignore")
@@ -1536,13 +1540,13 @@ class BIDSPath:
                     if sessions and _sidecar_is_file(sessions, root)
                     else {}
                 ),
-                scan=scan,
+                scans=scan_rows,
                 data_dictionary={
                     key: bp.read_sidecar(suffix, inherit=True, on_error="ignore")
                     for key, suffix in (
                         ("participant", "participants"),
                         ("session", "sessions"),
-                        ("scan", "scans"),
+                        ("scans", "scans"),
                     )
                 },
             )

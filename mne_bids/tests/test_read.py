@@ -2854,7 +2854,7 @@ def test_read_metadata(tmp_path):
         BIDSPath(subject="01").read_metadata()
     _write_json(bids_root / "scans.json", {"acq_time": {"Units": "s"}})  # inherited
     sub_only = BIDSPath(subject="01", root=bids_root).read_metadata()
-    assert sub_only["sidecar"] == {} and sub_only["scan"] == {}
+    assert sub_only["sidecar"] == {} and sub_only["scans"] == []
     assert (
         sub_only["participant"]
         == read_participants(bids_root / "participants.tsv")["01"]
@@ -2869,24 +2869,24 @@ def test_read_metadata(tmp_path):
         "acq_time": "2000-01-01T12:00:00.000000Z",
         "pathology": "Parkinson's disease",
     }
-    assert meta["scan"] == {"acq_time": "2000-01-01T12:00:00.000000Z"}
+    assert meta["scans"] == [{"acq_time": "2000-01-01T12:00:00.000000Z"}]
     # scans.tsv lists the .vhdr, also for the .eeg and without a datatype
     for kwargs in (dict(extension=".eeg"), dict(extension=".vhdr", datatype=None)):
         other = bp.copy().update(suffix="eeg", **kwargs).read_metadata()
-        assert other["scan"] == meta["scan"]
+        assert other["scans"] == meta["scans"]
     # also when scans.tsv itself lists .eeg instead of .vhdr, or is absent
     scans_tsv = bids_root / "sub-01" / "ses-eeg" / "sub-01_ses-eeg_scans.tsv"
     orig_scans = scans_tsv.read_text(encoding="utf-8")
     scans_tsv.write_text(orig_scans.replace(".vhdr", ".eeg"), encoding="utf-8")
-    assert bp.read_metadata()["scan"] == meta["scan"]
+    assert bp.read_metadata()["scans"] == meta["scans"]
     scans_tsv.unlink()
-    assert bp.read_metadata()["scan"] == {}
+    assert bp.read_metadata()["scans"] == []
     scans_tsv.write_text(orig_scans, encoding="utf-8")
     assert meta["data_dictionary"]["participant"]["age"]["Units"] == "years"
     assert "pathology" in meta["data_dictionary"]["session"]
-    assert meta["data_dictionary"]["scan"] == {"acq_time": {"Units": "s"}}
-    # An underspecified path matching several recordings cannot pick a scan
-    # row: warn, return an empty one, and keep the rest. Only the
+    assert meta["data_dictionary"]["scans"] == {"acq_time": {"Units": "s"}}
+    # An underspecified path matching several recordings warns and
+    # returns every matching row (only task-rest has one here). Only the
     # RuntimeError is caught; datatype-inference errors still raise.
     other_task = eeg_json.with_name("sub-01_ses-eeg_task-other_eeg.vhdr")
     other_task.write_text("")
@@ -2897,7 +2897,8 @@ def test_read_metadata(tmp_path):
             ).read_metadata()
     finally:
         other_task.unlink()
-    assert partial["scan"] == {} and partial["participant"] == meta["participant"]
+    assert partial["scans"] == meta["scans"]
+    assert partial["participant"] == meta["participant"]
     no_ephys_dir = bids_root / "sub-99" / "ses-eeg"
     no_ephys_dir.mkdir(parents=True)
     (no_ephys_dir / "sub-99_ses-eeg_scans.tsv").write_text("filename\tacq_time\n")
