@@ -2937,6 +2937,24 @@ def test_read_metadata(tmp_path):
         },
     ]
     assert partial["participant"] == meta["participant"]
+    # A session-less path collects scans rows from every session
+    other_ses = bids_root / "sub-01" / "ses-other"
+    (other_ses / "eeg").mkdir(parents=True)
+    (other_ses / "eeg" / "sub-01_ses-other_task-rest_eeg.vhdr").write_text("")
+    (other_ses / "sub-01_ses-other_scans.tsv").write_text(
+        "filename\tacq_time\n"
+        "eeg/sub-01_ses-other_task-rest_eeg.vhdr\t2000-01-02T12:00:00.000000Z\n",
+        encoding="utf-8",
+    )
+    all_ses = BIDSPath(subject="01", datatype="eeg", root=bids_root).read_metadata()
+    assert all_ses["scans"] == [
+        *meta["scans"],
+        {
+            "filename": "eeg/sub-01_ses-other_task-rest_eeg.vhdr",
+            "acq_time": datetime(2000, 1, 2, 12, tzinfo=UTC),
+        },
+    ]
+    assert all_ses["session"] == [] and all_ses["participant"] == meta["participant"]
     no_ephys_dir = bids_root / "sub-99" / "ses-eeg"
     no_ephys_dir.mkdir(parents=True)
     (no_ephys_dir / "sub-99_ses-eeg_scans.tsv").write_text("filename\tacq_time\n")

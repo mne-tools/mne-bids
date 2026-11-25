@@ -1455,7 +1455,8 @@ class BIDSPath:
             * ``"scans"``: list of dicts
                 Rows from `scans.tsv`_ for the recording file(s) matching
                 this path: one row for a fully specified path, every
-                matching row for an underspecified one.
+                matching row for an underspecified one; with no session
+                in the path, rows are collected from all sessions.
             * ``"data_dictionary"``: dict
                 Column descriptions from the inherited ``participants.json``,
                 ``sessions.json``, and ``scans.json`` sidecars, keyed by
@@ -1495,17 +1496,45 @@ class BIDSPath:
                 else None
             )
             # scans.tsv is optional in BIDS
-            scans = (
-                bp.find_matching_sidecar(
-                    suffix="scans", extension=".tsv", on_error="ignore"
-                )
-                if sub and (bp.datatype or bp.suffix or bp.extension)
-                else None
-            )
+            targets = []
+            if sub and (bp.datatype or bp.suffix or bp.extension):
+                if ses:
+                    if (
+                        scans := bp.find_matching_sidecar(
+                            suffix="scans", extension=".tsv", on_error="ignore"
+                        )
+                    ) is not None:
+                        targets = [(scans, bp)]
+                else:
+                    # No session: collect every session's scans.tsv
+                    subj_dir = root / f"sub-{sub}"
+                    subj_scans = subj_dir / f"sub-{sub}_scans.tsv"
+                    if _sidecar_is_file(subj_scans, root):
+                        targets.append((subj_scans, bp))
+                    entries = _listed(subj_dir)
+                    names = (
+                        entries.keys()
+                        if entries is not None
+                        else [e.name for e in subj_dir.iterdir()]
+                        if subj_dir.is_dir()
+                        else []
+                    )
+                    for label in sorted(
+                        n.removeprefix("ses-") for n in names if n.startswith("ses-")
+                    ):
+                        f = BIDSPath(
+                            subject=sub,
+                            session=label,
+                            suffix="scans",
+                            extension=".tsv",
+                            root=root,
+                        ).fpath
+                        if _sidecar_is_file(f, root):
+                            targets.append((f, bp.copy().update(session=label)))
             scan_rows = []
-            if scans is not None:
+            for scans_file, scoped in targets:
                 try:
-                    rec_fpaths = [bp.fpath]
+                    rec_fpaths = [scoped.fpath]
                 except RuntimeError:
                     # .fpath only raises for an underspecified path
                     # matching more than one recording file: return
@@ -1514,19 +1543,23 @@ class BIDSPath:
                         "The BIDSPath matches more than one recording "
                         "file; returning every matching 'scans' row."
                     )
-                    rec_fpaths = map(Path, _get_matching_bidspaths_from_filesystem(bp))
-                rows = _read_tsv_rows(scans, "filename")
+                    rec_fpaths = map(
+                        Path, _get_matching_bidspaths_from_filesystem(scoped)
+                    )
+                rows = _read_tsv_rows(scans_file, "filename")
                 fnames = [Path(k) for k in rows]
                 inds = {
                     ind
                     for rec in rec_fpaths
                     if (
-                        ind := _find_scan_row(fnames, rec, bp.datatype, scans.parent)[0]
+                        ind := _find_scan_row(
+                            fnames, rec, scoped.datatype, scans_file.parent
+                        )[0]
                     )
                     is not None
                 }
                 vals = list(rows.values())
-                scan_rows = [vals[i].copy() for i in sorted(inds)]
+                scan_rows += [vals[i].copy() for i in sorted(inds)]
             prow = (
                 _read_tsv_rows(participants, "participant_id", "sub-").get(sub)
                 if sub and participants.is_file()
