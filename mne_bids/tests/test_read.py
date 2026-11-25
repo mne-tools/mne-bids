@@ -2760,7 +2760,10 @@ def test_read_participants(tmp_path):
     """Read participants.tsv into rows keyed by subject label."""
     fname = tmp_path / "participants.tsv"
     fname.write_text("participant_id\tage\tsex\nsub-01\t24\tF\nsub-02\tn/a\tM\n")
-    expected = {"01": {"age": "24", "sex": "F"}, "02": {"age": None, "sex": "M"}}
+    expected = {
+        "01": {"participant_id": "sub-01", "age": "24", "sex": "F"},
+        "02": {"participant_id": "sub-02", "age": None, "sex": "M"},
+    }
     assert read_participants(fname) == expected
     assert (
         read_participants("hf://repo/participants.tsv", content=fname.read_bytes())
@@ -2770,7 +2773,8 @@ def test_read_participants(tmp_path):
     fname.write_text("participant_id\tage\nsub-01\t24\nsub-01\t99\nn/a\t30\n")
     with pytest.warns(RuntimeWarning, match="Duplicate participant_id 'sub-01'"):
         rows = read_participants(fname)
-    assert rows["01"] == {"age": "24"} and rows["n/a"] == {"age": "30"}
+    assert rows["01"] == {"participant_id": "sub-01", "age": "24"}
+    assert rows["n/a"] == {"participant_id": None, "age": "30"}
 
     fname.write_text("age\tsex\n24\tF\n")
     with pytest.raises(ValueError, match="participant_id"):
@@ -2855,21 +2859,35 @@ def test_read_metadata(tmp_path):
     _write_json(bids_root / "scans.json", {"acq_time": {"Units": "s"}})  # inherited
     sub_only = BIDSPath(subject="01", root=bids_root).read_metadata()
     assert sub_only["sidecar"] == {} and sub_only["scans"] == []
-    assert (
-        sub_only["participant"]
-        == read_participants(bids_root / "participants.tsv")["01"]
-    )
+    assert sub_only["participant"] == [
+        read_participants(bids_root / "participants.tsv")["01"]
+    ]
     meta = bp.copy().update(suffix="eeg", extension=".vhdr").read_metadata()
     assert meta["sidecar"] == bp.read_sidecar(inherit=True)
     assert meta["participant"] == sub_only["participant"]
-    assert meta["participant"] == dict(
-        age="29", sex="F", hand="A", weight=None, height=None
-    )
-    assert meta["session"] == {
-        "acq_time": "2000-01-01T12:00:00.000000Z",
-        "pathology": "Parkinson's disease",
-    }
-    assert meta["scans"] == [{"acq_time": "2000-01-01T12:00:00.000000Z"}]
+    assert meta["participant"] == [
+        dict(
+            participant_id="sub-01",
+            age="29",
+            sex="F",
+            hand="A",
+            weight=None,
+            height=None,
+        )
+    ]
+    assert meta["session"] == [
+        {
+            "session_id": "ses-eeg",
+            "acq_time": "2000-01-01T12:00:00.000000Z",
+            "pathology": "Parkinson's disease",
+        }
+    ]
+    assert meta["scans"] == [
+        {
+            "filename": "eeg/sub-01_ses-eeg_task-rest_eeg.vhdr",
+            "acq_time": "2000-01-01T12:00:00.000000Z",
+        }
+    ]
     # scans.tsv lists the .vhdr, also for the .eeg and without a datatype
     for kwargs in (dict(extension=".eeg"), dict(extension=".vhdr", datatype=None)):
         other = bp.copy().update(suffix="eeg", **kwargs).read_metadata()
@@ -2878,7 +2896,9 @@ def test_read_metadata(tmp_path):
     scans_tsv = bids_root / "sub-01" / "ses-eeg" / "sub-01_ses-eeg_scans.tsv"
     orig_scans = scans_tsv.read_text(encoding="utf-8")
     scans_tsv.write_text(orig_scans.replace(".vhdr", ".eeg"), encoding="utf-8")
-    assert bp.read_metadata()["scans"] == meta["scans"]
+    assert bp.read_metadata()["scans"] == [
+        {**meta["scans"][0], "filename": "eeg/sub-01_ses-eeg_task-rest_eeg.eeg"}
+    ]
     scans_tsv.unlink()
     assert bp.read_metadata()["scans"] == []
     scans_tsv.write_text(orig_scans, encoding="utf-8")
@@ -2886,10 +2906,15 @@ def test_read_metadata(tmp_path):
     assert "pathology" in meta["data_dictionary"]["session"]
     assert meta["data_dictionary"]["scans"] == {"acq_time": {"Units": "s"}}
     # An underspecified path matching several recordings warns and
-    # returns every matching row (only task-rest has one here). Only the
-    # RuntimeError is caught; datatype-inference errors still raise.
+    # returns every matching row. Only the RuntimeError is caught;
+    # datatype-inference errors still raise.
     other_task = eeg_json.with_name("sub-01_ses-eeg_task-other_eeg.vhdr")
     other_task.write_text("")
+    scans_tsv.write_text(
+        orig_scans + "eeg/sub-01_ses-eeg_task-other_eeg.vhdr\t"
+        "2000-01-01T13:00:00.000000Z\n",
+        encoding="utf-8",
+    )
     try:
         with pytest.warns(RuntimeWarning, match="more than one recording"):
             partial = BIDSPath(
@@ -2897,7 +2922,14 @@ def test_read_metadata(tmp_path):
             ).read_metadata()
     finally:
         other_task.unlink()
-    assert partial["scans"] == meta["scans"]
+        scans_tsv.write_text(orig_scans, encoding="utf-8")
+    assert partial["scans"] == [
+        *meta["scans"],
+        {
+            "filename": "eeg/sub-01_ses-eeg_task-other_eeg.vhdr",
+            "acq_time": "2000-01-01T13:00:00.000000Z",
+        },
+    ]
     assert partial["participant"] == meta["participant"]
     no_ephys_dir = bids_root / "sub-99" / "ses-eeg"
     no_ephys_dir.mkdir(parents=True)

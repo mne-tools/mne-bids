@@ -1446,10 +1446,12 @@ class BIDSPath:
             * ``"sidecar"``: dict
                 Sidecar metadata, as returned by
                 :meth:`read_sidecar(inherit=True) <mne_bids.BIDSPath.read_sidecar>`.
-            * ``"participant"``: dict
-                This participant's row from `participants.tsv`_.
-            * ``"session"``: dict
-                This session's row from `sessions.tsv`_.
+            * ``"participant"``: list of dicts
+                This participant's row from `participants.tsv`_ (a
+                single-row list, empty when there is none).
+            * ``"session"``: list of dicts
+                This session's row from `sessions.tsv`_ (a single-row
+                list, empty when there is none).
             * ``"scans"``: list of dicts
                 Rows from `scans.tsv`_ for the recording file(s) matching
                 this path: one row for a fully specified path, every
@@ -1522,24 +1524,24 @@ class BIDSPath:
                 }
                 vals = list(rows.values())
                 scan_rows = [vals[i].copy() for i in sorted(inds)]
+            prow = (
+                _read_tsv_rows(participants, "participant_id", "sub-").get(sub)
+                if sub and participants.is_file()
+                else None
+            )
+            srow = (
+                _read_tsv_rows(sessions, "session_id", "ses-").get(ses)
+                if sessions and _sidecar_is_file(sessions, root)
+                else None
+            )
             return dict(
                 sidecar=(
                     bp.read_sidecar(inherit=True, on_error="ignore")
                     if (bp.datatype or bp.suffix)
                     else {}
                 ),
-                participant=(
-                    _read_tsv_rows(participants, "participant_id", "sub-")
-                    .get(sub, {})
-                    .copy()
-                    if sub and participants.is_file()
-                    else {}
-                ),
-                session=(
-                    _read_tsv_rows(sessions, "session_id", "ses-").get(ses, {}).copy()
-                    if sessions and _sidecar_is_file(sessions, root)
-                    else {}
-                ),
+                participant=[prow.copy()] if prow is not None else [],
+                session=[srow.copy()] if srow is not None else [],
                 scans=scan_rows,
                 data_dictionary={
                     key: bp.read_sidecar(suffix, inherit=True, on_error="ignore")

@@ -357,10 +357,9 @@ def _tsv_rows_cached(fname, content, key_col, prefix):
     rows, duplicates = {}, []
     for values in zip(*table.values(), strict=True):
         row = dict(zip(table, values, strict=True))
-        raw_id = row.pop(key_col)
-        key = raw_id.removeprefix(prefix)
+        key = row[key_col].removeprefix(prefix)
         if key in rows:
-            duplicates.append(raw_id)
+            duplicates.append(row[key_col])
         else:
             rows[key] = {k: None if v == "n/a" else v for k, v in row.items()}
     return rows, tuple(duplicates)
