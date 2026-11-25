@@ -1540,7 +1540,7 @@ class BIDSPath:
             return dict(
                 sidecar=(
                     bp.read_sidecar(inherit=True, on_error="ignore")
-                    if (bp.datatype or bp.suffix)
+                    if (bp.datatype or bp.suffix or bp.extension)
                     else {}
                 ),
                 participant=[prow.copy()] if prow is not None else [],
