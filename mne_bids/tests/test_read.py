@@ -2761,7 +2761,7 @@ def test_read_participants(tmp_path):
     fname = tmp_path / "participants.tsv"
     fname.write_text("participant_id\tage\tsex\nsub-01\t24\tF\nsub-02\tn/a\tM\n")
     expected = {
-        "01": {"participant_id": "sub-01", "age": "24", "sex": "F"},
+        "01": {"participant_id": "sub-01", "age": 24.0, "sex": "F"},
         "02": {"participant_id": "sub-02", "age": None, "sex": "M"},
     }
     assert read_participants(fname) == expected
@@ -2773,8 +2773,8 @@ def test_read_participants(tmp_path):
     fname.write_text("participant_id\tage\nsub-01\t24\nsub-01\t99\nn/a\t30\n")
     with pytest.warns(RuntimeWarning, match="Duplicate participant_id 'sub-01'"):
         rows = read_participants(fname)
-    assert rows["01"] == {"participant_id": "sub-01", "age": "24"}
-    assert rows["n/a"] == {"participant_id": None, "age": "30"}
+    assert rows["01"] == {"participant_id": "sub-01", "age": 24.0}
+    assert rows["n/a"] == {"participant_id": None, "age": 30.0}
 
     fname.write_text("age\tsex\n24\tF\n")
     with pytest.raises(ValueError, match="participant_id"):
@@ -2868,7 +2868,7 @@ def test_read_metadata(tmp_path):
     assert meta["participant"] == [
         dict(
             participant_id="sub-01",
-            age="29",
+            age=29.0,
             sex="F",
             hand="A",
             weight=None,
@@ -2878,14 +2878,14 @@ def test_read_metadata(tmp_path):
     assert meta["session"] == [
         {
             "session_id": "ses-eeg",
-            "acq_time": "2000-01-01T12:00:00.000000Z",
+            "acq_time": datetime(2000, 1, 1, 12, tzinfo=UTC),
             "pathology": "Parkinson's disease",
         }
     ]
     assert meta["scans"] == [
         {
             "filename": "eeg/sub-01_ses-eeg_task-rest_eeg.vhdr",
-            "acq_time": "2000-01-01T12:00:00.000000Z",
+            "acq_time": datetime(2000, 1, 1, 12, tzinfo=UTC),
         }
     ]
     # scans.tsv lists the .vhdr, also for the .eeg and without a datatype
@@ -2901,6 +2901,12 @@ def test_read_metadata(tmp_path):
     ]
     scans_tsv.unlink()
     assert bp.read_metadata()["scans"] == []
+    scans_tsv.write_text(orig_scans, encoding="utf-8")
+    # an unparseable acq_time becomes None
+    scans_tsv.write_text(
+        orig_scans.replace("2000-01-01T12:00:00.000000Z", "junk"), encoding="utf-8"
+    )
+    assert bp.read_metadata()["scans"][0]["acq_time"] is None
     scans_tsv.write_text(orig_scans, encoding="utf-8")
     assert meta["data_dictionary"]["participant"]["age"]["Units"] == "years"
     assert "pathology" in meta["data_dictionary"]["session"]
@@ -2927,7 +2933,7 @@ def test_read_metadata(tmp_path):
         *meta["scans"],
         {
             "filename": "eeg/sub-01_ses-eeg_task-other_eeg.vhdr",
-            "acq_time": "2000-01-01T13:00:00.000000Z",
+            "acq_time": datetime(2000, 1, 1, 13, tzinfo=UTC),
         },
     ]
     assert partial["participant"] == meta["participant"]

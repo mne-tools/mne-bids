@@ -1461,18 +1461,21 @@ class BIDSPath:
                 ``sessions.json``, and ``scans.json`` sidecars, keyed by
                 ``"participant"``, ``"session"``, and ``"scans"``.
 
-            Any ``n/a`` values in TSV files are converted to ``None``.
+            Any ``n/a`` values in TSV files are converted to ``None``;
+            ``acq_time`` values become timezone-aware datetimes and
+            ``age``, ``height``, ``weight`` become floats.
 
         Notes
         -----
         .. versionadded:: 0.21
 
         The `scans.tsv`_ and `sessions.tsv`_ files are optional in BIDS, so
-        missing files or rows return empty dicts/lists instead of raising.
-        Only ``"scans"`` needs this path to resolve to recording files; an
-        underspecified path that matches several recordings returns every
-        matching row (with a warning) while the remaining entries are
-        still read.
+        missing files or rows return empty entries instead of raising; an
+        unset ``root`` or a path whose datatype cannot be inferred still
+        raises. Only ``"scans"`` needs this path to resolve to recording
+        files; an underspecified path that matches several recordings
+        returns every matching row (with a warning) while the remaining
+        entries are still read.
         """
         if self.root is None:
             raise ValueError("The root of the BIDSPath must be set to read metadata.")

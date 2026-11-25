@@ -10,6 +10,7 @@ import json
 import re
 from collections import OrderedDict
 from copy import deepcopy
+from datetime import UTC, datetime
 from functools import lru_cache
 from pathlib import Path
 
@@ -348,6 +349,20 @@ def _nansafe_to_str(value):
     return str(value)
 
 
+def _typed(col, value):
+    """Convert BIDS-standard typed columns; keep everything else a string."""
+    if value == "n/a":
+        return None
+    if col == "acq_time":
+        return _parse_acq_time(value)
+    if col in ("age", "height", "weight"):
+        try:
+            return float(value)
+        except ValueError:
+            return None
+    return value
+
+
 @lru_cache(maxsize=3)
 def _tsv_rows_cached(fname, content, key_col, prefix):
     """Parse a TSV file once per file content (participants, sessions, scans)."""
@@ -361,8 +376,26 @@ def _tsv_rows_cached(fname, content, key_col, prefix):
         if key in rows:
             duplicates.append(row[key_col])
         else:
-            rows[key] = {k: None if v == "n/a" else v for k, v in row.items()}
+            rows[key] = {k: _typed(k, v) for k, v in row.items()}
     return rows, tuple(duplicates)
+
+
+def _parse_acq_time(value):
+    """Parse a BIDS ``acq_time`` string to a UTC datetime; None if invalid."""
+    from .utils import _convert_dt_to_utc  # avoid circular import
+
+    if value is None:
+        return None
+    s = value.strip()
+    if not s or s.lower() == "nan":
+        return None
+    try:
+        parsed = datetime.fromisoformat(
+            s.replace("Z", "+00:00") if s.endswith("Z") else s
+        )
+    except ValueError:
+        return None
+    return parsed.astimezone(UTC) if parsed.tzinfo else _convert_dt_to_utc(parsed)
 
 
 def _read_tsv_rows(fname, key_col, prefix="", *, content=None):

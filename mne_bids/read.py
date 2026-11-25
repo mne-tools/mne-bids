@@ -327,8 +327,9 @@ def read_participants(fname, *, content=None):
     participants : dict
         The rows keyed by subject label (``participant_id`` without the
         ``sub-`` prefix), each a dict from column name to value (including
-        the ``participant_id`` column itself). Values are strings, and
-        ``n/a`` becomes None.
+        the ``participant_id`` column itself). ``acq_time`` becomes a
+        timezone-aware datetime and ``age``, ``height``, ``weight`` become
+        floats; other values are strings, and ``n/a`` becomes None.
 
     Notes
     -----
