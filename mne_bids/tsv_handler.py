@@ -363,7 +363,7 @@ def _typed(col, value):
     return value
 
 
-@lru_cache(maxsize=3)
+@lru_cache(maxsize=32)
 def _tsv_rows_cached(fname, content, key_col, prefix):
     """Parse a TSV file once per file content (participants, sessions, scans)."""
     table = _from_tsv(fname, content=content)
