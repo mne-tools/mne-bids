@@ -1487,6 +1487,9 @@ class BIDSPath:
                 if sub and ses
                 else None
             )
+            # scans.tsv is optional in BIDS: on_error="ignore" makes a
+            # missing file yield None (leaving "scan" empty) instead of
+            # raising "did not find any scans.tsv".
             scans = (
                 bp.find_matching_sidecar(
                     suffix="scans", extension=".tsv", on_error="ignore"
@@ -1499,9 +1502,11 @@ class BIDSPath:
                 try:
                     rec_fpath = bp.fpath
                 except RuntimeError:
-                    # scans.tsv is optional in BIDS, so do not raise here:
-                    # underspecified paths need not resolve to one recording
-                    # (several files or datatypes may match). Leave empty.
+                    # .fpath only raises when this path matches more than
+                    # one recording file (e.g. an underspecified path
+                    # spanning several tasks or datatypes). No single
+                    # scans.tsv row can be picked then, so leave "scan"
+                    # empty and still return the remaining entries.
                     rec_fpath = None
                 if rec_fpath is not None:
                     rows = _read_tsv_rows(scans, "filename")
