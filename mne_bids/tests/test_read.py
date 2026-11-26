@@ -2994,11 +2994,15 @@ def test_read_metadata(tmp_path):
     ]
     assert all_ses["session"] == [] and all_ses["participant"] == meta["participant"]
     # An unreadable root raises PermissionError rather than faking emptiness
+    # (chmod may not bite when tests run as root, e.g. in containers)
     if sys.platform != "win32":
         bids_root.chmod(0o000)
         try:
-            with pytest.raises(PermissionError):
-                BIDSPath(subject="01", datatype="eeg", root=bids_root).read_metadata()
+            if not os.access(bids_root, os.R_OK):
+                with pytest.raises(PermissionError):
+                    BIDSPath(
+                        subject="01", datatype="eeg", root=bids_root
+                    ).read_metadata()
         finally:
             bids_root.chmod(0o755)
     # Several datatypes without one in the path: the datatype error, not
