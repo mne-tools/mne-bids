@@ -10,7 +10,6 @@ import warnings
 from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from difflib import get_close_matches
-from functools import lru_cache
 from pathlib import Path
 
 import mne
@@ -32,12 +31,13 @@ from mne_bids.dig import _read_dig_bids
 from mne_bids.path import (
     BIDSPath,
     _find_matching_sidecar,
+    _find_scan_row,
     _infer_datatype,
     _parse_ext,
     _share_dir_listings,
     get_bids_path_from_fname,
 )
-from mne_bids.tsv_handler import _drop, _from_tsv
+from mne_bids.tsv_handler import _drop, _from_tsv, _read_tsv_rows
 from mne_bids.utils import (
     _convert_dt_to_utc,
     _get_ch_type_mapping,
@@ -298,18 +298,6 @@ def _verbose_list_index(lst, val, *, allow_all=False):
         raise ValueError(f"{exc}{extra}") from None
 
 
-@lru_cache(maxsize=1)
-def _participants_tsv(participants_fname, content):
-    """Parse participants.tsv once per content of the file.
-
-    ``content`` is the file's bytes. Reading them on every call is much cheaper
-    than parsing and, unlike file metadata, cannot miss a rewrite (some network
-    filesystems only store modification times in seconds). Only the last table
-    is kept, so a file that is rewritten often does not pile up in memory.
-    """
-    return _from_tsv(participants_fname, content=content)
-
-
 def read_participants(fname, *, content=None):
     """Read a ``participants.tsv`` file.
 
@@ -325,21 +313,17 @@ def read_participants(fname, *, content=None):
     -------
     participants : dict
         The rows keyed by subject label (``participant_id`` without the
-        ``sub-`` prefix), each a dict from column name to value. Values are
-        strings, and ``n/a`` becomes None.
+        ``sub-`` prefix), each a dict from column name to value (including
+        the ``participant_id`` column itself). ``acq_time`` becomes a
+        timezone-aware datetime and ``age``, ``height``, ``weight`` become
+        floats; other values are strings, and ``n/a`` becomes None.
 
     Notes
     -----
     .. versionadded:: 0.21
     """
-    table = _from_tsv(fname, content=content)
-    if "participant_id" not in table:
-        raise ValueError(f"{fname} has no participant_id column.")
-    participants = {}
-    for values in zip(*table.values()):
-        row = {col: None if val == "n/a" else val for col, val in zip(table, values)}
-        participants[row.pop("participant_id").removeprefix("sub-")] = row
-    return participants
+    rows = _read_tsv_rows(fname, "participant_id", "sub-", content=content)
+    return {k: v.copy() for k, v in rows.items()}
 
 
 # days per age unit allowed by BIDS in participants.json, years by default
@@ -376,15 +360,12 @@ def _age_unit_days(participants_fname):
 
 
 def _handle_participants_reading(participants_fname, raw, subject):
-    participants_tsv = _participants_tsv(
-        participants_fname, participants_fname.read_bytes()
-    )
-    subjects = participants_tsv["participant_id"]
-    if subject not in subjects:
+    rows = _read_tsv_rows(participants_fname, "participant_id", "sub-")
+    row = rows.get(subject.removeprefix("sub-"))
+    if row is None:
         warn(f"Subject {subject!r} is not listed in {participants_fname.name}")
         raw.info["subject_info"] = dict()
         return raw
-    row_ind = _verbose_list_index(subjects, subject, allow_all=True)
     raw.info["subject_info"] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
@@ -395,7 +376,7 @@ def _handle_participants_reading(participants_fname, raw, subject):
     id his_id last_name first_name middle_name birthday sex hand weight height
     """.strip().split()
     )
-    row = {col: values[row_ind] for col, values in participants_tsv.items()}
+    row = row.copy()  # the handedness rename below mutates it
     bad_key_vals = list()
     # MNE-BIDS < 0.21 wrote "hand". It can be a custom column when both exist.
     if "handedness" in row:
@@ -405,7 +386,13 @@ def _handle_participants_reading(participants_fname, raw, subject):
     for col_name, value in row.items():
         orig_value = value
         if col_name in ("sex", "hand"):
-            value = _map_options(what=col_name, key=value, fro="bids", to="mne")
+            # Typed rows give None for "n/a", which maps to 0 (unknown)
+            value = _map_options(
+                what=col_name,
+                key="n/a" if value is None else value,
+                fro="bids",
+                to="mne",
+            )
             # We don't know how to translate to MNE, so skip.
             if value is None:
                 if col_name == "sex":
@@ -416,7 +403,7 @@ def _handle_participants_reading(participants_fname, raw, subject):
         elif col_name in ("height", "weight"):
             try:
                 value = float(value)
-            except ValueError:
+            except (TypeError, ValueError):
                 value = None
         elif col_name == "age":
             age_days = _age_unit_days(participants_fname)
@@ -468,10 +455,6 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     scans_tsv = _from_tsv(scans_fname)
     fname = bids_path.fpath.name
 
-    # get the row corresponding to the file
-    # use string concatenation instead of os.path
-    # to work nicely with windows
-    data_fname = Path(bids_path.datatype) / fname
     fnames = scans_tsv["filename"]
     fnames = [Path(fname) for fname in fnames]
     if not fnames:  # header-only scans.tsv
@@ -481,34 +464,15 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     else:
         acq_times = ["n/a"] * len(fnames)
 
-    # There are three possible extensions for BrainVision
-    # First gather all the possible extensions
-    acq_suffixes = set(fname.suffix for fname in fnames)
-    # Add the filename extension for the bids folder
-    acq_suffixes.add(Path(data_fname).suffix)
-
-    if all(suffix in (".vhdr", ".eeg", ".vmrk") for suffix in acq_suffixes):
-        ext = fnames[0].suffix
-        data_fname = Path(data_fname).with_suffix(ext)
-    try:
-        row_ind = fnames.index(data_fname)
-    except ValueError:
-        row_ind = None
-        if fname.endswith(".pdf"):
-            alt_fname = Path(bids_path.datatype) / Path(fname).with_suffix("")
-            try:
-                row_ind = fnames.index(alt_fname)
-                data_fname = alt_fname
-            except ValueError:
-                pass
-        if row_ind is None:
-            matches = get_close_matches(str(data_fname), [str(f) for f in fnames])
-            hint = f" Did you mean one of {matches}?" if matches else ""
-            warn(
-                f"{data_fname} is not listed in {scans_fname.name}.{hint} "
-                "Leaving raw.info['meas_date'] unchanged."
-            )
-            return raw
+    row_ind, data_fname = _find_scan_row(fnames, bids_path.fpath, bids_path.datatype)
+    if row_ind is None:
+        matches = get_close_matches(str(data_fname), [str(f) for f in fnames])
+        hint = f" Did you mean one of {matches}?" if matches else ""
+        warn(
+            f"{data_fname} is not listed in {scans_fname.name}.{hint} "
+            "Leaving raw.info['meas_date'] unchanged."
+        )
+        return raw
 
     # check whether all split files have the same acq_time
     # and throw an error if they don't
@@ -574,26 +538,42 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     return raw
 
 
-def _read_json_object(fname):
+def _read_json_object(fname, *, read_bytes=None):
     """Read a JSON sidecar, which BIDS requires to be a JSON object."""
-    with _open_lock(fname, encoding="utf-8") as fin:
-        content = json.load(fin)
+    if read_bytes is not None:
+        content = json.loads(read_bytes(fname))
+    else:
+        with _open_lock(fname, encoding="utf-8") as fin:
+            content = json.load(fin)
     if not isinstance(content, dict):
         warn(f"{fname} is not a JSON object, ignoring it.")
         return {}
     return content
 
 
-def _read_sidecar_json(bids_path, suffix=None, on_error="ignore", *, inherit=True):
+def _read_sidecar_json(
+    bids_path,
+    suffix=None,
+    on_error="ignore",
+    *,
+    inherit=True,
+    candidates=None,
+    read_bytes=None,
+):
     """Read the closest JSON sidecar, or merge the inherited ones from the root down."""
     fnames = _find_matching_sidecar(
-        bids_path, suffix=suffix, extension=".json", on_error=on_error, inherit=inherit
+        bids_path,
+        suffix=suffix,
+        extension=".json",
+        on_error=on_error,
+        inherit=inherit,
+        candidates=candidates,
     )
     if not inherit:
         fnames = [] if fnames is None else [fnames]
     sidecar = {}
     for fname in fnames:
-        sidecar.update(_read_json_object(fname))
+        sidecar.update(_read_json_object(fname, read_bytes=read_bytes))
     return sidecar
 
 

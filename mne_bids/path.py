@@ -37,7 +37,13 @@ from mne_bids.config import (
     ENTITY_VALUE_TYPE,
     _get_readers,
 )
-from mne_bids.tsv_handler import _detect_file_encoding, _drop, _from_tsv, _to_tsv
+from mne_bids.tsv_handler import (
+    _detect_file_encoding,
+    _drop,
+    _from_tsv,
+    _read_tsv_rows,
+    _to_tsv,
+)
 from mne_bids.utils import (
     _check_empty_room_basename,
     _check_key_val,
@@ -1395,7 +1401,15 @@ class BIDSPath:
             candidates=candidates,
         )
 
-    def read_sidecar(self, suffix=None, *, inherit=False, on_error="raise"):
+    def read_sidecar(
+        self,
+        suffix=None,
+        *,
+        inherit=False,
+        on_error="raise",
+        candidates=None,
+        read_bytes=None,
+    ):
         """Read the matching JSON sidecar file(s).
 
         Parameters
@@ -1414,6 +1428,15 @@ class BIDSPath:
             ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a
             warning, and if ``'ignore'``, neither raise an exception nor a
             warning, and return an empty dictionary in both cases.
+        candidates : iterable of path-like | None
+            Pre-collected paths or URLs to choose the sidecar from instead
+            of listing directories on disk, as in
+            :meth:`find_matching_sidecar`.
+        read_bytes : callable | None
+            Callable taking a candidate path and returning its content as
+            bytes, used to read the chosen sidecar(s) instead of opening
+            them on the local filesystem (e.g. for remote candidates).
+            If ``None`` (default), files are read from disk.
 
         Returns
         -------
@@ -1427,7 +1450,173 @@ class BIDSPath:
         from mne_bids.read import _read_sidecar_json
 
         suffix = suffix or self.suffix or self.datatype
-        return _read_sidecar_json(self, suffix, on_error, inherit=inherit)
+        return _read_sidecar_json(
+            self,
+            suffix,
+            on_error,
+            inherit=inherit,
+            candidates=candidates,
+            read_bytes=read_bytes,
+        )
+
+    def read_metadata(self):
+        """Read the JSON sidecars and the data summary file rows of this path.
+
+        Returns
+        -------
+        metadata : dict
+            Dictionary containing BIDS metadata with the following keys:
+
+            * ``"sidecar"``: dict
+                Sidecar metadata, as returned by
+                :meth:`read_sidecar(inherit=True) <mne_bids.BIDSPath.read_sidecar>`.
+            * ``"participant"``: list of dicts
+                This participant's row from `participants.tsv`_ (a
+                single-row list, empty when there is none).
+            * ``"session"``: list of dicts
+                This session's row from `sessions.tsv`_ (a single-row
+                list, empty when there is none).
+            * ``"scans"``: list of dicts
+                Rows from `scans.tsv`_ for the recording file(s) matching
+                this path: one row for a fully specified path, every
+                matching row for an underspecified one; with no session
+                in the path, rows are collected from all sessions.
+            * ``"data_dictionary"``: dict
+                Column descriptions from the inherited ``participants.json``,
+                ``sessions.json``, and ``scans.json`` sidecars, keyed by
+                ``"participant"``, ``"session"``, and ``"scans"``.
+
+            Any ``n/a`` values in TSV files are converted to ``None``;
+            ``acq_time`` values become timezone-aware datetimes and
+            ``age``, ``height``, ``weight`` become floats.
+
+        Notes
+        -----
+        .. versionadded:: 0.21
+
+        The `scans.tsv`_ and `sessions.tsv`_ files are optional in BIDS, so
+        missing files or rows return empty entries instead of raising; an
+        unset ``root`` or a path whose datatype cannot be inferred still
+        raises. Only ``"scans"`` needs this path to resolve to recording
+        files; an underspecified path that matches several recordings
+        returns every matching row (with a warning) while the remaining
+        entries are still read.
+        """
+        if self.root is None:
+            raise ValueError("The root of the BIDSPath must be set to read metadata.")
+        bp = (
+            self.copy().update(datatype=self.suffix)
+            if self.datatype is None and self.suffix in ALLOWED_DATATYPES
+            else self
+        )
+        root, sub, ses = bp.root, bp.subject, bp.session
+        with _share_dir_listings():
+            participants = root / "participants.tsv"
+            sessions = (
+                BIDSPath(
+                    subject=sub, suffix="sessions", extension=".tsv", root=root
+                ).fpath
+                if sub and ses
+                else None
+            )
+            # scans.tsv is optional in BIDS
+            targets = []
+            if sub and (bp.datatype or bp.suffix or bp.extension):
+                if ses:
+                    if (
+                        scans := bp.find_matching_sidecar(
+                            suffix="scans", extension=".tsv", on_error="ignore"
+                        )
+                    ) is not None:
+                        targets = [(scans, bp)]
+                else:
+                    # No session: collect every session's scans.tsv
+                    subj_dir = root / f"sub-{sub}"
+                    subj_scans = subj_dir / f"sub-{sub}_scans.tsv"
+                    if _sidecar_is_file(subj_scans, root):
+                        targets.append((subj_scans, bp))
+                    entries = _listed(subj_dir)
+                    names = (
+                        entries.keys()
+                        if entries is not None
+                        else [e.name for e in subj_dir.iterdir()]
+                        if subj_dir.is_dir()
+                        else []
+                    )
+                    for label in sorted(
+                        n.removeprefix("ses-") for n in names if n.startswith("ses-")
+                    ):
+                        f = BIDSPath(
+                            subject=sub,
+                            session=label,
+                            suffix="scans",
+                            extension=".tsv",
+                            root=root,
+                        ).fpath
+                        if _sidecar_is_file(f, root):
+                            targets.append((f, bp.copy().update(session=label)))
+            scan_rows = []
+            for scans_file, scoped in targets:
+                try:
+                    rec_fpaths = [scoped.fpath]
+                except RuntimeError:
+                    # .fpath only raises for an underspecified path
+                    # matching more than one recording file: return
+                    # every matching row instead of picking one. Other
+                    # RuntimeErrors (e.g. several datatypes) propagate.
+                    try:
+                        rec_fpaths = [
+                            Path(p)
+                            for p in _get_matching_bidspaths_from_filesystem(scoped)
+                        ]
+                    except RuntimeError:
+                        raise
+                    warn(
+                        "The BIDSPath matches more than one recording "
+                        "file; returning every matching 'scans' row."
+                    )
+                rows = _read_tsv_rows(scans_file, "filename")
+                fnames = [Path(k) for k in rows]
+                inds = {
+                    ind
+                    for rec in rec_fpaths
+                    if (
+                        ind := _find_scan_row(
+                            fnames, rec, scoped.datatype, scans_file.parent
+                        )[0]
+                    )
+                    is not None
+                }
+                vals = list(rows.values())
+                scan_rows += [vals[i].copy() for i in sorted(inds)]
+            prow = (
+                _read_tsv_rows(participants, "participant_id", "sub-").get(sub)
+                if sub and participants.is_file()
+                else None
+            )
+            srow = (
+                _read_tsv_rows(sessions, "session_id", "ses-").get(ses)
+                if sessions and _sidecar_is_file(sessions, root)
+                else None
+            )
+            return dict(
+                sidecar=(
+                    bp.read_sidecar(inherit=True, on_error="ignore")
+                    if (bp.datatype or bp.suffix or bp.extension)
+                    else {}
+                ),
+                participant=[prow.copy()] if prow is not None else [],
+                session=[srow.copy()] if srow is not None else [],
+                scans=scan_rows,
+                data_dictionary={
+                    key: bp.read_sidecar(suffix, inherit=True, on_error="ignore")
+                    for key, suffix in (
+                        ("participant", "participants"),
+                        ("session", "sessions"),
+                        ("scans", "scans"),
+                    )
+                },
+            )
 
     @property
     def meg_calibration_fpath(self):
@@ -2247,7 +2436,11 @@ def _find_inherited_sidecars(bids_path, suffix=None, extension=None, candidates=
     """Find all sidecar files that apply to a recording, from the root down."""
     if bids_path.datatype is None and bids_path.suffix in ALLOWED_DATATYPES:
         bids_path = bids_path.copy().update(datatype=bids_path.suffix)
-    if bids_path.datatype is None:
+    if bids_path.datatype is None and suffix not in (
+        "participants",
+        "sessions",
+        "scans",
+    ):
         raise ValueError(
             "The datatype of the BIDSPath must be set to find inherited sidecar files."
         )
@@ -2297,6 +2490,28 @@ _ext_map = {  # these sidecar files should only ever have these extensions
     "coordsystem": ".json",
     "electrodes": ".tsv",
 }
+
+_SCAN_COMPANIONS = (
+    (".vhdr", ".eeg", ".vmrk"),
+    (".set", ".fdt"),
+    (".lay", ".dat"),
+    (".pdf", ""),
+)
+
+
+def _find_scan_row(fnames, rec_fpath, datatype, scans_dir=None):
+    """Find the row index in ``scans.tsv`` matching ``rec_fpath``."""
+    bases = [Path(datatype or "") / rec_fpath.name]
+    if scans_dir and rec_fpath.is_relative_to(scans_dir):
+        bases.insert(0, rec_fpath.relative_to(scans_dir))
+    exts = next(
+        (g for g in _SCAN_COMPANIONS if rec_fpath.suffix in g), (rec_fpath.suffix,)
+    )
+    for base in bases:
+        for ext in (base.suffix, *(e for e in exts if e != base.suffix)):
+            if (cand := base.with_suffix(ext)) in fnames:
+                return fnames.index(cand), cand
+    return None, bases[-1]
 
 
 _DIR_LISTINGS = contextvars.ContextVar("_DIR_LISTINGS", default=None)
@@ -2440,7 +2655,7 @@ def get_datatypes(root, *, verbose=None):
         ``root``.
     """
     datatypes = list()
-    for sub_dir in glob.iglob(os.path.join(root, "sub-*/*/"), recursive=True):
+    for sub_dir in glob.iglob(os.path.join(glob.escape(str(root)), "sub-*/*/")):
         _dir = Path(sub_dir).parts[-1]
         if _dir in _DATATYPE_LIST:
             if _dir not in datatypes:
@@ -2448,7 +2663,7 @@ def get_datatypes(root, *, verbose=None):
         # Check session subdirs
         elif not _dir.startswith("ses-"):
             continue
-        for next_dir in glob.iglob(os.path.join(sub_dir, "*/")):
+        for next_dir in glob.iglob(os.path.join(glob.escape(sub_dir), "*/")):
             _dir = Path(next_dir).parts[-1]
             if _dir in _DATATYPE_LIST and _dir not in datatypes:
                 datatypes.append(_dir)
@@ -2838,7 +3053,7 @@ def _get_datatypes_for_sub(*, root, sub, ses=None):
     # TODO We do this to ensure we don't accidentally pick up any "spurious"
     # TODO sub-directories. But is that really necessary with valid BIDS data?
     modalities_in_dataset = get_datatypes(root=root)
-    subdirs = [f.name for f in os.scandir(subject_dir) if f.is_dir()]
+    subdirs = [f.name for f in _scandir(subject_dir) if f.is_dir()]
     available_modalities = [s for s in subdirs if s in modalities_in_dataset]
     return available_modalities
 

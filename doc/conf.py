@@ -222,7 +222,4 @@ sphinx_gallery_conf = {
 assert is_serializable(sphinx_gallery_conf)
 
 # Reusable hyperlink targets that can be referenced in our Documentation/Docstrings
-rst_epilog = """
-.. _The Eyetracking BIDS specification:
-   https://bids-specification.readthedocs.io/en/stable/modality-specific-files/physiological-recordings.html#eye-tracking
-"""
+rst_epilog = (Path(__file__).parent / "links.inc").read_text(encoding="utf-8")
