@@ -2856,6 +2856,15 @@ def test_read_metadata(tmp_path):
     )
     with pytest.raises(ValueError, match="root"):
         BIDSPath(subject="01").read_metadata()
+    # A missing root (unlocalized or partial dataset) degrades to empties
+    missing = BIDSPath(subject="01", datatype="eeg", root=tmp_path / "nope")
+    assert missing.read_metadata() == dict(
+        sidecar={},
+        participant=[],
+        session=[],
+        scans=[],
+        data_dictionary={"participant": {}, "session": {}, "scans": {}},
+    )
     _write_json(bids_root / "scans.json", {"acq_time": {"Units": "s"}})  # inherited
     sub_only = BIDSPath(subject="01", root=bids_root).read_metadata()
     assert sub_only["sidecar"] == {} and sub_only["scans"] == []
