@@ -12,6 +12,7 @@ import os
 import os.path as op
 import re
 import shutil as sh
+import sys
 import warnings
 from collections import OrderedDict
 from contextlib import nullcontext
@@ -2964,6 +2965,21 @@ def test_read_metadata(tmp_path):
         },
     ]
     assert all_ses["session"] == [] and all_ses["participant"] == meta["participant"]
+    # An unreadable root raises PermissionError rather than faking emptiness
+    if sys.platform != "win32":
+        bids_root.chmod(0o000)
+        try:
+            with pytest.raises(PermissionError):
+                BIDSPath(subject="01", datatype="eeg", root=bids_root).read_metadata()
+        finally:
+            bids_root.chmod(0o755)
+    # Several datatypes without one in the path: the datatype error, not
+    # the multi-recording fallback, propagates
+    (bids_root / "sub-01" / "ses-eeg" / "meg").mkdir()
+    with pytest.raises(RuntimeError, match="more than one recording datatype"):
+        BIDSPath(
+            subject="01", session="eeg", extension=".vhdr", root=bids_root
+        ).read_metadata()
     no_ephys_dir = bids_root / "sub-99" / "ses-eeg"
     no_ephys_dir.mkdir(parents=True)
     (no_ephys_dir / "sub-99_ses-eeg_scans.tsv").write_text("filename\tacq_time\n")

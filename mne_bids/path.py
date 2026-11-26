@@ -1538,13 +1538,18 @@ class BIDSPath:
                 except RuntimeError:
                     # .fpath only raises for an underspecified path
                     # matching more than one recording file: return
-                    # every matching row instead of picking one.
+                    # every matching row instead of picking one. Other
+                    # RuntimeErrors (e.g. several datatypes) propagate.
+                    try:
+                        rec_fpaths = [
+                            Path(p)
+                            for p in _get_matching_bidspaths_from_filesystem(scoped)
+                        ]
+                    except RuntimeError:
+                        raise
                     warn(
                         "The BIDSPath matches more than one recording "
                         "file; returning every matching 'scans' row."
-                    )
-                    rec_fpaths = map(
-                        Path, _get_matching_bidspaths_from_filesystem(scoped)
                     )
                 rows = _read_tsv_rows(scans_file, "filename")
                 fnames = [Path(k) for k in rows]
@@ -2626,7 +2631,7 @@ def get_datatypes(root, *, verbose=None):
         ``root``.
     """
     datatypes = list()
-    for sub_dir in glob.iglob(os.path.join(root, "sub-*/*/"), recursive=True):
+    for sub_dir in glob.iglob(os.path.join(glob.escape(str(root)), "sub-*/*/")):
         _dir = Path(sub_dir).parts[-1]
         if _dir in _DATATYPE_LIST:
             if _dir not in datatypes:
@@ -2634,7 +2639,7 @@ def get_datatypes(root, *, verbose=None):
         # Check session subdirs
         elif not _dir.startswith("ses-"):
             continue
-        for next_dir in glob.iglob(os.path.join(sub_dir, "*/")):
+        for next_dir in glob.iglob(os.path.join(glob.escape(sub_dir), "*/")):
             _dir = Path(next_dir).parts[-1]
             if _dir in _DATATYPE_LIST and _dir not in datatypes:
                 datatypes.append(_dir)
@@ -3024,7 +3029,7 @@ def _get_datatypes_for_sub(*, root, sub, ses=None):
     # TODO We do this to ensure we don't accidentally pick up any "spurious"
     # TODO sub-directories. But is that really necessary with valid BIDS data?
     modalities_in_dataset = get_datatypes(root=root)
-    subdirs = [f.name for f in os.scandir(subject_dir) if f.is_dir()]
+    subdirs = [f.name for f in _scandir(subject_dir) if f.is_dir()]
     available_modalities = [s for s in subdirs if s in modalities_in_dataset]
     return available_modalities
 
