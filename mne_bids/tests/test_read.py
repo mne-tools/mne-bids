@@ -2971,10 +2971,17 @@ def test_read_metadata(tmp_path):
         bids_root.chmod(0o000)
         try:
             if not os.access(bids_root, os.R_OK):
-                with pytest.raises(PermissionError):
-                    BIDSPath(
+                # Python <=3.13 raises PermissionError from is_file, >=3.14
+                # returns False and read_metadata degrades to empties
+                try:
+                    unreadable = BIDSPath(
                         subject="01", datatype="eeg", root=bids_root
                     ).read_metadata()
+                except PermissionError:
+                    pass
+                else:
+                    assert unreadable["participant"] == []
+                    assert unreadable["scans"] == []
         finally:
             bids_root.chmod(0o755)
     # Several datatypes without one in the path: the datatype error, not
