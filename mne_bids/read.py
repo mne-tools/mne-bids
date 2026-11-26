@@ -538,26 +538,42 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     return raw
 
 
-def _read_json_object(fname):
+def _read_json_object(fname, *, read_bytes=None):
     """Read a JSON sidecar, which BIDS requires to be a JSON object."""
-    with _open_lock(fname, encoding="utf-8") as fin:
-        content = json.load(fin)
+    if read_bytes is not None:
+        content = json.loads(read_bytes(fname))
+    else:
+        with _open_lock(fname, encoding="utf-8") as fin:
+            content = json.load(fin)
     if not isinstance(content, dict):
         warn(f"{fname} is not a JSON object, ignoring it.")
         return {}
     return content
 
 
-def _read_sidecar_json(bids_path, suffix=None, on_error="ignore", *, inherit=True):
+def _read_sidecar_json(
+    bids_path,
+    suffix=None,
+    on_error="ignore",
+    *,
+    inherit=True,
+    candidates=None,
+    read_bytes=None,
+):
     """Read the closest JSON sidecar, or merge the inherited ones from the root down."""
     fnames = _find_matching_sidecar(
-        bids_path, suffix=suffix, extension=".json", on_error=on_error, inherit=inherit
+        bids_path,
+        suffix=suffix,
+        extension=".json",
+        on_error=on_error,
+        inherit=inherit,
+        candidates=candidates,
     )
     if not inherit:
         fnames = [] if fnames is None else [fnames]
     sidecar = {}
     for fname in fnames:
-        sidecar.update(_read_json_object(fname))
+        sidecar.update(_read_json_object(fname, read_bytes=read_bytes))
     return sidecar
 
 

@@ -1401,7 +1401,15 @@ class BIDSPath:
             candidates=candidates,
         )
 
-    def read_sidecar(self, suffix=None, *, inherit=False, on_error="raise"):
+    def read_sidecar(
+        self,
+        suffix=None,
+        *,
+        inherit=False,
+        on_error="raise",
+        candidates=None,
+        read_bytes=None,
+    ):
         """Read the matching JSON sidecar file(s).
 
         Parameters
@@ -1420,6 +1428,15 @@ class BIDSPath:
             ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a
             warning, and if ``'ignore'``, neither raise an exception nor a
             warning, and return an empty dictionary in both cases.
+        candidates : iterable of path-like | None
+            Pre-collected paths or URLs to choose the sidecar from instead
+            of listing directories on disk, as in
+            :meth:`find_matching_sidecar`.
+        read_bytes : callable | None
+            Callable taking a candidate path and returning its content as
+            bytes, used to read the chosen sidecar(s) instead of opening
+            them on the local filesystem (e.g. for remote candidates).
+            If ``None`` (default), files are read from disk.
 
         Returns
         -------
@@ -1433,7 +1450,14 @@ class BIDSPath:
         from mne_bids.read import _read_sidecar_json
 
         suffix = suffix or self.suffix or self.datatype
-        return _read_sidecar_json(self, suffix, on_error, inherit=inherit)
+        return _read_sidecar_json(
+            self,
+            suffix,
+            on_error,
+            inherit=inherit,
+            candidates=candidates,
+            read_bytes=read_bytes,
+        )
 
     def read_metadata(self):
         """Read the JSON sidecars and the data summary file rows of this path.

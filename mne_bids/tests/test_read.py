@@ -2845,6 +2845,34 @@ def test_read_sidecar(tmp_path):
     assert read_raw_bids(bp).info["line_freq"] == 50
 
 
+def test_read_sidecar_candidates():
+    """read_sidecar chooses and reads sidecars from pre-collected candidates."""
+    bp = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root="hf://ds"
+    )
+    root_json = "hf://ds/task-rest_eeg.json"
+    rec_json = "hf://ds/sub-01/ses-eeg/eeg/sub-01_ses-eeg_task-rest_eeg.json"
+    contents = {
+        root_json: json.dumps(
+            {"PowerLineFrequency": 60, "EEGReference": "Cz"}
+        ).encode(),
+        rec_json: json.dumps({"PowerLineFrequency": 50}).encode(),
+    }
+    # Nothing is read from disk: remote candidates are chosen and merged
+    merged = bp.read_sidecar(
+        inherit=True, candidates=[root_json, rec_json], read_bytes=contents.__getitem__
+    )
+    assert merged["PowerLineFrequency"] == 50 and merged["EEGReference"] == "Cz"
+    closest = bp.read_sidecar(
+        candidates=[root_json, rec_json], read_bytes=contents.__getitem__
+    )
+    assert closest == {"PowerLineFrequency": 50}
+    with pytest.raises(RuntimeError, match="nosuchsuffix"):
+        bp.read_sidecar(
+            "nosuchsuffix", candidates=[root_json], read_bytes=contents.__getitem__
+        )
+
+
 def test_read_metadata(tmp_path):
     """BIDSPath.read_metadata returns TSV rows and their data dictionaries."""
     bids_root = tmp_path / "tiny_bids[1]"
