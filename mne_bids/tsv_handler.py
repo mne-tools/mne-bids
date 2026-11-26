@@ -10,6 +10,8 @@ import json
 import re
 from collections import OrderedDict
 from copy import deepcopy
+from datetime import UTC, datetime
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -345,3 +347,63 @@ def _nansafe_to_str(value):
     if isinstance(value, float | np.floating) and np.isnan(value):
         return "n/a"
     return str(value)
+
+
+def _typed(col, value):
+    """Convert BIDS-standard typed columns; keep everything else a string."""
+    if value == "n/a":
+        return None
+    if col == "acq_time":
+        return _parse_acq_time(value)
+    if col in ("age", "height", "weight"):
+        try:
+            return float(value)
+        except ValueError:
+            return None
+    return value
+
+
+@lru_cache(maxsize=32)
+def _tsv_rows_cached(fname, content, key_col, prefix):
+    """Parse a TSV file once per file content (participants, sessions, scans)."""
+    table = _from_tsv(fname, content=content)
+    if key_col not in table:
+        raise ValueError(f"{fname} has no {key_col} column.")
+    rows, duplicates = {}, []
+    for values in zip(*table.values(), strict=True):
+        row = dict(zip(table, values, strict=True))
+        key = row[key_col].removeprefix(prefix)
+        if key in rows:
+            duplicates.append(row[key_col])
+        else:
+            rows[key] = {k: _typed(k, v) for k, v in row.items()}
+    return rows, tuple(duplicates)
+
+
+def _parse_acq_time(value):
+    """Parse a BIDS ``acq_time`` string to a UTC datetime; None if invalid."""
+    from .utils import _convert_dt_to_utc  # avoid circular import
+
+    if value is None:
+        return None
+    s = value.strip()
+    if not s or s.lower() == "nan":
+        return None
+    try:
+        parsed = datetime.fromisoformat(
+            s.replace("Z", "+00:00") if s.endswith("Z") else s
+        )
+    except ValueError:
+        return None
+    return parsed.astimezone(UTC) if parsed.tzinfo else _convert_dt_to_utc(parsed)
+
+
+def _read_tsv_rows(fname, key_col, prefix="", *, content=None):
+    from .utils import warn  # avoid circular import
+
+    if content is None:
+        content = Path(fname).read_bytes()
+    rows, duplicates = _tsv_rows_cached(str(fname), content, key_col, prefix)
+    for dup in duplicates:
+        warn(f"Duplicate {key_col} {dup!r} in {fname}; keeping the first row.")
+    return rows

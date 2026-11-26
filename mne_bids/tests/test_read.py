@@ -12,6 +12,7 @@ import os
 import os.path as op
 import re
 import shutil as sh
+import sys
 import warnings
 from collections import OrderedDict
 from contextlib import nullcontext
@@ -2760,12 +2761,21 @@ def test_read_participants(tmp_path):
     """Read participants.tsv into rows keyed by subject label."""
     fname = tmp_path / "participants.tsv"
     fname.write_text("participant_id\tage\tsex\nsub-01\t24\tF\nsub-02\tn/a\tM\n")
-    expected = {"01": {"age": "24", "sex": "F"}, "02": {"age": None, "sex": "M"}}
+    expected = {
+        "01": {"participant_id": "sub-01", "age": 24.0, "sex": "F"},
+        "02": {"participant_id": "sub-02", "age": None, "sex": "M"},
+    }
     assert read_participants(fname) == expected
     assert (
         read_participants("hf://repo/participants.tsv", content=fname.read_bytes())
         == expected
     )
+
+    fname.write_text("participant_id\tage\nsub-01\t24\nsub-01\t99\nn/a\t30\n")
+    with pytest.warns(RuntimeWarning, match="Duplicate participant_id 'sub-01'"):
+        rows = read_participants(fname)
+    assert rows["01"] == {"participant_id": "sub-01", "age": 24.0}
+    assert rows["n/a"] == {"participant_id": None, "age": 30.0}
 
     fname.write_text("age\tsex\n24\tF\n")
     with pytest.raises(ValueError, match="participant_id"):
@@ -2833,6 +2843,161 @@ def test_read_sidecar(tmp_path):
     _write_json(eeg_json, sidecar, overwrite=True)
     assert bp.read_sidecar(inherit=True)["PowerLineFrequency"] == 50
     assert read_raw_bids(bp).info["line_freq"] == 50
+
+
+def test_read_metadata(tmp_path):
+    """BIDSPath.read_metadata returns TSV rows and their data dictionaries."""
+    bids_root = tmp_path / "tiny_bids[1]"
+    sh.copytree(tiny_bids_root, bids_root)
+    eeg_json = (
+        bids_root / "sub-01" / "ses-eeg" / "eeg" / "sub-01_ses-eeg_task-rest_eeg.json"
+    )
+    bp = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=bids_root
+    )
+    with pytest.raises(ValueError, match="root"):
+        BIDSPath(subject="01").read_metadata()
+    # A missing root (unlocalized or partial dataset) degrades to empties
+    missing = BIDSPath(subject="01", datatype="eeg", root=tmp_path / "nope")
+    assert missing.read_metadata() == dict(
+        sidecar={},
+        participant=[],
+        session=[],
+        scans=[],
+        data_dictionary={"participant": {}, "session": {}, "scans": {}},
+    )
+    _write_json(bids_root / "scans.json", {"acq_time": {"Units": "s"}})  # inherited
+    sub_only = BIDSPath(subject="01", root=bids_root).read_metadata()
+    assert sub_only["sidecar"] == {} and sub_only["scans"] == []
+    assert sub_only["participant"] == [
+        read_participants(bids_root / "participants.tsv")["01"]
+    ]
+    meta = bp.copy().update(suffix="eeg", extension=".vhdr").read_metadata()
+    assert meta["sidecar"] == bp.read_sidecar(inherit=True)
+    assert meta["participant"] == sub_only["participant"]
+    assert meta["participant"] == [
+        dict(
+            participant_id="sub-01",
+            age=29.0,
+            sex="F",
+            hand="A",
+            weight=None,
+            height=None,
+        )
+    ]
+    assert meta["session"] == [
+        {
+            "session_id": "ses-eeg",
+            "acq_time": datetime(2000, 1, 1, 12, tzinfo=UTC),
+            "pathology": "Parkinson's disease",
+        }
+    ]
+    assert meta["scans"] == [
+        {
+            "filename": "eeg/sub-01_ses-eeg_task-rest_eeg.vhdr",
+            "acq_time": datetime(2000, 1, 1, 12, tzinfo=UTC),
+        }
+    ]
+    # scans.tsv lists the .vhdr, also for the .eeg and without a datatype
+    for kwargs in (dict(extension=".eeg"), dict(extension=".vhdr", datatype=None)):
+        other = bp.copy().update(suffix="eeg", **kwargs).read_metadata()
+        assert other["scans"] == meta["scans"]
+    # also when scans.tsv itself lists .eeg instead of .vhdr, or is absent
+    scans_tsv = bids_root / "sub-01" / "ses-eeg" / "sub-01_ses-eeg_scans.tsv"
+    orig_scans = scans_tsv.read_text(encoding="utf-8")
+    scans_tsv.write_text(orig_scans.replace(".vhdr", ".eeg"), encoding="utf-8")
+    assert bp.read_metadata()["scans"] == [
+        {**meta["scans"][0], "filename": "eeg/sub-01_ses-eeg_task-rest_eeg.eeg"}
+    ]
+    scans_tsv.unlink()
+    assert bp.read_metadata()["scans"] == []
+    scans_tsv.write_text(orig_scans, encoding="utf-8")
+    # an unparseable acq_time becomes None
+    scans_tsv.write_text(
+        orig_scans.replace("2000-01-01T12:00:00.000000Z", "junk"), encoding="utf-8"
+    )
+    assert bp.read_metadata()["scans"][0]["acq_time"] is None
+    scans_tsv.write_text(orig_scans, encoding="utf-8")
+    assert meta["data_dictionary"]["participant"]["age"]["Units"] == "years"
+    assert "pathology" in meta["data_dictionary"]["session"]
+    assert meta["data_dictionary"]["scans"] == {"acq_time": {"Units": "s"}}
+    # An underspecified path matching several recordings warns and
+    # returns every matching row. Only the RuntimeError is caught;
+    # datatype-inference errors still raise.
+    other_task = eeg_json.with_name("sub-01_ses-eeg_task-other_eeg.vhdr")
+    other_task.write_text("")
+    scans_tsv.write_text(
+        orig_scans + "eeg/sub-01_ses-eeg_task-other_eeg.vhdr\t"
+        "2000-01-01T13:00:00.000000Z\n",
+        encoding="utf-8",
+    )
+    try:
+        with pytest.warns(RuntimeWarning, match="more than one recording"):
+            partial = BIDSPath(
+                subject="01", session="eeg", datatype="eeg", root=bids_root
+            ).read_metadata()
+    finally:
+        other_task.unlink()
+        scans_tsv.write_text(orig_scans, encoding="utf-8")
+    assert partial["scans"] == [
+        *meta["scans"],
+        {
+            "filename": "eeg/sub-01_ses-eeg_task-other_eeg.vhdr",
+            "acq_time": datetime(2000, 1, 1, 13, tzinfo=UTC),
+        },
+    ]
+    assert partial["participant"] == meta["participant"]
+    # A session-less path collects scans rows from every session
+    other_ses = bids_root / "sub-01" / "ses-other"
+    (other_ses / "eeg").mkdir(parents=True)
+    (other_ses / "eeg" / "sub-01_ses-other_task-rest_eeg.vhdr").write_text("")
+    (other_ses / "sub-01_ses-other_scans.tsv").write_text(
+        "filename\tacq_time\n"
+        "eeg/sub-01_ses-other_task-rest_eeg.vhdr\t2000-01-02T12:00:00.000000Z\n",
+        encoding="utf-8",
+    )
+    all_ses = BIDSPath(subject="01", datatype="eeg", root=bids_root).read_metadata()
+    assert all_ses["scans"] == [
+        *meta["scans"],
+        {
+            "filename": "eeg/sub-01_ses-other_task-rest_eeg.vhdr",
+            "acq_time": datetime(2000, 1, 2, 12, tzinfo=UTC),
+        },
+    ]
+    assert all_ses["session"] == [] and all_ses["participant"] == meta["participant"]
+    # An unreadable root raises PermissionError rather than faking emptiness
+    # (chmod may not bite when tests run as root, e.g. in containers)
+    if sys.platform != "win32":
+        bids_root.chmod(0o000)
+        try:
+            if not os.access(bids_root, os.R_OK):
+                # Python <=3.13 raises PermissionError from is_file, >=3.14
+                # returns False and read_metadata degrades to empties
+                try:
+                    unreadable = BIDSPath(
+                        subject="01", datatype="eeg", root=bids_root
+                    ).read_metadata()
+                except PermissionError:
+                    pass
+                else:
+                    assert unreadable["participant"] == []
+                    assert unreadable["scans"] == []
+        finally:
+            bids_root.chmod(0o755)
+    # Several datatypes without one in the path: the datatype error, not
+    # the multi-recording fallback, propagates
+    (bids_root / "sub-01" / "ses-eeg" / "meg").mkdir()
+    with pytest.raises(RuntimeError, match="more than one recording datatype"):
+        BIDSPath(
+            subject="01", session="eeg", extension=".vhdr", root=bids_root
+        ).read_metadata()
+    no_ephys_dir = bids_root / "sub-99" / "ses-eeg"
+    no_ephys_dir.mkdir(parents=True)
+    (no_ephys_dir / "sub-99_ses-eeg_scans.tsv").write_text("filename\tacq_time\n")
+    with pytest.raises(ValueError, match="No electrophysiological data found"):
+        BIDSPath(
+            subject="99", session="eeg", extension=".vhdr", root=bids_root
+        ).read_metadata()
 
 
 @pytest.mark.parametrize("col", ["description", "ch_names", "hed_string"])
